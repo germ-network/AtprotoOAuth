@@ -1,13 +1,20 @@
 import SwiftATProtoTypes
 
+public protocol ATProtoOAuthInterface {
+	//MARK: Resolution
+	static func resolve(handle: String) async throws -> ATProtoDID
 
-public class ATProtoOAuthRuntime {
+	//MARK: Authentication
+}
+
+public class ATProtoOAuthRuntime: ATProtoOAuthInterface {
 
 }
 
 extension ATProtoOAuthRuntime {
 	public enum AuthIdentity {
 		case handle(String)
-		case did(ATProtoDID)
+		//optionally pass in handle to fill into the UI of the web auth sheet
+		case did(ATProtoDID, String?)
 	}
 }

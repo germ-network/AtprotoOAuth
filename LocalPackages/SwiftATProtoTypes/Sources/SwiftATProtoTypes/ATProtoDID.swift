@@ -2,13 +2,6 @@
 //  ATProtoDID.swift
 //  SwiftATProtoOAuth
 //
-//  Created by Mark @ Germ on 2/17/26.
-//
-
-//
-//  ATProtoDID.swift
-//  CommProtocol
-//
 //  Created by Mark @ Germ on 4/22/25.
 //
 
