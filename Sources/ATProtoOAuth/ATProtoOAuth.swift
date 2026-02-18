@@ -5,6 +5,7 @@ public protocol ATProtoOAuthInterface {
 	static func resolve(handle: String) async throws -> ATProtoDID
 
 	//MARK: Authentication
+	
 }
 
 public class ATProtoOAuthRuntime: ATProtoOAuthInterface {
