@@ -4,27 +4,23 @@
 import PackageDescription
 
 let package = Package(
-	name: "SwiftATProtoOAuth",
+	name: "SwiftATProtoTypes",
 	products: [
 		// Products define the executables and libraries a package produces, making them visible to other packages.
 		.library(
-			name: "SwiftATProtoOAuth",
-			targets: ["SwiftATProtoOAuth"]
+			name: "SwiftATProtoTypes",
+			targets: ["SwiftATProtoTypes"]
 		)
-	],
-	dependencies: [
-		.package(path: 	"./LocalPackages/SwiftATProtoTypes")
 	],
 	targets: [
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
 		// Targets can depend on other targets in this package and products from dependencies.
 		.target(
-			name: "SwiftATProtoOAuth",
-			dependencies: ["SwiftATProtoTypes"]
+			name: "SwiftATProtoTypes"
 		),
 		.testTarget(
-			name: "SwiftATProtoOAuthTests",
-			dependencies: ["SwiftATProtoOAuth"]
+			name: "SwiftATProtoTypesTests",
+			dependencies: ["SwiftATProtoTypes"]
 		),
 	]
 )

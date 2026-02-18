@@ -1,3 +1,6 @@
+import SwiftATProtoTypes
+
+
 public class ATProtoOAuthRuntime {
 
 }
@@ -5,6 +8,6 @@ public class ATProtoOAuthRuntime {
 extension ATProtoOAuthRuntime {
 	public enum AuthIdentity {
 		case handle(String)
-		case did
+		case did(ATProtoDID)
 	}
 }
