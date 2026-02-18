@@ -5,7 +5,7 @@
 //  Created by Mark @ Germ on 2/17/26.
 //
 
-import SwiftATProtoTypes
+import ATProtoTypes
 import Testing
 
 struct ATProtoDIDTests {

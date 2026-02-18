@@ -4,17 +4,17 @@
 import PackageDescription
 
 let package = Package(
-	name: "SwiftATProtoOAuth",
+	name: "ATProtoOAuth",
 	platforms: [.iOS(.v17), .macOS(.v15)],
 	products: [
 		// Products define the executables and libraries a package produces, making them visible to other packages.
 		.library(
-			name: "SwiftATProtoOAuth",
-			targets: ["SwiftATProtoOAuth"]
+			name: "ATProtoOAuth",
+			targets: ["ATProtoOAuth"]
 		)
 	],
 	dependencies: [
-		.package(path: "./LocalPackages/SwiftATProtoTypes"),
+		.package(path: "./LocalPackages/ATProtoTypes"),
 		//for temp shim only
 		.package(
 			url: "https://github.com/germ-network/ATResolve",
@@ -25,16 +25,16 @@ let package = Package(
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
 		// Targets can depend on other targets in this package and products from dependencies.
 		.target(
-			name: "SwiftATProtoOAuth",
+			name: "ATProtoOAuth",
 			dependencies: [
-				"SwiftATProtoTypes",
+				"ATProtoTypes",
 				//for temp shim only
-				"ATResolve"
+				"ATResolve",
 			]
 		),
 		.testTarget(
-			name: "SwiftATProtoOAuthTests",
-			dependencies: ["SwiftATProtoOAuth"]
+			name: "ATProtoOAuthTests",
+			dependencies: ["ATProtoOAuth"]
 		),
 	]
 )

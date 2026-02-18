@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum OAuthRuntimeError: Error{
+enum OAuthRuntimeError: Error {
 	case noDidForHandle
 }
 

@@ -1,4 +1,4 @@
-import SwiftATProtoTypes
+import ATProtoTypes
 
 public protocol ATProtoOAuthInterface {
 	//MARK: Resolution
