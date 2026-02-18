@@ -16,6 +16,11 @@ let package = Package(
 	dependencies: [
 		.package(path: "../ATProtoTypes"),
 		.package(url: "https://github.com/MasterJ93/ATProtoKit.git", from: "0.32.0"),
+		//for temp shim only
+		.package(
+			url: "https://github.com/germ-network/OAuthenticator",
+			branch: "mark/build-runtime"
+		),
 	],
 	targets: [
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -25,6 +30,7 @@ let package = Package(
 			dependencies: [
 				"ATProtoTypes",
 				"ATProtoKit",
+				"OAuthenticator",
 			]
 		),
 		.testTarget(

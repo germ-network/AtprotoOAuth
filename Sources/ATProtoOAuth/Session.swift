@@ -9,7 +9,7 @@ import Foundation
 
 //to be moved into own package
 
-public class ATProtoOAuthSession {
+public actor ATProtoOAuthSession {
 
 }
 
@@ -18,7 +18,7 @@ extension ATProtoOAuthSession {
 
 	}
 
-	convenience init(archive: Archive) {
+	init(archive: Archive) {
 		self.init()
 	}
 

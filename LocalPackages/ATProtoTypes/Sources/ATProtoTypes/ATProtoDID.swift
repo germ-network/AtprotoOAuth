@@ -14,7 +14,7 @@ import Foundation
 //Store it as a string, do some rudimentary checking
 //can implement more checks later
 
-public struct ATProtoDID: Equatable, Hashable {
+public struct ATProtoDID: Equatable, Hashable, Sendable {
 	enum Constants {
 		static let prefix = "did:"
 	}

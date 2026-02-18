@@ -14,6 +14,9 @@ extension ATProtoClient {
 		did: ATProtoDID,
 		pdsURL: URL
 	) async throws -> GermLexicon.MessagingDelegateRecord {
+		//this uses the url request internal to ATProtoKit and not
+		//ATProtoClient's
+
 		let resp = try await ATProtoKit(pdsURL: pdsURL.absoluteString)
 			.getRepositoryRecord(
 				from: did.fullId,

@@ -1,6 +1,16 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
+import ATProtoTypes
+import Foundation
+import OAuthenticator
 
-enum ATProtoClient {
+//abstract out the protocol so we can sub in a mock one for offline testing
+public protocol ATProtoClientInterface: Sendable {
+	func resolveDocument(did: ATProtoDID) async throws -> DIDDocument
 
+	func loadProtectedResourceMetadata(
+		host: String
+	) async throws -> ProtectedResourceMetadata
+}
+
+struct ATProtoClient {
+	let responseProvider: URLResponseProvider
 }
