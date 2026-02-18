@@ -1,2 +1,10 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
+public class ATProtoOAuthRuntime {
+
+}
+
+extension ATProtoOAuthRuntime {
+	public enum AuthIdentity {
+		case handle(String)
+		case did
+	}
+}
