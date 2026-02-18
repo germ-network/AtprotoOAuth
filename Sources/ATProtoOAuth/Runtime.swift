@@ -5,10 +5,11 @@ public protocol ATProtoOAuthInterface {
 	static func resolve(handle: String) async throws -> ATProtoDID
 
 	//MARK: Authentication
-	
+	func manualLogin(_: ATProtoOAuthRuntime.AuthIdentity) async throws
+		-> ATProtoOAuthSession.Archive
 }
 
-public class ATProtoOAuthRuntime: ATProtoOAuthInterface {
+public class ATProtoOAuthRuntime {
 
 }
 
