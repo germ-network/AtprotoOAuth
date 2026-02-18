@@ -1,11 +1,10 @@
-import ATProtoKit
 import ATProtoTypes
 import Foundation
 import Testing
 
 @testable import ATProtoClient
 
-struct APITests {
+struct APIOnlineTests {
 	@Test func testMessagingDelegateRecord() async throws {
 		let pdsUrl = try #require(
 			URL(
@@ -14,27 +13,12 @@ struct APITests {
 		)
 		let did = try ATProtoDID(fullId: "did:plc:lbu36k4mysk5g6gcrpw4dbwm")
 
-		//haven't yet registered the type
-		await #expect(
-			throws: ATProtoClientError.failedToDecodeRecord
-		) {
-			let _ =
-				try await ATProtoClient
-				.getGermMessagingDelegate(
-					did: did,
-					pdsURL: pdsUrl
-				)
-		}
-
-		await ATRecordTypeRegistry.shared.register(
-			types: [GermLexicon.MessagingDelegateRecord.self]
-		)
-
-		let _ =
-			try await ATProtoClient
+		let result =
+			try await ATProtoClient(responseProvider: URLSession.defaultProvider)
 			.getGermMessagingDelegate(
 				did: did,
 				pdsURL: pdsUrl
 			)
+		#expect(result.type == "com.germnetwork.declaration")
 	}
 }

@@ -2,21 +2,21 @@
   "originHash" : "bb089780fbbd03ab88047c287fe9af9801707a1639e8a0ecf6e1bfe681a06995",
   "pins" : [
     {
-      "identity" : "atprotokit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/MasterJ93/ATProtoKit.git",
-      "state" : {
-        "revision" : "618aa33b0b57f54f2a145da5d6f77dd6a48de5de",
-        "version" : "0.32.5"
-      }
-    },
-    {
       "identity" : "atresolve",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/ATResolve",
       "state" : {
         "revision" : "26459d9d6e7deb27066b9d7d2931279acc107138",
         "version" : "1.0.0-germ.2"
+      }
+    },
+    {
+      "identity" : "base32",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Jarema/Base32.git",
+      "state" : {
+        "revision" : "7f723a2e55f1c76e7c79263aebf89dbfcd58e77d",
+        "version" : "0.10.2"
       }
     },
     {
@@ -35,15 +35,6 @@
       "state" : {
         "revision" : "2836c57c4c7c784569331cc35a4fe18941f6c796",
         "version" : "0.5.0"
-      }
-    },
-    {
-      "identity" : "swift-log",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-log.git",
-      "state" : {
-        "revision" : "bbd81b6725ae874c69e9b8c8804d462356b55523",
-        "version" : "1.10.1"
       }
     }
   ],

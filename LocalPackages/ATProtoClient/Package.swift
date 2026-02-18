@@ -15,7 +15,6 @@ let package = Package(
 	],
 	dependencies: [
 		.package(path: "../ATProtoTypes"),
-		.package(url: "https://github.com/MasterJ93/ATProtoKit.git", from: "0.32.0"),
 		//for temp shim only
 		.package(
 			url: "https://github.com/germ-network/OAuthenticator",
@@ -29,7 +28,6 @@ let package = Package(
 			name: "ATProtoClient",
 			dependencies: [
 				"ATProtoTypes",
-				"ATProtoKit",
 				"OAuthenticator",
 			]
 		),

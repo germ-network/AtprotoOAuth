@@ -1,16 +1,15 @@
 //
-//  essagingDelegateRecord.swift
+//  MessagingDelegateRecord.swift
 //  ATProtoClient
 //
 //  Created by Anna Mistele on 5/14/25.
 //
 
-import ATProtoKit
 import Foundation
 
 extension GermLexicon {
 
-	public struct MessagingDelegateRecord: ATRecordProtocol, Sendable {
+	public struct MessagingDelegateRecord: Sendable, Codable {
 		/// The identifier of the lexicon.
 		///
 		/// - Warning: The value must not change.
