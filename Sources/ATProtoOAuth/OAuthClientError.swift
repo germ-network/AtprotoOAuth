@@ -7,16 +7,17 @@
 
 import Foundation
 
-enum OAuthRuntimeError: Error {
+enum OAuthClientError: Error {
 	case noDidForHandle
+	case missingUrlHost
 	case notImplemented
-
 }
 
-extension OAuthRuntimeError: LocalizedError {
+extension OAuthClientError: LocalizedError {
 	var errorDescription: String? {
 		switch self {
 		case .noDidForHandle: "Handle didn't resolve to a did."
+		case .missingUrlHost: "URL did not contain a host."
 		case .notImplemented: "Not implemented."
 		}
 	}

@@ -17,7 +17,7 @@ extension ATProtoOAuthClient {
 			let did = try? await ATResolver(provider: URLSession.shared).didForHandle(
 				handle.lowercased())
 		else {
-			throw OAuthRuntimeError.noDidForHandle
+			throw OAuthClientError.noDidForHandle
 		}
 		return try .init(fullId: did)
 	}

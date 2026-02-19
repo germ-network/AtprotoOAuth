@@ -15,7 +15,7 @@ struct APITests {
 		let resolvedDid = try await ATProtoOAuthClient.resolve(handle: "germnetwork.com")
 		#expect(parsedDid == resolvedDid)
 
-		await #expect(throws: OAuthRuntimeError.noDidForHandle) {
+		await #expect(throws: OAuthClientError.noDidForHandle) {
 			let _ = try await ATProtoOAuthClient.resolve(handle: "example.com")
 		}
 	}
@@ -54,7 +54,7 @@ struct RuntimeAPITests {
 		)
 		#expect(resolvedDid.fullId == "did:plc:lbu36k4mysk5g6gcrpw4dbwm")
 
-		//make some unauthed requests. is this did already using germ?
+		//make some unauthed requests. e.g. is this did already using germ?
 		let _ =
 			try await oauthClient
 			.fetchFromPDS(did: resolvedDid) { pdsUrl, responseProvider in

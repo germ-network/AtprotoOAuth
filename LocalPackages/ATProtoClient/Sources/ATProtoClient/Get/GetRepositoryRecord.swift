@@ -28,7 +28,7 @@ extension ATProtoClient {
 	///
 	/// - Throws: An ``ATProtoError``-conforming error type, depending on the issue. Go to
 	/// ``ATAPIError`` and ``ATRequestPrepareError`` for more details.
-	public func getRepositoryRecord<Result>(
+	func getRepositoryRecord<Result>(
 		repo: AtIdentifier,
 		collection: NSID,
 		recordKey: RecordKey,
@@ -51,31 +51,28 @@ extension ATProtoClient {
 			serviceUrl: pdsUrl,
 			queryItems: queryItems
 		)
-		do {
-			let request = createRequest(
-				url: requestUrl,
-				httpMethod: .get,
-				authorizationValue: nil
+
+		let request = createRequest(
+			url: requestUrl,
+			httpMethod: .get,
+			authorizationValue: nil
+		)
+
+		let (result, response) = try await responseProvider(request)
+		guard
+			let httpResponse = response as? HTTPURLResponse,
+			httpResponse.statusCode >= 200 && httpResponse.statusCode < 300
+		else {
+
+			throw ATProtoClientError.requestFailed(
+				responseCode: (response as? HTTPURLResponse)?.statusCode
 			)
-
-			let (result, response) = try await responseProvider(request)
-			guard
-				let httpResponse = response as? HTTPURLResponse,
-				httpResponse.statusCode >= 200 && httpResponse.statusCode < 300
-			else {
-
-				throw ATProtoClientError.requestFailed(
-					responseCode: (response as? HTTPURLResponse)?.statusCode
-				)
-			}
-			return try JSONDecoder()
-				.decode(
-					ComAtprotoLexicon.Repository.GetRecordOutput.self,
-					from: result
-				)
-		} catch {
-			throw error
 		}
+		return try JSONDecoder()
+			.decode(
+				ComAtprotoLexicon.Repository.GetRecordOutput.self,
+				from: result
+			)
 	}
 
 	private func constructGetRecordURL(
