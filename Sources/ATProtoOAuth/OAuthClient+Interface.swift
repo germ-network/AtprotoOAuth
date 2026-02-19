@@ -20,17 +20,54 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 		)
 	}
 
+	//Germ will always do pre-processing so we will know did,
+	//but you can start from handle
+	public enum AuthIdentity: Sendable {
+		case handle(String)
+		//optionally pass in handle to fill into the UI of the web auth sheet
+		case did(ATProtoDID)
+	}
+	
 	public func initialLogin(
-		handle: String
+		identity: AuthIdentity
 	) async throws -> ATProtoOAuthSession.Archive {
 
-		//resolve handle to pds, uncached
-		let did = try await Self.resolve(handle: handle)
+		
+		let did: ATProtoDID
+		switch identity {
+		case .did(let _did):
+			did = _did
+		case .handle(let handle):
+			//resolve handle to pds, uncached
+			did = try await Self.resolve(handle: handle)
+		}
+
 
 		//resolve pds and pds metadata
-		let pdsUrl = try await resolvePdsUrl(did: did)
+		let didDoc = try await resolveDidDocument(did: did)
+		if case .handle(let handle) = identity {
+			if handle != didDoc.handle {
+				throw OAuthClientError.handleMismatch
+			}
+		}
 
-		guard let pdsHost = pdsUrl.host() else {
+		let authorizationServerUrl = try await getAuthorizationUrl(
+			didDoc: didDoc
+		)
+
+		guard
+			let authorizationServerHost = authorizationServerUrl.host()
+		else {
+			throw OAuthClientError.missingUrlHost
+		}
+
+		let serverConfig = try await getAuthServerMetadata(host: authorizationServerHost)
+
+		throw OAuthClientError.notImplemented
+	}
+	
+	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {
+		guard let pdsHost = try didDoc.pdsUrl.host() else {
 			throw OAuthClientError.missingUrlHost
 		}
 
@@ -46,14 +83,11 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 		}
 
 		guard
-			let authorizationServerUrl = pdsMetadata.authorizationServers?.first,
-			let authorizationServerHost = URL(string: authorizationServerUrl)?.host()
+			let authorizationServerString = pdsMetadata.authorizationServers?.first,
+			let authorizationServerUrl = URL(string: authorizationServerString)
 		else {
 			throw OAuthClientError.missingUrlHost
 		}
-
-		let serverConfig = try await getAuthServerMetadata(host: authorizationServerHost)
-
-		throw OAuthClientError.notImplemented
+		return authorizationServerUrl
 	}
 }

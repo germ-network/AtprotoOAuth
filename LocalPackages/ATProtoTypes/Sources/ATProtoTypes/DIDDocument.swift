@@ -79,6 +79,13 @@ public struct DIDDocument: Sendable, Codable, Equatable {
 		case urlConstructionError
 		case missingServiceUrl
 	}
+	
+	public var handle: String? {
+		(alsoKnownAs ?? [])
+			.filter{ $0.hasPrefix("at://")}
+			//TODO: filter for "no path or other URI parts."
+			.first
+	}
 }
 
 /// Describes a method for verifying digital signatures in the AT Protocol, including the public

@@ -17,7 +17,7 @@ extension ATProtoOAuthClient {
 	}
 
 	//has to be actor isolated method
-	private func resolveDidDocument(did: ATProtoDID) async throws -> DIDDocument {
+	func resolveDidDocument(did: ATProtoDID) async throws -> DIDDocument {
 		let cache: DiDCacheEntry
 		if let existing = didCache[did] {
 			cache = existing

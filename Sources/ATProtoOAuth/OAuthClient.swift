@@ -19,7 +19,7 @@ public protocol ATProtoOAuthInterface {
 	) async throws -> Result
 
 	//MARK: Authentication
-	func initialLogin(handle: String) async throws
+	func initialLogin(identity: ATProtoOAuthClient.AuthIdentity) async throws
 		-> ATProtoOAuthSession.Archive
 }
 
@@ -51,13 +51,5 @@ public actor ATProtoOAuthClient {
 		self.userAuthenticator = userAuthenticator
 		self.responseProvider = responseProvider
 		self.atprotoClient = atprotoClient
-	}
-}
-
-extension ATProtoOAuthClient {
-	public enum AuthIdentity: Sendable {
-		case handle(String)
-		//optionally pass in handle to fill into the UI of the web auth sheet
-		case did(ATProtoDID, String?)
 	}
 }

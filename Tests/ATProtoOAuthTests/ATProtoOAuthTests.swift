@@ -65,7 +65,7 @@ struct RuntimeAPITests {
 		//now try to login
 
 		let sessionArchive = try await oauthClient.initialLogin(
-			handle: inputHandle
+			identity: .did(resolvedDid)
 		)
 	}
 }
