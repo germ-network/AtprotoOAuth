@@ -10,7 +10,7 @@ import ATProtoTypes
 import Foundation
 import OAuthenticator
 
-extension ATProtoOAuthRuntime {
+extension ATProtoOAuthClient {
 	func resolvePdsUrl(did: ATProtoDID) async throws -> URL {
 		let document = try await resolveDidDocument(did: did)
 		return try document.pdsUrl
@@ -32,7 +32,7 @@ extension ATProtoOAuthRuntime {
 	}
 }
 
-extension ATProtoOAuthRuntime {
+extension ATProtoOAuthClient {
 	class CacheEntry {
 		var didDocument: CacheState<DIDDocument> = .unknown
 	}

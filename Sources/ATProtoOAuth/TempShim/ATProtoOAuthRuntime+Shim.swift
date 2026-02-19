@@ -11,7 +11,7 @@ import Foundation
 
 /// a temp file meant to be deprecated
 
-extension ATProtoOAuthRuntime {
+extension ATProtoOAuthClient {
 	public static func resolve(handle: String) async throws -> ATProtoDID {
 		guard
 			let did = try? await ATResolver(provider: URLSession.shared).didForHandle(

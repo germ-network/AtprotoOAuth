@@ -10,10 +10,10 @@ import Foundation
 ///parameters take a did or handle
 public enum AtIdentifier {
 	public typealias Handle = String
-	
+
 	case handle(Handle)
 	case did(ATProtoDID)
-	
+
 	//over the wire, passed as a string
 	public var wireFormat: String {
 		switch self {

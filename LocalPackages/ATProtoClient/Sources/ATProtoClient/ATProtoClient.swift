@@ -11,6 +11,10 @@ public protocol ATProtoClientInterface: Sendable {
 	) async throws -> ProtectedResourceMetadata
 }
 
-struct ATProtoClient {
+public struct ATProtoClient {
 	let responseProvider: URLResponseProvider
+
+	public init(responseProvider: @escaping URLResponseProvider) {
+		self.responseProvider = responseProvider
+	}
 }
