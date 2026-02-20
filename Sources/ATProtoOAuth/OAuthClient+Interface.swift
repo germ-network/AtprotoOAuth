@@ -61,6 +61,8 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 
 		let serverConfig = try await getAuthServerMetadata(host: authorizationServerHost)
 
+		let authenticator = Authenticator(config: <#T##Authenticator.Configuration#>)
+
 		throw OAuthClientError.notImplemented
 	}
 

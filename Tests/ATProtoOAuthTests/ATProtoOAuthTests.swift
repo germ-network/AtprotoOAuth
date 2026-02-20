@@ -8,6 +8,7 @@ import Testing
 
 struct APITests {
 	static let clientId = "https://static.germnetwork.com/client-metadata.json"
+	static let redirectUri = "com.germnetwork.static:/oauth"
 
 	//move this to the handle resolution library
 	@Test func testHandleResolution() async throws {
