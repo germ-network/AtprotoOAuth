@@ -29,7 +29,7 @@ import SwiftUI
 		let id: UUID = .init()
 		let body: String
 	}
-	var log: [LogEntry] = []
+	var logs: [LogEntry] = []
 
 	func login(handle: String) {
 		state = .validating(handle)
@@ -39,15 +39,33 @@ import SwiftUI
 					handle: handle
 				)
 
-				log.append(.init(body: "Resolved DID: \(resolvedDid.fullId)"))
+				logs.append(.init(body: "Resolved DID: \(resolvedDid.fullId)"))
+
+				let messageDelegate =
+					try await oauthClient
+					.fetchFromPDS(did: resolvedDid) {
+						pdsUrl, responseProvider in
+						try await ATProtoClient(
+							responseProvider: responseProvider
+						)
+						.getGermMessagingDelegate(
+							did: resolvedDid, pdsURL: pdsUrl)
+					}
+
+				if messageDelegate != nil {
+					logs.append(.init(body: "Found a message delegate"))
+				} else {
+					logs.append(.init(body: "Didn't find a message delegate"))
+				}
 			} catch {
-				log.append(.init(body: "Error: \(error)"))
+				logs.append(.init(body: "Error: \(error)"))
 			}
 		}
 	}
 
 	func reset() {
 		state = .collectHandle
+		logs = []
 	}
 }
 

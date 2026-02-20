@@ -21,7 +21,7 @@ struct LoginView: View {
 			}
 
 			VStack {
-				ForEach(viewModel.log) { log in
+				ForEach(viewModel.logs) { log in
 					Text(log.body)
 				}
 			}

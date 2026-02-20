@@ -37,7 +37,7 @@ extension ATProtoClient {
 		var components = URLComponents()
 		components.scheme = "https"
 		components.host = "plc.directory"
-		components.path = "/\(did)"
+		components.path = "/\(did.fullId)"
 
 		guard let url = components.url else {
 			throw ATProtoClientError.couldntConstructUrl

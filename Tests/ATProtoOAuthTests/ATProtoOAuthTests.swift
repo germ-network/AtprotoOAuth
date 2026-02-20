@@ -55,12 +55,13 @@ struct RuntimeAPITests {
 		#expect(resolvedDid.fullId == "did:plc:lbu36k4mysk5g6gcrpw4dbwm")
 
 		//make some unauthed requests. e.g. is this did already using germ?
-		let _ =
+		let messageDelegate =
 			try await oauthClient
 			.fetchFromPDS(did: resolvedDid) { pdsUrl, responseProvider in
 				try await ATProtoClient(responseProvider: responseProvider)
 					.getGermMessagingDelegate(did: resolvedDid, pdsURL: pdsUrl)
 			}
+		#expect(messageDelegate != nil)
 
 		//now try to login
 

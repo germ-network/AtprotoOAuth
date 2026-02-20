@@ -30,4 +30,9 @@ extension ComAtprotoLexicon.Repository {
 		/// The value for the record. Codable for later conversion
 		public let value: Result
 	}
+
+	public struct GetRecordError: Sendable, Codable {
+		let error: String
+		let message: String
+	}
 }

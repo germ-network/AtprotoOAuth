@@ -35,7 +35,7 @@ extension ATProtoClient {
 		pdsUrl: URL,
 		recordCID: CID? = nil,
 		resultType: Result.Type
-	) async throws -> ComAtprotoLexicon.Repository.GetRecordOutput<Result> {
+	) async throws -> ComAtprotoLexicon.Repository.GetRecordOutput<Result>? {
 		var queryItems: [URLQueryItem] = [
 			.init(name: "repo", value: repo.wireFormat),
 			.init(name: "collection", value: collection),
@@ -59,10 +59,23 @@ extension ATProtoClient {
 		)
 
 		let (result, response) = try await responseProvider(request)
-		guard
-			let httpResponse = response as? HTTPURLResponse,
+		guard let httpResponse = response as? HTTPURLResponse else {
+			throw ATProtoClientError.requestFailed(
+				responseCode: nil
+			)
+		}
+		guard let httpResponse = response as? HTTPURLResponse,
 			httpResponse.statusCode >= 200 && httpResponse.statusCode < 300
 		else {
+			if httpResponse.statusCode == 400 {
+				let errorResult = try JSONDecoder().decode(
+					ComAtprotoLexicon.Repository.GetRecordError.self,
+					from: result
+				)
+				if errorResult.error == "RecordNotFound" {
+					return nil
+				}
+			}
 
 			throw ATProtoClientError.requestFailed(
 				responseCode: (response as? HTTPURLResponse)?.statusCode
