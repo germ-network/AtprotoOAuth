@@ -1,5 +1,5 @@
 {
-  "originHash" : "48084b709434c68bcaf75a346ef79454d87595c796fa368667a9fc70b9385cb5",
+  "originHash" : "b0180cf084258c366a1cf3b45958a3433dfa627194e175f353ecfab7423a6d93",
   "pins" : [
     {
       "identity" : "atresolve",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "7f723a2e55f1c76e7c79263aebf89dbfcd58e77d",
         "version" : "0.10.2"
+      }
+    },
+    {
+      "identity" : "oauthenticator",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/germ-network/OAuthenticator",
+      "state" : {
+        "branch" : "mark/build-runtime",
+        "revision" : "109d0db77775692c3016d42117e2f26fdc9efb4e"
       }
     },
     {

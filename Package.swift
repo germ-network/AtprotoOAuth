@@ -16,13 +16,13 @@ let package = Package(
 	dependencies: [
 		.package(path: "./LocalPackages/ATProtoClient"),
 		.package(path: "./LocalPackages/ATProtoTypes"),
-		.package(path: "./LocalPackages/OAuth"),
+		.package(path: "./LocalPackages/oauth4swift"),
 		.package(url: "https://github.com/apple/swift-crypto.git", .upToNextMajor(from: "4.2.0")),
-		//		.package(
-		//			url: "https://github.com/germ-network/OAuthenticator",
-		//			branch: "mark/build-runtime"
-		//		),
-		.package(path: "../OAuthenticator"),
+		.package(
+			url: "https://github.com/germ-network/OAuthenticator",
+			branch: "mark/build-runtime"
+		),
+//		.package(path: "../OAuthenticator"),
 		//for temp shim only
 		.package(
 			url: "https://github.com/germ-network/ATResolve",
@@ -41,7 +41,7 @@ let package = Package(
 				.product(name: "Crypto", package: "swift-crypto"),
 				//for temp shim only
 				"ATResolve",
-				"OAuth"
+				.product(name: "OAuth", package: "oauth4swift"),
 			]
 		),
 		.testTarget(

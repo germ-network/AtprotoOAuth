@@ -15,7 +15,11 @@ import SwiftUI
 
 @Observable final class LoginVM {
 	let oauthClient = ATProtoOAuthClient(
-		clientId: "https://static.germnetwork.com/client-metadata.json",
+//		clientId: "https://static.germnetwork.com/client-metadata.json",
+		appCredentials: .init(
+			clientId: "https://static.germnetwork.com/client-metadata.json",
+			callbackURL: URL(string: "com.germnetwork.static:/oauth")!
+		),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
 		authenticationStatusHandler: nil,
 		responseProvider: URLSession.defaultProvider,
