@@ -19,7 +19,7 @@ public protocol ATProtoOAuthInterface {
 	) async throws -> Result
 
 	//MARK: Authentication
-	func initialLogin(identity: ATProtoOAuthClient.AuthIdentity) async throws
+	func authorize(identity: ATProtoOAuthClient.AuthIdentity) async throws
 		-> ATProtoOAuthSession.Archive
 }
 

@@ -57,6 +57,9 @@ import SwiftUI
 				} else {
 					logs.append(.init(body: "Didn't find a message delegate"))
 				}
+				
+				let sessionArchive = try await oauthClient
+					.authorize(identity: .did(resolvedDid))
 			} catch {
 				logs.append(.init(body: "Error: \(error)"))
 			}

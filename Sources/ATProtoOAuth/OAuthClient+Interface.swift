@@ -28,7 +28,7 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 		case did(ATProtoDID)
 	}
 
-	public func initialLogin(
+	public func authorize(
 		identity: AuthIdentity
 	) async throws -> ATProtoOAuthSession.Archive {
 
