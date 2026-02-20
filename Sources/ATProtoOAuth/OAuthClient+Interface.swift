@@ -27,12 +27,11 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 		//optionally pass in handle to fill into the UI of the web auth sheet
 		case did(ATProtoDID)
 	}
-	
+
 	public func initialLogin(
 		identity: AuthIdentity
 	) async throws -> ATProtoOAuthSession.Archive {
 
-		
 		let did: ATProtoDID
 		switch identity {
 		case .did(let _did):
@@ -41,7 +40,6 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 			//resolve handle to pds, uncached
 			did = try await Self.resolve(handle: handle)
 		}
-
 
 		//resolve pds and pds metadata
 		let didDoc = try await resolveDidDocument(did: did)
@@ -65,7 +63,7 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 
 		throw OAuthClientError.notImplemented
 	}
-	
+
 	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {
 		guard let pdsHost = try didDoc.pdsUrl.host() else {
 			throw OAuthClientError.missingUrlHost

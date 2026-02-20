@@ -16,10 +16,11 @@ let package = Package(
 	dependencies: [
 		.package(path: "./LocalPackages/ATProtoClient"),
 		.package(path: "./LocalPackages/ATProtoTypes"),
-		.package(
-			url: "https://github.com/germ-network/OAuthenticator",
-			branch: "mark/build-runtime"
-		),
+		//		.package(
+		//			url: "https://github.com/germ-network/OAuthenticator",
+		//			branch: "mark/build-runtime"
+		//		),
+		.package(path: "../OAuthenticator"),
 		//for temp shim only
 		.package(
 			url: "https://github.com/germ-network/ATResolve",
