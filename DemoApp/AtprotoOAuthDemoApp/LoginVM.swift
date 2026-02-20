@@ -7,6 +7,7 @@
 
 import ATProtoClient
 import ATProtoOAuth
+import ATProtoTypes
 import AuthenticationServices
 import Foundation
 import OAuthenticator
@@ -23,11 +24,37 @@ import SwiftUI
 		)
 	)
 
-	var handle: String = ""
+	var state: State = .collectHandle
+	struct LogEntry: Identifiable {
+		let id: UUID = .init()
+		let body: String
+	}
+	var log: [LogEntry] = []
 
-	var log: [String] = []
+	func login(handle: String) {
+		state = .validating(handle)
+		Task {
+			do {
+				let resolvedDid = try await ATProtoOAuthClient.resolve(
+					handle: handle
+				)
 
-	func login() {
+				log.append(.init(body: "Resolved DID: \(resolvedDid.fullId)"))
+			} catch {
+				log.append(.init(body: "Error: \(error)"))
+			}
+		}
+	}
+
+	func reset() {
+		state = .collectHandle
+	}
+}
+
+extension LoginVM {
+	enum State {
+		case collectHandle
+		case validating(String)
 
 	}
 }

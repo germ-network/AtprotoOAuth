@@ -11,9 +11,21 @@ struct LoginView: View {
 	@State private var viewModel = LoginVM()
 
 	var body: some View {
-		TextField("atprotoHandle", text: $viewModel.handle)
+		VStack {
+			switch viewModel.state {
+			case .collectHandle:
+				CollectHandleView(viewModel: viewModel)
+			case .validating(let handle):
+				Text("Validating \(handle)")
+				Button("reset", action: viewModel.reset)
+			}
 
-		Button("Authenticate", action: viewModel.login)
+			VStack {
+				ForEach(viewModel.log) { log in
+					Text(log.body)
+				}
+			}
+		}
 	}
 }
 
