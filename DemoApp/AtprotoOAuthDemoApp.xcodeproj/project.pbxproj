@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		016FA9882F4930760061B936 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 016FA9872F4930760061B936 /* Microcosm */; };
 		01E50C802F48403800C0D8E0 /* ATProtoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 01E50C7F2F48403800C0D8E0 /* ATProtoOAuth */; };
 /* End PBXBuildFile section */
 
@@ -57,6 +58,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				01E50C802F48403800C0D8E0 /* ATProtoOAuth in Frameworks */,
+				016FA9882F4930760061B936 /* Microcosm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,6 +120,7 @@
 			name = AtprotoOAuthDemoApp;
 			packageProductDependencies = (
 				01E50C7F2F48403800C0D8E0 /* ATProtoOAuth */,
+				016FA9872F4930760061B936 /* Microcosm */,
 			);
 			productName = AtprotoOAuthDemoApp;
 			productReference = 01E50C442F483FF800C0D8E0 /* AtprotoOAuthDemoApp.app */;
@@ -203,6 +206,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				01E50C7E2F48403800C0D8E0 /* XCLocalSwiftPackageReference "../../SwiftATProtoOAuth" */,
+				016FA9862F4930760061B936 /* XCLocalSwiftPackageReference "../LocalPackages/Microcosm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E50C452F483FF800C0D8E0 /* Products */;
@@ -646,6 +650,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		016FA9862F4930760061B936 /* XCLocalSwiftPackageReference "../LocalPackages/Microcosm" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../LocalPackages/Microcosm;
+		};
 		01E50C7E2F48403800C0D8E0 /* XCLocalSwiftPackageReference "../../SwiftATProtoOAuth" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../SwiftATProtoOAuth;
@@ -653,6 +661,10 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		016FA9872F4930760061B936 /* Microcosm */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Microcosm;
+		};
 		01E50C7F2F48403800C0D8E0 /* ATProtoOAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ATProtoOAuth;

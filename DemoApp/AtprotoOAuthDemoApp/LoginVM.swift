@@ -10,6 +10,7 @@ import ATProtoOAuth
 import ATProtoTypes
 import AuthenticationServices
 import Foundation
+import Microcosm
 import OAuthenticator
 import SwiftUI
 
@@ -39,9 +40,7 @@ import SwiftUI
 		state = .validating(handle)
 		Task {
 			do {
-				let resolvedDid = try await ATProtoOAuthClient.resolve(
-					handle: handle
-				)
+				let resolvedDid = try await fallbackResolve(handle: handle)
 
 				logs.append(.init(body: "Resolved DID: \(resolvedDid.fullId)"))
 
@@ -74,6 +73,16 @@ import SwiftUI
 	func reset() {
 		state = .collectHandle
 		logs = []
+	}
+	
+	func fallbackResolve(handle: String) async throws -> ATProtoDID {
+		do {
+			return try await Slingshot.resolve(handle: handle)
+		} catch {
+			return try await ATProtoOAuthClient.resolve(
+				handle: handle
+			)
+		}
 	}
 }
 
