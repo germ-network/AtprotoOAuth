@@ -19,12 +19,12 @@ public protocol ATProtoOAuthInterface {
 	) async throws -> Result
 
 	//MARK: Authentication
-	func initialLogin(identity: ATProtoOAuthClient.AuthIdentity) async throws
+	func authorize(identity: ATProtoOAuthClient.AuthIdentity) async throws
 		-> ATProtoOAuthSession.Archive
 }
 
 public actor ATProtoOAuthClient {
-	public let clientId: String
+	public let appCredentials: AppCredentials
 	public let userAuthenticator: Authenticator.UserAuthenticator
 	public let responseProvider: URLResponseProvider
 	public let atprotoClient: ATProtoClientInterface
@@ -41,13 +41,13 @@ public actor ATProtoOAuthClient {
 	var authServerCache: [String: CacheEntry<ServerMetadata>] = [:]
 
 	public init(
-		clientId: String,
+		appCredentials: AppCredentials,
 		userAuthenticator: @escaping Authenticator.UserAuthenticator,
 		authenticationStatusHandler: Authenticator.AuthenticationStatusHandler? = nil,
 		responseProvider: @escaping URLResponseProvider,
 		atprotoClient: ATProtoClientInterface,
 	) {
-		self.clientId = clientId
+		self.appCredentials = appCredentials
 		self.userAuthenticator = userAuthenticator
 		self.responseProvider = responseProvider
 		self.atprotoClient = atprotoClient

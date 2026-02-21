@@ -6,7 +6,9 @@
 //
 
 import ATProtoTypes
+import Crypto
 import Foundation
+import OAuth
 import OAuthenticator
 
 extension ATProtoOAuthClient: ATProtoOAuthInterface {
@@ -27,12 +29,11 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 		//optionally pass in handle to fill into the UI of the web auth sheet
 		case did(ATProtoDID)
 	}
-	
-	public func initialLogin(
+
+	public func authorize(
 		identity: AuthIdentity
 	) async throws -> ATProtoOAuthSession.Archive {
 
-		
 		let did: ATProtoDID
 		switch identity {
 		case .did(let _did):
@@ -41,7 +42,6 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 			//resolve handle to pds, uncached
 			did = try await Self.resolve(handle: handle)
 		}
-
 
 		//resolve pds and pds metadata
 		let didDoc = try await resolveDidDocument(did: did)
@@ -62,10 +62,34 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 		}
 
 		let serverConfig = try await getAuthServerMetadata(host: authorizationServerHost)
+		
+		let dpopKey = P256.Signing.PrivateKey()
+		
+//		let tokenHandling = Bluesky.tokenHandling(
+//			account: did.fullId,
+//			server: serverConfig,
+//			jwtGenerator: dpopKey.makeDpopSigner(),
+//			validator: { tokenResponse, sub in
+//				// TODO: GER-1343 - Implement validator
+//				// after a token is issued, it is critical that the returned
+//				// identity be resolved and its PDS match the issuing server
+//				//
+//				// check out draft-ietf-oauth-v2-1 section 7.3.1 for details
+//				return true
+//			}
+//		)
+//
+//		let authenticator = Authenticator(
+//			config: .init(
+//				appCredentials: appCredentials,
+//				tokenHandling: tokenHandling
+//			)
+//		)
+//		let token = try await authenticator.authenticate()
 
 		throw OAuthClientError.notImplemented
 	}
-	
+
 	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {
 		guard let pdsHost = try didDoc.pdsUrl.host() else {
 			throw OAuthClientError.missingUrlHost

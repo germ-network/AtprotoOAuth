@@ -8,6 +8,7 @@ import Testing
 
 struct APITests {
 	static let clientId = "https://static.germnetwork.com/client-metadata.json"
+	static let redirectUri = URL(string: "com.germnetwork.static:/oauth")!
 
 	//move this to the handle resolution library
 	@Test func testHandleResolution() async throws {
@@ -27,7 +28,10 @@ struct APITests {
 		)
 
 		let _ = ATProtoOAuthClient(
-			clientId: Self.clientId,
+			appCredentials: .init(
+				clientId: APITests.clientId,
+				callbackURL: APITests.redirectUri
+			),
 			userAuthenticator: Authenticator.failingUserAuthenticator(_:_:),
 			responseProvider: URLSession.defaultProvider,
 			atprotoClient: MockATProtoClient()
@@ -40,7 +44,10 @@ struct RuntimeAPITests {
 
 	init() async throws {
 		oauthClient = .init(
-			clientId: APITests.clientId,
+			appCredentials: .init(
+				clientId: APITests.clientId,
+				callbackURL: APITests.redirectUri
+			),
 			userAuthenticator: Authenticator.failingUserAuthenticator(_:_:),
 			responseProvider: URLSession.defaultProvider,
 			atprotoClient: MockATProtoClient()
@@ -55,16 +62,17 @@ struct RuntimeAPITests {
 		#expect(resolvedDid.fullId == "did:plc:lbu36k4mysk5g6gcrpw4dbwm")
 
 		//make some unauthed requests. e.g. is this did already using germ?
-		let _ =
+		let messageDelegate =
 			try await oauthClient
 			.fetchFromPDS(did: resolvedDid) { pdsUrl, responseProvider in
 				try await ATProtoClient(responseProvider: responseProvider)
 					.getGermMessagingDelegate(did: resolvedDid, pdsURL: pdsUrl)
 			}
+		#expect(messageDelegate != nil)
 
 		//now try to login
 
-		let sessionArchive = try await oauthClient.initialLogin(
+		let sessionArchive = try await oauthClient.authorize(
 			identity: .did(resolvedDid)
 		)
 	}
