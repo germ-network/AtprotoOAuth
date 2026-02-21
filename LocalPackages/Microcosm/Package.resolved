@@ -1,0 +1,15 @@
+{
+  "originHash" : "5b6c8ff0674e8228b00887705a1b365ded0d04794c31398b295b34ad36318e86",
+  "pins" : [
+    {
+      "identity" : "base32",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Jarema/Base32.git",
+      "state" : {
+        "revision" : "7f723a2e55f1c76e7c79263aebf89dbfcd58e77d",
+        "version" : "0.10.2"
+      }
+    }
+  ],
+  "version" : 3
+}
