@@ -18,12 +18,8 @@ let package = Package(
 		.package(path: "./LocalPackages/ATProtoTypes"),
 		.package(path: "./LocalPackages/oauth4swift"),
 		.package(url: "https://github.com/apple/swift-crypto.git", .upToNextMajor(from: "4.2.0")),
-		.package(
-			url: "https://github.com/germ-network/OAuthenticator",
-			branch: "mark/build-runtime"
-		),
-//		.package(path: "../OAuthenticator"),
 		//for temp shim only
+		.package(path: "./LocalPackages/OAuthenticator"),
 		.package(
 			url: "https://github.com/germ-network/ATResolve",
 			exact: "1.0.0-germ.2"

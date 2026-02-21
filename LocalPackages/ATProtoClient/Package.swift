@@ -16,10 +16,7 @@ let package = Package(
 	dependencies: [
 		.package(path: "../ATProtoTypes"),
 		//for temp shim only
-				.package(
-					url: "https://github.com/germ-network/OAuthenticator",
-					branch: "mark/build-runtime"
-				),
+		.package(path: "../LocalPackages/OAuthenticator"),
 		//.package(path: "../../OAuthenticator"),
 	],
 	targets: [
