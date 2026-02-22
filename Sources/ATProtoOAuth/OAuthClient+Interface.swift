@@ -90,7 +90,7 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 				}
 			)
 		)
-		let token = try await authenticator.authenticate()
+		let login = try await authenticator.authenticate()
 
 		throw OAuthClientError.notImplemented
 	}

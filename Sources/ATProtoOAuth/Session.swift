@@ -10,7 +10,8 @@ import Foundation
 //to be moved into own package
 
 public actor ATProtoOAuthSession {
-
+	//	var login: Login
+	//	var dpopKey: P256.Signing.PrivateKey
 }
 
 extension ATProtoOAuthSession {

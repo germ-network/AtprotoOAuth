@@ -11,63 +11,6 @@ import OAuth
 /// mechanism.
 public typealias URLResponseProvider = @Sendable (URLRequest) async throws -> (Data, URLResponse)
 
-/// Holds an access token value and its expiry.
-public struct Token: Codable, Hashable, Sendable {
-	/// The access token.
-	public let value: String
-
-	/// An optional expiry.
-	public let expiry: Date?
-
-	public init(value: String, expiry: Date? = nil) {
-		self.value = value
-		self.expiry = expiry
-	}
-
-	public init(value: String, expiresIn seconds: Int) {
-		self.value = value
-		self.expiry = Date(timeIntervalSinceNow: TimeInterval(seconds))
-	}
-
-	/// Determines if the token object is valid.
-	///
-	/// A token without an expiry is unconditionally valid.
-	public var valid: Bool {
-		guard let date = expiry else { return true }
-
-		return date.timeIntervalSinceNow > 0
-	}
-}
-
-public struct Login: Codable, Hashable, Sendable {
-	public var accessToken: Token
-	public var refreshToken: Token?
-
-	// User authorized scopes
-	public var scopes: String?
-	public var issuingServer: String?
-
-	public var additionalParams: [String: String]?
-
-	public init(
-		accessToken: Token,
-		refreshToken: Token? = nil,
-		scopes: String? = nil,
-		issuingServer: String? = nil,
-		additionalParams: [String: String]? = nil,
-	) {
-		self.accessToken = accessToken
-		self.refreshToken = refreshToken
-		self.scopes = scopes
-		self.issuingServer = issuingServer
-		self.additionalParams = additionalParams
-	}
-
-	public init(token: String, validUntilDate: Date? = nil) {
-		self.init(accessToken: Token(value: token, expiry: validUntilDate))
-	}
-}
-
 public struct AppCredentials: Codable, Hashable, Sendable {
 	public var clientId: String
 	public var scopes: [String]
@@ -91,8 +34,8 @@ public struct AppCredentials: Codable, Hashable, Sendable {
 }
 
 public struct LoginStorage: Sendable {
-	public typealias RetrieveLogin = @Sendable () async throws -> Login?
-	public typealias StoreLogin = @Sendable (Login) async throws -> Void
+	public typealias RetrieveLogin = @Sendable () async throws -> SessionState?
+	public typealias StoreLogin = @Sendable (SessionState) async throws -> Void
 	public typealias ClearLogin = @Sendable () async throws -> Void
 
 	public let retrieveLogin: RetrieveLogin
@@ -171,9 +114,11 @@ public struct TokenHandling: Sendable {
 	/// AppCredentials: The credentials from Configuration.appCredentials
 	/// URL: the authenticated URL from the OAuth service
 	/// URLResponseProvider: the authenticator's provider
-	public typealias LoginProvider = @Sendable (LoginProviderParameters) async throws -> Login
+	public typealias LoginProvider =
+		@Sendable (LoginProviderParameters) async throws -> SessionState
 	public typealias RefreshProvider =
-		@Sendable (Login, AppCredentials, URLResponseProvider) async throws -> Login
+		@Sendable (SessionState, AppCredentials, URLResponseProvider) async throws ->
+		SessionState
 	public typealias ResponseStatusProvider =
 		@Sendable ((Data, URLResponse)) throws -> ResponseStatus
 

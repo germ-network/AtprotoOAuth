@@ -66,7 +66,7 @@ extension AuthenticatorError: LocalizedError {
 public actor Authenticator {
 	public typealias UserAuthenticator = @Sendable (URL, String) async throws -> URL
 	public typealias AuthenticationStatusHandler =
-		@Sendable (Result<Login, AuthenticatorError>) async -> Void
+		@Sendable (Result<SessionState, AuthenticatorError>) async -> Void
 
 	/// A `UserAuthenticator` that always fails. Useful as a placeholder
 	/// for testing and for doing manual authentication with an external
@@ -156,8 +156,8 @@ public actor Authenticator {
 	let config: Configuration
 
 	let urlLoader: URLResponseProvider
-	private var activeTokenTask: Task<Login, Error>?
-	private var localLogin: Login?
+	private var activeTokenTask: Task<SessionState, Error>?
+	private var localLogin: SessionState?
 	private var dpop = DPoPSigner()
 	private let stateToken = UUID().uuidString
 
@@ -224,7 +224,7 @@ public actor Authenticator {
 		}
 	}
 
-	private func authedResponse(for request: URLRequest, login: Login) async throws -> (
+	private func authedResponse(for request: URLRequest, login: SessionState) async throws -> (
 		Data, URLResponse
 	) {
 		var authedRequest = request
@@ -241,7 +241,7 @@ public actor Authenticator {
 	/// Manually perform user authentication, if required.
 	@discardableResult
 	public func authenticate(with userAuthenticator: UserAuthenticator? = nil) async throws
-		-> Login
+		-> SessionState
 	{
 		return try await loginTaskResult(
 			manual: true,
@@ -251,7 +251,7 @@ public actor Authenticator {
 }
 
 extension Authenticator {
-	private func retrieveLogin() async throws -> Login? {
+	private func retrieveLogin() async throws -> SessionState? {
 		guard let storage = config.loginStorage else {
 			return localLogin
 		}
@@ -259,7 +259,7 @@ extension Authenticator {
 		return try await storage.retrieveLogin()
 	}
 
-	private func storeLogin(_ login: Login) async throws {
+	private func storeLogin(_ login: SessionState) async throws {
 		guard let storage = config.loginStorage else {
 			self.localLogin = login
 			return
@@ -280,7 +280,7 @@ extension Authenticator {
 
 extension Authenticator {
 	private func makeLoginTask(manual: Bool, userAuthenticator: @escaping UserAuthenticator)
-		-> Task<Login, Error>
+		-> Task<SessionState, Error>
 	{
 		return Task {
 			guard let login = try await retrieveLogin() else {
@@ -302,13 +302,13 @@ extension Authenticator {
 	}
 
 	private func loginTaskResult(manual: Bool, userAuthenticator: @escaping UserAuthenticator)
-		async throws -> Login
+		async throws -> SessionState
 	{
 		let task =
 			activeTokenTask
 			?? makeLoginTask(manual: manual, userAuthenticator: userAuthenticator)
 
-		var login: Login
+		var login: SessionState
 		do {
 			do {
 				login = try await loginFromTask(task: task)
@@ -330,10 +330,10 @@ extension Authenticator {
 		return login
 	}
 
-	private func loginFromTask(task: Task<Login, Error>) async throws -> Login {
+	private func loginFromTask(task: Task<SessionState, Error>) async throws -> SessionState {
 		self.activeTokenTask = task
 
-		let login: Login
+		let login: SessionState
 
 		do {
 			login = try await task.value
@@ -354,7 +354,7 @@ extension Authenticator {
 	}
 
 	private func performUserAuthentication(manual: Bool, userAuthenticator: UserAuthenticator)
-		async throws -> Login
+		async throws -> SessionState
 	{
 		if manual == false && config.mode == .manualOnly {
 			throw AuthenticatorError.manualAuthenticationRequired
@@ -392,7 +392,7 @@ extension Authenticator {
 		return login
 	}
 
-	private func refresh(with login: Login) async throws -> Login? {
+	private func refresh(with login: SessionState) async throws -> SessionState? {
 		guard let refreshProvider = config.tokenHandling.refreshProvider else {
 			return nil
 		}
@@ -476,7 +476,7 @@ extension Authenticator {
 		{ try await self.response(for: $0) }
 	}
 
-	private func dpopResponse(for request: URLRequest, login: Login?) async throws -> (
+	private func dpopResponse(for request: URLRequest, login: SessionState?) async throws -> (
 		Data, URLResponse
 	) {
 		guard let generator = config.tokenHandling.dpopJWTGenerator else {
