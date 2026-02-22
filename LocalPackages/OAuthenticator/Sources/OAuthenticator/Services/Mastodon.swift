@@ -1,6 +1,7 @@
 import Foundation
+
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+	import FoundationNetworking
 #endif
 
 public struct Mastodon {
@@ -58,7 +59,7 @@ public struct Mastodon {
 			case redirectURI = "redirect_uri"
 			case name
 			case website
-			case vapidKey  = "vapid_key"
+			case vapidKey = "vapid_key"
 		}
 	}
 
@@ -68,7 +69,8 @@ public struct Mastodon {
 		public let redirectURI: String
 		public let scopes: [String]
 
-		public init(host: String, clientName: String, redirectURI: String, scopes: [String]) {
+		public init(host: String, clientName: String, redirectURI: String, scopes: [String])
+		{
 			self.host = host
 			self.clientName = clientName
 			self.redirectURI = redirectURI
@@ -84,7 +86,9 @@ public struct Mastodon {
 		)
 	}
 
-	static func authorizationURLProvider(with parameters: UserTokenParameters) -> TokenHandling.AuthorizationURLProvider {
+	static func authorizationURLProvider(with parameters: UserTokenParameters)
+		-> TokenHandling.AuthorizationURLProvider
+	{
 		return { params in
 			let credentials = params.credentials
 
@@ -94,9 +98,14 @@ public struct Mastodon {
 			urlBuilder.host = parameters.host
 			urlBuilder.path = Mastodon.authorizePath
 			urlBuilder.queryItems = [
-				URLQueryItem(name: Mastodon.clientIDKey, value: credentials.clientId),
-				URLQueryItem(name: Mastodon.redirectURIKey, value: credentials.callbackURL.absoluteString),
-				URLQueryItem(name: Mastodon.responseTypeKey, value: Mastodon.responseTypeCode),
+				URLQueryItem(
+					name: Mastodon.clientIDKey, value: credentials.clientId),
+				URLQueryItem(
+					name: Mastodon.redirectURIKey,
+					value: credentials.callbackURL.absoluteString),
+				URLQueryItem(
+					name: Mastodon.responseTypeKey,
+					value: Mastodon.responseTypeCode),
 			]
 
 			guard let url = urlBuilder.url else {
@@ -107,7 +116,9 @@ public struct Mastodon {
 		}
 	}
 
-	static func authenticationRequest(with parameters: UserTokenParameters, url: URL, appCredentials: AppCredentials) throws -> URLRequest {
+	static func authenticationRequest(
+		with parameters: UserTokenParameters, url: URL, appCredentials: AppCredentials
+	) throws -> URLRequest {
 		let code = try url.authorizationCode
 
 		var urlBuilder = URLComponents()
@@ -116,9 +127,13 @@ public struct Mastodon {
 		urlBuilder.host = parameters.host
 		urlBuilder.path = Mastodon.tokenPath
 		urlBuilder.queryItems = [
-			URLQueryItem(name: Mastodon.grantTypeKey, value: Mastodon.grantTypeAuthorizationCode),
+			URLQueryItem(
+				name: Mastodon.grantTypeKey,
+				value: Mastodon.grantTypeAuthorizationCode),
 			URLQueryItem(name: Mastodon.clientIDKey, value: appCredentials.clientId),
-			URLQueryItem(name: Mastodon.redirectURIKey, value: appCredentials.callbackURL.absoluteString),
+			URLQueryItem(
+				name: Mastodon.redirectURIKey,
+				value: appCredentials.callbackURL.absoluteString),
 			URLQueryItem(name: Mastodon.codeKey, value: code),
 		]
 
@@ -134,25 +149,34 @@ public struct Mastodon {
 		return request
 	}
 
-	static func loginProvider(with userParameters: UserTokenParameters) -> TokenHandling.LoginProvider {
+	static func loginProvider(with userParameters: UserTokenParameters)
+		-> TokenHandling.LoginProvider
+	{
 		return { params in
-			let request = try authenticationRequest(with: userParameters, url: params.redirectURL, appCredentials: params.credentials)
+			let request = try authenticationRequest(
+				with: userParameters, url: params.redirectURL,
+				appCredentials: params.credentials)
 
 			let (data, _) = try await params.responseProvider(request)
 
-			let response = try JSONDecoder().decode(Mastodon.AppAuthResponse.self, from: data)
+			let response = try JSONDecoder().decode(
+				Mastodon.AppAuthResponse.self, from: data)
 
 			return response.login
 		}
 	}
 
-	static func refreshProvider(with parameters: UserTokenParameters) -> TokenHandling.RefreshProvider {
+	static func refreshProvider(with parameters: UserTokenParameters)
+		-> TokenHandling.RefreshProvider
+	{
 		return { login, appCredentials, urlResponseProvider in
 			throw AuthenticatorError.refreshUnsupported
 		}
 	}
 
-	public static func register(with parameters: UserTokenParameters, urlLoader: URLResponseProvider) async throws -> AppRegistrationResponse {
+	public static func register(
+		with parameters: UserTokenParameters, urlLoader: URLResponseProvider
+	) async throws -> AppRegistrationResponse {
 		var urlBuilder = URLComponents()
 
 		urlBuilder.scheme = Mastodon.scheme
@@ -161,7 +185,9 @@ public struct Mastodon {
 		urlBuilder.queryItems = [
 			URLQueryItem(name: Mastodon.clientNameKey, value: parameters.clientName),
 			URLQueryItem(name: Mastodon.redirectURIsKey, value: parameters.redirectURI),
-			URLQueryItem(name: Mastodon.scopesKey, value: parameters.scopes.joined(separator: " "))
+			URLQueryItem(
+				name: Mastodon.scopesKey,
+				value: parameters.scopes.joined(separator: " ")),
 		]
 
 		guard let url = urlBuilder.url else {
@@ -169,12 +195,13 @@ public struct Mastodon {
 		}
 
 		var request = URLRequest(url: url)
-		
+
 		request.httpMethod = "POST"
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
 
 		let (data, _) = try await urlLoader(request)
-		let registrationResponse = try JSONDecoder().decode(AppRegistrationResponse.self, from: data)
+		let registrationResponse = try JSONDecoder().decode(
+			AppRegistrationResponse.self, from: data)
 		return registrationResponse
 	}
 }

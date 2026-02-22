@@ -82,7 +82,7 @@ extension Data {
 		return data
 	}
 }
- 
+
 extension DataProtocol {
 	public func copyBytes() -> [UInt8] {
 		if let array = self.withContiguousStorageIfAvailable({ buffer in

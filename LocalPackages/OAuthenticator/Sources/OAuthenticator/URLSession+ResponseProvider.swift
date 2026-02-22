@@ -1,6 +1,7 @@
 import Foundation
+
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+	import FoundationNetworking
 #endif
 
 enum URLResponseProviderError: Error {
@@ -19,7 +20,9 @@ extension URLSession {
 					case (_, _, let error?):
 						continuation.resume(throwing: error)
 					case (_, _, nil):
-						continuation.resume(throwing: URLResponseProviderError.missingResponseComponents)
+						continuation.resume(
+							throwing: URLResponseProviderError
+								.missingResponseComponents)
 					}
 				}
 

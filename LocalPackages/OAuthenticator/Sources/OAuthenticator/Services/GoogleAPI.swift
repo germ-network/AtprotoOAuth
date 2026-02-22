@@ -1,6 +1,7 @@
 import Foundation
+
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+	import FoundationNetworking
 #endif
 
 public struct GoogleAPI {
@@ -21,7 +22,7 @@ public struct GoogleAPI {
 	static let scopeKey: String = "scope"
 	static let includeGrantedScopeKey: String = "include_granted_scopes"
 	static let loginHint: String = "login_hint"
-	
+
 	static let codeKey: String = "code"
 	static let refreshTokenKey: String = "refresh_token"
 
@@ -31,10 +32,10 @@ public struct GoogleAPI {
 
 	struct OAuthResponse: Codable, Hashable, Sendable {
 		let accessToken: String
-		let refreshToken: String?	   // When not using offline mode, no refreshToken is provided
+		let refreshToken: String?  // When not using offline mode, no refreshToken is provided
 		let scope: String
 		let tokenType: String
-		let expiresIn: Int			  // Access Token validity in seconds
+		let expiresIn: Int  // Access Token validity in seconds
 
 		enum CodingKeys: String, CodingKey {
 			case accessToken = "access_token"
@@ -45,18 +46,19 @@ public struct GoogleAPI {
 		}
 
 		var login: Login {
-			var login = Login(accessToken: .init(value: accessToken, expiresIn: expiresIn))
-			
+			var login = Login(
+				accessToken: .init(value: accessToken, expiresIn: expiresIn))
+
 			// Set the refresh token if we have one
 			if let refreshToken = refreshToken {
 				login.refreshToken = .init(value: refreshToken)
 			}
-			
+
 			// Set the authorized scopes from the OAuthResponse if present
 			if !self.scope.isEmpty {
 				login.scopes = self.scope
 			}
-			
+
 			return login
 		}
 	}
@@ -70,41 +72,54 @@ public struct GoogleAPI {
 			self.includeGrantedScopes = true
 			self.loginHint = nil
 		}
-		
+
 		public init(includeGrantedScopes: Bool, loginHint: String?) {
 			self.includeGrantedScopes = includeGrantedScopes
 			self.loginHint = loginHint
 		}
 	}
 
-	public static func googleAPITokenHandling(with parameters: GoogleAPIParameters = .init()) -> TokenHandling {
-		TokenHandling(authorizationURLProvider: Self.authorizationURLProvider(with: parameters),
-					  loginProvider: Self.loginProvider,
-					  refreshProvider: Self.refreshProvider())
+	public static func googleAPITokenHandling(with parameters: GoogleAPIParameters = .init())
+		-> TokenHandling
+	{
+		TokenHandling(
+			authorizationURLProvider: Self.authorizationURLProvider(with: parameters),
+			loginProvider: Self.loginProvider,
+			refreshProvider: Self.refreshProvider())
 	}
 
 	/// This is part 1 of the OAuth process
 	///
 	/// Will request an authentication `code` based on the acceptance by the user
-	public static func authorizationURLProvider(with parameters: GoogleAPIParameters) -> TokenHandling.AuthorizationURLProvider {
+	public static func authorizationURLProvider(with parameters: GoogleAPIParameters)
+		-> TokenHandling.AuthorizationURLProvider
+	{
 		return { params in
 			let credentials = params.credentials
-			
+
 			var urlBuilder = URLComponents()
 
 			urlBuilder.scheme = GoogleAPI.scheme
 			urlBuilder.host = GoogleAPI.authorizeHost
 			urlBuilder.path = GoogleAPI.authorizePath
 			urlBuilder.queryItems = [
-				URLQueryItem(name: GoogleAPI.clientIDKey, value: credentials.clientId),
-				URLQueryItem(name: GoogleAPI.redirectURIKey, value: credentials.callbackURL.absoluteString),
-				URLQueryItem(name: GoogleAPI.responseTypeKey, value: GoogleAPI.responseTypeCode),
-				URLQueryItem(name: GoogleAPI.includeGrantedScopeKey, value: String(parameters.includeGrantedScopes))
+				URLQueryItem(
+					name: GoogleAPI.clientIDKey, value: credentials.clientId),
+				URLQueryItem(
+					name: GoogleAPI.redirectURIKey,
+					value: credentials.callbackURL.absoluteString),
+				URLQueryItem(
+					name: GoogleAPI.responseTypeKey,
+					value: GoogleAPI.responseTypeCode),
+				URLQueryItem(
+					name: GoogleAPI.includeGrantedScopeKey,
+					value: String(parameters.includeGrantedScopes)),
 			]
-			
+
 			// Add login hint if provided
 			if let loginHint = parameters.loginHint {
-				urlBuilder.queryItems?.append(URLQueryItem(name: GoogleAPI.loginHint, value: loginHint))
+				urlBuilder.queryItems?.append(
+					URLQueryItem(name: GoogleAPI.loginHint, value: loginHint))
 			}
 
 			guard let url = urlBuilder.url else {
@@ -118,7 +133,9 @@ public struct GoogleAPI {
 	/// This is part 2 of the OAuth process
 	///
 	/// The `code` is exchanged for an access / refresh token pair using the granted scope in part 1
-	static func authenticationRequest(url: URL, appCredentials: AppCredentials) throws -> URLRequest {
+	static func authenticationRequest(url: URL, appCredentials: AppCredentials) throws
+		-> URLRequest
+	{
 		let code = try url.authorizationCode
 
 		// It's possible the user will decide to grant less scopes than requested by the app.
@@ -132,7 +149,7 @@ public struct GoogleAPI {
 			os_log(.info, "[Authentication] Granted scopes less than requested scopes")
 		}
 		*/
-		
+
 		// Regardless if we want to move forward, we need to supply the granted scopes.
 		// If we don't, the tokens will not be issued and an error will occur
 		// The application can then later inspect the Login object and decide how to handle a reduce OAuth scope
@@ -141,13 +158,16 @@ public struct GoogleAPI {
 		urlBuilder.host = GoogleAPI.tokenHost
 		urlBuilder.path = GoogleAPI.tokenPath
 		urlBuilder.queryItems = [
-			URLQueryItem(name: GoogleAPI.grantTypeKey, value: GoogleAPI.grantTypeAuthorizationCode),
+			URLQueryItem(
+				name: GoogleAPI.grantTypeKey,
+				value: GoogleAPI.grantTypeAuthorizationCode),
 			URLQueryItem(name: GoogleAPI.clientIDKey, value: appCredentials.clientId),
-			URLQueryItem(name: GoogleAPI.redirectURIKey, value: appCredentials.callbackURL.absoluteString),
+			URLQueryItem(
+				name: GoogleAPI.redirectURIKey,
+				value: appCredentials.callbackURL.absoluteString),
 			URLQueryItem(name: GoogleAPI.codeKey, value: code),
-			URLQueryItem(name: GoogleAPI.scopeKey, value: grantedScope)  // See above for grantedScope explanation
+			URLQueryItem(name: GoogleAPI.scopeKey, value: grantedScope),  // See above for grantedScope explanation
 		]
-		
 
 		guard let url = urlBuilder.url else {
 			throw AuthenticatorError.missingTokenURL
@@ -161,18 +181,23 @@ public struct GoogleAPI {
 	}
 
 	@Sendable
-	static func loginProvider(params: TokenHandling.LoginProviderParameters) async throws -> Login {
-		let request = try authenticationRequest(url: params.redirectURL, appCredentials: params.credentials)
+	static func loginProvider(params: TokenHandling.LoginProviderParameters) async throws
+		-> Login
+	{
+		let request = try authenticationRequest(
+			url: params.redirectURL, appCredentials: params.credentials)
 
 		let (data, _) = try await params.responseProvider(request)
 
 		do {
-			let response = try JSONDecoder().decode(GoogleAPI.OAuthResponse.self, from: data)
+			let response = try JSONDecoder().decode(
+				GoogleAPI.OAuthResponse.self, from: data)
 			return response.login
-		}
-		catch let decodingError as DecodingError {
+		} catch let decodingError as DecodingError {
 			let msg = decodingError.failureReason ?? decodingError.localizedDescription
-			print("Reponse from AuthenticationProvider is not conformed to provided response format. ", msg)
+			print(
+				"Reponse from AuthenticationProvider is not conformed to provided response format. ",
+				msg)
 			throw decodingError
 		}
 	}
@@ -184,9 +209,12 @@ public struct GoogleAPI {
 	///   - login: The current Login object containing the refresh token
 	///   - appCredentials: The Application credentials
 	/// - Returns: The URLRequest to refresh the access token
-	static func authenticationRefreshRequest(login: Login, appCredentials: AppCredentials) throws -> URLRequest {
+	static func authenticationRefreshRequest(login: Login, appCredentials: AppCredentials)
+		throws -> URLRequest
+	{
 		guard let refreshToken = login.refreshToken,
-			  !refreshToken.value.isEmpty else { throw AuthenticatorError.missingRefreshToken }
+			!refreshToken.value.isEmpty
+		else { throw AuthenticatorError.missingRefreshToken }
 
 		var urlBuilder = URLComponents()
 
@@ -196,9 +224,11 @@ public struct GoogleAPI {
 		urlBuilder.queryItems = [
 			URLQueryItem(name: GoogleAPI.clientIDKey, value: appCredentials.clientId),
 			URLQueryItem(name: GoogleAPI.refreshTokenKey, value: refreshToken.value),
-			URLQueryItem(name: GoogleAPI.grantTypeKey, value: GoogleAPI.grantTypeRefreshToken),
+			URLQueryItem(
+				name: GoogleAPI.grantTypeKey, value: GoogleAPI.grantTypeRefreshToken
+			),
 		]
-		
+
 		guard let url = urlBuilder.url else {
 			throw AuthenticatorError.missingTokenURL
 		}
@@ -209,20 +239,23 @@ public struct GoogleAPI {
 
 		return request
 	}
-	
+
 	static func refreshProvider() -> TokenHandling.RefreshProvider {
 		return { login, appCredentials, urlLoader in
-			let request = try authenticationRefreshRequest(login: login, appCredentials: appCredentials)
+			let request = try authenticationRefreshRequest(
+				login: login, appCredentials: appCredentials)
 			let (data, _) = try await urlLoader(request)
 
 			do {
-				let response = try JSONDecoder().decode(GoogleAPI.OAuthResponse.self, from: data)
+				let response = try JSONDecoder().decode(
+					GoogleAPI.OAuthResponse.self, from: data)
 				return response.login
-			}
-			catch let decodingError as DecodingError {
-				let msg = decodingError.failureReason ?? decodingError.localizedDescription
+			} catch let decodingError as DecodingError {
+				let msg =
+					decodingError.failureReason
+					?? decodingError.localizedDescription
 				print("Non-conformant response from AuthenticationProvider:", msg)
-				
+
 				throw decodingError
 			}
 		}

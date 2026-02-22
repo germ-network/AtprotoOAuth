@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 /// Function that can execute a `URLRequest`.
 ///
 /// This is used to abstract the actual networking system from the underlying authentication

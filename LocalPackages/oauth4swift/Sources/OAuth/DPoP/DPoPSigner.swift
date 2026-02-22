@@ -5,10 +5,10 @@
 //  Created by Mark @ Germ on 2/20/26.
 //
 
-
 import Foundation
+
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+	import FoundationNetworking
 #endif
 
 public struct DPoPRequestPayload: Codable, Hashable, Sendable {
@@ -22,7 +22,7 @@ public struct DPoPRequestPayload: Codable, Hashable, Sendable {
 	public let nonce: String?
 	public let authorizationServerIssuer: String
 	public let accessTokenHash: String
-	
+
 	public enum CodingKeys: String, CodingKey {
 		case uniqueCode = "jti"
 		case httpMethod = "htm"
@@ -33,7 +33,7 @@ public struct DPoPRequestPayload: Codable, Hashable, Sendable {
 		case authorizationServerIssuer = "iss"
 		case accessTokenHash = "ath"
 	}
-	
+
 	public init(
 		httpMethod: String,
 		httpRequestURL: String,
@@ -74,14 +74,17 @@ public final class DPoPSigner {
 		public let tokenHash: String?
 		public let issuingServer: String?
 	}
-	
+
 	public typealias NonceDecoder = (Data, URLResponse) throws -> String
 	public typealias JWTGenerator = @Sendable (JWTParameters) async throws -> String
 	private let nonceDecoder: NonceDecoder
 	public var nonce: String?
 
 	public static func nonceHeaderDecoder(data: Data, response: URLResponse) throws -> String {
-		guard let value = (response as? HTTPURLResponse)?.value(forHTTPHeaderField: "DPoP-Nonce") else {
+		guard
+			let value = (response as? HTTPURLResponse)?.value(
+				forHTTPHeaderField: "DPoP-Nonce")
+		else {
 			print("data:", String(decoding: data, as: UTF8.self))
 			throw DPoPError.nonceExpected(response)
 		}
@@ -130,7 +133,8 @@ extension DPoPSigner {
 
 	@discardableResult
 	public func setNonce(from response: URLResponse) -> Bool {
-		let newValue = (response as? HTTPURLResponse)?.value(forHTTPHeaderField: "dpop-nonce")
+		let newValue = (response as? HTTPURLResponse)?.value(
+			forHTTPHeaderField: "dpop-nonce")
 
 		nonce = newValue
 
@@ -148,7 +152,9 @@ extension DPoPSigner {
 	) async throws -> (Data, URLResponse) {
 		var request = request
 
-		try await authenticateRequest(&request, isolation: isolation, using: jwtGenerator, token: token, tokenHash: tokenHash, issuer: issuingServer)
+		try await authenticateRequest(
+			&request, isolation: isolation, using: jwtGenerator, token: token,
+			tokenHash: tokenHash, issuer: issuingServer)
 
 		let (data, response) = try await provider(request)
 
@@ -163,7 +169,9 @@ extension DPoPSigner {
 		print("DPoP nonce updated", existingNonce ?? "", nonce ?? "")
 
 		// repeat once, using newly-established nonce
-		try await authenticateRequest(&request, isolation: isolation, using: jwtGenerator, token: token, tokenHash: tokenHash, issuer: issuingServer)
+		try await authenticateRequest(
+			&request, isolation: isolation, using: jwtGenerator, token: token,
+			tokenHash: tokenHash, issuer: issuingServer)
 
 		return try await provider(request)
 	}

@@ -1,6 +1,7 @@
 import Foundation
+
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+	import FoundationNetworking
 #endif
 
 enum MetadataError: Error {
@@ -33,9 +34,11 @@ public struct ServerMetadata: Codable, Hashable, Sendable {
 		case grantTypesSupported = "grant_types_supported"
 		case codeChallengeMethodsSupported = "code_challenge_methods_supported"
 		case tokenEndpointAuthMethodsSupported = "token_endpoint_auth_methods_supported"
-		case tokenEndpointAuthSigningAlgValuesSupported = "token_endpoint_auth_signing_alg_values_supported"
+		case tokenEndpointAuthSigningAlgValuesSupported =
+			"token_endpoint_auth_signing_alg_values_supported"
 		case scopesSupported = "scopes_supported"
-		case authorizationResponseIssParameterSupported = "authorization_response_iss_parameter_supported"
+		case authorizationResponseIssParameterSupported =
+			"authorization_response_iss_parameter_supported"
 		case requirePushedAuthorizationRequests = "require_pushed_authorization_requests"
 		case pushedAuthorizationRequestEndpoint = "pushed_authorization_request_endpoint"
 		case dpopSigningAlgValuesSupported = "dpop_signing_alg_values_supported"
@@ -43,7 +46,9 @@ public struct ServerMetadata: Codable, Hashable, Sendable {
 		case clientIdMetadataDocumentSupported = "client_id_metadata_document_supported"
 	}
 
-	public static func load(for host: String, provider: URLResponseProvider) async throws -> ServerMetadata {
+	public static func load(for host: String, provider: URLResponseProvider) async throws
+		-> ServerMetadata
+	{
 		var components = URLComponents()
 
 		components.scheme = "https"
@@ -99,6 +104,7 @@ extension ClientMetadata {
 
 		return AppCredentials(
 			clientId: clientId,
+			scopes: scope.components(separatedBy: " "),
 			callbackURL: url
 		)
 	}
@@ -133,7 +139,8 @@ public struct ProtectedResourceMetadata: Codable, Hashable, Sendable {
 		case resourceDocumentation = "resource_documentation"
 		case resourcePolicyUri = "resource_policy_uri"
 		case resourceTosUri = "resource_tos_uri"
-		case tlsClientCertificateBoundAccessTokens = "tls_client_certificate_bound_access_tokens"
+		case tlsClientCertificateBoundAccessTokens =
+			"tls_client_certificate_bound_access_tokens"
 		case authorizationDetailsTypesSupported = "authorization_details_types_supported"
 		case dpopSigningAlgValuesSupported = "dpop_signing_alg_values_supported"
 		case dpopBoundAccessTokensRequired = "dpop_bound_access_tokens_required"

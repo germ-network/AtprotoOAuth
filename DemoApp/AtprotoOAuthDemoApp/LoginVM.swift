@@ -16,9 +16,9 @@ import SwiftUI
 
 @Observable final class LoginVM {
 	let oauthClient = ATProtoOAuthClient(
-//		clientId: "https://static.germnetwork.com/client-metadata.json",
 		appCredentials: .init(
 			clientId: "https://static.germnetwork.com/client-metadata.json",
+			scopes: ["atproto transition:generic"],
 			callbackURL: URL(string: "com.germnetwork.static:/oauth")!
 		),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
@@ -74,7 +74,7 @@ import SwiftUI
 		state = .collectHandle
 		logs = []
 	}
-	
+
 	func fallbackResolve(handle: String) async throws -> ATProtoDID {
 		do {
 			return try await Slingshot.resolve(handle: handle)

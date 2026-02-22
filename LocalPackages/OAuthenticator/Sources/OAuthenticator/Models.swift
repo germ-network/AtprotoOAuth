@@ -1,6 +1,8 @@
 import Foundation
+import OAuth
+
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+	import FoundationNetworking
 #endif
 
 /// Function that can execute a `URLRequest`.
@@ -13,7 +15,7 @@ public typealias URLResponseProvider = @Sendable (URLRequest) async throws -> (D
 public struct Token: Codable, Hashable, Sendable {
 	/// The access token.
 	public let value: String
-	
+
 	/// An optional expiry.
 	public let expiry: Date?
 
@@ -44,7 +46,7 @@ public struct Login: Codable, Hashable, Sendable {
 	// User authorized scopes
 	public var scopes: String?
 	public var issuingServer: String?
-	
+
 	public var additionalParams: [String: String]?
 
 	public init(
@@ -68,10 +70,12 @@ public struct Login: Codable, Hashable, Sendable {
 
 public struct AppCredentials: Codable, Hashable, Sendable {
 	public var clientId: String
+	public var scopes: [String]
 	public var callbackURL: URL
 
-	public init(clientId: String, callbackURL: URL) {
+	public init(clientId: String, scopes: [String], callbackURL: URL) {
 		self.clientId = clientId
+		self.scopes = scopes
 		self.callbackURL = callbackURL
 	}
 
@@ -110,7 +114,7 @@ public struct PARConfiguration: Hashable, Sendable {
 	public let url: URL
 	public let parameters: [String: String]
 
-	public init(url: URL, parameters: [String : String] = [:]) {
+	public init(url: URL, parameters: [String: String] = [:]) {
 		self.url = url
 		self.parameters = parameters
 	}
@@ -158,7 +162,8 @@ public struct TokenHandling: Sendable {
 	}
 
 	/// The output of this is a URL suitable for user authentication in a browser.
-	public typealias AuthorizationURLProvider = @Sendable (AuthorizationURLParameters) async throws -> URL
+	public typealias AuthorizationURLProvider =
+		@Sendable (AuthorizationURLParameters) async throws -> URL
 
 	/// A function that processes the results of an authentication operation
 	///
@@ -167,8 +172,10 @@ public struct TokenHandling: Sendable {
 	/// URL: the authenticated URL from the OAuth service
 	/// URLResponseProvider: the authenticator's provider
 	public typealias LoginProvider = @Sendable (LoginProviderParameters) async throws -> Login
-	public typealias RefreshProvider = @Sendable (Login, AppCredentials, URLResponseProvider) async throws -> Login
-	public typealias ResponseStatusProvider = @Sendable ((Data, URLResponse)) throws -> ResponseStatus
+	public typealias RefreshProvider =
+		@Sendable (Login, AppCredentials, URLResponseProvider) async throws -> Login
+	public typealias ResponseStatusProvider =
+		@Sendable ((Data, URLResponse)) throws -> ResponseStatus
 
 	public let authorizationURLProvider: AuthorizationURLProvider
 	public let loginProvider: LoginProvider
@@ -183,7 +190,8 @@ public struct TokenHandling: Sendable {
 		authorizationURLProvider: @escaping AuthorizationURLProvider,
 		loginProvider: @escaping LoginProvider,
 		refreshProvider: RefreshProvider? = nil,
-		responseStatusProvider: @escaping ResponseStatusProvider = Self.refreshOrAuthorizeWhenUnauthorized,
+		responseStatusProvider: @escaping ResponseStatusProvider = Self
+			.refreshOrAuthorizeWhenUnauthorized,
 		dpopJWTGenerator: DPoPSigner.JWTGenerator? = nil,
 		pkce: PKCEVerifier? = nil
 
@@ -203,7 +211,9 @@ public struct TokenHandling: Sendable {
 	}
 
 	@Sendable
-	public static func refreshOrAuthorizeWhenUnauthorized(result: (Data, URLResponse)) throws -> ResponseStatus {
+	public static func refreshOrAuthorizeWhenUnauthorized(result: (Data, URLResponse)) throws
+		-> ResponseStatus
+	{
 		guard let response = result.1 as? HTTPURLResponse else {
 			throw AuthenticatorError.httpResponseExpected
 		}

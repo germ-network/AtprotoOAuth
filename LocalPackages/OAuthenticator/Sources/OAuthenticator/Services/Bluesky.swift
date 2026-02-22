@@ -1,15 +1,17 @@
 import Foundation
-#if canImport(FoundationNetworking)
-import FoundationNetworking
-#endif
+import OAuth
 import os
+
+#if canImport(FoundationNetworking)
+	import FoundationNetworking
+#endif
 
 /// Find the spec here: https://atproto.com/specs/oauth
 public enum Bluesky {
 	static let logger = Logger(
 		subsystem: "com.germnetwork",
 		category: "BlueskyOAuthenticator")
-	
+
 	struct TokenRequest: Hashable, Sendable, Codable {
 		public let code: String
 		public let code_verifier: String
@@ -17,7 +19,10 @@ public enum Bluesky {
 		public let grant_type: String
 		public let client_id: String
 
-		public init(code: String, code_verifier: String, redirect_uri: String, grant_type: String, client_id: String) {
+		public init(
+			code: String, code_verifier: String, redirect_uri: String,
+			grant_type: String, client_id: String
+		) {
 			self.code = code
 			self.code_verifier = code_verifier
 			self.redirect_uri = redirect_uri
@@ -32,7 +37,10 @@ public enum Bluesky {
 		public let grant_type: String
 		public let client_id: String
 
-		public init(refresh_token: String, redirect_uri: String, grant_type: String, client_id: String) {
+		public init(
+			refresh_token: String, redirect_uri: String, grant_type: String,
+			client_id: String
+		) {
 			self.refresh_token = refresh_token
 			self.redirect_uri = redirect_uri
 			self.grant_type = grant_type
@@ -63,19 +71,19 @@ public enum Bluesky {
 		public var tokenType: String { token_type }
 		public var expiresIn: Int { expires_in }
 	}
-	
+
 	struct TokenError: Hashable, Sendable, Codable {
 		let error: String
 		let errorDescription: String
-		
+
 		enum CodingKeys: String, CodingKey {
 			case error
 			case errorDescription = "error_description"
 		}
 	}
 
-	public typealias TokenSubscriberValidator = @Sendable (TokenResponse, _ issuer: String) async throws -> Bool
-
+	public typealias TokenSubscriberValidator =
+		@Sendable (TokenResponse, _ issuer: String) async throws -> Bool
 
 	public static func tokenHandling(
 		account: String?,
@@ -87,7 +95,9 @@ public enum Bluesky {
 		TokenHandling(
 			parConfiguration: PARConfiguration(
 				url: URL(string: server.pushedAuthorizationRequestEndpoint)!,
-				parameters: { if let account { ["login_hint": account] } else { [:] } }()
+				parameters: {
+					if let account { ["login_hint": account] } else { [:] }
+				}()
 			),
 			authorizationURLProvider: authorizionURLProvider(server: server),
 			loginProvider: loginProvider(server: server, validator: validator),
@@ -97,24 +107,26 @@ public enum Bluesky {
 		)
 	}
 
-#if canImport(CryptoKit)
-	public static func tokenHandling(
-		account: String?,
-		server: ServerMetadata,
-		jwtGenerator: @escaping DPoPSigner.JWTGenerator,
-		validator: @escaping TokenSubscriberValidator
-	) -> TokenHandling {
-		tokenHandling(
-			account: account,
-			server: server,
-			jwtGenerator: jwtGenerator,
-			pkce: PKCEVerifier(),
-			validator: validator
-		)
-	}
-#endif
+	#if canImport(CryptoKit)
+		public static func tokenHandling(
+			account: String?,
+			server: ServerMetadata,
+			jwtGenerator: @escaping DPoPSigner.JWTGenerator,
+			validator: @escaping TokenSubscriberValidator
+		) -> TokenHandling {
+			tokenHandling(
+				account: account,
+				server: server,
+				jwtGenerator: jwtGenerator,
+				pkce: PKCEVerifier(),
+				validator: validator
+			)
+		}
+	#endif
 
-	private static func authorizionURLProvider(server: ServerMetadata) -> TokenHandling.AuthorizationURLProvider {
+	private static func authorizionURLProvider(server: ServerMetadata)
+		-> TokenHandling.AuthorizationURLProvider
+	{
 		return { params in
 			var components = URLComponents(string: server.authorizationEndpoint)
 
@@ -135,23 +147,35 @@ public enum Bluesky {
 		}
 	}
 
-	private static func loginProvider(server: ServerMetadata, validator: @escaping TokenSubscriberValidator) -> TokenHandling.LoginProvider {
+	private static func loginProvider(
+		server: ServerMetadata, validator: @escaping TokenSubscriberValidator
+	) -> TokenHandling.LoginProvider {
 		return { params in
 			// decode the params in the redirectURL
-			guard let redirectComponents = URLComponents(url: params.redirectURL, resolvingAgainstBaseURL: false) else {
+			guard
+				let redirectComponents = URLComponents(
+					url: params.redirectURL, resolvingAgainstBaseURL: false)
+			else {
 				throw AuthenticatorError.missingTokenURL
 			}
 
 			guard
-				let authCode = redirectComponents.queryItems?.first(where: { $0.name == "code" })?.value,
-				let iss = redirectComponents.queryItems?.first(where: { $0.name == "iss" })?.value,
-				let state = redirectComponents.queryItems?.first(where: { $0.name == "state" })?.value
+				let authCode = redirectComponents.queryItems?.first(where: {
+					$0.name == "code"
+				})?.value,
+				let iss = redirectComponents.queryItems?.first(where: {
+					$0.name == "iss"
+				})?.value,
+				let state = redirectComponents.queryItems?.first(where: {
+					$0.name == "state"
+				})?.value
 			else {
 				throw AuthenticatorError.missingAuthorizationCode
 			}
 
 			if state != params.stateToken {
-				throw AuthenticatorError.stateTokenMismatch(state, params.stateToken)
+				throw AuthenticatorError.stateTokenMismatch(
+					state, params.stateToken)
 			}
 
 			if iss != server.issuer {
@@ -186,36 +210,43 @@ public enum Bluesky {
 
 			print("data:", String(decoding: data, as: UTF8.self))
 			print("response:", response)
-			
+
 			if let tokenError = try? JSONDecoder().decode(TokenError.self, from: data) {
 				if tokenError.errorDescription == "Code challenge already used" {
 					throw AuthenticatorError.codeChallengeAlreadyUsed
 				}
 				Self.logger.error(
-					"Login error: \(tokenError.errorDescription, privacy: .public)")
-				throw AuthenticatorError.unrecognizedError(tokenError.errorDescription)
+					"Login error: \(tokenError.errorDescription, privacy: .public)"
+				)
+				throw AuthenticatorError.unrecognizedError(
+					tokenError.errorDescription)
 			}
 
 			do {
-				let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
+				let tokenResponse = try JSONDecoder().decode(
+					TokenResponse.self, from: data)
 				guard tokenResponse.token_type == "DPoP" else {
-					throw AuthenticatorError.dpopTokenExpected(tokenResponse.token_type)
+					throw AuthenticatorError.dpopTokenExpected(
+						tokenResponse.token_type)
 				}
-				
+
 				if try await validator(tokenResponse, server.issuer) == false {
 					throw AuthenticatorError.tokenInvalid
 				}
-				
+
 				return tokenResponse.login(for: iss)
 			} catch {
 				Self.logger.error(
-				  "Error decoding response: \(String(decoding: data, as: UTF8.self), privacy: .public)")
+					"Error decoding response: \(String(decoding: data, as: UTF8.self), privacy: .public)"
+				)
 				throw AuthenticatorError.unrecognizedError("Decoding response JSON")
 			}
 		}
 	}
 
-	private static func refreshProvider(server: ServerMetadata, validator: @escaping TokenSubscriberValidator) -> TokenHandling.RefreshProvider {
+	private static func refreshProvider(
+		server: ServerMetadata, validator: @escaping TokenSubscriberValidator
+	) -> TokenHandling.RefreshProvider {
 		{ login, credentials, responseProvider -> Login in
 			guard let refreshToken = login.refreshToken?.value else {
 				throw AuthenticatorError.refreshNotPossible
@@ -250,30 +281,35 @@ public enum Bluesky {
 
 				throw AuthenticatorError.refreshNotPossible
 			}
-			
+
 			if let tokenError = try? JSONDecoder().decode(TokenError.self, from: data) {
 				if tokenError.errorDescription == "Code challenge already used" {
 					throw AuthenticatorError.codeChallengeAlreadyUsed
 				}
 				Self.logger.error(
-					"Login error: \(tokenError.errorDescription, privacy: .public)")
-				throw AuthenticatorError.unrecognizedError(tokenError.errorDescription)
+					"Login error: \(tokenError.errorDescription, privacy: .public)"
+				)
+				throw AuthenticatorError.unrecognizedError(
+					tokenError.errorDescription)
 			}
-			
+
 			do {
-				let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
+				let tokenResponse = try JSONDecoder().decode(
+					TokenResponse.self, from: data)
 				guard tokenResponse.token_type == "DPoP" else {
-					throw AuthenticatorError.dpopTokenExpected(tokenResponse.token_type)
+					throw AuthenticatorError.dpopTokenExpected(
+						tokenResponse.token_type)
 				}
-				
+
 				if try await validator(tokenResponse, server.issuer) == false {
 					throw AuthenticatorError.tokenInvalid
 				}
-				
+
 				return tokenResponse.login(for: server.issuer)
 			} catch {
 				Self.logger.error(
-				  "Error decoding response: \(String(decoding: data, as: UTF8.self), privacy: .public)")
+					"Error decoding response: \(String(decoding: data, as: UTF8.self), privacy: .public)"
+				)
 				throw AuthenticatorError.unrecognizedError("Decoding response JSON")
 			}
 		}

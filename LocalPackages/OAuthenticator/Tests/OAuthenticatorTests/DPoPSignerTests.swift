@@ -1,10 +1,10 @@
 import Foundation
-#if canImport(FoundationNetworking)
-import FoundationNetworking
-#endif
+import OAuthenticator
 import Testing
 
-import OAuthenticator
+#if canImport(FoundationNetworking)
+	import FoundationNetworking
+#endif
 
 struct ExamplePayload: Codable, Hashable, Sendable {
 	let value: String

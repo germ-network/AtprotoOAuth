@@ -1,7 +1,6 @@
 import Foundation
-import Testing
-
 import OAuthenticator
+import Testing
 
 struct BlueskyTests {
 	@Test
@@ -31,26 +30,33 @@ struct BlueskyTests {
 			)!
 
 			let payload = """
-{"access_token":"1", "sub":"2", "scope":"3", "token_type":"DPoP","expires_in":120}
-"""
+				{"access_token":"1", "sub":"2", "scope":"3", "token_type":"DPoP","expires_in":120}
+				"""
 
 			return (Data(payload.utf8), response)
 		}
 
 		let verifier = PKCEVerifier()
 		let params = TokenHandling.LoginProviderParameters(
-			authorizationURL: URL(string: "https://server-metadata.test/oauth/authorize")!,
+			authorizationURL: URL(
+				string: "https://server-metadata.test/oauth/authorize")!,
 			credentials: AppCredentials(
 				clientId: "a",
 				callbackURL: URL(string: "app.test://callback")!,
 			),
-			redirectURL: URL(string: "app.test://callback?code=123&state=state&iss=this_is_incorrect")!,
+			redirectURL: URL(
+				string:
+					"app.test://callback?code=123&state=state&iss=this_is_incorrect"
+			)!,
 			responseProvider: provider,
 			stateToken: "state",
 			pcke: verifier
 		)
 
-		await #expect(throws: AuthenticatorError.issuingServerMismatch("this_is_incorrect", "https://server-metadata.test")) {
+		await #expect(
+			throws: AuthenticatorError.issuingServerMismatch(
+				"this_is_incorrect", "https://server-metadata.test")
+		) {
 			try await handling.loginProvider(params)
 		}
 	}
@@ -87,20 +93,24 @@ struct BlueskyTests {
 			)!
 
 			let payload = """
-{"access_token":"1", "sub":"2", "scope":"3", "token_type":"DPoP","expires_in":120}
-"""
+				{"access_token":"1", "sub":"2", "scope":"3", "token_type":"DPoP","expires_in":120}
+				"""
 
 			return (Data(payload.utf8), response)
 		}
 
 		let verifier = PKCEVerifier()
 		let params = TokenHandling.LoginProviderParameters(
-			authorizationURL: URL(string: "https://server-metadata.test/oauth/authorize")!,
+			authorizationURL: URL(
+				string: "https://server-metadata.test/oauth/authorize")!,
 			credentials: AppCredentials(
 				clientId: "a",
 				callbackURL: URL(string: "app.test://callback")!,
 			),
-			redirectURL: URL(string: "app.test:/callback?code=123&state=state&iss=https://server-metadata.test")!,
+			redirectURL: URL(
+				string:
+					"app.test:/callback?code=123&state=state&iss=https://server-metadata.test"
+			)!,
 			responseProvider: provider,
 			stateToken: "state",
 			pcke: verifier

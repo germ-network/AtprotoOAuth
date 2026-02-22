@@ -1,6 +1,7 @@
 import Foundation
+
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+	import FoundationNetworking
 #endif
 
 /// OAuth details for github.com
@@ -29,8 +30,10 @@ public enum GitHub {
 		}
 
 		var login: Login {
-			Login(accessToken: .init(value: accessToken, expiresIn: expiresIn),
-				  refreshToken: .init(value: refreshToken, expiresIn: refreshTokenExpiresIn))
+			Login(
+				accessToken: .init(value: accessToken, expiresIn: expiresIn),
+				refreshToken: .init(
+					value: refreshToken, expiresIn: refreshTokenExpiresIn))
 		}
 	}
 
@@ -63,7 +66,9 @@ public enum GitHub {
 	}
 
 	/// TokenHandling for GitHub Apps
-	public static func gitHubAppTokenHandling(with parameters: UserTokenParameters = .init()) -> TokenHandling {
+	public static func gitHubAppTokenHandling(with parameters: UserTokenParameters = .init())
+		-> TokenHandling
+	{
 		TokenHandling(
 			authorizationURLProvider: authorizationURLProvider(with: parameters),
 			loginProvider: gitHubAppLoginProvider,
@@ -79,10 +84,12 @@ public enum GitHub {
 		)
 	}
 
-	static func authorizationURLProvider(with parameters: UserTokenParameters) -> TokenHandling.AuthorizationURLProvider {
+	static func authorizationURLProvider(with parameters: UserTokenParameters)
+		-> TokenHandling.AuthorizationURLProvider
+	{
 		return { params in
 			let credentials = params.credentials
-			
+
 			var urlBuilder = URLComponents()
 
 			urlBuilder.scheme = "https"
@@ -90,11 +97,14 @@ public enum GitHub {
 			urlBuilder.path = "/login/oauth/authorize"
 			urlBuilder.queryItems = [
 				URLQueryItem(name: "client_id", value: credentials.clientId),
-				URLQueryItem(name: "redirect_uri", value: credentials.callbackURL.absoluteString),
+				URLQueryItem(
+					name: "redirect_uri",
+					value: credentials.callbackURL.absoluteString),
 			]
 
 			if let state = parameters.state {
-				urlBuilder.queryItems?.append(URLQueryItem(name: "state", value: state))
+				urlBuilder.queryItems?.append(
+					URLQueryItem(name: "state", value: state))
 			}
 
 			guard let url = urlBuilder.url else {
@@ -105,7 +115,9 @@ public enum GitHub {
 		}
 	}
 
-	static func authenticationRequest(with url: URL, appCredentials: AppCredentials) throws -> URLRequest {
+	static func authenticationRequest(with url: URL, appCredentials: AppCredentials) throws
+		-> URLRequest
+	{
 		let code = try url.authorizationCode
 
 		var urlBuilder = URLComponents()
@@ -115,7 +127,9 @@ public enum GitHub {
 		urlBuilder.path = "/login/oauth/access_token"
 		urlBuilder.queryItems = [
 			URLQueryItem(name: "client_id", value: appCredentials.clientId),
-			URLQueryItem(name: "redirect_uri", value: appCredentials.callbackURL.absoluteString),
+			URLQueryItem(
+				name: "redirect_uri",
+				value: appCredentials.callbackURL.absoluteString),
 			URLQueryItem(name: "code", value: code),
 		]
 
@@ -132,8 +146,11 @@ public enum GitHub {
 	}
 
 	@Sendable
-	static func gitHubAppLoginProvider(params: TokenHandling.LoginProviderParameters) async throws -> Login {
-		let request = try authenticationRequest(with: params.authorizationURL, appCredentials: params.credentials)
+	static func gitHubAppLoginProvider(params: TokenHandling.LoginProviderParameters)
+		async throws -> Login
+	{
+		let request = try authenticationRequest(
+			with: params.authorizationURL, appCredentials: params.credentials)
 
 		let (data, _) = try await params.responseProvider(request)
 
@@ -143,8 +160,11 @@ public enum GitHub {
 	}
 
 	@Sendable
-	static func OAuthAppLoginProvider(params: TokenHandling.LoginProviderParameters) async throws -> Login {
-		let request = try authenticationRequest(with: params.authorizationURL, appCredentials: params.credentials)
+	static func OAuthAppLoginProvider(params: TokenHandling.LoginProviderParameters)
+		async throws -> Login
+	{
+		let request = try authenticationRequest(
+			with: params.authorizationURL, appCredentials: params.credentials)
 
 		let (data, _) = try await params.responseProvider(request)
 
@@ -154,7 +174,9 @@ public enum GitHub {
 	}
 
 	@Sendable
-	static func refreshProvider(login: Login, credentials: AppCredentials, urlLoader: URLResponseProvider) async throws -> Login {
+	static func refreshProvider(
+		login: Login, credentials: AppCredentials, urlLoader: URLResponseProvider
+	) async throws -> Login {
 		// TODO: GitHub Apps actually do support refresh
 		throw AuthenticatorError.refreshUnsupported
 	}

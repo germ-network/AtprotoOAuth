@@ -1,9 +1,11 @@
 import Foundation
+import OAuth
+
 #if canImport(FoundationNetworking)
-import FoundationNetworking
+	import FoundationNetworking
 #endif
 #if canImport(AuthenticationServices)
-import AuthenticationServices
+	import AuthenticationServices
 #endif
 
 public enum AuthenticatorError: Error, Hashable {
@@ -49,19 +51,22 @@ extension AuthenticatorError: LocalizedError {
 		case .failingAuthenticatorUsed: "Failing authenticator used"
 		case .dpopTokenExpected(let detail): "DPOP token expected: \(detail)"
 		case .parRequestURIMissing: "PAR request URI missing"
-		case .stateTokenMismatch(let first, let second): "State token mismatch, \(first), \(second)"
+		case .stateTokenMismatch(let first, let second):
+			"State token mismatch, \(first), \(second)"
 		case .pkceRequired: "PKCE required"
 		case .codeChallengeAlreadyUsed: "Code challenge already used"
 		case .unrecognizedError(let description): "Unrecognized error: \(description)"
-		case .issuingServerMismatch(let first, let second): "Issuing server mismatch, \(first), \(second)"
-	}
+		case .issuingServerMismatch(let first, let second):
+			"Issuing server mismatch, \(first), \(second)"
+		}
 	}
 }
 
 /// Manage state required to executed authenticated URLRequests.
 public actor Authenticator {
 	public typealias UserAuthenticator = @Sendable (URL, String) async throws -> URL
-	public typealias AuthenticationStatusHandler = @Sendable (Result<Login, AuthenticatorError>) async -> Void
+	public typealias AuthenticationStatusHandler =
+		@Sendable (Result<Login, AuthenticatorError>) async -> Void
 
 	/// A `UserAuthenticator` that always fails. Useful as a placeholder
 	/// for testing and for doing manual authentication with an external
@@ -106,27 +111,30 @@ public actor Authenticator {
 		// Specify an authenticationResult closure to obtain result and grantedScope
 		public let authenticationStatusHandler: AuthenticationStatusHandler?
 
-#if canImport(AuthenticationServices)
-		@available(tvOS 16.0, macCatalyst 13.0, *)
-		public init(
-			appCredentials: AppCredentials,
-			loginStorage: LoginStorage? = nil,
-			tokenHandling: TokenHandling,
-			mode: UserAuthenticationMode = .automatic,
-			authenticationStatusHandler: AuthenticationStatusHandler? = nil
-		) {
-			self.appCredentials = appCredentials
-			self.loginStorage = loginStorage
-			self.tokenHandling = tokenHandling
-			self.mode = mode
+		#if canImport(AuthenticationServices)
+			@available(tvOS 16.0, macCatalyst 13.0, *)
+			public init(
+				appCredentials: AppCredentials,
+				loginStorage: LoginStorage? = nil,
+				tokenHandling: TokenHandling,
+				mode: UserAuthenticationMode = .automatic,
+				authenticationStatusHandler: AuthenticationStatusHandler? = nil
+			) {
+				self.appCredentials = appCredentials
+				self.loginStorage = loginStorage
+				self.tokenHandling = tokenHandling
+				self.mode = mode
 
-			// It *should* be possible to use just a reference to
-			// ASWebAuthenticationSession.userAuthenticator directly here
-			// with GlobalActorIsolatedTypesUsability, but it isn't working
-			self.userAuthenticator = { try await ASWebAuthenticationSession.userAuthenticator(url: $0, scheme: $1) }
-			self.authenticationStatusHandler = authenticationStatusHandler
-		}
-#endif
+				// It *should* be possible to use just a reference to
+				// ASWebAuthenticationSession.userAuthenticator directly here
+				// with GlobalActorIsolatedTypesUsability, but it isn't working
+				self.userAuthenticator = {
+					try await ASWebAuthenticationSession.userAuthenticator(
+						url: $0, scheme: $1)
+				}
+				self.authenticationStatusHandler = authenticationStatusHandler
+			}
+		#endif
 
 		public init(
 			appCredentials: AppCredentials,
@@ -172,7 +180,8 @@ public actor Authenticator {
 	public func response(for request: URLRequest) async throws -> (Data, URLResponse) {
 		let userAuthenticator = config.userAuthenticator
 
-		let login = try await loginTaskResult(manual: false, userAuthenticator: userAuthenticator)
+		let login = try await loginTaskResult(
+			manual: false, userAuthenticator: userAuthenticator)
 
 		let result = try await authedResponse(for: request, login: login)
 
@@ -180,29 +189,34 @@ public actor Authenticator {
 
 		switch action {
 		case .authorize:
-			let newLogin = try await loginFromTask(task: Task {
-				return try await performUserAuthentication(manual: false, userAuthenticator: userAuthenticator)
-			})
+			let newLogin = try await loginFromTask(
+				task: Task {
+					return try await performUserAuthentication(
+						manual: false, userAuthenticator: userAuthenticator)
+				})
 
 			return try await authedResponse(for: request, login: newLogin)
 		case .refresh:
-			let newLogin = try await loginFromTask(task: Task {
-				guard let value = try await refresh(with: login) else {
-					throw AuthenticatorError.unauthorizedRefreshFailed
-				}
+			let newLogin = try await loginFromTask(
+				task: Task {
+					guard let value = try await refresh(with: login) else {
+						throw AuthenticatorError.unauthorizedRefreshFailed
+					}
 
-				return value
-			})
+					return value
+				})
 
 			return try await authedResponse(for: request, login: newLogin)
 		case .refreshOrAuthorize:
-			let newLogin = try await loginFromTask(task: Task {
-				if let value = try await refresh(with: login) {
-					return value
-				}
+			let newLogin = try await loginFromTask(
+				task: Task {
+					if let value = try await refresh(with: login) {
+						return value
+					}
 
-				return try await performUserAuthentication(manual: false, userAuthenticator: userAuthenticator)
-			})
+					return try await performUserAuthentication(
+						manual: false, userAuthenticator: userAuthenticator)
+				})
 
 			return try await authedResponse(for: request, login: newLogin)
 		case .valid:
@@ -210,12 +224,15 @@ public actor Authenticator {
 		}
 	}
 
-	private func authedResponse(for request: URLRequest, login: Login) async throws -> (Data, URLResponse) {
+	private func authedResponse(for request: URLRequest, login: Login) async throws -> (
+		Data, URLResponse
+	) {
 		var authedRequest = request
 		let token = login.accessToken.value
 
 		if config.tokenHandling.dpopJWTGenerator == nil {
-			authedRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+			authedRequest.setValue(
+				"Bearer \(token)", forHTTPHeaderField: "Authorization")
 		}
 
 		return try await dpopResponse(for: authedRequest, login: login)
@@ -223,7 +240,9 @@ public actor Authenticator {
 
 	/// Manually perform user authentication, if required.
 	@discardableResult
-	public func authenticate(with userAuthenticator: UserAuthenticator? = nil) async throws -> Login {
+	public func authenticate(with userAuthenticator: UserAuthenticator? = nil) async throws
+		-> Login
+	{
 		return try await loginTaskResult(
 			manual: true,
 			userAuthenticator: userAuthenticator ?? config.userAuthenticator
@@ -260,10 +279,13 @@ extension Authenticator {
 }
 
 extension Authenticator {
-	private func makeLoginTask(manual: Bool, userAuthenticator: @escaping UserAuthenticator) -> Task<Login, Error> {
+	private func makeLoginTask(manual: Bool, userAuthenticator: @escaping UserAuthenticator)
+		-> Task<Login, Error>
+	{
 		return Task {
 			guard let login = try await retrieveLogin() else {
-				return try await performUserAuthentication(manual: manual, userAuthenticator: userAuthenticator)
+				return try await performUserAuthentication(
+					manual: manual, userAuthenticator: userAuthenticator)
 			}
 
 			if login.accessToken.valid {
@@ -274,30 +296,35 @@ extension Authenticator {
 				return refreshedLogin
 			}
 
-			return try await performUserAuthentication(manual: manual, userAuthenticator: userAuthenticator)
+			return try await performUserAuthentication(
+				manual: manual, userAuthenticator: userAuthenticator)
 		}
 	}
 
-	private func loginTaskResult(manual: Bool, userAuthenticator: @escaping UserAuthenticator) async throws -> Login {
-		let task = activeTokenTask ?? makeLoginTask(manual: manual, userAuthenticator: userAuthenticator)
+	private func loginTaskResult(manual: Bool, userAuthenticator: @escaping UserAuthenticator)
+		async throws -> Login
+	{
+		let task =
+			activeTokenTask
+			?? makeLoginTask(manual: manual, userAuthenticator: userAuthenticator)
 
 		var login: Login
 		do {
-				do {
-						login = try await loginFromTask(task: task)
-				} catch AuthenticatorError.tokenInvalid {
-						let newTask = makeLoginTask(manual: manual, userAuthenticator: userAuthenticator)
-						login = try await loginFromTask(task: newTask)
-				}
+			do {
+				login = try await loginFromTask(task: task)
+			} catch AuthenticatorError.tokenInvalid {
+				let newTask = makeLoginTask(
+					manual: manual, userAuthenticator: userAuthenticator)
+				login = try await loginFromTask(task: newTask)
+			}
 
-				// Inform authenticationResult closure of new login information
-				await self.config.authenticationStatusHandler?(.success(login))
-		}
-		catch let authenticatorError as AuthenticatorError {
-				await self.config.authenticationStatusHandler?(.failure(authenticatorError))
+			// Inform authenticationResult closure of new login information
+			await self.config.authenticationStatusHandler?(.success(login))
+		} catch let authenticatorError as AuthenticatorError {
+			await self.config.authenticationStatusHandler?(.failure(authenticatorError))
 
-				// Rethrow error
-				throw authenticatorError
+			// Rethrow error
+			throw authenticatorError
 		}
 
 		return login
@@ -326,7 +353,9 @@ extension Authenticator {
 		return login
 	}
 
-	private func performUserAuthentication(manual: Bool, userAuthenticator: UserAuthenticator) async throws -> Login {
+	private func performUserAuthentication(manual: Bool, userAuthenticator: UserAuthenticator)
+		async throws -> Login
+	{
 		if manual == false && config.mode == .manualOnly {
 			throw AuthenticatorError.manualAuthenticationRequired
 		}
@@ -345,7 +374,7 @@ extension Authenticator {
 
 		let scheme = try config.appCredentials.callbackURLScheme
 
-		let	callbackURL = try await userAuthenticator(tokenURL, scheme)
+		let callbackURL = try await userAuthenticator(tokenURL, scheme)
 
 		let params = TokenHandling.LoginProviderParameters(
 			authorizationURL: tokenURL,
@@ -377,7 +406,9 @@ extension Authenticator {
 		}
 
 		do {
-			let login = try await refreshProvider(login, config.appCredentials, { try await self.dpopResponse(for: $0, login: nil) })
+			let login = try await refreshProvider(
+				login, config.appCredentials,
+				{ try await self.dpopResponse(for: $0, login: nil) })
 
 			try await storeLogin(login)
 
@@ -395,24 +426,28 @@ extension Authenticator {
 		}
 
 		let challenge = pkce.challenge
+		let scopes = config.appCredentials.scopes.joined(separator: " ")
 		let callbackURI = config.appCredentials.callbackURL
 		let clientId = config.appCredentials.clientId
 
 		var request = URLRequest(url: url)
 		request.httpMethod = "POST"
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
-		request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+		request.setValue(
+			"application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
 
 		let base: [String: String] = [
 			"client_id": clientId,
 			"state": stateToken,
+			"scope": scopes,
 			"response_type": "code",
 			"redirect_uri": callbackURI.absoluteString,
 			"code_challenge": challenge.value,
 			"code_challenge_method": challenge.method,
 		]
 
-		let body = params
+		let body =
+			params
 			.merging(base, uniquingKeysWith: { a, b in a })
 			.map({ [$0, $1].joined(separator: "=") })
 			.joined(separator: "&")
@@ -429,7 +464,8 @@ extension Authenticator {
 			return nil
 		}
 
-		let parResponse = try await parRequest(url: parConfig.url, params: parConfig.parameters)
+		let parResponse = try await parRequest(
+			url: parConfig.url, params: parConfig.parameters)
 
 		return parResponse.requestURI
 	}
@@ -440,7 +476,9 @@ extension Authenticator {
 		{ try await self.response(for: $0) }
 	}
 
-	private func dpopResponse(for request: URLRequest, login: Login?) async throws -> (Data, URLResponse) {
+	private func dpopResponse(for request: URLRequest, login: Login?) async throws -> (
+		Data, URLResponse
+	) {
 		guard let generator = config.tokenHandling.dpopJWTGenerator else {
 			return try await urlLoader(request)
 		}

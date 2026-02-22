@@ -12,20 +12,20 @@ public struct DPoPKey: Codable, Hashable, Sendable {
 }
 
 #if canImport(CryptoKit)
-import CryptoKit
+	import CryptoKit
 
-extension DPoPKey {
-	/// Generate a new instance with P-256 key data.
-	public static func P256() -> DPoPKey {
-		let data = CryptoKit.P256.Signing.PrivateKey().rawRepresentation
-		
-		return DPoPKey(keyData: data)
-	}
-	
-	public var p256PrivateKey: CryptoKit.P256.Signing.PrivateKey {
-		get throws {
-			try CryptoKit.P256.Signing.PrivateKey(rawRepresentation: data)
+	extension DPoPKey {
+		/// Generate a new instance with P-256 key data.
+		public static func P256() -> DPoPKey {
+			let data = CryptoKit.P256.Signing.PrivateKey().rawRepresentation
+
+			return DPoPKey(keyData: data)
+		}
+
+		public var p256PrivateKey: CryptoKit.P256.Signing.PrivateKey {
+			get throws {
+				try CryptoKit.P256.Signing.PrivateKey(rawRepresentation: data)
+			}
 		}
 	}
-}
 #endif

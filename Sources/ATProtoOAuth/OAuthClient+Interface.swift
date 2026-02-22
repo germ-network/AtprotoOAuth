@@ -6,6 +6,7 @@
 //
 
 import ATProtoTypes
+import AuthenticationServices
 import Crypto
 import Foundation
 import OAuth
@@ -62,30 +63,34 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 		}
 
 		let serverConfig = try await getAuthServerMetadata(host: authorizationServerHost)
-		
+
 		let dpopKey = P256.Signing.PrivateKey()
-		
-//		let tokenHandling = Bluesky.tokenHandling(
-//			account: did.fullId,
-//			server: serverConfig,
-//			jwtGenerator: dpopKey.makeDpopSigner(),
-//			validator: { tokenResponse, sub in
-//				// TODO: GER-1343 - Implement validator
-//				// after a token is issued, it is critical that the returned
-//				// identity be resolved and its PDS match the issuing server
-//				//
-//				// check out draft-ietf-oauth-v2-1 section 7.3.1 for details
-//				return true
-//			}
-//		)
-//
-//		let authenticator = Authenticator(
-//			config: .init(
-//				appCredentials: appCredentials,
-//				tokenHandling: tokenHandling
-//			)
-//		)
-//		let token = try await authenticator.authenticate()
+
+		let tokenHandling = Bluesky.tokenHandling(
+			account: did.fullId,
+			server: serverConfig,
+			jwtGenerator: try dpopKey.makeDpopSigner(),
+			validator: { tokenResponse, sub in
+				// TODO: GER-1343 - Implement validator
+				// after a token is issued, it is critical that the returned
+				// identity be resolved and its PDS match the issuing server
+				//
+				// check out draft-ietf-oauth-v2-1 section 7.3.1 for details
+				return true
+			}
+		)
+
+		let authenticator = Authenticator(
+			config: .init(
+				appCredentials: appCredentials,
+				tokenHandling: tokenHandling,
+				userAuthenticator: {
+					try await ASWebAuthenticationSession.userAuthenticator(
+						url: $0, scheme: $1)
+				}
+			)
+		)
+		let token = try await authenticator.authenticate()
 
 		throw OAuthClientError.notImplemented
 	}

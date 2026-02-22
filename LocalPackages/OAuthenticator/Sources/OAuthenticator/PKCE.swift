@@ -12,7 +12,8 @@ public struct PKCEVerifier: Sendable {
 	public let hashFunction: HashFunction
 
 	public static func randomString(length: Int) -> String {
-		let characters = Array("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+		let characters = Array(
+			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
 		var string = ""
 
@@ -35,26 +36,26 @@ public struct PKCEVerifier: Sendable {
 }
 
 #if canImport(CryptoKit)
-import CryptoKit
+	import CryptoKit
 
-extension SHA256.Digest {
-	var data: Data {
-		self.withUnsafeBytes { buffer in
-			Data(bytes: buffer.baseAddress!, count: buffer.count)
+	extension SHA256.Digest {
+		var data: Data {
+			self.withUnsafeBytes { buffer in
+				Data(bytes: buffer.baseAddress!, count: buffer.count)
+			}
 		}
 	}
-}
 
-extension PKCEVerifier {
-	public init() {
-		self.init(
-			hash: "S256",
-			hasher: { value in
-				let digest = SHA256.hash(data: Data(value.utf8))
-				
-				return digest.data.base64EncodedURLEncodedString()
-			}
-		)
+	extension PKCEVerifier {
+		public init() {
+			self.init(
+				hash: "S256",
+				hasher: { value in
+					let digest = SHA256.hash(data: Data(value.utf8))
+
+					return digest.data.base64EncodedURLEncodedString()
+				}
+			)
+		}
 	}
-}
 #endif

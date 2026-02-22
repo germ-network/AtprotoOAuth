@@ -41,7 +41,9 @@ struct WellKnownTests {
 		)
 
 		#expect(response.issuer == "https://server-metadata.test")
-		#expect(response.authorizationEndpoint == "https://server-metadata.test/oauth/authorize")
+		#expect(
+			response.authorizationEndpoint
+				== "https://server-metadata.test/oauth/authorize")
 		#expect(response.tokenEndpoint == "https://server-metadata.test/oauth/token")
 	}
 
@@ -73,10 +75,14 @@ struct WellKnownTests {
 			provider: mockLoader
 		)
 
-		#expect(response.clientId == "https://client-metadata.test/oauth-client-metadata.json")
+		#expect(
+			response.clientId
+				== "https://client-metadata.test/oauth-client-metadata.json")
 		#expect(response.scope == "atproto")
 		#expect(response.redirectURIs.isEmpty == false)
-		#expect(response.redirectURIs.first == "https://client-metadata.test/oauth/callback")
+		#expect(
+			response.redirectURIs.first == "https://client-metadata.test/oauth/callback"
+		)
 	}
 
 	@Test

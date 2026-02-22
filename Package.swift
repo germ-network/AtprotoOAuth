@@ -17,7 +17,9 @@ let package = Package(
 		.package(path: "./LocalPackages/ATProtoClient"),
 		.package(path: "./LocalPackages/ATProtoTypes"),
 		.package(path: "./LocalPackages/oauth4swift"),
-		.package(url: "https://github.com/apple/swift-crypto.git", .upToNextMajor(from: "4.2.0")),
+		.package(
+			url: "https://github.com/apple/swift-crypto.git",
+			.upToNextMajor(from: "4.2.0")),
 		//for temp shim only
 		.package(path: "./LocalPackages/OAuthenticator"),
 		.package(
