@@ -6,24 +6,33 @@
 //
 
 import Foundation
+import OAuth
 
-//to be moved into own package
+///Usage pattern: A session starts out authenticated. May degrade to lose auth
+///Parent should recognize it has an expired session and re-auth
 
 public actor ATProtoOAuthSession {
-	//	var login: Login
-	//	var dpopKey: P256.Signing.PrivateKey
+	enum State {
+		case active(SessionState)
+		case expired
+	}
+	var state: State
+
+	private init(state: State) {
+		self.state = state
+	}
 }
 
 extension ATProtoOAuthSession {
-	public struct Archive: Codable, Sendable {
-
+	init(archive: SessionState.Archive) {
+		self.init(state: .active(.init(archive: archive)))
 	}
 
-	init(archive: Archive) {
-		self.init()
-	}
-
-	var archive: Archive {
-		.init()
+	//if expired not worth saving
+	var archive: SessionState.Archive? {
+		guard case .active(let sessionState) = state else {
+			return nil
+		}
+		return sessionState.archive
 	}
 }

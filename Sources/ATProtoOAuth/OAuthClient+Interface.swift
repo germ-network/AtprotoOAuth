@@ -33,7 +33,7 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 
 	public func authorize(
 		identity: AuthIdentity
-	) async throws -> ATProtoOAuthSession.Archive {
+	) async throws -> SessionState.Archive {
 
 		let did: ATProtoDID
 		switch identity {
@@ -92,7 +92,14 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 		)
 		let login = try await authenticator.authenticate()
 
-		throw OAuthClientError.notImplemented
+		return SessionState(
+			accessToken: login.accessToken,
+			refreshToken: login.refreshToken,
+			dPopKey: .init(alg: .e256, keyData: dpopKey.rawRepresentation),
+			scopes: login.scopes,
+			issuingServer: login.issuingServer,
+			additionalParams: login.additionalParams
+		).archive
 	}
 
 	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {

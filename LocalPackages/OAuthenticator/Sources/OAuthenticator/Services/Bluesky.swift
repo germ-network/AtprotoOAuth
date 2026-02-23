@@ -56,7 +56,7 @@ public enum Bluesky {
 		public let token_type: String
 		public let expires_in: Int
 
-		public func login(for issuingServer: String) -> SessionState {
+		public func login(for issuingServer: String) -> SessionStateShim {
 			.init(
 				accessToken: Token(value: access_token, expiresIn: expires_in),
 				refreshToken: refresh_token.map { Token(value: $0) },
@@ -247,7 +247,7 @@ public enum Bluesky {
 	private static func refreshProvider(
 		server: ServerMetadata, validator: @escaping TokenSubscriberValidator
 	) -> TokenHandling.RefreshProvider {
-		{ login, credentials, responseProvider -> SessionState in
+		{ login, credentials, responseProvider -> SessionStateShim in
 			guard let refreshToken = login.refreshToken?.value else {
 				throw AuthenticatorError.refreshNotPossible
 			}

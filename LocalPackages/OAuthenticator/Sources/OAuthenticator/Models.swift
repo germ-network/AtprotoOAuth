@@ -34,8 +34,8 @@ public struct AppCredentials: Codable, Hashable, Sendable {
 }
 
 public struct LoginStorage: Sendable {
-	public typealias RetrieveLogin = @Sendable () async throws -> SessionState?
-	public typealias StoreLogin = @Sendable (SessionState) async throws -> Void
+	public typealias RetrieveLogin = @Sendable () async throws -> SessionStateShim?
+	public typealias StoreLogin = @Sendable (SessionStateShim) async throws -> Void
 	public typealias ClearLogin = @Sendable () async throws -> Void
 
 	public let retrieveLogin: RetrieveLogin
@@ -115,10 +115,10 @@ public struct TokenHandling: Sendable {
 	/// URL: the authenticated URL from the OAuth service
 	/// URLResponseProvider: the authenticator's provider
 	public typealias LoginProvider =
-		@Sendable (LoginProviderParameters) async throws -> SessionState
+		@Sendable (LoginProviderParameters) async throws -> SessionStateShim
 	public typealias RefreshProvider =
-		@Sendable (SessionState, AppCredentials, URLResponseProvider) async throws ->
-		SessionState
+		@Sendable (SessionStateShim, AppCredentials, URLResponseProvider) async throws ->
+		SessionStateShim
 	public typealias ResponseStatusProvider =
 		@Sendable ((Data, URLResponse)) throws -> ResponseStatus
 

@@ -9,6 +9,7 @@ import Testing
 struct APITests {
 	static let clientId = "https://static.germnetwork.com/client-metadata.json"
 	static let redirectUri = URL(string: "com.germnetwork.static:/oauth")!
+	static let genericScope = "atproto transition:generic"
 
 	//move this to the handle resolution library
 	@Test func testHandleResolution() async throws {
@@ -30,6 +31,7 @@ struct APITests {
 		let _ = ATProtoOAuthClient(
 			appCredentials: .init(
 				clientId: APITests.clientId,
+				scopes: [Self.genericScope],
 				callbackURL: APITests.redirectUri
 			),
 			userAuthenticator: Authenticator.failingUserAuthenticator(_:_:),
@@ -39,13 +41,14 @@ struct APITests {
 	}
 }
 
-struct RuntimeAPITests {
+struct ClientAPITests {
 	let oauthClient: ATProtoOAuthClient
 
 	init() async throws {
 		oauthClient = .init(
 			appCredentials: .init(
 				clientId: APITests.clientId,
+				scopes: [APITests.genericScope],
 				callbackURL: APITests.redirectUri
 			),
 			userAuthenticator: Authenticator.failingUserAuthenticator(_:_:),

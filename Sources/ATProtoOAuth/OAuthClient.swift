@@ -1,6 +1,7 @@
 import ATProtoClient
 import ATProtoTypes
 import Foundation
+import OAuth
 import OAuthenticator
 
 public protocol ATProtoOAuthInterface {
@@ -20,7 +21,7 @@ public protocol ATProtoOAuthInterface {
 
 	//MARK: Authentication
 	func authorize(identity: ATProtoOAuthClient.AuthIdentity) async throws
-		-> ATProtoOAuthSession.Archive
+		-> SessionState.Archive
 }
 
 public actor ATProtoOAuthClient {
