@@ -2,7 +2,7 @@
 //  Token.swift
 //  OAuth
 //
-//  Created by Mark @ Germ on 2/22/26.
+//  Created by Mark @ Germ on 2/22/26 from OAuthenticator
 //
 
 import Foundation
@@ -35,27 +35,12 @@ public struct Token: Codable, Hashable, Sendable {
 	}
 }
 
-public enum DpopAlg: Codable, Hashable, Sendable {
-	case e256
-}
-
-//keep this a primitive type and let
-public struct DpopKey: Codable, Hashable, Sendable {
-	let alg: DpopAlg
-	let keyData: Data
-
-	public init(alg: DpopAlg, keyData: Data) {
-		self.alg = alg
-		self.keyData = keyData
-	}
-}
-
 //best way to express fixed key and variable accessToken is as a reference type
 public class SessionState {
 	public var accessToken: Token
 	public var refreshToken: Token?
 
-	let dPopKey: DpopKey?
+	let dPopKey: DPoPKey?
 
 	// User authorized scopes
 	public var scopes: String?
@@ -66,7 +51,7 @@ public class SessionState {
 	public init(
 		accessToken: Token,
 		refreshToken: Token? = nil,
-		dPopKey: DpopKey?,
+		dPopKey: DPoPKey?,
 		scopes: String? = nil,
 		issuingServer: String? = nil,
 		additionalParams: [String: String]? = nil,
@@ -82,7 +67,7 @@ public class SessionState {
 	public convenience init(
 		accessToken: String,
 		validUntilDate: Date? = nil,
-		dPopKey: DpopKey?
+		dPopKey: DPoPKey?
 	) {
 		self.init(
 			accessToken: Token(
@@ -99,7 +84,7 @@ extension SessionState {
 		public let accessToken: Token
 		public let refreshToken: Token?
 
-		let dPopKey: DpopKey?
+		let dPopKey: DPoPKey?
 
 		// User authorized scopes
 		public let scopes: String?

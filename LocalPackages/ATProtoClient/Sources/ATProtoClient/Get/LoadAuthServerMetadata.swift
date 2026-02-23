@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OAuth
 import OAuthenticator
 
 extension ATProtoClient {

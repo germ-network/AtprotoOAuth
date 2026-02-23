@@ -1,4 +1,5 @@
 import Foundation
+import OAuth
 
 #if canImport(FoundationNetworking)
 	import FoundationNetworking

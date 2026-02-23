@@ -86,20 +86,6 @@ public actor Authenticator {
 		case manualOnly
 	}
 
-	struct PARResponse: Codable, Hashable, Sendable {
-		public let requestURI: String
-		public let expiresIn: Int
-
-		enum CodingKeys: String, CodingKey {
-			case requestURI = "request_uri"
-			case expiresIn = "expires_in"
-		}
-
-		var expiry: Date {
-			Date(timeIntervalSinceNow: Double(expiresIn))
-		}
-	}
-
 	public struct Configuration {
 		public let appCredentials: AppCredentials
 
@@ -366,10 +352,9 @@ extension Authenticator {
 
 		let parRequestURI = try await getPARRequestURI()
 
-		let authConfig = TokenHandling.AuthorizationURLParameters(
+		let authConfig = AuthorizationURLParameters(
 			credentials: config.appCredentials,
-			pcke: config.tokenHandling.pkce,
-			parRequestURI: parRequestURI,
+			parRequestURI: parRequestURI!,
 			stateToken: stateToken,
 			responseProvider: { try await self.dpopResponse(for: $0, login: nil) }
 		)
@@ -380,7 +365,7 @@ extension Authenticator {
 
 		let callbackURL = try await userAuthenticator(tokenURL, scheme)
 
-		let params = TokenHandling.LoginProviderParameters(
+		let params = LoginProviderParameters(
 			authorizationURL: tokenURL,
 			credentials: config.appCredentials,
 			redirectURL: callbackURL,
@@ -496,14 +481,16 @@ extension Authenticator {
 		let token = login?.accessToken.value
 		let tokenHash = token.map { pkce.hashFunction($0) }
 
-		return try await self.dpop.response(
-			isolation: self,
-			for: request,
-			using: generator,
-			token: token,
-			tokenHash: tokenHash,
-			issuingServer: login?.issuingServer,
-			provider: urlLoader
-		)
+		throw OAuthError.notImplemented
+
+		//		return try await self.dpop.response(
+		//			isolation: self,
+		//			for: request,
+		//			using: generator,
+		//			token: token,
+		//			tokenHash: tokenHash,
+		//			issuingServer: login?.issuingServer,
+		//			provider: urlLoader
+		//		)
 	}
 }

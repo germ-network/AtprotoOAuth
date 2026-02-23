@@ -8,6 +8,7 @@
 import ATProtoClient
 import ATProtoTypes
 import Foundation
+import OAuth
 import OAuthenticator
 
 protocol ATProtoCacheable: Sendable, Equatable {

@@ -1,5 +1,6 @@
 import ATProtoTypes
 import Foundation
+import OAuth
 import OAuthenticator
 
 //abstract out the protocol so we can sub in a mock one for offline testing

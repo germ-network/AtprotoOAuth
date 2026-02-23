@@ -13,8 +13,6 @@ extension P256.Signing.PrivateKey {
 		-> DPoPSigner.JWTGenerator
 	{
 		{ (parameters: DPoPSigner.JWTParameters) async throws -> String in
-			print(parameters)
-			print("\n")
 
 			let payload: any Encodable = {
 				if let nonce = parameters.nonce,

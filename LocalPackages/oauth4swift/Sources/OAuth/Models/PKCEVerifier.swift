@@ -1,3 +1,11 @@
+//
+//  PKCEVerifier.swift
+//  OAuth
+//
+//  Created by Mark @ Germ on 2/22/26 from OAuthenticator
+//
+
+import Crypto
 import Foundation
 
 public struct PKCEVerifier: Sendable {
@@ -35,27 +43,23 @@ public struct PKCEVerifier: Sendable {
 	}
 }
 
-#if canImport(CryptoKit)
-	import CryptoKit
+extension SHA256.Digest {
+	var data: Data {
+		self.withUnsafeBytes { buffer in
+			Data(bytes: buffer.baseAddress!, count: buffer.count)
+		}
+	}
+}
 
-	extension SHA256.Digest {
-		var data: Data {
-			self.withUnsafeBytes { buffer in
-				Data(bytes: buffer.baseAddress!, count: buffer.count)
+extension PKCEVerifier {
+	public init() {
+		self.init(
+			hash: "S256",
+			hasher: { value in
+				let digest = SHA256.hash(data: Data(value.utf8))
+
+				return digest.data.base64URLEncodedString()
 			}
-		}
+		)
 	}
-
-	extension PKCEVerifier {
-		public init() {
-			self.init(
-				hash: "S256",
-				hasher: { value in
-					let digest = SHA256.hash(data: Data(value.utf8))
-
-					return digest.data.base64EncodedURLEncodedString()
-				}
-			)
-		}
-	}
-#endif
+}

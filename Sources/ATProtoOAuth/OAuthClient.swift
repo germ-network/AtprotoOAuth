@@ -3,6 +3,7 @@ import ATProtoTypes
 import Foundation
 import OAuth
 import OAuthenticator
+import os
 
 public protocol ATProtoOAuthInterface {
 	//MARK: Resolution
@@ -25,6 +26,10 @@ public protocol ATProtoOAuthInterface {
 }
 
 public actor ATProtoOAuthClient {
+	static let logger = Logger(
+		subsystem: "com.germnetwork",
+		category: "BlueskyOAuthenticator")
+
 	public let appCredentials: AppCredentials
 	public let userAuthenticator: Authenticator.UserAuthenticator
 	public let responseProvider: URLResponseProvider

@@ -1,3 +1,10 @@
+//
+//  MetadataError.swift
+//  OAuth
+//
+//  Created by Mark @ Germ on 2/23/26 from OAuthenticator
+//
+
 import Foundation
 
 #if canImport(FoundationNetworking)

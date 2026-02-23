@@ -11,6 +11,7 @@ import ATProtoTypes
 import AuthenticationServices
 import Foundation
 import Microcosm
+import OAuth
 import OAuthenticator
 import SwiftUI
 

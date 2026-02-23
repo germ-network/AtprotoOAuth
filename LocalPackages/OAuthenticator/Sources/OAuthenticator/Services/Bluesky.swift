@@ -125,17 +125,17 @@ public enum Bluesky {
 	#endif
 
 	private static func authorizionURLProvider(server: ServerMetadata)
-		-> TokenHandling.AuthorizationURLProvider
+		-> AuthorizationURLProvider
 	{
 		return { params in
 			var components = URLComponents(string: server.authorizationEndpoint)
 
-			guard let parRequestURI = params.parRequestURI else {
-				throw AuthenticatorError.parRequestURIMissing
-			}
+			//			guard let parRequestURI = params.parRequestURI else {
+			//				throw AuthenticatorError.parRequestURIMissing
+			//			}
 
 			components?.queryItems = [
-				URLQueryItem(name: "request_uri", value: parRequestURI),
+				URLQueryItem(name: "request_uri", value: params.parRequestURI),
 				URLQueryItem(name: "client_id", value: params.credentials.clientId),
 			]
 

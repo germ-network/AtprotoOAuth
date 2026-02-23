@@ -141,38 +141,119 @@ extension DPoPSigner {
 		return newValue != nil
 	}
 
-	public func response(
-		isolation: isolated (any Actor),
+	//	public func response(
+	//		isolation: isolated (any Actor),
+	//		for request: URLRequest,
+	//		using jwtGenerator: JWTGenerator,
+	//		token: String?,
+	//		tokenHash: String?,
+	//		issuingServer: String?,
+	//		provider: URLResponseProvider
+	//	) async throws -> (Data, URLResponse) {
+	//		var request = request
+	//
+	//		try await authenticateRequest(
+	//			&request, isolation: isolation, using: jwtGenerator, token: token,
+	//			tokenHash: tokenHash, issuer: issuingServer)
+	//
+	//		let (data, response) = try await provider(request)
+	//
+	//		let existingNonce = nonce
+	//
+	//		self.nonce = try nonceDecoder(data, response)
+	//
+	//		if nonce == existingNonce {
+	//			return (data, response)
+	//		}
+	//
+	//		print("DPoP nonce updated", existingNonce ?? "", nonce ?? "")
+	//
+	//		// repeat once, using newly-established nonce
+	//		try await authenticateRequest(
+	//			&request, isolation: isolation, using: jwtGenerator, token: token,
+	//			tokenHash: tokenHash, issuer: issuingServer)
+	//
+	//		return try await provider(request)
+	//	}
+
+	public static func response(
 		for request: URLRequest,
-		using jwtGenerator: JWTGenerator,
 		token: String?,
 		tokenHash: String?,
 		issuingServer: String?,
-		provider: URLResponseProvider
+		nonce: String?,
+		provider: URLResponseProvider,
+		dPoPKey: DPoPKey,
 	) async throws -> (Data, URLResponse) {
 		var request = request
 
-		try await authenticateRequest(
-			&request, isolation: isolation, using: jwtGenerator, token: token,
-			tokenHash: tokenHash, issuer: issuingServer)
+		guard let method = request.httpMethod else {
+			throw OAuthError.missingHTTPMethod
+		}
+		guard let url = request.url else {
+			throw OAuthError.missingUrl
+		}
+
+		let jwt = try await generateJWT(
+			method: method,
+			requestUrl: url,
+			nonce: nonce,
+			tokenHash: tokenHash,
+			issuer: issuingServer,
+			dPoPKey: dPoPKey
+		)
+
+		request.setValue(jwt, forHTTPHeaderField: "DPoP")
+
+		if let token {
+			request.setValue("DPoP \(token)", forHTTPHeaderField: "Authorization")
+		}
 
 		let (data, response) = try await provider(request)
 
-		let existingNonce = nonce
+		let receivedNonce = try Self.nonceHeaderDecoder(
+			data: data,
+			response: response
+		)
 
-		self.nonce = try nonceDecoder(data, response)
-
-		if nonce == existingNonce {
+		if receivedNonce == nonce {
 			return (data, response)
 		}
 
-		print("DPoP nonce updated", existingNonce ?? "", nonce ?? "")
+		print("DPoP nonce updated", receivedNonce ?? "", nonce ?? "")
 
 		// repeat once, using newly-established nonce
-		try await authenticateRequest(
-			&request, isolation: isolation, using: jwtGenerator, token: token,
-			tokenHash: tokenHash, issuer: issuingServer)
+		let secondJwt = try await generateJWT(
+			method: method,
+			requestUrl: url,
+			nonce: receivedNonce,
+			tokenHash: tokenHash,
+			issuer: issuingServer,
+			dPoPKey: dPoPKey
+		)
+
+		request.setValue(secondJwt, forHTTPHeaderField: "DPoP")
 
 		return try await provider(request)
+	}
+
+	public static func generateJWT(
+		method: String,
+		requestUrl: URL,
+		nonce: String?,
+		tokenHash: String?,
+		issuer: String?,
+		dPoPKey: DPoPKey,
+	) throws -> String {
+		try dPoPKey.sign(
+			.init(
+				keyType: "dpop+jwt",
+				httpMethod: method,
+				requestEndpoint: requestUrl.absoluteString,
+				nonce: nonce,
+				tokenHash: tokenHash,
+				issuingServer: issuer
+			)
+		)
 	}
 }
