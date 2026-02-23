@@ -27,12 +27,14 @@ extension OAuthSession {
 	) async throws -> SessionState.Archive {
 		let stateToken = UUID().uuidString
 		let dpopKey = DPoPKey.generateP256()
+		let pkceVerifier = PKCEVerifier()
 
 		let parRequestURI = try await getPARRequestURI(
 			appCredentials: appCredentials,
 			parConfig: parConfig,
 			stateToken: stateToken,
-			dPoPKey: dpopKey
+			dPoPKey: dpopKey,
+			pkceVerifier: pkceVerifier
 		)
 
 		let authConfig = AuthorizationURLParameters(
@@ -40,7 +42,12 @@ extension OAuthSession {
 			parRequestURI: parRequestURI,
 			stateToken: stateToken,
 			responseProvider: {
-				try await dpopResponse(for: $0, login: nil, dPoPKey: dpopKey)
+				try await dpopResponse(
+					for: $0,
+					login: nil,
+					dPoPKey: dpopKey,
+					pkceVerifier: pkceVerifier
+				)
 			}
 		)
 
@@ -61,11 +68,12 @@ extension OAuthSession {
 				try await Self.dpopResponse(
 					for: $0,
 					login: nil,
-					dPoPKey: dpopKey
+					dPoPKey: dpopKey,
+					pkceVerifier: pkceVerifier
 				)
 			},
 			stateToken: stateToken,
-			pcke: PKCEVerifier()
+			pkceVerifier: pkceVerifier
 		)
 
 		return try await loginProvider(params, dpopKey).archive
@@ -75,14 +83,16 @@ extension OAuthSession {
 		appCredentials: AppCredentials,
 		parConfig: PARConfiguration,
 		stateToken: String,
-		dPoPKey: DPoPKey
+		dPoPKey: DPoPKey,
+		pkceVerifier: PKCEVerifier
 	) async throws -> String {
 		try await parRequest(
 			appCredentials: appCredentials,
 			url: parConfig.url,
 			params: parConfig.parameters,
 			stateToken: stateToken,
-			dPoPKey: dPoPKey
+			dPoPKey: dPoPKey,
+			pkceVerifier: pkceVerifier
 		).requestURI
 	}
 
@@ -91,10 +101,9 @@ extension OAuthSession {
 		url: URL,
 		params: [String: String],
 		stateToken: String,
-		dPoPKey: DPoPKey
+		dPoPKey: DPoPKey,
+		pkceVerifier: PKCEVerifier
 	) async throws -> PARResponse {
-		let pkceVerifier = PKCEVerifier()
-
 		let challenge = pkceVerifier.challenge
 		let scopes = appCredentials.scopes.joined(separator: " ")
 		let callbackURI = appCredentials.callbackURL
@@ -127,9 +136,9 @@ extension OAuthSession {
 		let (parData, response) = try await dpopResponse(
 			for: request,
 			login: nil,
-			dPoPKey: dPoPKey
+			dPoPKey: dPoPKey,
+			pkceVerifier: pkceVerifier
 		)
-		print(String(data: parData, encoding: .utf8))
 
 		return try JSONDecoder().decode(PARResponse.self, from: parData)
 	}
@@ -137,11 +146,12 @@ extension OAuthSession {
 	private static func dpopResponse(
 		for request: URLRequest,
 		login: SessionStateShim?,
-		dPoPKey: DPoPKey
+		dPoPKey: DPoPKey,
+		pkceVerifier: PKCEVerifier
 	) async throws -> (Data, URLResponse) {
 
 		let token = login?.accessToken.value
-		let tokenHash = token.map { PKCEVerifier().hashFunction($0) }
+		let tokenHash = token.map { pkceVerifier.hashFunction($0) }
 
 		return
 			try await DPoPSigner

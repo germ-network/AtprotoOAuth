@@ -371,7 +371,7 @@ extension Authenticator {
 			redirectURL: callbackURL,
 			responseProvider: { try await self.dpopResponse(for: $0, login: nil) },
 			stateToken: stateToken,
-			pcke: config.tokenHandling.pkce
+			pkceVerifier: config.tokenHandling.pkce
 		)
 
 		let login = try await config.tokenHandling.loginProvider(params)

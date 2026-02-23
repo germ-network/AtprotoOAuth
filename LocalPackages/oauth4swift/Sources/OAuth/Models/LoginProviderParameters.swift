@@ -13,7 +13,7 @@ public struct LoginProviderParameters: Sendable {
 	public let redirectURL: URL
 	public let responseProvider: URLResponseProvider
 	public let stateToken: String
-	public let pcke: PKCEVerifier?
+	public let pkceVerifier: PKCEVerifier?
 
 	public init(
 		authorizationURL: URL,
@@ -21,14 +21,14 @@ public struct LoginProviderParameters: Sendable {
 		redirectURL: URL,
 		responseProvider: @escaping URLResponseProvider,
 		stateToken: String,
-		pcke: PKCEVerifier?
+		pkceVerifier: PKCEVerifier?
 	) {
 		self.authorizationURL = authorizationURL
 		self.credentials = credentials
 		self.redirectURL = redirectURL
 		self.responseProvider = responseProvider
 		self.stateToken = stateToken
-		self.pcke = pcke
+		self.pkceVerifier = pkceVerifier
 	}
 }
 

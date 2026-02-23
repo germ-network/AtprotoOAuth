@@ -187,7 +187,7 @@ public enum Bluesky {
 				throw AuthenticatorError.missingTokenURL
 			}
 
-			guard let verifier = params.pcke?.verifier else {
+			guard let verifier = params.pkceVerifier?.verifier else {
 				throw AuthenticatorError.pkceRequired
 			}
 
