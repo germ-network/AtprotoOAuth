@@ -1,17 +1,14 @@
 //
 //  GetRecordOutput.swift
-//  ATProtoClient
+//  ATProtoTypes
 //
+//  Created by Mark @ Germ on 2/24/26.
 //  Created by Christopher Jr Riley on 2024-05-20.
 //
 
 import Foundation
 
-#if canImport(FoundationNetworking)
-	import FoundationNetworking
-#endif
-
-extension ComAtprotoLexicon.Repository {
+extension Lexicon.Com.Atproto.Repo {
 
 	/// An output model for a record.
 	///
@@ -32,7 +29,7 @@ extension ComAtprotoLexicon.Repository {
 	}
 
 	public struct GetRecordError: Sendable, Codable {
-		let error: String
+		public let error: String
 		let message: String
 	}
 }

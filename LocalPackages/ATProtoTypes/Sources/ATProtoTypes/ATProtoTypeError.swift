@@ -8,6 +8,7 @@
 import Foundation
 
 enum ATProtoTypeError: Error {
+	case invalidRecordType
 	case invalidPrefix
 	case invalidBase32Data
 }
@@ -15,6 +16,7 @@ enum ATProtoTypeError: Error {
 extension ATProtoTypeError: LocalizedError {
 	var errorDescription: String? {
 		switch self {
+		case .invalidRecordType: "Invalid Record type"
 		case .invalidPrefix: "Invalid prefix"
 		case .invalidBase32Data: "Invalid Base32 data"
 		}

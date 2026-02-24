@@ -10,6 +10,3 @@ public enum AppBskyLexicon {}
 
 /// A group of lexicons within the `com.atproto` namespace.
 public enum ComAtprotoLexicon {}
-
-/// A group of lexicons within the `com.germnetwork` namespace.
-public struct GermLexicon {}

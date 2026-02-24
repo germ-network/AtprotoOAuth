@@ -24,7 +24,7 @@ public actor ATProtoOAuthSession {
 }
 
 extension ATProtoOAuthSession {
-	init(archive: SessionState.Archive) {
+	public init(archive: SessionState.Archive) {
 		self.init(state: .active(.init(archive: archive)))
 	}
 

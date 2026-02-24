@@ -12,13 +12,12 @@ extension ATProtoClient {
 	public func getGermMessagingDelegate(
 		did: ATProtoDID,
 		pdsURL: URL
-	) async throws -> GermLexicon.MessagingDelegateRecord? {
-		let response = try await getRepositoryRecord(
+	) async throws -> Lexicon.Com.GermNetwork.Declaration? {
+		let response = try await getRepository(
+			recordType: Lexicon.Com.GermNetwork.Declaration.self,
 			repo: .did(did),
-			collection: GermLexicon.MessagingDelegateRecord.type,
 			recordKey: "self",
 			pdsUrl: pdsURL,
-			resultType: GermLexicon.MessagingDelegateRecord.self
 		)
 
 		return response?.value

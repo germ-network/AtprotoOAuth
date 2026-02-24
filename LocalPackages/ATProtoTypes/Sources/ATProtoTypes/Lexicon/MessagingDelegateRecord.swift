@@ -7,14 +7,15 @@
 
 import Foundation
 
-extension GermLexicon {
-
-	public struct MessagingDelegateRecord: Sendable, Codable {
+extension Lexicon.Com.GermNetwork {
+	public struct Declaration: Sendable, Codable {
 		/// The identifier of the lexicon.
 		///
 		/// - Warning: The value must not change.
-		public static let type: String = "com.germnetwork.declaration"
-		private(set) var type: String = Self.type
+		//is "id" in the lexicon but avoid conflict with Swift id
+		public static let nsid: NSID = "com.germnetwork.declaration"
+		//for encoding
+		private(set) var id: NSID = Self.nsid
 
 		/// Required, Opaque.
 		/// Expected to parse to a SemVer. While the lexicon is fixed, the version applies to the format of opaque content
@@ -37,7 +38,7 @@ extension GermLexicon {
 		public let continuityProofs: [Data]?
 
 		enum CodingKeys: String, CodingKey {
-			case type = "$type"
+			case id = "$type"
 			case version
 			case currentKey
 			case keyPackage
@@ -48,9 +49,11 @@ extension GermLexicon {
 		public init(from decoder: any Decoder) throws {
 			let container = try decoder.container(keyedBy: CodingKeys.self)
 
-			self.type = try container.decode(String.self, forKey: CodingKeys.type)
-			guard self.type == Self.type else {
-				throw ATProtoClientError.unexpectedRecordType
+			self.id =
+				try container
+				.decode(String.self, forKey: CodingKeys.id)
+			guard self.id == Self.nsid else {
+				throw ATProtoTypeError.invalidRecordType
 			}
 
 			self.version = try container.decode(String.self, forKey: CodingKeys.version)
@@ -108,6 +111,8 @@ extension GermLexicon {
 		case none
 	}
 }
+
+extension Lexicon.Com.GermNetwork.Declaration: AtprotoRecord {}
 
 public struct LexiconBytes: Codable, Equatable, Hashable, Sendable {
 	public let bytes: Data

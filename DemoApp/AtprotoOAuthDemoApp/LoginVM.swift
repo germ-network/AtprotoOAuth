@@ -30,6 +30,11 @@ import SwiftUI
 		)
 	)
 
+	enum State {
+		case collectHandle
+		case validating(String)
+		case loggedIn(OAuthSession)
+	}
 	var state: State = .collectHandle
 	struct LogEntry: Identifiable {
 		let id: UUID = .init()
@@ -65,6 +70,12 @@ import SwiftUI
 				let sessionArchive =
 					try await oauthClient
 					.authorize(identity: .did(resolvedDid))
+
+				let session = ATProtoOAuthSession(archive: sessionArchive)
+				state = .loggedIn(session)
+
+				//make an auth request
+
 			} catch {
 				logs.append(.init(body: "Error: \(error)"))
 			}
@@ -84,13 +95,5 @@ import SwiftUI
 				handle: handle
 			)
 		}
-	}
-}
-
-extension LoginVM {
-	enum State {
-		case collectHandle
-		case validating(String)
-
 	}
 }

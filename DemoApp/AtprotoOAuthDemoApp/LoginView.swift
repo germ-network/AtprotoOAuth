@@ -18,6 +18,9 @@ struct LoginView: View {
 			case .validating(let handle):
 				Text("Validating \(handle)")
 				Button("reset", action: viewModel.reset)
+			case .loggedIn(_):
+				Text("Successfully Logged In")
+				Button("reset", action: viewModel.reset)
 			}
 
 			VStack {

@@ -28,17 +28,16 @@ extension ATProtoClient {
 	///
 	/// - Throws: An ``ATProtoError``-conforming error type, depending on the issue. Go to
 	/// ``ATAPIError`` and ``ATRequestPrepareError`` for more details.
-	func getRepositoryRecord<Result>(
+	func getRepository<Result: AtprotoRecord>(
+		recordType: Result.Type,
 		repo: AtIdentifier,
-		collection: NSID,
 		recordKey: RecordKey,
 		pdsUrl: URL,
 		recordCID: CID? = nil,
-		resultType: Result.Type
-	) async throws -> ComAtprotoLexicon.Repository.GetRecordOutput<Result>? {
+	) async throws -> Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>? {
 		var queryItems: [URLQueryItem] = [
 			.init(name: "repo", value: repo.wireFormat),
-			.init(name: "collection", value: collection),
+			.init(name: "collection", value: Result.nsid),
 			.init(name: "rkey", value: recordKey),
 		]
 
@@ -69,7 +68,7 @@ extension ATProtoClient {
 		else {
 			if httpResponse.statusCode == 400 {
 				let errorResult = try JSONDecoder().decode(
-					ComAtprotoLexicon.Repository.GetRecordError.self,
+					Lexicon.Com.Atproto.Repo.GetRecordError.self,
 					from: result
 				)
 				if errorResult.error == "RecordNotFound" {
@@ -83,7 +82,7 @@ extension ATProtoClient {
 		}
 		return try JSONDecoder()
 			.decode(
-				ComAtprotoLexicon.Repository.GetRecordOutput.self,
+				Lexicon.Com.Atproto.Repo.GetRecordOutput.self,
 				from: result
 			)
 	}
