@@ -10,8 +10,13 @@ import SwiftUI
 
 struct ContentView: View {
 	var body: some View {
-		VStack {
-			LoginView()
+		TabView {
+			Tab("Authenticated", systemImage: "person") {
+				LoginView()
+			}
+			Tab("Unauthenticated", systemImage: "smartphone") {
+				UnauthenticatedView()
+			}
 		}
 		.padding()
 	}

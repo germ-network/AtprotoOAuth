@@ -46,7 +46,7 @@ import SwiftUI
 		state = .validating(handle)
 		Task {
 			do {
-				let resolvedDid = try await fallbackResolve(handle: handle)
+				let resolvedDid = try await Self.fallbackResolve(handle: handle)
 
 				logs.append(.init(body: "Resolved DID: \(resolvedDid.fullId)"))
 
@@ -87,7 +87,7 @@ import SwiftUI
 		logs = []
 	}
 
-	func fallbackResolve(handle: String) async throws -> ATProtoDID {
+	static func fallbackResolve(handle: String) async throws -> ATProtoDID {
 		do {
 			return try await Slingshot.resolve(handle: handle)
 		} catch {
