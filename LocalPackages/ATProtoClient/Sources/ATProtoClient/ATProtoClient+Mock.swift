@@ -42,6 +42,16 @@ public struct MockATProtoClient: ATProtoClientInterface {
 				""".utf8Data
 		)
 	}
+
+	public func getRepository<Result: AtprotoRecord>(
+		recordType: Result.Type,
+		repo: AtIdentifier,
+		recordKey: RecordKey,
+		pdsUrl: URL,
+		recordCID: CID?
+	) async throws -> Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>? {
+		.mock(cid: recordCID)
+	}
 }
 
 enum MockATProtoClientError: Error {

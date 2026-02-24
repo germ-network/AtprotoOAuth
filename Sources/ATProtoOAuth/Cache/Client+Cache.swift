@@ -13,24 +13,8 @@ import OAuthenticator
 
 extension ATProtoOAuthClient {
 	func resolvePdsUrl(did: ATProtoDID) async throws -> URL {
-		let document = try await resolveDidDocument(did: did)
-		return try document.pdsUrl
-	}
-
-	//has to be actor isolated method
-	func resolveDidDocument(did: ATProtoDID) async throws -> DIDDocument {
-		let cache: DiDCacheEntry
-		if let existing = didCache[did] {
-			cache = existing
-		} else {
-			cache = .init()
-			didCache[did] = cache
-		}
-		return try await cache.didDocument.fetch(
-			input: did,
-			atprotoClient: atprotoClient,
-			on: self
-		)
+		try await atprotoClient.plcDirectoryQuery(did)
+			.pdsUrl
 	}
 
 	func getProtectedResourceMetadata(host: String) async throws -> ProtectedResourceMetadata {
@@ -65,9 +49,6 @@ extension ATProtoOAuthClient {
 }
 
 extension ATProtoOAuthClient {
-	class DiDCacheEntry {
-		var didDocument: CacheEntry<DIDDocument> = .init(state: .unknown)
-	}
 	class CacheEntry<V: ATProtoCacheable> {
 		var state: CacheState<V>
 

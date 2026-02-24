@@ -112,7 +112,17 @@ extension Lexicon.Com.GermNetwork {
 	}
 }
 
-extension Lexicon.Com.GermNetwork.Declaration: AtprotoRecord {}
+extension Lexicon.Com.GermNetwork.Declaration: AtprotoRecord {
+	public static func mock() -> Lexicon.Com.GermNetwork.Declaration {
+		.init(
+			version: "1.1.0",
+			currentKey: Data("mock".utf8),
+			keyPackage: Data("mock".utf8),
+			messageMe: nil,
+			continuityProofs: nil
+		)
+	}
+}
 
 public struct LexiconBytes: Codable, Equatable, Hashable, Sendable {
 	public let bytes: Data

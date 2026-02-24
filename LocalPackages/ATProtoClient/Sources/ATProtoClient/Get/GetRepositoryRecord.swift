@@ -28,7 +28,7 @@ extension ATProtoClient {
 	///
 	/// - Throws: An ``ATProtoError``-conforming error type, depending on the issue. Go to
 	/// ``ATAPIError`` and ``ATRequestPrepareError`` for more details.
-	func getRepository<Result: AtprotoRecord>(
+	public func getRepository<Result: AtprotoRecord>(
 		recordType: Result.Type,
 		repo: AtIdentifier,
 		recordKey: RecordKey,

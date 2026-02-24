@@ -22,18 +22,6 @@ protocol ATProtoCacheable: Sendable, Equatable {
 	) async throws -> Self
 }
 
-extension DIDDocument: ATProtoCacheable {
-	typealias Inputs = ATProtoDID
-	static let defaultTTL: TimeInterval = 60 * 10
-
-	static func fetch(
-		inputs: ATProtoDID,
-		atprotoClient: any ATProtoClientInterface
-	) async throws -> DIDDocument {
-		try await atprotoClient.plcDirectoryQuery(inputs)
-	}
-}
-
 extension ProtectedResourceMetadata: ATProtoCacheable {
 	typealias Inputs = String  //host
 	static let defaultTTL: TimeInterval = 60 * 10

@@ -41,8 +41,6 @@ public actor ATProtoOAuthClient {
 
 	//not going to implement, defer to the session
 	//sessionStorage
-
-	var didCache: [ATProtoDID: DiDCacheEntry] = [:]
 	var protectedResourceCache: [String: CacheEntry<ProtectedResourceMetadata>] = [:]
 	var authServerCache: [String: CacheEntry<ServerMetadata>] = [:]
 

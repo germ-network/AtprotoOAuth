@@ -14,6 +14,10 @@ public struct CID {
 	//todo: further parse components of the CID data such as the hash
 	let bytes: Data
 
+	private init(bytes: Data) {
+		self.bytes = bytes
+	}
+
 	public init(string: String) throws {
 		guard let prefix = string.first, prefix == "b" else {
 			throw ATProtoTypeError.invalidPrefix
@@ -34,5 +38,12 @@ public struct CID {
 
 	public var string: String {
 		"b" + bytes.base32EncodedStringNoPadding
+	}
+}
+
+extension CID {
+	static func mock() -> Self {
+		//TODO, mock the internal mechanics of CID
+		.init(bytes: Data("mock".utf8))
 	}
 }

@@ -8,6 +8,7 @@
 import Foundation
 
 ///define the interface needed to get/put a record
-public protocol AtprotoRecord {
+public protocol AtprotoRecord: Sendable, Codable {
 	static var nsid: String { get }
+	static func mock() -> Self
 }

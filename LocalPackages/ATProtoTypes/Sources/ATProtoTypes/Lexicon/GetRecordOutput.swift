@@ -15,8 +15,7 @@ extension Lexicon.Com.Atproto.Repo {
 	/// - SeeAlso: This is based on the [`com.atproto.repo.getRecord`][github] lexicon.
 	///
 	/// [github]: https://github.com/bluesky-social/atproto/blob/main/lexicons/com/atproto/repo/getRecord.json
-	public struct GetRecordOutput<Result>: Sendable, Codable
-	where Result: Codable, Result: Sendable {
+	public struct GetRecordOutput<Result: AtprotoRecord>: Sendable, Codable {
 
 		/// The URI of the record.
 		public let uri: String
@@ -31,5 +30,15 @@ extension Lexicon.Com.Atproto.Repo {
 	public struct GetRecordError: Sendable, Codable {
 		public let error: String
 		let message: String
+	}
+}
+
+extension Lexicon.Com.Atproto.Repo.GetRecordOutput {
+	public static func mock(cid: CID?) -> Self {
+		.init(
+			uri: UUID().uuidString,
+			cid: (cid ?? .mock()).string,
+			value: .mock()
+		)
 	}
 }

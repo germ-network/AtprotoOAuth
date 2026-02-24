@@ -14,6 +14,14 @@ public protocol ATProtoClientInterface: Sendable {
 	func loadAuthServerMetadata(
 		host: String
 	) async throws -> ServerMetadata
+
+	func getRepository<Result: AtprotoRecord>(
+		recordType: Result.Type,
+		repo: AtIdentifier,
+		recordKey: RecordKey,
+		pdsUrl: URL,
+		recordCID: CID?,
+	) async throws -> Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>?
 }
 
 public struct ATProtoClient {

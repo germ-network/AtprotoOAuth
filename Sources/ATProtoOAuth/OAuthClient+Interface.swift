@@ -54,7 +54,7 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 		}
 
 		//resolve pds and pds metadata
-		let didDoc = try await resolveDidDocument(did: did)
+		let didDoc = try await atprotoClient.plcDirectoryQuery(did)
 		if case .handle(let handle) = identity {
 			if handle != didDoc.handle {
 				throw OAuthClientError.handleMismatch
