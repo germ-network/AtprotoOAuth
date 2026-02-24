@@ -50,16 +50,10 @@ import SwiftUI
 
 				logs.append(.init(body: "Resolved DID: \(resolvedDid.fullId)"))
 
-				let messageDelegate =
-					try await oauthClient
-					.fetchFromPDS(did: resolvedDid) {
-						pdsUrl, responseProvider in
-						try await ATProtoClient(
-							responseProvider: responseProvider
-						)
-						.getGermMessagingDelegate(
-							did: resolvedDid, pdsURL: pdsUrl)
-					}
+				let messageDelegate = try await ATProtoClient(
+					responseProvider: URLSession.defaultProvider
+				)
+				.getGermMessagingDelegate(did: resolvedDid)
 
 				if messageDelegate != nil {
 					logs.append(.init(body: "Found a message delegate"))
