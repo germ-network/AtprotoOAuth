@@ -11,7 +11,7 @@ public struct LoginProviderParameters: Sendable {
 	public let authorizationURL: URL
 	public let credentials: AppCredentials
 	public let redirectURL: URL
-	public let responseProvider: URLResponseProvider
+	public let responseProvider: HTTPURLResponseProvider
 	public let stateToken: String
 	public let pkceVerifier: PKCEVerifier?
 
@@ -19,7 +19,7 @@ public struct LoginProviderParameters: Sendable {
 		authorizationURL: URL,
 		credentials: AppCredentials,
 		redirectURL: URL,
-		responseProvider: @escaping URLResponseProvider,
+		responseProvider: @escaping HTTPURLResponseProvider,
 		stateToken: String,
 		pkceVerifier: PKCEVerifier?
 	) {

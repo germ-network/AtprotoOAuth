@@ -12,7 +12,6 @@ import AuthenticationServices
 import Foundation
 import Microcosm
 import OAuth
-import OAuthenticator
 import SwiftUI
 
 @Observable final class LoginVM {
@@ -23,7 +22,6 @@ import SwiftUI
 			callbackURL: URL(string: "com.germnetwork.static:/oauth")!
 		),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
-		authenticationStatusHandler: nil,
 		responseProvider: URLSession.defaultProvider,
 		atprotoClient: ATProtoClient(
 			responseProvider: URLSession.defaultProvider
@@ -65,7 +63,15 @@ import SwiftUI
 					try await oauthClient
 					.authorize(identity: .did(resolvedDid))
 
-				let session = ATProtoOAuthSession(archive: sessionArchive)
+				let session = try ATProtoOAuthSession(
+					archive: .init(
+						did: resolvedDid.fullId,
+						session: sessionArchive,
+					),
+					atprotoClient: ATProtoClient(
+						responseProvider: URLSession.defaultProvider
+					)
+				)
 				state = .loggedIn(session)
 
 				//make an auth request

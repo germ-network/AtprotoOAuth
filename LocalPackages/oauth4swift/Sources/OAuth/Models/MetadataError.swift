@@ -53,7 +53,7 @@ public struct ServerMetadata: Codable, Hashable, Sendable {
 		case clientIdMetadataDocumentSupported = "client_id_metadata_document_supported"
 	}
 
-	public static func load(for host: String, provider: URLResponseProvider) async throws
+	public static func load(for host: String, provider: HTTPURLResponseProvider) async throws
 		-> ServerMetadata
 	{
 		var components = URLComponents()
@@ -89,7 +89,8 @@ public struct ClientMetadata: Hashable, Codable, Sendable {
 		case dpopBoundAccessTokens = "dpop_bound_access_tokens"
 	}
 
-	public static func load(for client_id: String, provider: URLResponseProvider) async throws
+	public static func load(for client_id: String, provider: HTTPURLResponseProvider)
+		async throws
 		-> ClientMetadata
 	{
 		guard let url = URL(string: client_id) else {
@@ -154,7 +155,7 @@ public struct ProtectedResourceMetadata: Codable, Hashable, Sendable {
 		case signedMetadata = "signed_metadata"
 	}
 
-	public static func load(for host: String, provider: URLResponseProvider) async throws
+	public static func load(for host: String, provider: HTTPURLResponseProvider) async throws
 		-> ProtectedResourceMetadata
 	{
 		var components = URLComponents()

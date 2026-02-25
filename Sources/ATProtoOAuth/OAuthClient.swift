@@ -2,7 +2,6 @@ import ATProtoClient
 import ATProtoTypes
 import Foundation
 import OAuth
-import OAuthenticator
 import os
 
 public protocol ATProtoOAuthInterface {
@@ -12,7 +11,7 @@ public protocol ATProtoOAuthInterface {
 	typealias UnauthPDSRequest<Result: Sendable> =
 		@Sendable (
 			URL,
-			@escaping URLResponseProvider
+			@escaping HTTPURLResponseProvider
 		) async throws -> Result
 	//MARK: Unauthenticated Pass-through
 	func fetchFromPDS<Result: Sendable>(
@@ -31,8 +30,9 @@ public actor ATProtoOAuthClient {
 		category: "BlueskyOAuthenticator")
 
 	public let appCredentials: AppCredentials
-	public let userAuthenticator: Authenticator.UserAuthenticator
-	public let responseProvider: URLResponseProvider
+	public typealias UserAuthenticator = @Sendable (URL, String) async throws -> URL
+	public let userAuthenticator: UserAuthenticator
+	public let responseProvider: HTTPURLResponseProvider
 	public let atprotoClient: ATProtoClientInterface
 
 	//didResolver
@@ -46,9 +46,8 @@ public actor ATProtoOAuthClient {
 
 	public init(
 		appCredentials: AppCredentials,
-		userAuthenticator: @escaping Authenticator.UserAuthenticator,
-		authenticationStatusHandler: Authenticator.AuthenticationStatusHandler? = nil,
-		responseProvider: @escaping URLResponseProvider,
+		userAuthenticator: @escaping UserAuthenticator,
+		responseProvider: @escaping HTTPURLResponseProvider,
 		atprotoClient: ATProtoClientInterface,
 	) {
 		self.appCredentials = appCredentials

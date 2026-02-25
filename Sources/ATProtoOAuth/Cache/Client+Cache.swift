@@ -9,7 +9,6 @@ import ATProtoClient
 import ATProtoTypes
 import Foundation
 import OAuth
-import OAuthenticator
 
 extension ATProtoOAuthClient {
 	func resolvePdsUrl(did: ATProtoDID) async throws -> URL {

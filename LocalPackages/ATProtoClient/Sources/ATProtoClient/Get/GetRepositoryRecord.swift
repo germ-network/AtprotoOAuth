@@ -139,7 +139,7 @@ extension ATProtoClient {
 }
 
 //from Dave Delong
-struct HTTPMethod: Hashable, Sendable {
+public struct HTTPMethod: Hashable, Sendable {
 	public static let get = HTTPMethod(rawValue: "GET")
 	public static let post = HTTPMethod(rawValue: "POST")
 	public static let put = HTTPMethod(rawValue: "PUT")

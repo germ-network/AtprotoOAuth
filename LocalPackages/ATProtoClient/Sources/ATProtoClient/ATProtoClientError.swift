@@ -13,6 +13,7 @@ enum ATProtoClientError: Error {
 	case failedToDecodeRecord
 	case improperServiceUrl
 	case couldntConstructUrl
+	case nonHTTPResponse
 	case requestFailed(responseCode: Int?)
 }
 
@@ -24,6 +25,7 @@ extension ATProtoClientError: LocalizedError {
 		case .failedToDecodeRecord: "Failed to decode record"
 		case .improperServiceUrl: "Improper service URL"
 		case .couldntConstructUrl: "Couldn't construct URL"
+		case .nonHTTPResponse: "Request failed with non-HTTP response"
 		case .requestFailed(let responseCode):
 			if let responseCode {
 				"Request failed with response code: \(responseCode)"

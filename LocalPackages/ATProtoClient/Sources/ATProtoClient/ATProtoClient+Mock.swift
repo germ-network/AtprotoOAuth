@@ -8,7 +8,6 @@
 import ATProtoTypes
 import Foundation
 import OAuth
-import OAuthenticator
 
 public struct MockATProtoClient: ATProtoClientInterface {
 	public init() {}

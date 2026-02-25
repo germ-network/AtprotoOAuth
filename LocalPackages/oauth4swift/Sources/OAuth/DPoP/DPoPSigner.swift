@@ -182,9 +182,9 @@ extension DPoPSigner {
 		tokenHash: String?,
 		issuingServer: String?,
 		nonce: String?,
-		provider: URLResponseProvider,
+		provider: HTTPURLResponseProvider,
 		dPoPKey: DPoPKey,
-	) async throws -> (Data, URLResponse) {
+	) async throws -> (Data, HTTPURLResponse) {
 		var request = request
 
 		guard let method = request.httpMethod else {

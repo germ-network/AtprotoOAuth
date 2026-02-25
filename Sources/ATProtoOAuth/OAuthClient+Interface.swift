@@ -10,7 +10,6 @@ import AuthenticationServices
 import Crypto
 import Foundation
 import OAuth
-import OAuthenticator
 
 extension ATProtoOAuthClient: ATProtoOAuthInterface {
 	public func fetchFromPDS<Result: Sendable>(
@@ -75,20 +74,6 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 
 		let dpopKey = P256.Signing.PrivateKey()
 
-		//		let tokenHandling = Bluesky.tokenHandling(
-		//			account: did.fullId,
-		//			server: serverConfig,
-		//			jwtGenerator: try dpopKey.makeDpopSigner(),
-		//			validator: { tokenResponse, sub in
-		//				// TODO: GER-1343 - Implement validator
-		//				// after a token is issued, it is critical that the returned
-		//				// identity be resolved and its PDS match the issuing server
-		//				//
-		//				// check out draft-ietf-oauth-v2-1 section 7.3.1 for details
-		//				return true
-		//			}
-		//		)
-
 		let parConfig = PARConfiguration(
 			url: URL(string: serverConfig.pushedAuthorizationRequestEndpoint)!,
 			parameters: ["login_hint": identity.serverHint]
@@ -100,9 +85,6 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 				appCredentials: appCredentials,
 				parConfig: parConfig,
 				authEndpoint: serverConfig.authorizationEndpoint,
-				//				authorizationURLProvider: Self.authorizationURLProvider(
-				//					server: serverConfig
-				//				),
 				loginProvider: Self.loginProvider(
 					server: serverConfig,
 					validator: { tokenResponse, sub in
@@ -116,26 +98,6 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 				),
 				userAuthenticator: { try await userAuthenticator($0, $1) }
 			)
-		//		let authenticator = Authenticator(
-		//			config: .init(
-		//				appCredentials: appCredentials,
-		//				tokenHandling: tokenHandling,
-		//				userAuthenticator: {
-		//					try await ASWebAuthenticationSession.userAuthenticator(
-		//						url: $0, scheme: $1)
-		//				}
-		//			)
-		//		)
-		//		let login = try await authenticator.authenticate()
-		//
-		//		return SessionState(
-		//			accessToken: login.accessToken,
-		//			refreshToken: login.refreshToken,
-		//			dPopKey: .init(alg: .es256, keyData: dpopKey.rawRepresentation),
-		//			scopes: login.scopes,
-		//			issuingServer: login.issuingServer,
-		//			additionalParams: login.additionalParams
-		//		).archive
 	}
 
 	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {
@@ -166,13 +128,13 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 	private static func loginProvider(
 		server: ServerMetadata, validator: @escaping TokenSubscriberValidator
 	) -> LoginProvider {
-		return { params, dpopKey in
+		{ params, dpopKey in
 			// decode the params in the redirectURL
 			guard
 				let redirectComponents = URLComponents(
 					url: params.redirectURL, resolvingAgainstBaseURL: false)
 			else {
-				throw AuthenticatorError.missingTokenURL
+				throw OAuthClientError.missingTokenURL
 			}
 
 			guard
@@ -186,25 +148,25 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 					$0.name == "state"
 				})?.value
 			else {
-				throw AuthenticatorError.missingAuthorizationCode
+				throw OAuthClientError.missingAuthorizationCode
 			}
 
 			if state != params.stateToken {
-				throw AuthenticatorError.stateTokenMismatch(
+				throw OAuthClientError.stateTokenMismatch(
 					state, params.stateToken)
 			}
 
 			if iss != server.issuer {
-				throw AuthenticatorError.issuingServerMismatch(iss, server.issuer)
+				throw OAuthClientError.issuingServerMismatch(iss, server.issuer)
 			}
 
 			// and use them (plus just a little more) to construct the token request
 			guard let tokenURL = URL(string: server.tokenEndpoint) else {
-				throw AuthenticatorError.missingTokenURL
+				throw OAuthClientError.missingTokenURL
 			}
 
 			guard let verifier = params.pkceVerifier?.verifier else {
-				throw AuthenticatorError.pkceRequired
+				throw OAuthClientError.pkceRequired
 			}
 
 			let tokenRequest = ATProto.TokenRequest(
@@ -232,25 +194,25 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 				from: data
 			) {
 				if tokenError.errorDescription == "Code challenge already used" {
-					throw AuthenticatorError.codeChallengeAlreadyUsed
+					throw OAuthClientError.codeChallengeAlreadyUsed
 				}
 				Self.logger.error(
 					"Login error: \(tokenError.errorDescription, privacy: .public)"
 				)
-				throw AuthenticatorError.unrecognizedError(
-					tokenError.errorDescription)
+				throw OAuthClientError.remoteTokenError(
+					tokenError)
 			}
 
 			do {
 				let tokenResponse = try JSONDecoder().decode(
 					ATProto.TokenResponse.self, from: data)
 				guard tokenResponse.token_type == "DPoP" else {
-					throw AuthenticatorError.dpopTokenExpected(
+					throw OAuthClientError.dpopTokenExpected(
 						tokenResponse.token_type)
 				}
 
 				if try await validator(tokenResponse, server.issuer) == false {
-					throw AuthenticatorError.tokenInvalid
+					throw OAuthClientError.tokenInvalid
 				}
 
 				return tokenResponse.login(for: iss, dpopKey: dpopKey)
@@ -258,7 +220,7 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 				Self.logger.error(
 					"Error decoding response: \(String(decoding: data, as: UTF8.self), privacy: .public)"
 				)
-				throw AuthenticatorError.unrecognizedError("Decoding response JSON")
+				throw OAuthClientError.generic("Decoding response JSON")
 			}
 		}
 	}

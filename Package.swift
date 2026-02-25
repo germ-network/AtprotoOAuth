@@ -20,8 +20,6 @@ let package = Package(
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
 			.upToNextMajor(from: "4.2.0")),
-		//for temp shim only
-		.package(path: "./LocalPackages/OAuthenticator"),
 		.package(
 			url: "https://github.com/germ-network/ATResolve",
 			exact: "1.0.0-germ.2"
@@ -35,7 +33,6 @@ let package = Package(
 			dependencies: [
 				"ATProtoClient",
 				"ATProtoTypes",
-				"OAuthenticator",
 				.product(name: "Crypto", package: "swift-crypto"),
 				//for temp shim only
 				"ATResolve",

@@ -1,7 +1,6 @@
 import ATProtoTypes
 import Foundation
 import OAuth
-import OAuthenticator
 
 //abstract out the protocol so we can sub in a mock one for offline testing
 public protocol ATProtoClientInterface: Sendable {
@@ -25,9 +24,9 @@ public protocol ATProtoClientInterface: Sendable {
 }
 
 public struct ATProtoClient {
-	let responseProvider: URLResponseProvider
+	let responseProvider: HTTPURLResponseProvider
 
-	public init(responseProvider: @escaping URLResponseProvider) {
+	public init(responseProvider: @escaping HTTPURLResponseProvider) {
 		self.responseProvider = responseProvider
 	}
 }

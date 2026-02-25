@@ -11,13 +11,13 @@ public struct AuthorizationURLParameters: Sendable {
 	public let credentials: AppCredentials
 	public let parRequestURI: String
 	public let stateToken: String
-	public let responseProvider: URLResponseProvider
+	public let responseProvider: HTTPURLResponseProvider
 
 	public init(
 		credentials: AppCredentials,
 		parRequestURI: String,
 		stateToken: String,
-		responseProvider: @escaping URLResponseProvider
+		responseProvider: @escaping HTTPURLResponseProvider
 	) {
 		self.credentials = credentials
 		self.parRequestURI = parRequestURI

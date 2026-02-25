@@ -7,7 +7,6 @@
 
 import Foundation
 import OAuth
-import OAuthenticator
 
 extension ATProtoClient {
 	public func loadAuthServerMetadata(

@@ -11,17 +11,19 @@ public protocol OAuthSession {
 	static func response(for: URLRequest) async throws -> (Data, HTTPURLResponse)
 	static func authorizationURLProvider(
 		authEndpoint: String,
-		params: AuthorizationURLParameters
+		parRequestURI: String,
+		clientId: String,
 	) throws -> URL
+
 	//	static func userAuthenticate(url: URL, string: String) async throws -> URL
 }
 
 extension OAuthSession {
+	//call chain is static method so we can reuse it before we have a session
 	static public func performUserAuthentication(
 		appCredentials: AppCredentials,
 		parConfig: PARConfiguration,
 		authEndpoint: String,
-		//		authorizationURLProvider: AuthorizationURLProvider,
 		loginProvider: LoginProvider,
 		userAuthenticator: @Sendable (URL, String) async throws -> URL
 	) async throws -> SessionState.Archive {
@@ -37,23 +39,10 @@ extension OAuthSession {
 			pkceVerifier: pkceVerifier
 		)
 
-		let authConfig = AuthorizationURLParameters(
-			credentials: appCredentials,
-			parRequestURI: parRequestURI,
-			stateToken: stateToken,
-			responseProvider: {
-				try await dpopResponse(
-					for: $0,
-					login: nil,
-					dPoPKey: dpopKey,
-					pkceVerifier: pkceVerifier
-				)
-			}
-		)
-
 		let tokenURL = try await Self.authorizationURLProvider(
 			authEndpoint: authEndpoint,
-			params: authConfig
+			parRequestURI: parRequestURI,
+			clientId: appCredentials.clientId
 		)
 
 		let scheme = try appCredentials.callbackURLScheme
@@ -65,7 +54,7 @@ extension OAuthSession {
 			credentials: appCredentials,
 			redirectURL: callbackURL,
 			responseProvider: {
-				try await Self.dpopResponse(
+				try await dpopResponse(
 					for: $0,
 					login: nil,
 					dPoPKey: dpopKey,
@@ -148,7 +137,7 @@ extension OAuthSession {
 		login: SessionStateShim?,
 		dPoPKey: DPoPKey,
 		pkceVerifier: PKCEVerifier
-	) async throws -> (Data, URLResponse) {
+	) async throws -> (Data, HTTPURLResponse) {
 
 		let token = login?.accessToken.value
 		let tokenHash = token.map { pkceVerifier.hashFunction($0) }
@@ -169,8 +158,8 @@ extension OAuthSession {
 
 //to deprecate and depend on the session protocol
 
-/// Function that can execute a `URLRequest`.
-///
-/// This is used to abstract the actual networking system from the underlying authentication
-/// mechanism.
-public typealias URLResponseProvider = @Sendable (URLRequest) async throws -> (Data, URLResponse)
+public typealias HTTPURLResponseProvider =
+	@Sendable (URLRequest) async throws -> (
+		Data,
+		HTTPURLResponse
+	)

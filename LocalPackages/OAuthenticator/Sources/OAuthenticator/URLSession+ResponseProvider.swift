@@ -11,29 +11,38 @@ enum URLResponseProviderError: Error {
 
 extension URLSession {
 	/// Convert a `URLSession` instance into a `URLResponseProvider`.
-	public var responseProvider: URLResponseProvider {
-		return { request in
-			return try await withCheckedThrowingContinuation { continuation in
-				let task = self.dataTask(with: request) { data, response, error in
-					switch (data, response, error) {
-					case (let data?, let response?, nil):
-						continuation.resume(returning: (data, response))
-					case (_, _, let error?):
-						continuation.resume(throwing: error)
-					case (_, _, nil):
-						continuation.resume(
-							throwing: URLResponseProviderError
-								.missingResponseComponents)
-					}
-				}
-
-				task.resume()
+	public var responseProvider: HTTPURLResponseProvider {
+		{ request in
+			let (data, urlResponse) = try await data(for: request)
+			if let httpResponse = urlResponse as? HTTPURLResponse {
+				return (data, httpResponse)
+			} else {
+				throw DPoPError.urlResponseToHttpUrlResponseConversionFailed
 			}
 		}
+
+		//		return { request in
+		//			return try await withCheckedThrowingContinuation { continuation in
+		//				let task = self.dataTask(with: request) { data, response, error in
+		//					switch (data, response, error) {
+		//					case (let data?, let response?, nil):
+		//						continuation.resume(returning: (data, response))
+		//					case (_, _, let error?):
+		//						continuation.resume(throwing: error)
+		//					case (_, _, nil):
+		//						continuation.resume(
+		//							throwing: URLResponseProviderError
+		//								.missingResponseComponents)
+		//					}
+		//				}
+		//
+		//				task.resume()
+		//			}
+		//		}
 	}
 
 	/// Convert a `URLSession` with a default configuration into a `URLResponseProvider`.
-	public static var defaultProvider: URLResponseProvider {
+	public static var defaultProvider: HTTPURLResponseProvider {
 		let session = URLSession(configuration: .default)
 
 		return session.responseProvider
