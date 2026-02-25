@@ -1,5 +1,12 @@
 //
 //  NonceValue.swift
+//  OAuth
+//
+//  Created by Mark @ Germ on 2/24/26.
+//
+
+//
+//  NonceValue.swift
 //  ATProtoOAuth
 //
 //  Created by Mark @ Germ on 2/24/26.
@@ -7,11 +14,13 @@
 
 import Foundation
 
+public typealias NonceDecoder = (Data, HTTPURLResponse) throws -> NonceValue?
+
 public final class NonceValue {
 	public let origin: String
 	public let nonce: String
 
-	init(origin: String, nonce: String) {
+	public init(origin: String, nonce: String) {
 		self.origin = origin
 		self.nonce = nonce
 	}
@@ -37,31 +46,6 @@ extension NSCache where KeyType == NSString, ObjectType == NonceValue {
 			} else {
 				removeObject(forKey: key as NSString)
 			}
-		}
-	}
-}
-
-extension URL {
-	var origin: String? {
-		guard
-			let host = self.host,
-			let scheme = self.scheme
-		else {
-			return nil
-		}
-
-		var originComponents = URLComponents()
-		originComponents.scheme = scheme
-		originComponents.host = host
-		originComponents.port = nonDefaultHTTPort()
-		return originComponents.string
-	}
-
-	private func nonDefaultHTTPort() -> Int? {
-		switch (scheme, port) {
-		case ("http", 80): nil
-		case ("https", 443): nil
-		default: port
 		}
 	}
 }

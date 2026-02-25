@@ -19,7 +19,6 @@ public actor ATProtoOAuthSession {
 
 	private let nonceCache: NSCache<NSString, NonceValue> = NSCache()
 	// Return value is (origin, nonce)
-	public typealias NonceDecoder = (Data, HTTPURLResponse) throws -> NonceValue?
 	private let nonceDecoder: NonceDecoder = nonceHeaderDecoder(data:response:)
 
 	public static func nonceHeaderDecoder(data: Data, response: HTTPURLResponse) throws
@@ -39,6 +38,7 @@ public actor ATProtoOAuthSession {
 	}
 
 	enum State {
+		case authorizing
 		case active(SessionState)
 		case expired
 
@@ -51,6 +51,18 @@ public actor ATProtoOAuthSession {
 		}
 	}
 	var state: State
+
+	//starts in authorizing
+	static func new(
+		did: ATProtoDID,
+		atprotoClient: ATProtoClientInterface
+	) -> Self {
+		.init(
+			did: did,
+			state: .authorizing,
+			atprotoClient: atprotoClient
+		)
+	}
 
 	private init(
 		did: ATProtoDID,
@@ -97,6 +109,13 @@ extension ATProtoOAuthSession {
 }
 
 extension ATProtoOAuthSession: OAuthSession {
+	public func decode(
+		nonceResult: Data,
+		response: HTTPURLResponse
+	) throws -> OAuth.NonceValue? {
+		try nonceDecoder(nonceResult, response)
+	}
+
 	public static func response(for request: URLRequest) async throws -> (Data, HTTPURLResponse)
 	{
 		let (data, response) = try await URLSession.defaultProvider(request)
@@ -123,6 +142,18 @@ extension ATProtoOAuthSession: OAuthSession {
 		}
 
 		return url
+	}
+
+	public func getNonce(origin: String) -> NonceValue? {
+		nonceCache.object(forKey: origin as NSString)
+	}
+
+	public func store(nonce: String, for origin: String) {
+		nonceCache.setObject(
+			.init(origin: origin, nonce: nonce),
+			forKey: origin as NSString
+		)
+
 	}
 }
 

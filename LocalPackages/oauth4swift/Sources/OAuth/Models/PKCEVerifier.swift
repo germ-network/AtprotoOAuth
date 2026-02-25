@@ -56,9 +56,8 @@ extension PKCEVerifier {
 		self.init(
 			hash: "S256",
 			hasher: { value in
-				let digest = SHA256.hash(data: Data(value.utf8))
-
-				return digest.data.base64URLEncodedString()
+				SHA256.hash(data: Data(value.utf8))
+					.data.base64URLEncodedString()
 			}
 		)
 	}

@@ -81,6 +81,7 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 
 		return
 			try await ATProtoOAuthSession
+			.new(did: did, atprotoClient: atprotoClient)
 			.performUserAuthentication(
 				appCredentials: appCredentials,
 				parConfig: parConfig,
