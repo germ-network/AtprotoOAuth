@@ -120,7 +120,7 @@ extension ATProtoOAuthSession: OAuthSession {
 
 	public func refreshed(sessionMutable: OAuth.SessionState.Mutable) throws {
 		let session = try session
-		
+
 		session.updated(mutable: sessionMutable)
 		//TODO: save this
 	}

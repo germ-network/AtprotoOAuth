@@ -41,7 +41,7 @@ public class SessionState {
 	let dPopKey: DPoPKey?
 
 	public let additionalParams: [String: String]?
-	
+
 	var mutable: Mutable
 
 	public init(
@@ -66,7 +66,7 @@ public class SessionState {
 			)
 		)
 	}
-	
+
 	public struct Mutable {
 		let accessToken: Token
 		let refreshToken: Token?
@@ -74,7 +74,7 @@ public class SessionState {
 		// User authorized scopes
 		let scopes: String?
 		let issuingServer: String?
-		
+
 		public init(
 			accessToken: Token,
 			refreshToken: Token? = nil,
@@ -87,7 +87,7 @@ public class SessionState {
 			self.issuingServer = issuingServer
 		}
 	}
-	
+
 	public func updated(mutable: Mutable) {
 		self.mutable = mutable
 	}

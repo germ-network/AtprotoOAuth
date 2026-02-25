@@ -20,9 +20,9 @@ public protocol OAuthSession: Actor {
 	func getNonce(origin: String) -> NonceValue?
 	func store(nonce: String, for: String)
 	func decode(nonceResult: Data, response: HTTPURLResponse) throws -> NonceValue?
-	
+
 	var session: SessionState { get throws }
-	func refreshed(sessionMutable: SessionState.Mutable) throws 
+	func refreshed(sessionMutable: SessionState.Mutable) throws
 
 	//	static func userAuthenticate(url: URL, string: String) async throws -> URL
 }

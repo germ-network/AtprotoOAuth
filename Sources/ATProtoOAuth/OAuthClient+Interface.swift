@@ -262,20 +262,21 @@ enum ATProto {
 				dPopKey: dpopKey,
 				additionalParams: ["did": sub],
 				mutable: .init(
-					accessToken: .init(value: access_token, expiresIn: expires_in),
-					refreshToken: refresh_token.map{ .init(value: $0) },
+					accessToken: .init(
+						value: access_token, expiresIn: expires_in),
+					refreshToken: refresh_token.map { .init(value: $0) },
 					scopes: scope,
 					issuingServer: issuingServer
 				)
 			)
-//			.init(
-//				accessToken: Token(value: access_token, expiresIn: expires_in),
-//				refreshToken: refresh_token.map { Token(value: $0) },
-//				dPopKey: dpopKey,
-//				scopes: scope,
-//				issuingServer: issuingServer,
-//				additionalParams: ["did": sub]
-//			)
+			//			.init(
+			//				accessToken: Token(value: access_token, expiresIn: expires_in),
+			//				refreshToken: refresh_token.map { Token(value: $0) },
+			//				dPopKey: dpopKey,
+			//				scopes: scope,
+			//				issuingServer: issuingServer,
+			//				additionalParams: ["did": sub]
+			//			)
 		}
 
 		public var accessToken: String { access_token }

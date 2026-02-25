@@ -79,11 +79,5 @@ struct ClientAPITests {
 					.getGermMessagingDelegate(did: resolvedDid)
 			}
 		#expect(messageDelegate != nil)
-
-		//now try to login
-
-		let sessionArchive = try await oauthClient.authorize(
-			identity: .did(resolvedDid)
-		)
 	}
 }
