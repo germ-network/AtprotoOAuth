@@ -37,31 +37,21 @@ public struct Token: Codable, Hashable, Sendable {
 
 //best way to express fixed key and variable accessToken is as a reference type
 public class SessionState {
-	public var accessToken: Token
-	public var refreshToken: Token?
-
+	//not mandatory in OAuth 2.1
 	let dPopKey: DPoPKey?
 
-	// User authorized scopes
-	public var scopes: String?
-	public let issuingServer: String?
-
 	public let additionalParams: [String: String]?
+	
+	var mutable: Mutable
 
 	public init(
-		accessToken: Token,
-		refreshToken: Token? = nil,
 		dPopKey: DPoPKey?,
-		scopes: String? = nil,
-		issuingServer: String? = nil,
 		additionalParams: [String: String]? = nil,
+		mutable: Mutable
 	) {
-		self.accessToken = accessToken
-		self.refreshToken = refreshToken
 		self.dPopKey = dPopKey
-		self.scopes = scopes
-		self.issuingServer = issuingServer
 		self.additionalParams = additionalParams
+		self.mutable = mutable
 	}
 
 	public convenience init(
@@ -70,12 +60,36 @@ public class SessionState {
 		dPopKey: DPoPKey?
 	) {
 		self.init(
-			accessToken: Token(
-				value: accessToken,
-				expiry: validUntilDate
-			),
-			dPopKey: dPopKey
+			dPopKey: dPopKey,
+			mutable: .init(
+				accessToken: .init(value: accessToken, expiry: validUntilDate)
+			)
 		)
+	}
+	
+	public struct Mutable {
+		let accessToken: Token
+		let refreshToken: Token?
+
+		// User authorized scopes
+		let scopes: String?
+		let issuingServer: String?
+		
+		public init(
+			accessToken: Token,
+			refreshToken: Token? = nil,
+			scopes: String? = nil,
+			issuingServer: String? = nil
+		) {
+			self.accessToken = accessToken
+			self.refreshToken = refreshToken
+			self.scopes = scopes
+			self.issuingServer = issuingServer
+		}
+	}
+	
+	public func updated(mutable: Mutable) {
+		self.mutable = mutable
 	}
 }
 
@@ -95,22 +109,24 @@ extension SessionState {
 
 	public convenience init(archive: Archive) {
 		self.init(
-			accessToken: archive.accessToken,
-			refreshToken: archive.refreshToken,
 			dPopKey: archive.dPopKey,
-			scopes: archive.scopes,
-			issuingServer: archive.issuingServer,
-			additionalParams: archive.additionalParams
+			additionalParams: archive.additionalParams,
+			mutable: .init(
+				accessToken: archive.accessToken,
+				refreshToken: archive.refreshToken,
+				scopes: archive.scopes,
+				issuingServer: archive.issuingServer
+			)
 		)
 	}
 
 	public var archive: Archive {
 		.init(
-			accessToken: accessToken,
-			refreshToken: refreshToken,
+			accessToken: mutable.accessToken,
+			refreshToken: mutable.refreshToken,
 			dPopKey: dPopKey,
-			scopes: scopes,
-			issuingServer: issuingServer,
+			scopes: mutable.scopes,
+			issuingServer: mutable.issuingServer,
 			additionalParams: additionalParams
 		)
 	}

@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum OAuthClientError: Error {
+enum OAuthClientError: Error, Equatable {
 	case noDidForHandle
 	case missingUrlHost
 	case handleMismatch

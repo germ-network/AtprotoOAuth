@@ -20,12 +20,14 @@ public protocol OAuthSession: Actor {
 	func getNonce(origin: String) -> NonceValue?
 	func store(nonce: String, for: String)
 	func decode(nonceResult: Data, response: HTTPURLResponse) throws -> NonceValue?
+	
+	var session: SessionState { get throws }
+	func refreshed(sessionMutable: SessionState.Mutable) throws 
 
 	//	static func userAuthenticate(url: URL, string: String) async throws -> URL
 }
 
 extension OAuthSession {
-	//call chain is static method so we can reuse it before we have a session
 	public func performUserAuthentication(
 		appCredentials: AppCredentials,
 		parConfig: PARConfiguration,
@@ -144,9 +146,9 @@ extension OAuthSession {
 		return try JSONDecoder().decode(PARResponse.self, from: parData)
 	}
 
-	private func dpopResponse(
+	func dpopResponse(
 		for request: URLRequest,
-		login: SessionState?,
+		login: SessionState.Mutable?,
 		dPoPKey: DPoPKey,
 		pkceVerifier: PKCEVerifier
 	) async throws -> (Data, HTTPURLResponse) {

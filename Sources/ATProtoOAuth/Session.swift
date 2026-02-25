@@ -109,6 +109,22 @@ extension ATProtoOAuthSession {
 }
 
 extension ATProtoOAuthSession: OAuthSession {
+	public var session: OAuth.SessionState {
+		get throws {
+			guard case .active(let sessionState) = state else {
+				throw OAuthSessionError.sessionInactive
+			}
+			return sessionState
+		}
+	}
+
+	public func refreshed(sessionMutable: OAuth.SessionState.Mutable) throws {
+		let session = try session
+		
+		session.updated(mutable: sessionMutable)
+		//TODO: save this
+	}
+
 	public func decode(
 		nonceResult: Data,
 		response: HTTPURLResponse

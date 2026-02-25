@@ -1,6 +1,6 @@
 import ATProtoClient
 import Foundation
-import OAuthenticator
+import OAuth
 import Testing
 
 @testable import ATProtoOAuth
@@ -34,10 +34,17 @@ struct APITests {
 				scopes: [Self.genericScope],
 				callbackURL: APITests.redirectUri
 			),
-			userAuthenticator: Authenticator.failingUserAuthenticator(_:_:),
+			userAuthenticator: ATProtoClient.failingUserAuthenticator(_:_:),
 			responseProvider: URLSession.defaultProvider,
 			atprotoClient: MockATProtoClient()
 		)
+	}
+}
+
+extension ATProtoClient {
+	@Sendable
+	public static func failingUserAuthenticator(_ url: URL, _ user: String) throws -> URL {
+		throw OAuthClientError.generic("failed user autheticator")
 	}
 }
 
@@ -51,7 +58,7 @@ struct ClientAPITests {
 				scopes: [APITests.genericScope],
 				callbackURL: APITests.redirectUri
 			),
-			userAuthenticator: Authenticator.failingUserAuthenticator(_:_:),
+			userAuthenticator: ATProtoClient.failingUserAuthenticator(_:_:),
 			responseProvider: URLSession.defaultProvider,
 			atprotoClient: MockATProtoClient()
 		)
@@ -69,7 +76,7 @@ struct ClientAPITests {
 			try await oauthClient
 			.fetchFromPDS(did: resolvedDid) { pdsUrl, responseProvider in
 				try await ATProtoClient(responseProvider: responseProvider)
-					.getGermMessagingDelegate(did: resolvedDid, pdsURL: pdsUrl)
+					.getGermMessagingDelegate(did: resolvedDid)
 			}
 		#expect(messageDelegate != nil)
 
