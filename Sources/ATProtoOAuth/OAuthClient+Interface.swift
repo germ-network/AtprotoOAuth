@@ -196,9 +196,9 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 
 			switch result {
 			case .result(let tokenResponse):
-				guard tokenResponse.token_type == "DPoP" else {
+				guard tokenResponse.tokenType == "DPoP" else {
 					throw OAuthClientError.dpopTokenExpected(
-						tokenResponse.token_type)
+						tokenResponse.tokenType)
 				}
 
 				if try await validator(tokenResponse, server.issuer) == false {
@@ -243,12 +243,12 @@ enum ATProto {
 	}
 
 	struct TokenResponse: Hashable, Sendable, Codable {
-		public let access_token: String
-		public let refresh_token: String?
+		public let accessToken: String
+		public let refreshToken: String?
 		public let sub: String
 		public let scope: String
-		public let token_type: String
-		public let expires_in: Int
+		public let tokenType: String
+		public let expiresIn: Int
 
 		public func login(for issuingServer: String, dpopKey: OAuth.DPoPKey) -> SessionState
 		{
@@ -257,18 +257,22 @@ enum ATProto {
 				additionalParams: ["did": sub],
 				mutable: .init(
 					accessToken: .init(
-						value: access_token, expiresIn: expires_in),
-					refreshToken: refresh_token.map { .init(value: $0) },
+						value: accessToken, expiresIn: expiresIn),
+					refreshToken: refreshToken.map { .init(value: $0) },
 					scopes: scope,
 					issuingServer: issuingServer,
 				)
 			)
 		}
+		enum CodingKeys: String, CodingKey {
+			case accessToken = "access_token"
+			case refreshToken = "refresh_token"
+			case sub
+			case scope
+			case tokenType = "token_type"
+			case expiresIn = "expires_in"
 
-		public var accessToken: String { access_token }
-		public var refreshToken: String? { refresh_token }
-		public var tokenType: String { token_type }
-		public var expiresIn: Int { expires_in }
+		}
 	}
 
 	struct TokenError: Hashable, Sendable, Codable {
