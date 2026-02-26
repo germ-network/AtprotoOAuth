@@ -4,29 +4,29 @@
 import PackageDescription
 
 let package = Package(
-	name: "ATProtoClient",
+	name: "AtprotoClient",
 	platforms: [.iOS(.v15), .macOS(.v13)],
 	products: [
 		// Products define the executables and libraries a package produces, making them visible to other packages.
 		.library(
-			name: "ATProtoClient",
-			targets: ["ATProtoClient"]
+			name: "AtprotoClient",
+			targets: ["AtprotoClient"]
 		)
 	],
 	dependencies: [
-		.package(path: "../ATProtoTypes"),
-		.package(path: "../GermConvenience")
+		.package(path: "../AtprotoTypes"),
+		.package(path: "../GermConvenience"),
 	],
 	targets: [
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
 		// Targets can depend on other targets in this package and products from dependencies.
 		.target(
-			name: "ATProtoClient",
-			dependencies: ["ATProtoTypes", "GermConvenience"]
+			name: "AtprotoClient",
+			dependencies: ["AtprotoTypes", "GermConvenience"]
 		),
 		.testTarget(
-			name: "ATProtoClientTests",
-			dependencies: ["ATProtoClient"]
+			name: "AtprotoClientTests",
+			dependencies: ["AtprotoClient"]
 		),
 	]
 )

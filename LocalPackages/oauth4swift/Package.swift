@@ -14,10 +14,10 @@ let package = Package(
 		)
 	],
 	dependencies: [
-		.package(path: "../GermConvenience")
+		.package(path: "../GermConvenience"),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
-			.upToNextMajor(from: "4.2.0"))
+			.upToNextMajor(from: "4.2.0")),
 	],
 	targets: [
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -26,7 +26,7 @@ let package = Package(
 			name: "OAuth",
 			dependencies: [
 				"GermConvenience",
-				.product(name: "Crypto", package: "swift-crypto")
+				.product(name: "Crypto", package: "swift-crypto"),
 			]
 		),
 		.testTarget(

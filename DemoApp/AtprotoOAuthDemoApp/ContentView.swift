@@ -5,7 +5,7 @@
 //  Created by Mark @ Germ on 2/19/26.
 //
 
-import ATProtoOAuth
+import AtprotoOAuth
 import SwiftUI
 
 struct ContentView: View {

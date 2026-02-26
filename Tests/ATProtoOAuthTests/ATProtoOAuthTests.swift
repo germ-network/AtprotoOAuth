@@ -1,10 +1,10 @@
-import ATProtoClient
+import AtprotoClient
 import Foundation
 import OAuth
 import Testing
 
-@testable import ATProtoOAuth
-@testable import ATProtoTypes
+@testable import AtprotoOAuth
+@testable import AtprotoTypes
 
 struct APITests {
 	static let clientId = "https://static.germnetwork.com/client-metadata.json"

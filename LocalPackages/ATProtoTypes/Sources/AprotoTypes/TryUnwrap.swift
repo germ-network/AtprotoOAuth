@@ -17,7 +17,7 @@ extension Optional {
 			try tryUnwrap(UnwrapError.missing("\(Wrapped.self)"))
 		}
 	}
-	
+
 	public func tryUnwrap<E: Error>(_ throwing: E) throws(E) -> Wrapped {
 		guard let self else {
 			throw throwing

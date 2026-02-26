@@ -5,8 +5,8 @@
 //  Created by Mark @ Germ on 8/1/25.
 //
 
-import ATProtoOAuth
-import ATProtoTypes
+import AtprotoOAuth
+import AtprotoTypes
 import SwiftUI
 
 struct UnauthenticatedView: View {

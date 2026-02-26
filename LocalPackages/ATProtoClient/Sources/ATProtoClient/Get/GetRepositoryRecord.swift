@@ -5,7 +5,7 @@
 //  Created by Christopher Jr Riley on 2024-02-08.
 //
 
-import ATProtoTypes
+import AtprotoTypes
 import Foundation
 import GermConvenience
 
@@ -57,13 +57,13 @@ extension ATProtoClient {
 			httpMethod: .get,
 			authorizationValue: nil
 		)
-		
+
 		let result = try await responseProvider(request)
 			.successErrorDecode(
 				resultType: Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>.self,
 				errorType: Lexicon.Com.Atproto.Repo.GetRecordError.self
 			)
-		
+
 		switch result {
 		case .error(let errorStruct, let statusCode):
 			if statusCode == 400, errorStruct.error == "RecordNotFound" {

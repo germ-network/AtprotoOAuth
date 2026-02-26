@@ -5,7 +5,7 @@
 //  Created by Mark @ Germ on 2/17/26.
 //
 
-import ATProtoTypes
+import AtprotoTypes
 import AuthenticationServices
 import Crypto
 import Foundation
@@ -140,7 +140,7 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 			else {
 				throw OAuthClientError.missingTokenURL
 			}
-			
+
 			guard
 				let authCode = redirectComponents.queryItems?.first(where: {
 					$0.name == "code"
@@ -154,25 +154,25 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 			else {
 				throw OAuthClientError.missingAuthorizationCode
 			}
-			
+
 			if state != params.stateToken {
 				throw OAuthClientError.stateTokenMismatch(
 					state, params.stateToken)
 			}
-			
+
 			if iss != server.issuer {
 				throw OAuthClientError.issuingServerMismatch(iss, server.issuer)
 			}
-			
+
 			// and use them (plus just a little more) to construct the token request
 			guard let tokenURL = URL(string: server.tokenEndpoint) else {
 				throw OAuthClientError.missingTokenURL
 			}
-			
+
 			guard let verifier = params.pkceVerifier?.verifier else {
 				throw OAuthClientError.pkceRequired
 			}
-			
+
 			let tokenRequest = ATProto.TokenRequest(
 				code: authCode,
 				code_verifier: verifier,
@@ -180,20 +180,20 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 				grant_type: "authorization_code",
 				client_id: params.credentials.clientId
 			)
-			
+
 			var request = URLRequest(url: tokenURL)
-			
+
 			request.httpMethod = "POST"
 			request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 			request.setValue("application/json", forHTTPHeaderField: "Accept")
 			request.httpBody = try JSONEncoder().encode(tokenRequest)
-			
+
 			let result = try await params.responseProvider(request)
 				.successErrorDecode(
 					resultType: ATProto.TokenResponse.self,
 					errorType: ATProto.TokenError.self,
 				)
-			
+
 			switch result {
 			case .result(let tokenResponse):
 				guard tokenResponse.token_type == "DPoP" else {

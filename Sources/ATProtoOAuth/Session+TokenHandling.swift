@@ -9,9 +9,9 @@ import Foundation
 import OAuth
 
 extension ATProtoOAuthSession: TokenHandling {
-//	public static func loginProvider(params: OAuth.LoginProviderParameters) async throws -> OAuth.SessionState.Archive {
-//		<#code#>
-//	}
+	//	public static func loginProvider(params: OAuth.LoginProviderParameters) async throws -> OAuth.SessionState.Archive {
+	//		<#code#>
+	//	}
 
 	public func refreshProvider(
 		sessionState: SessionState.Archive,
@@ -21,7 +21,7 @@ extension ATProtoOAuthSession: TokenHandling {
 		let serverMetadata = try await lazyServerMetadata.lazyValue(
 			isolation: self
 		)
-		
+
 		let tokenURL = try URL(string: serverMetadata.tokenEndpoint)
 			.tryUnwrap(OAuthSessionError.cantFormURL)
 
@@ -41,12 +41,12 @@ extension ATProtoOAuthSession: TokenHandling {
 		let tokenResponse: TokenResponse = try await Self.response(for: request)
 			.successDecode()
 
-
 		guard tokenResponse.token_type == "DPoP" else {
-			throw OAuthSessionError
+			throw
+				OAuthSessionError
 				.expectedDpopToken(tokenResponse.token_type)
 		}
-		
+
 		try await tokenSubscriberValidator(
 			response: tokenResponse,
 			sub: serverMetadata.issuer
@@ -54,17 +54,17 @@ extension ATProtoOAuthSession: TokenHandling {
 
 		return tokenResponse.refreshOutput(for: serverMetadata.issuer)
 	}
-	
+
 	//throws if invalid
 	private func tokenSubscriberValidator(
 		response: TokenResponse,
 		sub: String
 	) async throws {
-			// TODO: GER-1343 - Implement validator
-			// after a token is issued, it is critical that the returned
-			// identity be resolved and its PDS match the issuing server
-			//
-			// check out draft-ietf-oauth-v2-1 section 7.3.1 for details
+		// TODO: GER-1343 - Implement validator
+		// after a token is issued, it is critical that the returned
+		// identity be resolved and its PDS match the issuing server
+		//
+		// check out draft-ietf-oauth-v2-1 section 7.3.1 for details
 	}
 }
 
@@ -75,14 +75,17 @@ extension ATProtoOAuthSession {
 		public let grant_type: String
 		public let client_id: String
 
-		public init(refresh_token: String, redirect_uri: String, grant_type: String, client_id: String) {
+		public init(
+			refresh_token: String, redirect_uri: String, grant_type: String,
+			client_id: String
+		) {
 			self.refresh_token = refresh_token
 			self.redirect_uri = redirect_uri
 			self.grant_type = grant_type
 			self.client_id = client_id
 		}
 	}
-	
+
 	public struct TokenResponse: Hashable, Sendable, Codable {
 		public let access_token: String
 		public let refresh_token: String?

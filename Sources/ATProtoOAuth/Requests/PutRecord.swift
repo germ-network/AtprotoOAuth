@@ -6,8 +6,8 @@
 //  Created by Christopher Jr Riley on 2024-03-11.
 //
 
-import ATProtoClient
-import ATProtoTypes
+import AtprotoClient
+import AtprotoTypes
 import Foundation
 
 extension ATProtoOAuthSession {

@@ -40,7 +40,7 @@ extension OAuthSession {
 		throw OAuthError.notImplemented
 
 		let refreshed = try await refresh(state: sessionState)
-		
+
 		//try again
 		return try await dpopResponse(
 			for: request,
@@ -49,27 +49,27 @@ extension OAuthSession {
 			pkceVerifier: pkceVerifier
 		)
 	}
-	
+
 	private func refresh(state: SessionState) async throws -> SessionState.Mutable {
 		if let refreshTask {
 			return try await refreshTask.value
 		}
-		
+
 		let newRefreshTask = Task {
 			try await refreshProvider(
 				sessionState: state.archive,
 				appCredentials: appCredentials
 			)
 		}
-		
+
 		refreshTask = newRefreshTask
-		
+
 		defer {
 			refreshTask = nil
 		}
-		
+
 		//handle successful refresh
-		
+
 		return try await newRefreshTask.value
 	}
 }

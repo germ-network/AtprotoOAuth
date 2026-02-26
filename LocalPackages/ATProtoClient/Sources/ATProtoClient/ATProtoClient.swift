@@ -1,4 +1,4 @@
-import ATProtoTypes
+import AtprotoTypes
 import Foundation
 import OAuth
 

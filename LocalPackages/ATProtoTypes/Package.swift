@@ -4,12 +4,12 @@
 import PackageDescription
 
 let package = Package(
-	name: "ATProtoTypes",
+	name: "AtprotoTypes",
 	products: [
 		// Products define the executables and libraries a package produces, making them visible to other packages.
 		.library(
-			name: "ATProtoTypes",
-			targets: ["ATProtoTypes"]
+			name: "AtprotoTypes",
+			targets: ["AtprotoTypes"]
 		)
 	],
 	dependencies: [
@@ -19,12 +19,12 @@ let package = Package(
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
 		// Targets can depend on other targets in this package and products from dependencies.
 		.target(
-			name: "ATProtoTypes",
+			name: "AtprotoTypes",
 			dependencies: ["Base32"]
 		),
 		.testTarget(
-			name: "ATProtoTypesTests",
-			dependencies: ["ATProtoTypes"]
+			name: "AtprotoTypesTests",
+			dependencies: ["AtprotoTypes"]
 		),
 	]
 )

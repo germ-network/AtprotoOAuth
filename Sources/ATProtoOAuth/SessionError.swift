@@ -22,7 +22,8 @@ extension OAuthSessionError: LocalizedError {
 		case .sessionInactive: "session is inactive"
 		case .incorrectResponseType: "incorrect response type"
 		case .unsupported: "unsupported"
-		case .expectedDpopToken(let tokenType): "expected dpop token, got \(tokenType) token"
+		case .expectedDpopToken(let tokenType):
+			"expected dpop token, got \(tokenType) token"
 		}
 	}
 }

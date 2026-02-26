@@ -5,16 +5,14 @@
 //  Created by Mark @ Germ on 2/18/26.
 //
 
-import ATProtoTypes
+import AtprotoTypes
 import Foundation
 import OAuth
 
 public struct MockATProtoClient: ATProtoClientInterface {
 	public init() {}
 
-	public func plcDirectoryQuery(_: ATProtoTypes.ATProtoDID) async throws
-		-> ATProtoTypes.DIDDocument
-	{
+	public func plcDirectoryQuery(_: ATProtoDID) async throws -> DIDDocument {
 		try .mock()
 	}
 

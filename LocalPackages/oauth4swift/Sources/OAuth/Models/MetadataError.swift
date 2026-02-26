@@ -65,7 +65,7 @@ public struct AuthServerMetadata: Codable, Hashable, Sendable {
 
 		var request = URLRequest(url: url)
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
-		
+
 		return try await provider(request)
 			.successDecode()
 	}

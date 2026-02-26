@@ -5,8 +5,8 @@
 //  Created by Mark @ Germ on 2/17/26.
 //
 
-import ATProtoTypes
 import ATResolve
+import AtprotoTypes
 import Foundation
 
 /// a temp file meant to be deprecated

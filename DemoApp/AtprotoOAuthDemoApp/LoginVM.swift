@@ -5,9 +5,9 @@
 //  Created by Mark @ Germ on 2/19/26.
 //
 
-import ATProtoClient
-import ATProtoOAuth
-import ATProtoTypes
+import AtprotoClient
+import AtprotoOAuth
+import AtprotoTypes
 import AuthenticationServices
 import Foundation
 import Microcosm
@@ -68,6 +68,7 @@ import SwiftUI
 						did: resolvedDid.fullId,
 						session: sessionArchive,
 					),
+					appCredentials: oauthClient.appCredentials,
 					atprotoClient: ATProtoClient(
 						responseProvider: URLSession.defaultProvider
 					)

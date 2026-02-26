@@ -5,7 +5,7 @@
 //  Created by Mark @ Germ on 2/20/26.
 //
 
-import ATProtoTypes
+import AtprotoTypes
 import Foundation
 
 // namespaces

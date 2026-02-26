@@ -5,8 +5,8 @@
 //  Created by Mark @ Germ on 2/17/26.
 //
 
-import ATProtoClient
-import ATProtoTypes
+import AtprotoClient
+import AtprotoTypes
 import Foundation
 import GermConvenience
 import OAuth
@@ -26,7 +26,8 @@ public actor ATProtoOAuthSession {
 	public static func nonceHeaderDecoder(
 		dataResponse: HTTPDataResponse
 	) throws -> NonceValue? {
-		guard let value = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce") else {
+		guard let value = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce")
+		else {
 			return nil
 		}
 
@@ -80,14 +81,15 @@ public actor ATProtoOAuthSession {
 		self.appCredentials = appCredentials
 		self.state = state
 		self.atprotoClient = atprotoClient
-		
+
 		self.lazyServerMetadata = .init(fetchTaskGenerator: {
 			Task {
 				let pdsHost = try await atprotoClient.plcDirectoryQuery(did)
 					.pdsUrl
-				let pdsMetadata = try await atprotoClient.loadProtectedResourceMetadata(
-					host: pdsHost.absoluteString
-				)
+				let pdsMetadata =
+					try await atprotoClient.loadProtectedResourceMetadata(
+						host: pdsHost.absoluteString
+					)
 
 				//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 				//PDS doesn't actually fill this field, so we only check it if present
@@ -99,8 +101,10 @@ public actor ATProtoOAuthSession {
 				}
 
 				guard
-					let authorizationServerUrl = pdsMetadata.authorizationServers?.first,
-					let authorizationServerHost = URL(string: authorizationServerUrl)?.host()
+					let authorizationServerUrl = pdsMetadata
+						.authorizationServers?.first,
+					let authorizationServerHost = URL(
+						string: authorizationServerUrl)?.host()
 				else {
 					throw OAuthSessionError.cantFormURL
 				}
@@ -171,8 +175,7 @@ extension ATProtoOAuthSession: OAuthSession {
 		try nonceDecoder(dataResponse)
 	}
 
-	public static func response(for request: URLRequest) async throws -> HTTPDataResponse
-	{
+	public static func response(for request: URLRequest) async throws -> HTTPDataResponse {
 		try await URLSession.defaultProvider(request)
 	}
 

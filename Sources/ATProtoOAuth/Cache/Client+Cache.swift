@@ -5,8 +5,8 @@
 //  Created by Mark @ Germ on 2/18/26.
 //
 
-import ATProtoClient
-import ATProtoTypes
+import AtprotoClient
+import AtprotoTypes
 import Foundation
 import OAuth
 

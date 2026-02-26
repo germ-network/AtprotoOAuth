@@ -17,14 +17,14 @@ public final class LazyResource<Resource: Sendable> {
 		case unknown
 	}
 	private var state: State
-	
+
 	private var fetchTaskGenerator: () -> Task<Resource, Error>
-	
+
 	public init(fetchTaskGenerator: @escaping () -> Task<Resource, Error>) {
 		self.state = .unknown
 		self.fetchTaskGenerator = fetchTaskGenerator
 	}
-	
+
 	public func lazyValue(
 		isolation: isolated (any Actor),
 	) async throws -> Resource {
@@ -36,7 +36,7 @@ public final class LazyResource<Resource: Sendable> {
 		case .unknown:
 			let task = fetchTaskGenerator()
 			state = .fetching(task)
-			
+
 			do {
 				let fetched = try await task.value
 				state = .fetched(fetched)

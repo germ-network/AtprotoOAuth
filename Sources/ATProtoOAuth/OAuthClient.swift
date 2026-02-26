@@ -1,5 +1,5 @@
-import ATProtoClient
-import ATProtoTypes
+import AtprotoClient
+import AtprotoTypes
 import Foundation
 import OAuth
 import os
@@ -29,7 +29,7 @@ public actor ATProtoOAuthClient {
 		subsystem: "com.germnetwork",
 		category: "BlueskyOAuthenticator")
 
-	public let appCredentials: AppCredentials
+	public nonisolated let appCredentials: AppCredentials
 	public typealias UserAuthenticator = @Sendable (URL, String) async throws -> URL
 	public let userAuthenticator: UserAuthenticator
 	public let responseProvider: HTTPURLResponseProvider

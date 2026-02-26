@@ -19,9 +19,9 @@ public protocol OAuthSession: Actor, TokenHandling {
 	) throws -> URL
 
 	var appCredentials: AppCredentials { get }
-	
+
 	var lazyServerMetadata: LazyResource<AuthServerMetadata> { get }
-	
+
 	func getNonce(origin: String) -> NonceValue?
 	func store(nonce: String, for: String)
 	func decode(dataResponse: HTTPDataResponse) throws -> NonceValue?
@@ -30,19 +30,18 @@ public protocol OAuthSession: Actor, TokenHandling {
 	func refreshed(sessionMutable: SessionState.Mutable) throws
 	var refreshTask: Task<SessionState.Mutable, Error>? { get set }
 
-	
-//	static func responseStatusProvider(data: Data, response: URLResponse) throws -> ResponseStatus
+	//	static func responseStatusProvider(data: Data, response: URLResponse) throws -> ResponseStatus
 
 	//	static func userAuthenticate(url: URL, string: String) async throws -> URL
 }
 
 public protocol TokenHandling {
-//	static func loginProvider(params: LoginProviderParameters) async throws -> SessionState.Archive
-	
+	//	static func loginProvider(params: LoginProviderParameters) async throws -> SessionState.Archive
+
 	func refreshProvider(
 		sessionState: SessionState.Archive,
 		appCredentials: AppCredentials,
-//		urlResponseProvider: URLResponseProvider
+		//		urlResponseProvider: URLResponseProvider
 		//URLResponseProvider expect to use the response
 	) async throws -> SessionState.Mutable
 }
@@ -327,4 +326,4 @@ extension OAuthSession {
 //to deprecate and depend on the session protocol
 
 public typealias HTTPURLResponseProvider =
-@Sendable (URLRequest) async throws -> HTTPDataResponse
+	@Sendable (URLRequest) async throws -> HTTPDataResponse
