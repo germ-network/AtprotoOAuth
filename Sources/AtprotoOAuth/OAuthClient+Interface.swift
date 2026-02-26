@@ -69,7 +69,9 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 			throw OAuthClientError.missingUrlHost
 		}
 
-		let serverConfig = try await getAuthServerMetadata(host: authorizationServerHost)
+		let serverConfig = try await atprotoClient.loadAuthServerMetadata(
+			host: authorizationServerHost
+		)
 
 		let parConfig = PARConfiguration(
 			url: URL(string: serverConfig.pushedAuthorizationRequestEndpoint)!,
@@ -107,7 +109,9 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 			throw OAuthClientError.missingUrlHost
 		}
 
-		let pdsMetadata = try await getProtectedResourceMetadata(host: pdsHost)
+		let pdsMetadata = try await atprotoClient.loadProtectedResourceMetadata(
+			host: pdsHost
+		)
 
 		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 		//PDS doesn't actually fill this field, so we only check it if present

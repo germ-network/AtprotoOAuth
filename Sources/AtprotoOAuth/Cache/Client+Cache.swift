@@ -15,22 +15,6 @@ extension ATProtoOAuthClient {
 		try await atprotoClient.plcDirectoryQuery(did)
 			.pdsUrl
 	}
-
-
-	func getAuthServerMetadata(host: String) async throws -> AuthServerMetadata {
-		let cache: CacheEntry<AuthServerMetadata>
-		if let existing = authServerCache[host] {
-			cache = existing
-		} else {
-			cache = .init(state: .unknown)
-			authServerCache[host] = cache
-		}
-		return try await cache.fetch(
-			input: host,
-			atprotoClient: atprotoClient,
-			on: self
-		)
-	}
 }
 
 extension ATProtoOAuthClient {
