@@ -5,30 +5,34 @@
 //  Created by Mark @ Germ on 2/19/26.
 //
 
-import ATProtoClient
-import ATProtoOAuth
-import ATProtoTypes
+import AtprotoClient
+import AtprotoOAuth
+import AtprotoTypes
 import AuthenticationServices
 import Foundation
 import Microcosm
-import OAuthenticator
+import OAuth
 import SwiftUI
 
 @Observable final class LoginVM {
 	let oauthClient = ATProtoOAuthClient(
-//		clientId: "https://static.germnetwork.com/client-metadata.json",
 		appCredentials: .init(
 			clientId: "https://static.germnetwork.com/client-metadata.json",
+			scopes: ["atproto transition:generic"],
 			callbackURL: URL(string: "com.germnetwork.static:/oauth")!
 		),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
-		authenticationStatusHandler: nil,
 		responseProvider: URLSession.defaultProvider,
 		atprotoClient: ATProtoClient(
 			responseProvider: URLSession.defaultProvider
 		)
 	)
 
+	enum State {
+		case collectHandle
+		case validating(String)
+		case loggedIn(OAuthSession)
+	}
 	var state: State = .collectHandle
 	struct LogEntry: Identifiable {
 		let id: UUID = .init()
@@ -40,20 +44,14 @@ import SwiftUI
 		state = .validating(handle)
 		Task {
 			do {
-				let resolvedDid = try await fallbackResolve(handle: handle)
+				let resolvedDid = try await Self.fallbackResolve(handle: handle)
 
 				logs.append(.init(body: "Resolved DID: \(resolvedDid.fullId)"))
 
-				let messageDelegate =
-					try await oauthClient
-					.fetchFromPDS(did: resolvedDid) {
-						pdsUrl, responseProvider in
-						try await ATProtoClient(
-							responseProvider: responseProvider
-						)
-						.getGermMessagingDelegate(
-							did: resolvedDid, pdsURL: pdsUrl)
-					}
+				let messageDelegate = try await ATProtoClient(
+					responseProvider: URLSession.defaultProvider
+				)
+				.getGermMessagingDelegate(did: resolvedDid)
 
 				if messageDelegate != nil {
 					logs.append(.init(body: "Found a message delegate"))
@@ -64,6 +62,21 @@ import SwiftUI
 				let sessionArchive =
 					try await oauthClient
 					.authorize(identity: .did(resolvedDid))
+
+				let session = try ATProtoOAuthSession(
+					archive: .init(
+						did: resolvedDid.fullId,
+						session: sessionArchive,
+					),
+					appCredentials: oauthClient.appCredentials,
+					atprotoClient: ATProtoClient(
+						responseProvider: URLSession.defaultProvider
+					)
+				)
+				state = .loggedIn(session)
+
+				//make an auth request
+
 			} catch {
 				logs.append(.init(body: "Error: \(error)"))
 			}
@@ -74,8 +87,8 @@ import SwiftUI
 		state = .collectHandle
 		logs = []
 	}
-	
-	func fallbackResolve(handle: String) async throws -> ATProtoDID {
+
+	static func fallbackResolve(handle: String) async throws -> ATProtoDID {
 		do {
 			return try await Slingshot.resolve(handle: handle)
 		} catch {
@@ -83,13 +96,5 @@ import SwiftUI
 				handle: handle
 			)
 		}
-	}
-}
-
-extension LoginVM {
-	enum State {
-		case collectHandle
-		case validating(String)
-
 	}
 }

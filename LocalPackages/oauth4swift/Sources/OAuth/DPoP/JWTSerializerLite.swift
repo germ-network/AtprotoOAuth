@@ -11,8 +11,8 @@ public struct JWTSerializerLite {
 	public static func sign(
 		_ payload: some Encodable, with header: JWTLexiconLite.JWTHeader,
 		using signer: ECDSASigner
-	) async throws -> String {
-		let signingInput = try await makeSigningInput(
+	) throws -> String {
+		let signingInput = try makeSigningInput(
 			payload: payload,
 			header: header
 		)
@@ -25,7 +25,7 @@ public struct JWTSerializerLite {
 private func makeSigningInput(
 	payload: some Encodable,
 	header: JWTLexiconLite.JWTHeader
-) async throws -> Data {
+) throws -> Data {
 	// Make the encoder
 	let encoder = JSONEncoder()
 	encoder.dateEncodingStrategy = .secondsSince1970

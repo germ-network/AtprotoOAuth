@@ -1,0 +1,42 @@
+import AtprotoClient
+import AtprotoTypes
+import Foundation
+import OAuth
+import os
+
+public protocol ATProtoOAuthInterface {
+	//MARK: Resolution
+	static func resolve(handle: String) async throws -> ATProtoDID
+
+	//MARK: Authentication
+	func authorize(identity: ATProtoOAuthClient.AuthIdentity) async throws
+		-> SessionState.Archive
+}
+
+public actor ATProtoOAuthClient {
+	static let logger = Logger(
+		subsystem: "com.germnetwork",
+		category: "BlueskyOAuthenticator")
+
+	public nonisolated let appCredentials: AppCredentials
+	public typealias UserAuthenticator = @Sendable (URL, String) async throws -> URL
+	public let userAuthenticator: UserAuthenticator
+	public let responseProvider: HTTPURLResponseProvider
+	public let atprotoClient: ATProtoClientInterface
+
+	//didResolver
+	//handleResolver
+	//stateStorage
+
+	public init(
+		appCredentials: AppCredentials,
+		userAuthenticator: @escaping UserAuthenticator,
+		responseProvider: @escaping HTTPURLResponseProvider,
+		atprotoClient: ATProtoClientInterface,
+	) {
+		self.appCredentials = appCredentials
+		self.userAuthenticator = userAuthenticator
+		self.responseProvider = responseProvider
+		self.atprotoClient = atprotoClient
+	}
+}

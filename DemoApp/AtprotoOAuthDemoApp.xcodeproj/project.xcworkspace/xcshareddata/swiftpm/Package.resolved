@@ -20,15 +20,6 @@
       }
     },
     {
-      "identity" : "oauthenticator",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/germ-network/OAuthenticator",
-      "state" : {
-        "branch" : "mark/build-runtime",
-        "revision" : "109d0db77775692c3016d42117e2f26fdc9efb4e"
-      }
-    },
-    {
       "identity" : "swift-asn1",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-asn1.git",

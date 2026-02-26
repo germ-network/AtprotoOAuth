@@ -4,27 +4,27 @@
 import PackageDescription
 
 let package = Package(
-    name: "Microcosm",
-    products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(
-            name: "Microcosm",
-            targets: ["Microcosm"]
-        ),
-    ],
-	dependencies: [
-		.package(path: "../ATProtoTypes"),
+	name: "Microcosm",
+	products: [
+		// Products define the executables and libraries a package produces, making them visible to other packages.
+		.library(
+			name: "Microcosm",
+			targets: ["Microcosm"]
+		)
 	],
-    targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
-        .target(
-            name: "Microcosm",
-			dependencies: ["ATProtoTypes"]
-        ),
-        .testTarget(
-            name: "MicrocosmTests",
-            dependencies: ["Microcosm"]
-        ),
-    ]
+	dependencies: [
+		.package(path: "../AtprotoTypes")
+	],
+	targets: [
+		// Targets are the basic building blocks of a package, defining a module or a test suite.
+		// Targets can depend on other targets in this package and products from dependencies.
+		.target(
+			name: "Microcosm",
+			dependencies: ["AtprotoTypes"]
+		),
+		.testTarget(
+			name: "MicrocosmTests",
+			dependencies: ["Microcosm"]
+		),
+	]
 )

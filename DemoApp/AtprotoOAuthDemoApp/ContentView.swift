@@ -5,13 +5,18 @@
 //  Created by Mark @ Germ on 2/19/26.
 //
 
-import ATProtoOAuth
+import AtprotoOAuth
 import SwiftUI
 
 struct ContentView: View {
 	var body: some View {
-		VStack {
-			LoginView()
+		TabView {
+			Tab("Authenticated", systemImage: "person") {
+				LoginView()
+			}
+			Tab("Unauthenticated", systemImage: "smartphone") {
+				UnauthenticatedView()
+			}
 		}
 		.padding()
 	}

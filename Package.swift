@@ -4,26 +4,22 @@
 import PackageDescription
 
 let package = Package(
-	name: "ATProtoOAuth",
+	name: "AtprotoOAuth",
 	platforms: [.iOS(.v16), .macOS(.v15)],
 	products: [
 		// Products define the executables and libraries a package produces, making them visible to other packages.
 		.library(
-			name: "ATProtoOAuth",
-			targets: ["ATProtoOAuth"]
+			name: "AtprotoOAuth",
+			targets: ["AtprotoOAuth"]
 		)
 	],
 	dependencies: [
-		.package(path: "./LocalPackages/ATProtoClient"),
-		.package(path: "./LocalPackages/ATProtoTypes"),
+		.package(path: "./LocalPackages/AtprotoClient"),
+		.package(path: "./LocalPackages/AtprotoTypes"),
 		.package(path: "./LocalPackages/oauth4swift"),
-		.package(url: "https://github.com/apple/swift-crypto.git", .upToNextMajor(from: "4.2.0")),
 		.package(
-			url: "https://github.com/germ-network/OAuthenticator",
-			branch: "mark/build-runtime"
-		),
-//		.package(path: "../OAuthenticator"),
-		//for temp shim only
+			url: "https://github.com/apple/swift-crypto.git",
+			.upToNextMajor(from: "4.2.0")),
 		.package(
 			url: "https://github.com/germ-network/ATResolve",
 			exact: "1.0.0-germ.2"
@@ -33,11 +29,10 @@ let package = Package(
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
 		// Targets can depend on other targets in this package and products from dependencies.
 		.target(
-			name: "ATProtoOAuth",
+			name: "AtprotoOAuth",
 			dependencies: [
-				"ATProtoClient",
-				"ATProtoTypes",
-				"OAuthenticator",
+				"AtprotoClient",
+				"AtprotoTypes",
 				.product(name: "Crypto", package: "swift-crypto"),
 				//for temp shim only
 				"ATResolve",
@@ -45,8 +40,8 @@ let package = Package(
 			]
 		),
 		.testTarget(
-			name: "ATProtoOAuthTests",
-			dependencies: ["ATProtoOAuth"]
+			name: "AtprotoOAuthTests",
+			dependencies: ["AtprotoOAuth"]
 		),
 	]
 )
