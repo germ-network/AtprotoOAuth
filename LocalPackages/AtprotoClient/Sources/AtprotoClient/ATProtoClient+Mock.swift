@@ -54,7 +54,7 @@ public struct MockATProtoClient: ATProtoClientInterface {
 	public func authRequest<X: XRPCInterface>(
 		for xrpc: X.Type,
 		pdsUrl: URL,
-		parameters: [URLQueryItem],
+		parameters: X.Parameters,
 		session: AtprotoSession
 	) async throws -> X.Result {
 		.mock()

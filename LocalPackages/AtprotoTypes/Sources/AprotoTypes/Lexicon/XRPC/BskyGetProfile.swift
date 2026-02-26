@@ -12,6 +12,18 @@ extension Lexicon.App.Bsky.Actor {
 		public typealias Result = Lexicon.App.Bsky.Actor.Defs.ProfileViewDetailed
 
 		public static let nsid = "app.bsky.actor.getProfile"
+
+		public struct Parameters: XRPCParameters {
+			public let did: ATProtoDID
+
+			public init(did: ATProtoDID) {
+				self.did = did
+			}
+
+			public func asQueryItems() -> [URLQueryItem] {
+				[.init(name: "actor", value: did.fullId)]
+			}
+		}
 	}
 }
 

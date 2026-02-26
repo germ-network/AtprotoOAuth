@@ -12,11 +12,11 @@ extension ATProtoClient {
 	public func authRequest<X: XRPCInterface>(
 		for xrpc: X.Type,
 		pdsUrl: URL,
-		parameters: [URLQueryItem],
+		parameters: X.Parameters,
 		session: AtprotoSession
 	) async throws -> X.Result {
 		var requestURL = pdsUrl.appending(path: "/xrpc/app.bsky.actor.getProfile")
-		requestURL = requestURL.appending(queryItems: parameters)
+		requestURL = requestURL.appending(queryItems: parameters.asQueryItems())
 		let request = createRequest(url: requestURL, httpMethod: .get)
 
 		let result = try await session.authResponse(for: request)

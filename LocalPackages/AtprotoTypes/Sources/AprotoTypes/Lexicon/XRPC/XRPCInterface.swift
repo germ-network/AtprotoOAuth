@@ -9,5 +9,10 @@ import Foundation
 
 public protocol XRPCInterface {
 	static var nsid: NSID { get }
+	associatedtype Parameters: XRPCParameters
 	associatedtype Result: Decodable, Mockable
+}
+
+public protocol XRPCParameters: Sendable {
+	func asQueryItems() -> [URLQueryItem]
 }

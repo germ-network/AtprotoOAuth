@@ -121,7 +121,7 @@ public actor ATProtoOAuthSession {
 
 	public func authRequest<X: XRPCInterface>(
 		for xrpc: X.Type,
-		parameters: [URLQueryItem]
+		parameters: X.Parameters
 	) async throws -> X.Result {
 		try await atprotoClient.authRequest(
 			for: xrpc,
