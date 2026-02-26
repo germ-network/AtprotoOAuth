@@ -16,20 +16,6 @@ extension ATProtoOAuthClient {
 			.pdsUrl
 	}
 
-	func getProtectedResourceMetadata(host: String) async throws -> ProtectedResourceMetadata {
-		let cache: CacheEntry<ProtectedResourceMetadata>
-		if let existing = protectedResourceCache[host] {
-			cache = existing
-		} else {
-			cache = .init(state: .unknown)
-			protectedResourceCache[host] = cache
-		}
-		return try await cache.fetch(
-			input: host,
-			atprotoClient: atprotoClient,
-			on: self
-		)
-	}
 
 	func getAuthServerMetadata(host: String) async throws -> AuthServerMetadata {
 		let cache: CacheEntry<AuthServerMetadata>
