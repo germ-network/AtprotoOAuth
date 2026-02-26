@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		01268A9A2F49795700058D68 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 01268A992F49795700058D68 /* Microcosm */; };
+		015D043E2F50C34500996C25 /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 015D043D2F50C34500996C25 /* AtprotoOAuth */; };
 		016FA9882F4930760061B936 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 016FA9872F4930760061B936 /* Microcosm */; };
-		017083E12F50441300643C8A /* AprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 017083E02F50441300643C8A /* AprotoOAuth */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,7 +59,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				01268A9A2F49795700058D68 /* Microcosm in Frameworks */,
-				017083E12F50441300643C8A /* AprotoOAuth in Frameworks */,
+				015D043E2F50C34500996C25 /* AtprotoOAuth in Frameworks */,
 				016FA9882F4930760061B936 /* Microcosm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -81,12 +81,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		015D043C2F50C34500996C25 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		01E50C3B2F483FF800C0D8E0 = {
 			isa = PBXGroup;
 			children = (
 				01E50C462F483FF800C0D8E0 /* AtprotoOAuthDemoApp */,
 				01E50C542F483FF800C0D8E0 /* AtprotoOAuthDemoAppTests */,
 				01E50C5E2F483FF800C0D8E0 /* AtprotoOAuthDemoAppUITests */,
+				015D043C2F50C34500996C25 /* Frameworks */,
 				01E50C452F483FF800C0D8E0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -123,7 +131,7 @@
 			packageProductDependencies = (
 				016FA9872F4930760061B936 /* Microcosm */,
 				01268A992F49795700058D68 /* Microcosm */,
-				017083E02F50441300643C8A /* AprotoOAuth */,
+				015D043D2F50C34500996C25 /* AtprotoOAuth */,
 			);
 			productName = AtprotoOAuthDemoApp;
 			productReference = 01E50C442F483FF800C0D8E0 /* AtprotoOAuthDemoApp.app */;
@@ -668,13 +676,14 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = Microcosm;
 		};
+		015D043D2F50C34500996C25 /* AtprotoOAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 017083DF2F50441300643C8A /* XCLocalSwiftPackageReference "../../AtprotoOAuth" */;
+			productName = AtprotoOAuth;
+		};
 		016FA9872F4930760061B936 /* Microcosm */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Microcosm;
-		};
-		017083E02F50441300643C8A /* AprotoOAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = AprotoOAuth;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
