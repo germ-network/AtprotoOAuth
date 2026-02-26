@@ -8,6 +8,7 @@
 import ATProtoClient
 import ATProtoTypes
 import Foundation
+import GermConvenience
 import OAuth
 
 ///Usage pattern: A session starts out authenticated. May degrade to lose auth
@@ -15,22 +16,23 @@ import OAuth
 
 public actor ATProtoOAuthSession {
 	let did: ATProtoDID
+	public let appCredentials: AppCredentials
 	let atprotoClient: ATProtoClientInterface
 
 	private let nonceCache: NSCache<NSString, NonceValue> = NSCache()
 	// Return value is (origin, nonce)
-	private let nonceDecoder: NonceDecoder = nonceHeaderDecoder(data:response:)
+	private let nonceDecoder: NonceDecoder = nonceHeaderDecoder(dataResponse:)
 
-	public static func nonceHeaderDecoder(data: Data, response: HTTPURLResponse) throws
-		-> NonceValue?
-	{
-		guard let value = response.value(forHTTPHeaderField: "DPoP-Nonce") else {
+	public static func nonceHeaderDecoder(
+		dataResponse: HTTPDataResponse
+	) throws -> NonceValue? {
+		guard let value = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce") else {
 			return nil
 		}
 
 		// I'm not sure why response.url is optional, but maybe we need the request
 		// passed into the decoder here, to fallback to request.url.origin
-		guard let responseOrigin = response.url?.origin else {
+		guard let responseOrigin = dataResponse.response.url?.origin else {
 			return nil
 		}
 
@@ -51,14 +53,18 @@ public actor ATProtoOAuthSession {
 		}
 	}
 	var state: State
+	public var lazyServerMetadata: LazyResource<AuthServerMetadata>
+	public var refreshTask: Task<SessionState.Mutable, Error>?
 
 	//starts in authorizing
 	static func new(
 		did: ATProtoDID,
+		appCredentials: AppCredentials,
 		atprotoClient: ATProtoClientInterface
 	) -> Self {
 		.init(
 			did: did,
+			appCredentials: appCredentials,
 			state: .authorizing,
 			atprotoClient: atprotoClient
 		)
@@ -66,12 +72,44 @@ public actor ATProtoOAuthSession {
 
 	private init(
 		did: ATProtoDID,
+		appCredentials: AppCredentials,
 		state: State,
 		atprotoClient: ATProtoClientInterface
 	) {
 		self.did = did
+		self.appCredentials = appCredentials
 		self.state = state
 		self.atprotoClient = atprotoClient
+		
+		self.lazyServerMetadata = .init(fetchTaskGenerator: {
+			Task {
+				let pdsHost = try await atprotoClient.plcDirectoryQuery(did)
+					.pdsUrl
+				let pdsMetadata = try await atprotoClient.loadProtectedResourceMetadata(
+					host: pdsHost.absoluteString
+				)
+
+				//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
+				//PDS doesn't actually fill this field, so we only check it if present
+				if let supportedAlgs = pdsMetadata.dpopSigningAlgValuesSupported {
+					guard supportedAlgs.contains("ES256")
+					else {
+						throw OAuthSessionError.unsupported
+					}
+				}
+
+				guard
+					let authorizationServerUrl = pdsMetadata.authorizationServers?.first,
+					let authorizationServerHost = URL(string: authorizationServerUrl)?.host()
+				else {
+					throw OAuthSessionError.cantFormURL
+				}
+
+				return try await atprotoClient.loadAuthServerMetadata(
+					host: authorizationServerHost
+				)
+			}
+		})
 
 		nonceCache.countLimit = 25
 	}
@@ -90,10 +128,12 @@ extension ATProtoOAuthSession {
 
 	public init(
 		archive: Archive,
+		appCredentials: AppCredentials,
 		atprotoClient: ATProtoClientInterface
 	) throws {
 		try self.init(
 			did: .init(fullId: archive.did),
+			appCredentials: appCredentials,
 			state: .init(archive: archive.session),
 			atprotoClient: atprotoClient
 		)
@@ -126,19 +166,14 @@ extension ATProtoOAuthSession: OAuthSession {
 	}
 
 	public func decode(
-		nonceResult: Data,
-		response: HTTPURLResponse
+		dataResponse: HTTPDataResponse
 	) throws -> OAuth.NonceValue? {
-		try nonceDecoder(nonceResult, response)
+		try nonceDecoder(dataResponse)
 	}
 
-	public static func response(for request: URLRequest) async throws -> (Data, HTTPURLResponse)
+	public static func response(for request: URLRequest) async throws -> HTTPDataResponse
 	{
-		let (data, response) = try await URLSession.defaultProvider(request)
-		guard let httpResponse = response as? HTTPURLResponse else {
-			throw OAuthSessionError.incorrectResponseType
-		}
-		return (data, httpResponse)
+		try await URLSession.defaultProvider(request)
 	}
 
 	public static func authorizationURLProvider(

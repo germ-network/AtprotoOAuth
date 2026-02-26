@@ -12,7 +12,7 @@ public protocol ATProtoClientInterface: Sendable {
 
 	func loadAuthServerMetadata(
 		host: String
-	) async throws -> ServerMetadata
+	) async throws -> AuthServerMetadata
 
 	func getRepository<Result: AtprotoRecord>(
 		recordType: Result.Type,

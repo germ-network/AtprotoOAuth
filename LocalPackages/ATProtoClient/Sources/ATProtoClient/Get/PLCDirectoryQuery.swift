@@ -16,21 +16,8 @@ extension ATProtoClient {
 		var request = URLRequest(url: url)
 		request.addValue("application/json", forHTTPHeaderField: "Accept")
 
-		let (result, response) = try await responseProvider(request)
-		guard
-			let httpResponse = response as? HTTPURLResponse,
-			httpResponse.statusCode >= 200 && httpResponse.statusCode < 300
-		else {
-
-			throw ATProtoClientError.requestFailed(
-				responseCode: (response as? HTTPURLResponse)?.statusCode
-			)
-		}
-		return try JSONDecoder()
-			.decode(
-				DIDDocument.self,
-				from: result
-			)
+		return try await responseProvider(request)
+			.successDecode()
 	}
 
 	private func constructPlcQueryUrl(did: ATProtoDID) throws -> URL {

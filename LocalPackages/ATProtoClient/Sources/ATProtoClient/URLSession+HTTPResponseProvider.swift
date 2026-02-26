@@ -22,7 +22,7 @@ extension URLSession {
 		{ request in
 			let (data, urlResponse) = try await self.data(for: request)
 			if let httpResponse = urlResponse as? HTTPURLResponse {
-				return (data, httpResponse)
+				return .init(data: data, response: httpResponse)
 			} else {
 				throw ATProtoClientError.nonHTTPResponse
 			}
@@ -31,7 +31,6 @@ extension URLSession {
 
 	/// Convert a `URLSession` with a default configuration into a `URLResponseProvider`.
 	public static var defaultProvider: HTTPURLResponseProvider {
-		URLSession(configuration: .default)
-			.responseProvider
+		URLSession(configuration: .default).responseProvider
 	}
 }

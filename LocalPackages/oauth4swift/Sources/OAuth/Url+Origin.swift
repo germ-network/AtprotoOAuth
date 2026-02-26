@@ -1,5 +1,5 @@
 //
-//  Url+oauth.swift
+//  Url+Origin.swift
 //  OAuth
 //
 //  Created by Mark @ Germ on 2/24/26.

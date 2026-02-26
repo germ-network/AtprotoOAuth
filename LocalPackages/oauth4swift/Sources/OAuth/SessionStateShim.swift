@@ -67,7 +67,7 @@ public class SessionState {
 		)
 	}
 
-	public struct Mutable {
+	public struct Mutable: Sendable {
 		let accessToken: Token
 		let refreshToken: Token?
 

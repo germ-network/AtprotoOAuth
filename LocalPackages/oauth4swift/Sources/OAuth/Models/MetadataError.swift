@@ -6,17 +6,14 @@
 //
 
 import Foundation
-
-#if canImport(FoundationNetworking)
-	import FoundationNetworking
-#endif
+import GermConvenience
 
 enum MetadataError: Error {
 	case urlInvalid
 }
 
 // See: https://www.rfc-editor.org/rfc/rfc8414.html
-public struct ServerMetadata: Codable, Hashable, Sendable {
+public struct AuthServerMetadata: Codable, Hashable, Sendable {
 	public let issuer: String
 	public let authorizationEndpoint: String
 	public let tokenEndpoint: String
@@ -54,7 +51,7 @@ public struct ServerMetadata: Codable, Hashable, Sendable {
 	}
 
 	public static func load(for host: String, provider: HTTPURLResponseProvider) async throws
-		-> ServerMetadata
+		-> AuthServerMetadata
 	{
 		var components = URLComponents()
 
@@ -68,10 +65,9 @@ public struct ServerMetadata: Codable, Hashable, Sendable {
 
 		var request = URLRequest(url: url)
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-		let (data, _) = try await provider(request)
-
-		return try JSONDecoder().decode(ServerMetadata.self, from: data)
+		
+		return try await provider(request)
+			.successDecode()
 	}
 }
 
@@ -89,7 +85,10 @@ public struct ClientMetadata: Hashable, Codable, Sendable {
 		case dpopBoundAccessTokens = "dpop_bound_access_tokens"
 	}
 
-	public static func load(for client_id: String, provider: HTTPURLResponseProvider)
+	public static func load(
+		for client_id: String,
+		provider: HTTPURLResponseProvider
+	)
 		async throws
 		-> ClientMetadata
 	{
@@ -100,9 +99,8 @@ public struct ClientMetadata: Hashable, Codable, Sendable {
 		var request = URLRequest(url: url)
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
 
-		let (data, _) = try await provider(request)
-
-		return try JSONDecoder().decode(ClientMetadata.self, from: data)
+		return try await provider(request)
+			.successDecode()
 	}
 }
 
@@ -170,12 +168,7 @@ public struct ProtectedResourceMetadata: Codable, Hashable, Sendable {
 		var request = URLRequest(url: url)
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
 
-		let (data, _) = try await provider(request)
-
-		return try self.loadJson(data: data)
-	}
-
-	public static func loadJson(data: Data) throws -> ProtectedResourceMetadata {
-		return try JSONDecoder().decode(ProtectedResourceMetadata.self, from: data)
+		return try await provider(request)
+			.successDecode()
 	}
 }

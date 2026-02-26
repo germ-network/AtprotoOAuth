@@ -33,14 +33,14 @@ extension ProtectedResourceMetadata: ATProtoCacheable {
 	}
 }
 
-extension ServerMetadata: ATProtoCacheable {
+extension AuthServerMetadata: ATProtoCacheable {
 	typealias Inputs = String  //host
 	static let defaultTTL: TimeInterval = 60 * 10
 
 	static func fetch(
 		inputs: String,
 		atprotoClient: any ATProtoClientInterface
-	) async throws -> ServerMetadata {
+	) async throws -> AuthServerMetadata {
 		try await atprotoClient.loadAuthServerMetadata(host: inputs)
 	}
 }

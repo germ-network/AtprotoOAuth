@@ -14,7 +14,7 @@ enum ATProtoClientError: Error {
 	case improperServiceUrl
 	case couldntConstructUrl
 	case nonHTTPResponse
-	case requestFailed(responseCode: Int?)
+	case requestFailed(responseCode: Int, error: String)
 }
 
 extension ATProtoClientError: LocalizedError {
@@ -26,12 +26,8 @@ extension ATProtoClientError: LocalizedError {
 		case .improperServiceUrl: "Improper service URL"
 		case .couldntConstructUrl: "Couldn't construct URL"
 		case .nonHTTPResponse: "Request failed with non-HTTP response"
-		case .requestFailed(let responseCode):
-			if let responseCode {
-				"Request failed with response code: \(responseCode)"
-			} else {
-				"Request failed with non-HTTP response"
-			}
+		case .requestFailed(let responseCode, let errorString):
+			"Request failed with response code: \(responseCode), error \(errorString)"
 		}
 	}
 }

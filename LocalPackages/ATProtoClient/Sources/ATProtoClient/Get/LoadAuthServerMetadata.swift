@@ -11,7 +11,7 @@ import OAuth
 extension ATProtoClient {
 	public func loadAuthServerMetadata(
 		host: String
-	) async throws -> ServerMetadata {
+	) async throws -> AuthServerMetadata {
 		var components = URLComponents()
 		components.scheme = "https"
 		components.host = host
@@ -24,20 +24,7 @@ extension ATProtoClient {
 		var request = URLRequest(url: url)
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
 
-		let (result, response) = try await responseProvider(request)
-		guard
-			let httpResponse = response as? HTTPURLResponse,
-			httpResponse.statusCode >= 200 && httpResponse.statusCode < 300
-		else {
-
-			throw ATProtoClientError.requestFailed(
-				responseCode: (response as? HTTPURLResponse)?.statusCode
-			)
-		}
-		return try JSONDecoder()
-			.decode(
-				ServerMetadata.self,
-				from: result
-			)
+		return try await responseProvider(request)
+			.successDecode()
 	}
 }

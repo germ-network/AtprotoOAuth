@@ -31,8 +31,8 @@ extension ATProtoOAuthClient {
 		)
 	}
 
-	func getAuthServerMetadata(host: String) async throws -> ServerMetadata {
-		let cache: CacheEntry<ServerMetadata>
+	func getAuthServerMetadata(host: String) async throws -> AuthServerMetadata {
+		let cache: CacheEntry<AuthServerMetadata>
 		if let existing = authServerCache[host] {
 			cache = existing
 		} else {

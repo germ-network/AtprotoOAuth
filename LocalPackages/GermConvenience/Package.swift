@@ -4,34 +4,23 @@
 import PackageDescription
 
 let package = Package(
-	name: "OAuth",
-	platforms: [.iOS(.v15), .macOS(.v12)],
+	name: "GermConvenience",
 	products: [
 		// Products define the executables and libraries a package produces, making them visible to other packages.
 		.library(
-			name: "OAuth",
-			targets: ["OAuth"]
+			name: "GermConvenience",
+			targets: ["GermConvenience"]
 		)
-	],
-	dependencies: [
-		.package(path: "../GermConvenience")
-		.package(
-			url: "https://github.com/apple/swift-crypto.git",
-			.upToNextMajor(from: "4.2.0"))
 	],
 	targets: [
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
 		// Targets can depend on other targets in this package and products from dependencies.
 		.target(
-			name: "OAuth",
-			dependencies: [
-				"GermConvenience",
-				.product(name: "Crypto", package: "swift-crypto")
-			]
+			name: "GermConvenience"
 		),
 		.testTarget(
-			name: "OAuthTests",
-			dependencies: ["OAuth"]
+			name: "GermConvenienceTests",
+			dependencies: ["GermConvenience"]
 		),
 	]
 )

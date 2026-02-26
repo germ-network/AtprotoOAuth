@@ -8,9 +8,9 @@
 import Foundation
 
 public struct AppCredentials: Codable, Hashable, Sendable {
-	public var clientId: String
-	public var scopes: [String]
-	public var callbackURL: URL
+	public let clientId: String
+	public let scopes: [String]
+	public let callbackURL: URL
 
 	public init(clientId: String, scopes: [String], callbackURL: URL) {
 		self.clientId = clientId

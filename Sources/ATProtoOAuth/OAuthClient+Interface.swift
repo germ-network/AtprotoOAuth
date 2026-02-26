@@ -42,7 +42,6 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 	public func authorize(
 		identity: AuthIdentity
 	) async throws -> SessionState.Archive {
-
 		let did: ATProtoDID
 		switch identity {
 		case .did(let _did):
@@ -79,7 +78,11 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 
 		return
 			try await ATProtoOAuthSession
-			.new(did: did, atprotoClient: atprotoClient)
+			.new(
+				did: did,
+				appCredentials: appCredentials,
+				atprotoClient: atprotoClient
+			)
 			.performUserAuthentication(
 				appCredentials: appCredentials,
 				parConfig: parConfig,
@@ -125,9 +128,11 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 	}
 
 	private static func loginProvider(
-		server: ServerMetadata, validator: @escaping TokenSubscriberValidator
+		server: AuthServerMetadata, validator: @escaping TokenSubscriberValidator
 	) -> LoginProvider {
-		{ params, dpopKey in
+		{
+			params,
+			dpopKey in
 			// decode the params in the redirectURL
 			guard
 				let redirectComponents = URLComponents(
@@ -135,7 +140,7 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 			else {
 				throw OAuthClientError.missingTokenURL
 			}
-
+			
 			guard
 				let authCode = redirectComponents.queryItems?.first(where: {
 					$0.name == "code"
@@ -149,25 +154,25 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 			else {
 				throw OAuthClientError.missingAuthorizationCode
 			}
-
+			
 			if state != params.stateToken {
 				throw OAuthClientError.stateTokenMismatch(
 					state, params.stateToken)
 			}
-
+			
 			if iss != server.issuer {
 				throw OAuthClientError.issuingServerMismatch(iss, server.issuer)
 			}
-
+			
 			// and use them (plus just a little more) to construct the token request
 			guard let tokenURL = URL(string: server.tokenEndpoint) else {
 				throw OAuthClientError.missingTokenURL
 			}
-
+			
 			guard let verifier = params.pkceVerifier?.verifier else {
 				throw OAuthClientError.pkceRequired
 			}
-
+			
 			let tokenRequest = ATProto.TokenRequest(
 				code: authCode,
 				code_verifier: verifier,
@@ -175,36 +180,22 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 				grant_type: "authorization_code",
 				client_id: params.credentials.clientId
 			)
-
+			
 			var request = URLRequest(url: tokenURL)
-
+			
 			request.httpMethod = "POST"
 			request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 			request.setValue("application/json", forHTTPHeaderField: "Accept")
 			request.httpBody = try JSONEncoder().encode(tokenRequest)
-
-			let (data, response) = try await params.responseProvider(request)
-
-			print("data:", String(decoding: data, as: UTF8.self))
-			print("response:", response)
-
-			if let tokenError = try? JSONDecoder().decode(
-				ATProto.TokenError.self,
-				from: data
-			) {
-				if tokenError.errorDescription == "Code challenge already used" {
-					throw OAuthClientError.codeChallengeAlreadyUsed
-				}
-				Self.logger.error(
-					"Login error: \(tokenError.errorDescription, privacy: .public)"
+			
+			let result = try await params.responseProvider(request)
+				.successErrorDecode(
+					resultType: ATProto.TokenResponse.self,
+					errorType: ATProto.TokenError.self,
 				)
-				throw OAuthClientError.remoteTokenError(
-					tokenError)
-			}
-
-			do {
-				let tokenResponse = try JSONDecoder().decode(
-					ATProto.TokenResponse.self, from: data)
+			
+			switch result {
+			case .result(let tokenResponse):
 				guard tokenResponse.token_type == "DPoP" else {
 					throw OAuthClientError.dpopTokenExpected(
 						tokenResponse.token_type)
@@ -215,11 +206,14 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 				}
 
 				return tokenResponse.login(for: iss, dpopKey: dpopKey)
-			} catch {
+			case .error(let tokenError, let int):
+				if tokenError.errorDescription == "Code challenge already used" {
+					throw OAuthClientError.codeChallengeAlreadyUsed
+				}
 				Self.logger.error(
-					"Error decoding response: \(String(decoding: data, as: UTF8.self), privacy: .public)"
+					"Login error: \(tokenError.errorDescription, privacy: .public)"
 				)
-				throw OAuthClientError.generic("Decoding response JSON")
+				throw OAuthClientError.remoteTokenError(tokenError)
 			}
 		}
 	}
@@ -266,17 +260,9 @@ enum ATProto {
 						value: access_token, expiresIn: expires_in),
 					refreshToken: refresh_token.map { .init(value: $0) },
 					scopes: scope,
-					issuingServer: issuingServer
+					issuingServer: issuingServer,
 				)
 			)
-			//			.init(
-			//				accessToken: Token(value: access_token, expiresIn: expires_in),
-			//				refreshToken: refresh_token.map { Token(value: $0) },
-			//				dPopKey: dpopKey,
-			//				scopes: scope,
-			//				issuingServer: issuingServer,
-			//				additionalParams: ["did": sub]
-			//			)
 		}
 
 		public var accessToken: String { access_token }

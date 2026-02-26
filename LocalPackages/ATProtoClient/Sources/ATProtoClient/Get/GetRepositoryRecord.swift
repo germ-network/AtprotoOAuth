@@ -7,6 +7,7 @@
 
 import ATProtoTypes
 import Foundation
+import GermConvenience
 
 extension ATProtoClient {
 
@@ -56,35 +57,26 @@ extension ATProtoClient {
 			httpMethod: .get,
 			authorizationValue: nil
 		)
-
-		let (result, response) = try await responseProvider(request)
-		guard let httpResponse = response as? HTTPURLResponse else {
-			throw ATProtoClientError.requestFailed(
-				responseCode: nil
+		
+		let result = try await responseProvider(request)
+			.successErrorDecode(
+				resultType: Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>.self,
+				errorType: Lexicon.Com.Atproto.Repo.GetRecordError.self
 			)
-		}
-		guard let httpResponse = response as? HTTPURLResponse,
-			httpResponse.statusCode >= 200 && httpResponse.statusCode < 300
-		else {
-			if httpResponse.statusCode == 400 {
-				let errorResult = try JSONDecoder().decode(
-					Lexicon.Com.Atproto.Repo.GetRecordError.self,
-					from: result
+		
+		switch result {
+		case .error(let errorStruct, let statusCode):
+			if statusCode == 400, errorStruct.error == "RecordNotFound" {
+				return nil
+			} else {
+				throw ATProtoClientError.requestFailed(
+					responseCode: statusCode,
+					error: errorStruct.error
 				)
-				if errorResult.error == "RecordNotFound" {
-					return nil
-				}
 			}
-
-			throw ATProtoClientError.requestFailed(
-				responseCode: (response as? HTTPURLResponse)?.statusCode
-			)
+		case .result(let result):
+			return result
 		}
-		return try JSONDecoder()
-			.decode(
-				Lexicon.Com.Atproto.Repo.GetRecordOutput.self,
-				from: result
-			)
 	}
 
 	private func constructGetRecordURL(

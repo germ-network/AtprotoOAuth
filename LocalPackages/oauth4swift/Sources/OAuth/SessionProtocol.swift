@@ -7,9 +7,10 @@
 
 import Crypto
 import Foundation
+import GermConvenience
 
-public protocol OAuthSession: Actor {
-	static func response(for: URLRequest) async throws -> (Data, HTTPURLResponse)
+public protocol OAuthSession: Actor, TokenHandling {
+	static func response(for: URLRequest) async throws -> HTTPDataResponse
 
 	static func authorizationURLProvider(
 		authEndpoint: String,
@@ -17,14 +18,33 @@ public protocol OAuthSession: Actor {
 		clientId: String,
 	) throws -> URL
 
+	var appCredentials: AppCredentials { get }
+	
+	var lazyServerMetadata: LazyResource<AuthServerMetadata> { get }
+	
 	func getNonce(origin: String) -> NonceValue?
 	func store(nonce: String, for: String)
-	func decode(nonceResult: Data, response: HTTPURLResponse) throws -> NonceValue?
+	func decode(dataResponse: HTTPDataResponse) throws -> NonceValue?
 
 	var session: SessionState { get throws }
 	func refreshed(sessionMutable: SessionState.Mutable) throws
+	var refreshTask: Task<SessionState.Mutable, Error>? { get set }
+
+	
+//	static func responseStatusProvider(data: Data, response: URLResponse) throws -> ResponseStatus
 
 	//	static func userAuthenticate(url: URL, string: String) async throws -> URL
+}
+
+public protocol TokenHandling {
+//	static func loginProvider(params: LoginProviderParameters) async throws -> SessionState.Archive
+	
+	func refreshProvider(
+		sessionState: SessionState.Archive,
+		appCredentials: AppCredentials,
+//		urlResponseProvider: URLResponseProvider
+		//URLResponseProvider expect to use the response
+	) async throws -> SessionState.Mutable
 }
 
 extension OAuthSession {
@@ -130,20 +150,12 @@ extension OAuthSession {
 
 		request.httpBody = Data(body.utf8)
 
-		let (parData, response) = try await dpopResponse(
+		return try await dpopResponse(
 			for: request,
 			login: nil,
 			dPoPKey: dPoPKey,
 			pkceVerifier: pkceVerifier
-		)
-
-		guard response.statusCode >= 200 && response.statusCode < 300 else {
-			throw
-				OAuthError
-				.httpResponse(response: response)
-		}
-
-		return try JSONDecoder().decode(PARResponse.self, from: parData)
+		).successDecode()
 	}
 
 	func dpopResponse(
@@ -151,7 +163,7 @@ extension OAuthSession {
 		login: SessionState.Mutable?,
 		dPoPKey: DPoPKey,
 		pkceVerifier: PKCEVerifier
-	) async throws -> (Data, HTTPURLResponse) {
+	) async throws -> HTTPDataResponse {
 		try await response(
 			for: request,
 			token: login?.accessToken.value,
@@ -168,7 +180,7 @@ extension OAuthSession {
 		issuingServer: String?,
 		provider: HTTPURLResponseProvider,
 		dPoPKey: DPoPKey,
-	) async throws -> (Data, HTTPURLResponse) {
+	) async throws -> HTTPDataResponse {
 		var request = request
 		var issuer: String? = nil
 		if let iss = issuingServer {
@@ -208,22 +220,17 @@ extension OAuthSession {
 			request.setValue("DPoP \(token)", forHTTPHeaderField: "Authorization")
 		}
 
-		let (data, response) = try await provider(request)
+		let dataResponse = try await provider(request)
 
 		// Extract the next nonce value if any; if we don't have a new nonce, return the response:
-		guard
-			let nextNonce = try decode(
-				nonceResult: data,
-				response: response
-			)
-		else {
-			return (data, response)
+		guard let nextNonce = try decode(dataResponse: dataResponse) else {
+			return dataResponse
 		}
 
 		// If the response doesn't have a new nonce, or the new nonce is the same as
 		// the current nonce for the same origin, return the response:
 		if nextNonce.origin == initNonce?.origin && nextNonce.nonce == initNonce?.nonce {
-			return (data, response)
+			return dataResponse
 		}
 		store(nonce: nextNonce.nonce, for: nextNonce.origin)
 
@@ -238,9 +245,10 @@ extension OAuthSession {
 
 		//fixme: adopt logic from OAuthenticator pr 50
 		let shouldRetry = Self.isUseDpopError(
-			data: data, response: response, isAuthServer: isAuthServer)
+			dataResponse: dataResponse, isAuthServer: isAuthServer
+		)
 		if !shouldRetry {
-			return (data, response)
+			return dataResponse
 		}
 
 		// repeat once, using newly-established nonce
@@ -253,16 +261,13 @@ extension OAuthSession {
 			dPoPKey: dPoPKey
 		)
 		request.setValue(secondJwt, forHTTPHeaderField: "DPoP")
-		let (retryData, retryResponse) = try await provider(request)
+		let retryDataResponse = try await provider(request)
 
-		if let retryNonce = try decode(
-			nonceResult: retryData,
-			response: retryResponse
-		) {
+		if let retryNonce = try decode(dataResponse: retryDataResponse) {
 			store(nonce: retryNonce.nonce, for: retryNonce.origin)
 		}
 
-		return (retryData, retryResponse)
+		return retryDataResponse
 	}
 
 	private static func generateJWT(
@@ -288,14 +293,14 @@ extension OAuthSession {
 	// The logic here is taken from:
 	// https://github.com/bluesky-social/atproto/blob/4e96e2c7/packages/oauth/oauth-client/src/fetch-dpop.ts#L195
 	private static func isUseDpopError(
-		data: Data, response: HTTPURLResponse, isAuthServer: Bool?
+		dataResponse: HTTPDataResponse, isAuthServer: Bool?
 	) -> Bool {
 		// https://datatracker.ietf.org/doc/html/rfc6750#section-3
 		// https://datatracker.ietf.org/doc/html/rfc9449#name-resource-server-provided-no
 
-		switch (isAuthServer, response.statusCode) {
+		switch (isAuthServer, dataResponse.response.statusCode) {
 		case (let authServer, 401) where authServer != true:
-			if let wwwAuthHeader = response.value(
+			if let wwwAuthHeader = dataResponse.response.value(
 				forHTTPHeaderField: "WWW-Authenticate")
 			{
 				if wwwAuthHeader.starts(with: "DPoP") {
@@ -306,7 +311,7 @@ extension OAuthSession {
 		case (let authServer, 400) where authServer != false:
 			do {
 				let err = try JSONDecoder().decode(
-					OAuthErrorResponse.self, from: data)
+					OAuthErrorResponse.self, from: dataResponse.data)
 				return err.error == "use_dpop_nonce"
 			} catch {
 				return false
@@ -322,7 +327,4 @@ extension OAuthSession {
 //to deprecate and depend on the session protocol
 
 public typealias HTTPURLResponseProvider =
-	@Sendable (URLRequest) async throws -> (
-		Data,
-		HTTPURLResponse
-	)
+@Sendable (URLRequest) async throws -> HTTPDataResponse

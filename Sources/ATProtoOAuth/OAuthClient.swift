@@ -42,7 +42,7 @@ public actor ATProtoOAuthClient {
 	//not going to implement, defer to the session
 	//sessionStorage
 	var protectedResourceCache: [String: CacheEntry<ProtectedResourceMetadata>] = [:]
-	var authServerCache: [String: CacheEntry<ServerMetadata>] = [:]
+	var authServerCache: [String: CacheEntry<AuthServerMetadata>] = [:]
 
 	public init(
 		appCredentials: AppCredentials,

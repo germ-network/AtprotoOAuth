@@ -5,16 +5,10 @@
 //  Created by Mark @ Germ on 2/24/26.
 //
 
-//
-//  NonceValue.swift
-//  ATProtoOAuth
-//
-//  Created by Mark @ Germ on 2/24/26.
-//
-
 import Foundation
+import GermConvenience
 
-public typealias NonceDecoder = (Data, HTTPURLResponse) throws -> NonceValue?
+public typealias NonceDecoder = (HTTPDataResponse) throws -> NonceValue?
 
 public final class NonceValue {
 	public let origin: String
