@@ -86,15 +86,10 @@ public struct ClientMetadata: Hashable, Codable, Sendable {
 	}
 
 	public static func load(
-		for client_id: String,
+		for clientId: String,
 		provider: HTTPURLResponseProvider
-	)
-		async throws
-		-> ClientMetadata
-	{
-		guard let url = URL(string: client_id) else {
-			throw MetadataError.urlInvalid
-		}
+	) async throws -> ClientMetadata {
+		let url = try URL(string: clientId).tryUnwrap(MetadataError.urlInvalid)
 
 		var request = URLRequest(url: url)
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
