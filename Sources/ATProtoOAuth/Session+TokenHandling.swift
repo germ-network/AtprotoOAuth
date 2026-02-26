@@ -26,10 +26,10 @@ extension ATProtoOAuthSession: TokenHandling {
 			.tryUnwrap(OAuthSessionError.cantFormURL)
 
 		let tokenRequest = RefreshTokenRequest(
-			refresh_token: refreshToken.value,
-			redirect_uri: appCredentials.callbackURL.absoluteString,
-			grant_type: "refresh_token",
-			client_id: appCredentials.clientId
+			refreshToken: refreshToken.value,
+			redirectUri: appCredentials.callbackURL.absoluteString,
+			grantType: "refresh_token",
+			clientId: appCredentials.clientId
 		)
 
 		var request = URLRequest(url: tokenURL)
@@ -41,10 +41,10 @@ extension ATProtoOAuthSession: TokenHandling {
 		let tokenResponse: TokenResponse = try await Self.response(for: request)
 			.successDecode()
 
-		guard tokenResponse.token_type == "DPoP" else {
+		guard tokenResponse.tokenType == "DPoP" else {
 			throw
 				OAuthSessionError
-				.expectedDpopToken(tokenResponse.token_type)
+				.expectedDpopToken(tokenResponse.tokenType)
 		}
 
 		try await tokenSubscriberValidator(
@@ -69,44 +69,103 @@ extension ATProtoOAuthSession: TokenHandling {
 }
 
 extension ATProtoOAuthSession {
-	struct RefreshTokenRequest: Hashable, Sendable, Codable {
-		public let refresh_token: String
-		public let redirect_uri: String
-		public let grant_type: String
-		public let client_id: String
+	struct TokenRequest: Hashable, Sendable, Codable {
+		public let code: String
+		public let codeVerifier: String
+		public let redirectUri: String
+		public let grantType: String
+		public let clientId: String
 
 		public init(
-			refresh_token: String, redirect_uri: String, grant_type: String,
-			client_id: String
+			code: String,
+			codeVerifier: String,
+			redirectUri: String,
+			grantType: String,
+			clientId: String
 		) {
-			self.refresh_token = refresh_token
-			self.redirect_uri = redirect_uri
-			self.grant_type = grant_type
-			self.client_id = client_id
+			self.code = code
+			self.codeVerifier = codeVerifier
+			self.redirectUri = redirectUri
+			self.grantType = grantType
+			self.clientId = clientId
+		}
+
+		public enum CodingKeys: String, CodingKey {
+			case code
+			case codeVerifier = "code_verifier"
+			case redirectUri = "redirect_uri"
+			case grantType = "grant_type"
+			case clientId = "client_id"
+		}
+	}
+	
+	struct RefreshTokenRequest: Hashable, Sendable, Codable {
+		public let refreshToken: String
+		public let redirectUri: String
+		public let grantType: String
+		public let clientId: String
+
+		public init(
+			refreshToken: String,
+			redirectUri: String,
+			grantType: String,
+			clientId: String
+		) {
+			self.refreshToken = refreshToken
+			self.redirectUri = redirectUri
+			self.grantType = grantType
+			self.clientId = clientId
+		}
+		
+		public enum CodingKeys: String, CodingKey {
+			case refreshToken = "refresh_token"
+			case redirectUri = "redirect_uri"
+			case grantType = "grant_type"
+			case clientId = "client_id"
 		}
 	}
 
-	public struct TokenResponse: Hashable, Sendable, Codable {
-		public let access_token: String
-		public let refresh_token: String?
+	struct TokenResponse: Hashable, Sendable, Codable {
+		public let accessToken: String
+		public let refreshToken: String?
 		public let sub: String
 		public let scope: String
-		public let token_type: String
-		public let expires_in: Int
+		public let tokenType: String
+		public let expiresIn: Int
 
 		public func refreshOutput(for issuingServer: String) -> SessionState.Mutable {
 			.init(
-				accessToken: .init(value: access_token, expiresIn: expires_in),
-				refreshToken: refresh_token.map { Token(value: $0) },
+				accessToken: .init(value: accessToken, expiresIn: expiresIn),
+				refreshToken: refreshToken.map { Token(value: $0) },
 				scopes: scope,
 				issuingServer: issuingServer
 			)
 		}
+		
+		public func login(for issuingServer: String, dpopKey: OAuth.DPoPKey) -> SessionState
+		{
+			.init(
+				dPopKey: dpopKey,
+				additionalParams: ["did": sub],
+				mutable: .init(
+					accessToken: .init(
+						value: accessToken, expiresIn: expiresIn),
+					refreshToken: refreshToken.map { .init(value: $0) },
+					scopes: scope,
+					issuingServer: issuingServer,
+				)
+			)
+		}
+		
+		enum CodingKeys: String, CodingKey {
+			case accessToken = "access_token"
+			case refreshToken = "refresh_token"
+			case sub
+			case scope
+			case tokenType = "token_type"
+			case expiresIn = "expires_in"
 
-		public var accessToken: String { access_token }
-		public var refreshToken: String? { refresh_token }
-		public var tokenType: String { token_type }
-		public var expiresIn: Int { expires_in }
+		}
 	}
 
 }

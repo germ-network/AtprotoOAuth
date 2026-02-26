@@ -173,7 +173,7 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 				throw OAuthClientError.pkceRequired
 			}
 
-			let tokenRequest = ATProto.TokenRequest(
+			let tokenRequest = ATProtoOAuthSession.TokenRequest(
 				code: authCode,
 				codeVerifier: verifier,
 				redirectUri: params.credentials.callbackURL.absoluteString,
@@ -190,7 +190,7 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 
 			let result = try await params.responseProvider(request)
 				.successErrorDecode(
-					resultType: ATProto.TokenResponse.self,
+					resultType: ATProtoOAuthSession.TokenResponse.self,
 					errorType: ATProto.TokenError.self,
 				)
 
@@ -219,72 +219,13 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 	}
 
 	typealias TokenSubscriberValidator =
-		@Sendable (ATProto.TokenResponse, _ issuer: String) async throws -> Bool
+		@Sendable (ATProtoOAuthSession.TokenResponse, _ issuer: String) async throws -> Bool
 }
 
 enum ATProto {
-	struct TokenRequest: Hashable, Sendable, Codable {
-		public let code: String
-		public let codeVerifier: String
-		public let redirectUri: String
-		public let grantType: String
-		public let clientId: String
+	
 
-		public init(
-			code: String,
-			codeVerifier: String,
-			redirectUri: String,
-			grantType: String,
-			clientId: String
-		) {
-			self.code = code
-			self.codeVerifier = codeVerifier
-			self.redirectUri = redirectUri
-			self.grantType = grantType
-			self.clientId = clientId
-		}
-
-		public enum CodingKeys: String, CodingKey {
-			case code
-			case codeVerifier = "code_verifier"
-			case redirectUri = "redirect_uri"
-			case grantType = "grant_type"
-			case clientId = "client_id"
-		}
-	}
-
-	struct TokenResponse: Hashable, Sendable, Codable {
-		public let accessToken: String
-		public let refreshToken: String?
-		public let sub: String
-		public let scope: String
-		public let tokenType: String
-		public let expiresIn: Int
-
-		public func login(for issuingServer: String, dpopKey: OAuth.DPoPKey) -> SessionState
-		{
-			.init(
-				dPopKey: dpopKey,
-				additionalParams: ["did": sub],
-				mutable: .init(
-					accessToken: .init(
-						value: accessToken, expiresIn: expiresIn),
-					refreshToken: refreshToken.map { .init(value: $0) },
-					scopes: scope,
-					issuingServer: issuingServer,
-				)
-			)
-		}
-		enum CodingKeys: String, CodingKey {
-			case accessToken = "access_token"
-			case refreshToken = "refresh_token"
-			case sub
-			case scope
-			case tokenType = "token_type"
-			case expiresIn = "expires_in"
-
-		}
-	}
+	
 
 	struct TokenError: Hashable, Sendable, Codable {
 		let error: String
