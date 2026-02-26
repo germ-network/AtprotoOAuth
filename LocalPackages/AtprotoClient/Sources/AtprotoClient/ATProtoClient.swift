@@ -1,5 +1,6 @@
 import AtprotoTypes
 import Foundation
+import GermConvenience
 import OAuth
 
 //abstract out the protocol so we can sub in a mock one for offline testing
@@ -16,11 +17,24 @@ public protocol ATProtoClientInterface: Sendable {
 
 	func getRepository<Result: AtprotoRecord>(
 		recordType: Result.Type,
+		pdsUrl: URL,
 		repo: AtIdentifier,
 		recordKey: RecordKey,
-		pdsUrl: URL,
 		recordCID: CID?,
 	) async throws -> Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>?
+
+	func authRequest<X: XRPCInterface>(
+		for xrpc: X.Type,
+		pdsUrl: URL,
+		parameters: [URLQueryItem],
+		session: AtprotoSession
+	) async throws -> X.Result
+}
+
+public protocol AtprotoSession {
+	func authResponse(
+		for request: URLRequest,
+	) async throws -> HTTPDataResponse
 }
 
 public struct ATProtoClient {

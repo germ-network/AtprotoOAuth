@@ -19,6 +19,7 @@ public actor ATProtoOAuthSession {
 	public let appCredentials: AppCredentials
 	let atprotoClient: ATProtoClientInterface
 
+	public let pkceVerifier = PKCEVerifier()
 	private let nonceCache: NSCache<NSString, NonceValue> = NSCache()
 	// Return value is (origin, nonce)
 	private let nonceDecoder: NonceDecoder = nonceHeaderDecoder(dataResponse:)
@@ -116,6 +117,18 @@ public actor ATProtoOAuthSession {
 		})
 
 		nonceCache.countLimit = 25
+	}
+
+	public func authRequest<X: XRPCInterface>(
+		for xrpc: X.Type,
+		parameters: [URLQueryItem]
+	) async throws -> X.Result {
+		try await atprotoClient.authRequest(
+			for: xrpc,
+			pdsUrl: try await getPDSUrl(),
+			parameters: parameters,
+			session: self
+		)
 	}
 }
 

@@ -26,11 +26,6 @@ extension Lexicon.Com.Atproto.Repo {
 		/// The value for the record. Codable for later conversion
 		public let value: Result
 	}
-
-	public struct GetRecordError: Sendable, Codable {
-		public let error: String
-		let message: String
-	}
 }
 
 extension Lexicon.Com.Atproto.Repo.GetRecordOutput {

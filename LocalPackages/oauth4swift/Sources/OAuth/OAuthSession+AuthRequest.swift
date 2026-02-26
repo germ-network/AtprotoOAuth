@@ -9,9 +9,8 @@ import Foundation
 import GermConvenience
 
 extension OAuthSession {
-	public func dpopResponse(
+	public func authResponse(
 		for request: URLRequest,
-		pkceVerifier: PKCEVerifier
 	) async throws -> HTTPDataResponse {
 		let sessionState = try session
 

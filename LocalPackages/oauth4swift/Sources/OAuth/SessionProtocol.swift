@@ -22,6 +22,7 @@ public protocol OAuthSession: Actor, TokenHandling {
 
 	var lazyServerMetadata: LazyResource<AuthServerMetadata> { get }
 
+	var pkceVerifier: PKCEVerifier { get }
 	func getNonce(origin: String) -> NonceValue?
 	func store(nonce: String, for: String)
 	func decode(dataResponse: HTTPDataResponse) throws -> NonceValue?
@@ -56,7 +57,6 @@ extension OAuthSession {
 	) async throws -> SessionState.Archive {
 		let stateToken = UUID().uuidString
 		let dpopKey = DPoPKey.generateP256()
-		let pkceVerifier = PKCEVerifier()
 
 		let parRequestURI = try await getPARRequestURI(
 			appCredentials: appCredentials,
@@ -85,7 +85,7 @@ extension OAuthSession {
 					for: $0,
 					login: nil,
 					dPoPKey: dpopKey,
-					pkceVerifier: pkceVerifier
+					pkceVerifier: self.pkceVerifier
 				)
 			},
 			stateToken: stateToken,

@@ -17,9 +17,9 @@ extension ATProtoClient {
 			.pdsUrl
 		let response = try await getRepository(
 			recordType: Lexicon.Com.GermNetwork.Declaration.self,
+			pdsUrl: pdsUrl,
 			repo: .did(did),
 			recordKey: "self",
-			pdsUrl: pdsUrl,
 		)
 
 		return response?.value
