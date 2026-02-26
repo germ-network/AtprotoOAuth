@@ -175,10 +175,10 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 
 			let tokenRequest = ATProto.TokenRequest(
 				code: authCode,
-				code_verifier: verifier,
-				redirect_uri: params.credentials.callbackURL.absoluteString,
-				grant_type: "authorization_code",
-				client_id: params.credentials.clientId
+				codeVerifier: verifier,
+				redirectUri: params.credentials.callbackURL.absoluteString,
+				grantType: "authorization_code",
+				clientId: params.credentials.clientId
 			)
 
 			var request = URLRequest(url: tokenURL)
@@ -225,20 +225,31 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 enum ATProto {
 	struct TokenRequest: Hashable, Sendable, Codable {
 		public let code: String
-		public let code_verifier: String
-		public let redirect_uri: String
-		public let grant_type: String
-		public let client_id: String
+		public let codeVerifier: String
+		public let redirectUri: String
+		public let grantType: String
+		public let clientId: String
 
 		public init(
-			code: String, code_verifier: String, redirect_uri: String,
-			grant_type: String, client_id: String
+			code: String,
+			codeVerifier: String,
+			redirectUri: String,
+			grantType: String,
+			clientId: String
 		) {
 			self.code = code
-			self.code_verifier = code_verifier
-			self.redirect_uri = redirect_uri
-			self.grant_type = grant_type
-			self.client_id = client_id
+			self.codeVerifier = codeVerifier
+			self.redirectUri = redirectUri
+			self.grantType = grantType
+			self.clientId = clientId
+		}
+
+		public enum CodingKeys: String, CodingKey {
+			case code
+			case codeVerifier = "code_verifier"
+			case redirectUri = "redirect_uri"
+			case grantType = "grant_type"
+			case clientId = "client_id"
 		}
 	}
 
