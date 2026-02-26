@@ -8,17 +8,6 @@ public protocol ATProtoOAuthInterface {
 	//MARK: Resolution
 	static func resolve(handle: String) async throws -> ATProtoDID
 
-	typealias UnauthPDSRequest<Result: Sendable> =
-		@Sendable (
-			URL,
-			@escaping HTTPURLResponseProvider
-		) async throws -> Result
-	//MARK: Unauthenticated Pass-through
-	func fetchFromPDS<Result: Sendable>(
-		did: ATProtoDID,
-		request: UnauthPDSRequest<Result>
-	) async throws -> Result
-
 	//MARK: Authentication
 	func authorize(identity: ATProtoOAuthClient.AuthIdentity) async throws
 		-> SessionState.Archive

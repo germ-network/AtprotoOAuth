@@ -12,15 +12,6 @@ import Foundation
 import OAuth
 
 extension ATProtoOAuthClient: ATProtoOAuthInterface {
-	public func fetchFromPDS<Result: Sendable>(
-		did: ATProtoDID,
-		request: UnauthPDSRequest<Result>
-	) async throws -> Result {
-		try await request(
-			resolvePdsUrl(did: did),
-			responseProvider
-		)
-	}
 
 	//Germ will always do pre-processing so we will know did,
 	//but you can start from handle
@@ -227,9 +218,6 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 }
 
 enum ATProto {
-	
-
-	
 
 	struct TokenError: Hashable, Sendable, Codable {
 		let error: String

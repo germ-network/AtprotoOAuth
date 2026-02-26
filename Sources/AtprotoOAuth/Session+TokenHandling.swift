@@ -98,7 +98,7 @@ extension ATProtoOAuthSession {
 			case clientId = "client_id"
 		}
 	}
-	
+
 	struct RefreshTokenRequest: Hashable, Sendable, Codable {
 		public let refreshToken: String
 		public let redirectUri: String
@@ -116,7 +116,7 @@ extension ATProtoOAuthSession {
 			self.grantType = grantType
 			self.clientId = clientId
 		}
-		
+
 		public enum CodingKeys: String, CodingKey {
 			case refreshToken = "refresh_token"
 			case redirectUri = "redirect_uri"
@@ -141,7 +141,7 @@ extension ATProtoOAuthSession {
 				issuingServer: issuingServer
 			)
 		}
-		
+
 		public func login(for issuingServer: String, dpopKey: OAuth.DPoPKey) -> SessionState
 		{
 			.init(
@@ -156,7 +156,7 @@ extension ATProtoOAuthSession {
 				)
 			)
 		}
-		
+
 		enum CodingKeys: String, CodingKey {
 			case accessToken = "access_token"
 			case refreshToken = "refresh_token"
