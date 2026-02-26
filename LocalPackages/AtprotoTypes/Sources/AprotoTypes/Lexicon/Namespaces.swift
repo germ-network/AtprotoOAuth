@@ -13,6 +13,14 @@ public enum Lexicon {
 			public enum Repo {}
 		}
 	}
+
+	public enum App {
+		public enum Bsky {
+			public enum Actor {
+				public enum Defs {}
+			}
+		}
+	}
 }
 
 extension Lexicon.Com {

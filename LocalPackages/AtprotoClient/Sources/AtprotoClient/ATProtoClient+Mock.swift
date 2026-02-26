@@ -40,14 +40,24 @@ public struct MockATProtoClient: ATProtoClientInterface {
 		)
 	}
 
-	public func getRepository<Result: AtprotoRecord>(
+	public func getRepository<Result>(
 		recordType: Result.Type,
-		repo: AtIdentifier,
-		recordKey: RecordKey,
 		pdsUrl: URL,
-		recordCID: CID?
-	) async throws -> Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>? {
-		.mock(cid: recordCID)
+		repo: AtprotoTypes.AtIdentifier,
+		recordKey: AtprotoTypes.RecordKey,
+		recordCID: AtprotoTypes.CID?
+	) async throws -> AtprotoTypes.Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>?
+	where Result: AtprotoTypes.AtprotoRecord {
+		.mock(cid: nil)
+	}
+
+	public func authRequest<X: XRPCInterface>(
+		for xrpc: X.Type,
+		pdsUrl: URL,
+		parameters: X.Parameters,
+		session: AtprotoSession
+	) async throws -> X.Result {
+		.mock()
 	}
 }
 

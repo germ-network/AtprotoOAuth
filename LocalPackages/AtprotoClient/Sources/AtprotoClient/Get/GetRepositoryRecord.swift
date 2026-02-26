@@ -31,11 +31,12 @@ extension ATProtoClient {
 	/// ``ATAPIError`` and ``ATRequestPrepareError`` for more details.
 	public func getRepository<Result: AtprotoRecord>(
 		recordType: Result.Type,
+		pdsUrl: URL,
 		repo: AtIdentifier,
 		recordKey: RecordKey,
-		pdsUrl: URL,
 		recordCID: CID? = nil,
 	) async throws -> Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>? {
+
 		var queryItems: [URLQueryItem] = [
 			.init(name: "repo", value: repo.wireFormat),
 			.init(name: "collection", value: Result.nsid),
@@ -61,7 +62,7 @@ extension ATProtoClient {
 		let result = try await responseProvider(request)
 			.successErrorDecode(
 				resultType: Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>.self,
-				errorType: Lexicon.Com.Atproto.Repo.GetRecordError.self
+				errorType: Lexicon.XRPCError.self
 			)
 
 		switch result {
@@ -100,7 +101,7 @@ extension ATProtoClient {
 		return url
 	}
 
-	private func createRequest(
+	func createRequest(
 		url: URL,
 		httpMethod: HTTPMethod,
 		acceptValue: String? = "application/json",

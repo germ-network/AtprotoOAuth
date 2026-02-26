@@ -76,7 +76,10 @@ import SwiftUI
 				state = .loggedIn(session)
 
 				//make an auth request
-
+				let profileMetadata = try await session.authRequest(
+					for: Lexicon.App.Bsky.Actor.GetProfile.self,
+					parameters: .init(did: resolvedDid)
+				)
 			} catch {
 				logs.append(.init(body: "Error: \(error)"))
 			}
