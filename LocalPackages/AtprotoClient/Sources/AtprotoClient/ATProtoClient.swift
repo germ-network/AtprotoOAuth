@@ -7,14 +7,6 @@ import OAuth
 public protocol ATProtoClientInterface: Sendable {
 	func plcDirectoryQuery(_: Atproto.DID) async throws -> DIDDocument
 
-	func loadProtectedResourceMetadata(
-		host: String
-	) async throws -> ProtectedResourceMetadata
-
-	func loadAuthServerMetadata(
-		host: String
-	) async throws -> AuthServerMetadata
-
 	func getRepository<Result: AtprotoRecord>(
 		recordType: Result.Type,
 		pdsUrl: URL,

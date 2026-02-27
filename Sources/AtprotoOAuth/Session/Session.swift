@@ -49,42 +49,44 @@ public actor ATProtoOAuthSession {
 		self.state = state
 		self.atprotoClient = atprotoClient
 
-		self.lazyServerMetadata = .init(fetchTaskGenerator: {
-			Task {
-				let pdsHost = try await atprotoClient.plcDirectoryQuery(did)
-					.pdsUrl
-				let pdsMetadata =
-					try await atprotoClient.loadProtectedResourceMetadata(
-						host: pdsHost.host().tryUnwrap
+		self.lazyServerMetadata = .init(
+			fetchTaskGenerator: {
+				Task {
+					let pdsHost = try await atprotoClient.plcDirectoryQuery(did)
+						.pdsUrl
+					let pdsMetadata = try await ProtectedResourceMetadata.load(
+						for: pdsHost.host().tryUnwrap,
+						provider: URLSession.defaultProvider
 					)
-
-				//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
-				//PDS doesn't actually fill this field, so we only check it if present
-				if let supportedAlgs = pdsMetadata.dpopSigningAlgValuesSupported {
-					guard supportedAlgs.contains("ES256")
-					else {
-						throw OAuthSessionError.unsupported
+					
+					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
+					//PDS doesn't actually fill this field, so we only check it if present
+					if let supportedAlgs = pdsMetadata.dpopSigningAlgValuesSupported {
+						guard supportedAlgs.contains("ES256")
+						else {
+							throw OAuthSessionError.unsupported
+						}
 					}
+					
+					guard
+						let authorizationServerUrl = pdsMetadata
+							.authorizationServers?.first,
+						let authorizationServerHost = URL(
+							string: authorizationServerUrl)?.host()
+					else {
+						throw OAuthSessionError.cantFormURL
+					}
+					
+					return try await AuthServerMetadata.load(
+						for: authorizationServerHost,
+						provider: URLSession.defaultProvider
+					)
 				}
-
-				guard
-					let authorizationServerUrl = pdsMetadata
-						.authorizationServers?.first,
-					let authorizationServerHost = URL(
-						string: authorizationServerUrl)?.host()
-				else {
-					throw OAuthSessionError.cantFormURL
-				}
-
-				return try await atprotoClient.loadAuthServerMetadata(
-					host: authorizationServerHost
-				)
-			}
-		})
-
+			})
+		
 		nonceCache.countLimit = 25
 	}
-
+	
 	public func authRequest<X: XRPCInterface>(
 		for xrpc: X.Type,
 		parameters: X.Parameters
@@ -102,13 +104,13 @@ extension ATProtoOAuthSession {
 	public struct Archive {
 		let did: String
 		let session: SessionState.Archive?
-
+		
 		public init(did: String, session: SessionState.Archive?) {
 			self.did = did
 			self.session = session
 		}
 	}
-
+	
 	public init(
 		archive: Archive,
 		appCredentials: AppCredentials,
@@ -121,7 +123,7 @@ extension ATProtoOAuthSession {
 			atprotoClient: atprotoClient
 		)
 	}
-
+	
 	//if expired not worth saving
 	var archive: SessionState.Archive? {
 		guard case .active(let sessionState) = state else {
@@ -148,7 +150,7 @@ extension ATProtoOAuthSession: OAuthSession {
 		//TODO: save this
 	}
 	
-
+	
 	
 	public static func response(for request: URLRequest) async throws -> HTTPDataResponse {
 		try await URLSession.defaultProvider(request)
@@ -161,11 +163,11 @@ extension ATProtoOAuthSession: DPoPNonceHolding {
 			try session.dPopKey.tryUnwrap
 		}
 	}
-
+	
 	public func response(request: URLRequest) async throws -> GermConvenience.HTTPDataResponse {
 		try await URLSession.defaultProvider(request)
 	}
-
+	
 	public static func decode(
 		dataResponse: HTTPDataResponse
 	) throws -> OAuth.NonceValue? {
@@ -173,7 +175,7 @@ extension ATProtoOAuthSession: DPoPNonceHolding {
 		else {
 			return nil
 		}
-
+		
 		// I'm not sure why response.url is optional, but maybe we need the request
 		// passed into the decoder here, to fallback to request.url.origin
 		guard let responseOrigin = dataResponse.response.url?.origin else {
