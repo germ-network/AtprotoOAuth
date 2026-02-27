@@ -9,6 +9,7 @@
 import AtprotoClient
 import AtprotoTypes
 import Foundation
+import GermConvenience
 
 extension ATProtoOAuthSession {
 	/// Writes a record in the repository, which may replace a previous record.
