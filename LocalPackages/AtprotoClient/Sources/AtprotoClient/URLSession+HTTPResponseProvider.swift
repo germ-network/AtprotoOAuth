@@ -15,7 +15,7 @@ enum URLResponseProviderError: Error {
 
 extension URLSession {
 	/// Convert a `URLSession` instance into a `URLResponseProvider`.
-	public var responseProvider: HTTPDataResponse.Responder {
+	public var responseProvider: HTTPDataResponse.Requester {
 		{ request in
 			let (data, urlResponse) = try await self.data(for: request)
 			if let httpResponse = urlResponse as? HTTPURLResponse {
@@ -27,7 +27,7 @@ extension URLSession {
 	}
 
 	/// Convert a `URLSession` with a default configuration into a `URLResponseProvider`.
-	public static var defaultProvider: HTTPDataResponse.Responder {
+	public static var defaultProvider: HTTPDataResponse.Requester {
 		URLSession(configuration: .default).responseProvider
 	}
 }

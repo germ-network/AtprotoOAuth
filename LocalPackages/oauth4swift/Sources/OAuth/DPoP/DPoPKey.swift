@@ -17,7 +17,7 @@ public struct DPoPKey: Codable, Hashable, Sendable {
 	let alg: DPoPAlg
 	let keyData: Data
 
-	static func generateP256() -> Self {
+	public static func generateP256() -> Self {
 		.init(alg: .es256, keyData: P256.Signing.PrivateKey().rawRepresentation)
 	}
 

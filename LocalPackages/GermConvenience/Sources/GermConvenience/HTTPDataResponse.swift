@@ -13,7 +13,7 @@ public struct HTTPDataResponse: Sendable {
 	public let data: Data
 	public let response: HTTPURLResponse
 
-	public typealias Responder = @Sendable (URLRequest) async throws -> HTTPDataResponse
+	public typealias Requester = @Sendable (URLRequest) async throws -> HTTPDataResponse
 
 	public init(data: Data, response: HTTPURLResponse) {
 		self.data = data

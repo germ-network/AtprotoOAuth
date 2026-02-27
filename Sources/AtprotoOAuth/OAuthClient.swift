@@ -10,6 +10,7 @@ public protocol ATProtoOAuthInterface {
 	static func resolve(handle: String) async throws -> Atproto.DID
 
 	//MARK: Authentication
+	//want to end up with a valid archive, not a live object
 	func authorize(identity: ATProtoOAuthClient.AuthIdentity) async throws
 		-> SessionState.Archive
 }
@@ -22,7 +23,7 @@ public actor ATProtoOAuthClient {
 	public nonisolated let appCredentials: AppCredentials
 	public typealias UserAuthenticator = @Sendable (URL, String) async throws -> URL
 	public let userAuthenticator: UserAuthenticator
-	public let responseProvider: HTTPDataResponse.Responder
+	public let responseProvider: HTTPDataResponse.Requester
 	public let atprotoClient: ATProtoClientInterface
 
 	//didResolver
@@ -32,7 +33,7 @@ public actor ATProtoOAuthClient {
 	public init(
 		appCredentials: AppCredentials,
 		userAuthenticator: @escaping UserAuthenticator,
-		responseProvider: @escaping HTTPDataResponse.Responder,
+		responseProvider: @escaping HTTPDataResponse.Requester,
 		atprotoClient: ATProtoClientInterface,
 	) {
 		self.appCredentials = appCredentials

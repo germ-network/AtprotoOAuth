@@ -21,28 +21,8 @@ public actor ATProtoOAuthSession {
 
 	public let pkceVerifier = PKCEVerifier()
 	private let nonceCache: NSCache<NSString, NonceValue> = NSCache()
-	// Return value is (origin, nonce)
-	private let nonceDecoder: NonceDecoder = nonceHeaderDecoder(dataResponse:)
-
-	public static func nonceHeaderDecoder(
-		dataResponse: HTTPDataResponse
-	) throws -> NonceValue? {
-		guard let value = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce")
-		else {
-			return nil
-		}
-
-		// I'm not sure why response.url is optional, but maybe we need the request
-		// passed into the decoder here, to fallback to request.url.origin
-		guard let responseOrigin = dataResponse.response.url?.origin else {
-			return nil
-		}
-
-		return NonceValue(origin: responseOrigin, nonce: value)
-	}
 
 	enum State {
-		case authorizing
 		case active(SessionState)
 		case expired
 
@@ -57,20 +37,6 @@ public actor ATProtoOAuthSession {
 	var state: State
 	public var lazyServerMetadata: LazyResource<AuthServerMetadata>
 	public var refreshTask: Task<SessionState.Mutable, Error>?
-
-	//starts in authorizing
-	static func new(
-		did: Atproto.DID,
-		appCredentials: AppCredentials,
-		atprotoClient: ATProtoClientInterface
-	) -> Self {
-		.init(
-			did: did,
-			appCredentials: appCredentials,
-			state: .authorizing,
-			atprotoClient: atprotoClient
-		)
-	}
 
 	private init(
 		did: Atproto.DID,
@@ -89,7 +55,7 @@ public actor ATProtoOAuthSession {
 					.pdsUrl
 				let pdsMetadata =
 					try await atprotoClient.loadProtectedResourceMetadata(
-						host: pdsHost.absoluteString
+						host: pdsHost.host().tryUnwrap
 					)
 
 				//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
@@ -174,43 +140,49 @@ extension ATProtoOAuthSession: OAuthSession {
 			return sessionState
 		}
 	}
-
+	
 	public func refreshed(sessionMutable: OAuth.SessionState.Mutable) throws {
 		let session = try session
-
+		
 		session.updated(mutable: sessionMutable)
 		//TODO: save this
 	}
+	
 
-	public func decode(
-		dataResponse: HTTPDataResponse
-	) throws -> OAuth.NonceValue? {
-		try nonceDecoder(dataResponse)
-	}
-
+	
 	public static func response(for request: URLRequest) async throws -> HTTPDataResponse {
 		try await URLSession.defaultProvider(request)
 	}
+}
 
-	public static func authorizationURLProvider(
-		authEndpoint: String,
-		parRequestURI: String,
-		clientId: String,
-	) throws -> URL {
-		var components = URLComponents(string: authEndpoint)
-
-		components?.queryItems = [
-			URLQueryItem(name: "request_uri", value: parRequestURI),
-			URLQueryItem(name: "client_id", value: clientId),
-		]
-
-		guard let url = components?.url else {
-			throw OAuthSessionError.cantFormURL
+extension ATProtoOAuthSession: DPoPNonceHolding {
+	public var dpopKey: OAuth.DPoPKey {
+		get throws {
+			try session.dPopKey.tryUnwrap
 		}
-
-		return url
 	}
 
+	public func response(request: URLRequest) async throws -> GermConvenience.HTTPDataResponse {
+		try await URLSession.defaultProvider(request)
+	}
+
+	public static func decode(
+		dataResponse: HTTPDataResponse
+	) throws -> OAuth.NonceValue? {
+		guard let value = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce")
+		else {
+			return nil
+		}
+
+		// I'm not sure why response.url is optional, but maybe we need the request
+		// passed into the decoder here, to fallback to request.url.origin
+		guard let responseOrigin = dataResponse.response.url?.origin else {
+			return nil
+		}
+
+		return NonceValue(origin: responseOrigin, nonce: value)
+	}
+	
 	public func getNonce(origin: String) -> NonceValue? {
 		nonceCache.object(forKey: origin as NSString)
 	}

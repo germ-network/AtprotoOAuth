@@ -60,37 +60,21 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 			throw OAuthClientError.missingUrlHost
 		}
 
-		let serverConfig = try await atprotoClient.loadAuthServerMetadata(
+		let authServerMetadata = try await atprotoClient.loadAuthServerMetadata(
 			host: authorizationServerHost
 		)
 
 		let parConfig = PARConfiguration(
-			url: URL(string: serverConfig.pushedAuthorizationRequestEndpoint)!,
+			url: try URL(
+				string: authServerMetadata.pushedAuthorizationRequestEndpoint
+			).tryUnwrap,
 			parameters: ["login_hint": identity.serverHint]
 		)
 
-		return
-			try await ATProtoOAuthSession
-			.new(
-				did: did,
-				appCredentials: appCredentials,
-				atprotoClient: atprotoClient
-			)
+		return try await PreSession(appCredentials: appCredentials)
 			.performUserAuthentication(
-				appCredentials: appCredentials,
 				parConfig: parConfig,
-				authEndpoint: serverConfig.authorizationEndpoint,
-				loginProvider: Self.loginProvider(
-					server: serverConfig,
-					validator: { tokenResponse, sub in
-						// TODO: GER-1343 - Implement validator
-						// after a token is issued, it is critical that the returned
-						// identity be resolved and its PDS match the issuing server
-						//
-						// check out draft-ietf-oauth-v2-1 section 7.3.1 for details
-						return true
-					}
-				),
+				authServerMetadata: authServerMetadata,
 				userAuthenticator: { try await userAuthenticator($0, $1) }
 			)
 	}
@@ -122,103 +106,21 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 		return authorizationServerUrl
 	}
 
-	private static func loginProvider(
-		server: AuthServerMetadata, validator: @escaping TokenSubscriberValidator
-	) -> LoginProvider {
-		{
-			params,
-			dpopKey in
-			// decode the params in the redirectURL
-			guard
-				let redirectComponents = URLComponents(
-					url: params.redirectURL, resolvingAgainstBaseURL: false)
-			else {
-				throw OAuthClientError.missingTokenURL
-			}
-
-			guard
-				let authCode = redirectComponents.queryItems?.first(where: {
-					$0.name == "code"
-				})?.value,
-				let iss = redirectComponents.queryItems?.first(where: {
-					$0.name == "iss"
-				})?.value,
-				let state = redirectComponents.queryItems?.first(where: {
-					$0.name == "state"
-				})?.value
-			else {
-				throw OAuthClientError.missingAuthorizationCode
-			}
-
-			if state != params.stateToken {
-				throw OAuthClientError.stateTokenMismatch(
-					state, params.stateToken)
-			}
-
-			if iss != server.issuer {
-				throw OAuthClientError.issuingServerMismatch(iss, server.issuer)
-			}
-
-			// and use them (plus just a little more) to construct the token request
-			guard let tokenURL = URL(string: server.tokenEndpoint) else {
-				throw OAuthClientError.missingTokenURL
-			}
-
-			guard let verifier = params.pkceVerifier?.verifier else {
-				throw OAuthClientError.pkceRequired
-			}
-
-			let tokenRequest = ATProtoOAuthSession.TokenRequest(
-				code: authCode,
-				codeVerifier: verifier,
-				redirectUri: params.credentials.callbackURL.absoluteString,
-				grantType: "authorization_code",
-				clientId: params.credentials.clientId
-			)
-
-			var request = URLRequest(url: tokenURL)
-
-			request.httpMethod = "POST"
-			request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-			request.setValue("application/json", forHTTPHeaderField: "Accept")
-			request.httpBody = try JSONEncoder().encode(tokenRequest)
-
-			let result = try await params.responseProvider(request)
-				.successErrorDecode(
-					resultType: ATProtoOAuthSession.TokenResponse.self,
-					errorType: ATProto.TokenError.self,
-				)
-
-			switch result {
-			case .result(let tokenResponse):
-				guard tokenResponse.tokenType == "DPoP" else {
-					throw OAuthClientError.dpopTokenExpected(
-						tokenResponse.tokenType)
-				}
-
-				if try await validator(tokenResponse, server.issuer) == false {
-					throw OAuthClientError.tokenInvalid
-				}
-
-				return tokenResponse.login(for: iss, dpopKey: dpopKey)
-			case .error(let tokenError, let int):
-				if tokenError.errorDescription == "Code challenge already used" {
-					throw OAuthClientError.codeChallengeAlreadyUsed
-				}
-				Self.logger.error(
-					"Login error: \(tokenError.errorDescription, privacy: .public)"
-				)
-				throw OAuthClientError.remoteTokenError(tokenError)
-			}
-		}
-	}
-
-	typealias TokenSubscriberValidator =
-		@Sendable (ATProtoOAuthSession.TokenResponse, _ issuer: String) async throws -> Bool
+//	private static func loginProvider(
+//		server: AuthServerMetadata, validator: @escaping TokenSubscriberValidator
+//	) -> LoginProvider {
+//		{
+//			params,
+//			dpopKey in
+//			
+//	}
+//
+//	typealias TokenSubscriberValidator =
+//		@Sendable (ATProtoOAuthSession.TokenResponse, _ issuer: String) async throws -> Bool
 }
 
-enum ATProto {
 
+extension Atproto {
 	struct TokenError: Hashable, Sendable, Codable {
 		let error: String
 		let errorDescription: String

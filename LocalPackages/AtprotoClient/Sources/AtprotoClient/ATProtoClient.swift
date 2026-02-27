@@ -32,15 +32,13 @@ public protocol ATProtoClientInterface: Sendable {
 }
 
 public protocol AtprotoSession {
-	func authResponse(
-		for request: URLRequest,
-	) async throws -> HTTPDataResponse
+	func authResponse(for request: URLRequest) async throws -> HTTPDataResponse
 }
 
 public struct ATProtoClient {
-	let responseProvider: HTTPDataResponse.Responder
+	let responseProvider: HTTPDataResponse.Requester
 
-	public init(responseProvider: @escaping HTTPDataResponse.Responder) {
+	public init(responseProvider: @escaping HTTPDataResponse.Requester) {
 		self.responseProvider = responseProvider
 	}
 }

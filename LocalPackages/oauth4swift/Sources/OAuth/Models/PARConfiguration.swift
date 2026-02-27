@@ -25,8 +25,4 @@ public struct PARResponse: Codable, Hashable, Sendable {
 		case requestURI = "request_uri"
 		case expiresIn = "expires_in"
 	}
-
-	var expiry: Date {
-		Date(timeIntervalSinceNow: Double(expiresIn))
-	}
 }

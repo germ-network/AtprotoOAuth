@@ -52,7 +52,7 @@ public struct AuthServerMetadata: Codable, Hashable, Sendable {
 
 	public static func load(
 		for host: String,
-		provider: HTTPDataResponse.Responder
+		provider: HTTPDataResponse.Requester
 	) async throws -> AuthServerMetadata {
 		var components = URLComponents()
 
@@ -86,7 +86,7 @@ public struct ClientMetadata: Hashable, Codable, Sendable {
 
 	public static func load(
 		for clientId: String,
-		provider: HTTPDataResponse.Responder
+		provider: HTTPDataResponse.Requester
 	) async throws -> ClientMetadata {
 		let url = try URL(string: clientId).tryUnwrap(MetadataError.urlInvalid)
 
@@ -149,7 +149,7 @@ public struct ProtectedResourceMetadata: Codable, Hashable, Sendable {
 
 	public static func load(
 		for host: String,
-		provider: HTTPDataResponse.Responder
+		provider: HTTPDataResponse.Requester
 	) async throws -> ProtectedResourceMetadata {
 		var components = URLComponents()
 		components.scheme = "https"

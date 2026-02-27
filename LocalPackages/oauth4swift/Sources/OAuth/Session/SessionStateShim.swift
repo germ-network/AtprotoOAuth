@@ -38,7 +38,7 @@ public struct Token: Codable, Hashable, Sendable {
 //best way to express fixed key and variable accessToken is as a reference type
 public class SessionState {
 	//not mandatory in OAuth 2.1
-	let dPopKey: DPoPKey?
+	public let dPopKey: DPoPKey?
 
 	public let additionalParams: [String: String]?
 
@@ -67,9 +67,9 @@ public class SessionState {
 		)
 	}
 
-	public struct Mutable: Sendable {
+	public struct Mutable: Sendable, Codable {
 		let accessToken: Token
-		let refreshToken: Token?
+		public let refreshToken: Token?
 
 		// User authorized scopes
 		let scopes: String?
@@ -95,68 +95,36 @@ public class SessionState {
 
 extension SessionState {
 	public struct Archive: Sendable, Codable {
-		public let accessToken: Token
-		public let refreshToken: Token?
-
 		let dPopKey: DPoPKey?
 
-		// User authorized scopes
-		public let scopes: String?
-		public let issuingServer: String?
-
 		public let additionalParams: [String: String]?
+		
+		public let mutable: SessionState.Mutable
+		
+		public init(
+			dPopKey: DPoPKey?,
+			additionalParams: [String : String]?,
+			mutable: SessionState.Mutable
+		) {
+			self.dPopKey = dPopKey
+			self.additionalParams = additionalParams
+			self.mutable = mutable
+		}
 	}
 
 	public convenience init(archive: Archive) {
 		self.init(
 			dPopKey: archive.dPopKey,
 			additionalParams: archive.additionalParams,
-			mutable: .init(
-				accessToken: archive.accessToken,
-				refreshToken: archive.refreshToken,
-				scopes: archive.scopes,
-				issuingServer: archive.issuingServer
-			)
+			mutable: archive.mutable
 		)
 	}
 
 	public var archive: Archive {
 		.init(
-			accessToken: mutable.accessToken,
-			refreshToken: mutable.refreshToken,
 			dPopKey: dPopKey,
-			scopes: mutable.scopes,
-			issuingServer: mutable.issuingServer,
-			additionalParams: additionalParams
+			additionalParams: additionalParams,
+			mutable: mutable
 		)
-	}
-}
-
-public struct SessionStateShim: Codable, Hashable, Sendable {
-	public var accessToken: Token
-	public var refreshToken: Token?
-
-	// User authorized scopes
-	public var scopes: String?
-	public let issuingServer: String?
-
-	public let additionalParams: [String: String]?
-
-	public init(
-		accessToken: Token,
-		refreshToken: Token? = nil,
-		scopes: String? = nil,
-		issuingServer: String? = nil,
-		additionalParams: [String: String]? = nil,
-	) {
-		self.accessToken = accessToken
-		self.refreshToken = refreshToken
-		self.scopes = scopes
-		self.issuingServer = issuingServer
-		self.additionalParams = additionalParams
-	}
-
-	public init(token: String, validUntilDate: Date? = nil) {
-		self.init(accessToken: Token(value: token, expiry: validUntilDate))
 	}
 }
