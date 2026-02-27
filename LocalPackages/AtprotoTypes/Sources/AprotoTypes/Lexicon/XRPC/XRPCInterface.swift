@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol XRPCInterface {
-	static var nsid: NSID { get }
+	static var nsid: Atproto.NSID { get }
 	associatedtype Parameters: XRPCParameters
 	associatedtype Result: Decodable, Mockable
 }

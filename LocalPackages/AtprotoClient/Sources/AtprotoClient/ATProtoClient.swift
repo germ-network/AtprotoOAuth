@@ -5,7 +5,7 @@ import OAuth
 
 //abstract out the protocol so we can sub in a mock one for offline testing
 public protocol ATProtoClientInterface: Sendable {
-	func plcDirectoryQuery(_: ATProtoDID) async throws -> DIDDocument
+	func plcDirectoryQuery(_: Atproto.DID) async throws -> DIDDocument
 
 	func loadProtectedResourceMetadata(
 		host: String
@@ -19,7 +19,7 @@ public protocol ATProtoClientInterface: Sendable {
 		recordType: Result.Type,
 		pdsUrl: URL,
 		repo: AtIdentifier,
-		recordKey: RecordKey,
+		recordKey: Atproto.RecordKey,
 		recordCID: CID?,
 	) async throws -> Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>?
 

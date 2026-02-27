@@ -10,7 +10,7 @@ import Foundation
 
 extension ATProtoClient {
 	public func getGermMessagingDelegate(
-		did: ATProtoDID,
+		did: Atproto.DID,
 	) async throws -> Lexicon.Com.GermNetwork.Declaration? {
 		//rely on url caching for this value
 		let pdsUrl = try await plcDirectoryQuery(did)

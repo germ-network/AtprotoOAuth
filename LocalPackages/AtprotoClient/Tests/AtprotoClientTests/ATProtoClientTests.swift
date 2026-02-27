@@ -11,7 +11,7 @@ struct APIOnlineTests {
 				string: "https://shiitake.us-east.host.bsky.network"
 			)
 		)
-		let did = try ATProtoDID(fullId: "did:plc:lbu36k4mysk5g6gcrpw4dbwm")
+		let did = try Atproto.DID(fullId: "did:plc:lbu36k4mysk5g6gcrpw4dbwm")
 
 		let result =
 			try await ATProtoClient(responseProvider: URLSession.defaultProvider)

@@ -91,7 +91,7 @@ import SwiftUI
 		logs = []
 	}
 
-	static func fallbackResolve(handle: String) async throws -> ATProtoDID {
+	static func fallbackResolve(handle: String) async throws -> Atproto.DID {
 		do {
 			return try await Slingshot.resolve(handle: handle)
 		} catch {

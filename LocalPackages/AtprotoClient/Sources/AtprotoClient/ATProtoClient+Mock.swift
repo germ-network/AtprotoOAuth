@@ -12,7 +12,7 @@ import OAuth
 public struct MockATProtoClient: ATProtoClientInterface {
 	public init() {}
 
-	public func plcDirectoryQuery(_: ATProtoDID) async throws -> DIDDocument {
+	public func plcDirectoryQuery(_: Atproto.DID) async throws -> DIDDocument {
 		try .mock()
 	}
 
@@ -44,8 +44,8 @@ public struct MockATProtoClient: ATProtoClientInterface {
 		recordType: Result.Type,
 		pdsUrl: URL,
 		repo: AtprotoTypes.AtIdentifier,
-		recordKey: AtprotoTypes.RecordKey,
-		recordCID: AtprotoTypes.CID?
+		recordKey: Atproto.RecordKey,
+		recordCID: CID?
 	) async throws -> AtprotoTypes.Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>?
 	where Result: AtprotoTypes.AtprotoRecord {
 		.mock(cid: nil)

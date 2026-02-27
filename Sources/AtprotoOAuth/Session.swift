@@ -15,7 +15,7 @@ import OAuth
 ///Parent should recognize it has an expired session and re-auth
 
 public actor ATProtoOAuthSession {
-	let did: ATProtoDID
+	let did: Atproto.DID
 	public let appCredentials: AppCredentials
 	let atprotoClient: ATProtoClientInterface
 
@@ -60,7 +60,7 @@ public actor ATProtoOAuthSession {
 
 	//starts in authorizing
 	static func new(
-		did: ATProtoDID,
+		did: Atproto.DID,
 		appCredentials: AppCredentials,
 		atprotoClient: ATProtoClientInterface
 	) -> Self {
@@ -73,7 +73,7 @@ public actor ATProtoOAuthSession {
 	}
 
 	private init(
-		did: ATProtoDID,
+		did: Atproto.DID,
 		appCredentials: AppCredentials,
 		state: State,
 		atprotoClient: ATProtoClientInterface

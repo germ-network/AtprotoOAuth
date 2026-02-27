@@ -10,7 +10,7 @@ import Foundation
 
 extension ATProtoClient {
 	public func plcDirectoryQuery(
-		_ did: ATProtoDID
+		_ did: Atproto.DID
 	) async throws -> DIDDocument {
 		let url = try constructPlcQueryUrl(did: did)
 		var request = URLRequest(url: url)
@@ -20,7 +20,7 @@ extension ATProtoClient {
 			.successDecode()
 	}
 
-	private func constructPlcQueryUrl(did: ATProtoDID) throws -> URL {
+	private func constructPlcQueryUrl(did: Atproto.DID) throws -> URL {
 		var components = URLComponents()
 		components.scheme = "https"
 		components.host = "plc.directory"

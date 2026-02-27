@@ -21,7 +21,7 @@ struct UnauthenticatedView: View {
 	@State private var avatarBlob: Data?
 	@State private var bannerBlob: Data?
 	@State private var pdsURL: URL?
-	@State private var did: ATProtoDID?
+	@State private var did: Atproto.DID?
 	//	@State private var keyPackage: GermLexicon.ArchivedKeyPackageRecord?
 	@State private var messagingDelegate: Lexicon.Com.GermNetwork.Declaration?
 

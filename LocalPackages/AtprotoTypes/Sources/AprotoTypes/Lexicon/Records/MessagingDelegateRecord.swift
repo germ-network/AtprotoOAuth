@@ -13,9 +13,9 @@ extension Lexicon.Com.GermNetwork {
 		///
 		/// - Warning: The value must not change.
 		//is "id" in the lexicon but avoid conflict with Swift id
-		public static let nsid: NSID = "com.germnetwork.declaration"
+		public static let nsid: Atproto.NSID = "com.germnetwork.declaration"
 		//for encoding
-		private(set) var id: NSID = Self.nsid
+		private(set) var id: Atproto.NSID = Self.nsid
 
 		/// Required, Opaque.
 		/// Expected to parse to a SemVer. While the lexicon is fixed, the version applies to the format of opaque content

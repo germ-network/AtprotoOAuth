@@ -12,7 +12,7 @@ import Foundation
 /// a temp file meant to be deprecated
 
 extension ATProtoOAuthClient {
-	public static func resolve(handle: String) async throws -> ATProtoDID {
+	public static func resolve(handle: String) async throws -> Atproto.DID {
 		guard
 			let did = try? await ATResolver(provider: URLSession.shared).didForHandle(
 				handle.lowercased())

@@ -20,7 +20,7 @@ extension ATProtoOAuthSession {
 	public func put<Record: AtprotoRecord>(
 		record: Record,
 		repo: AtIdentifier,
-		recordKey: RecordKey,  // The record key of the collection.
+		recordKey: Atproto.RecordKey,  // The record key of the collection.
 		// Indicates whether the record should be validated. Optional.
 		shouldValidate: Bool? = true,
 	) async throws -> Lexicon.Com.Atproto.Repo.StrongReference {

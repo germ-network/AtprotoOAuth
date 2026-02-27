@@ -35,7 +35,7 @@ extension Lexicon.Com.Atproto.Repo {
 		/// The record key of the collection.
 		///
 		/// - Note: According to the AT Protocol specifications: "The Record Key."
-		public let rkey: RecordKey
+		public let rkey: Atproto.RecordKey
 
 		/// Indicates whether the record should be validated. Optional.
 		///
@@ -51,7 +51,7 @@ extension Lexicon.Com.Atproto.Repo {
 
 		public init(
 			repo: String,
-			rkey: RecordKey,
+			rkey: Atproto.RecordKey,
 			validate: Bool?,
 			record: Record
 		) {

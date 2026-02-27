@@ -6,7 +6,7 @@ import os
 
 public protocol ATProtoOAuthInterface {
 	//MARK: Resolution
-	static func resolve(handle: String) async throws -> ATProtoDID
+	static func resolve(handle: String) async throws -> Atproto.DID
 
 	//MARK: Authentication
 	func authorize(identity: ATProtoOAuthClient.AuthIdentity) async throws

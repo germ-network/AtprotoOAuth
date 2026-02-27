@@ -12,7 +12,7 @@ public enum AtIdentifier {
 	public typealias Handle = String
 
 	case handle(Handle)
-	case did(ATProtoDID)
+	case did(Atproto.DID)
 
 	//over the wire, passed as a string
 	public var wireFormat: String {
@@ -22,9 +22,3 @@ public enum AtIdentifier {
 		}
 	}
 }
-
-///https://atproto.com/specs/nsid
-public typealias NSID = String
-
-///https://atproto.com/specs/record-key
-public typealias RecordKey = String

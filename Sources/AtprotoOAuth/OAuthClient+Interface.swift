@@ -18,7 +18,7 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 	public enum AuthIdentity: Sendable {
 		case handle(String)
 		//optionally pass in handle to fill into the UI of the web auth sheet
-		case did(ATProtoDID)
+		case did(Atproto.DID)
 
 		var serverHint: String {
 			switch self {
@@ -33,7 +33,7 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 	public func authorize(
 		identity: AuthIdentity
 	) async throws -> SessionState.Archive {
-		let did: ATProtoDID
+		let did: Atproto.DID
 		switch identity {
 		case .did(let _did):
 			did = _did

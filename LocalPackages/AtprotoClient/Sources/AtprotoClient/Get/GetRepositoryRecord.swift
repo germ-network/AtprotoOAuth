@@ -33,7 +33,7 @@ extension ATProtoClient {
 		recordType: Result.Type,
 		pdsUrl: URL,
 		repo: AtIdentifier,
-		recordKey: RecordKey,
+		recordKey: Atproto.RecordKey,
 		recordCID: CID? = nil,
 	) async throws -> Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>? {
 
