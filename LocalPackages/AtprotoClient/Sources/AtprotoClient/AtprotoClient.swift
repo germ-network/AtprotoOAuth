@@ -1,10 +1,9 @@
 import AtprotoTypes
 import Foundation
 import GermConvenience
-import OAuth
 
 //abstract out the protocol so we can sub in a mock one for offline testing
-public protocol ATProtoClientInterface: Sendable {
+public protocol AtprotoClientInterface: Sendable {
 	func plcDirectoryQuery(_: Atproto.DID) async throws -> DIDDocument
 
 	func getRepository<Result: AtprotoRecord>(
@@ -27,7 +26,7 @@ public protocol AtprotoSession {
 	func authResponse(for request: URLRequest) async throws -> HTTPDataResponse
 }
 
-public struct ATProtoClient {
+public struct AtprotoClient {
 	let responseProvider: HTTPDataResponse.Requester
 
 	public init(responseProvider: @escaping HTTPDataResponse.Requester) {
@@ -35,5 +34,5 @@ public struct ATProtoClient {
 	}
 }
 
-extension ATProtoClient: ATProtoClientInterface {
+extension AtprotoClient: AtprotoClientInterface {
 }

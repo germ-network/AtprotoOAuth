@@ -1,6 +1,6 @@
 //
 //  OAuthRuntimeError.swift
-//  SwiftATProtoOAuth
+//  SwiftAtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/17/26.
 //

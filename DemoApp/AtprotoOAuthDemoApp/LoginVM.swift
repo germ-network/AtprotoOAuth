@@ -15,7 +15,7 @@ import OAuth
 import SwiftUI
 
 @Observable final class LoginVM {
-	let oauthClient = ATProtoOAuthClient(
+	let oauthClient = AtprotoOAuthClient(
 		appCredentials: .init(
 			clientId: "https://static.germnetwork.com/client-metadata.json",
 			scopes: ["atproto transition:generic"],
@@ -23,7 +23,7 @@ import SwiftUI
 		),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
 		responseProvider: URLSession.defaultProvider,
-		atprotoClient: ATProtoClient(
+		atprotoClient: AtprotoClient(
 			responseProvider: URLSession.defaultProvider
 		)
 	)
@@ -48,7 +48,7 @@ import SwiftUI
 
 				logs.append(.init(body: "Resolved DID: \(resolvedDid.fullId)"))
 
-				let messageDelegate = try await ATProtoClient(
+				let messageDelegate = try await AtprotoClient(
 					responseProvider: URLSession.defaultProvider
 				)
 				.getGermMessagingDelegate(did: resolvedDid)
@@ -63,13 +63,13 @@ import SwiftUI
 					try await oauthClient
 					.authorize(identity: .did(resolvedDid))
 
-				let session = try ATProtoOAuthSession(
+				let session = try AtprotoOAuthSession(
 					archive: .init(
 						did: resolvedDid.fullId,
 						session: sessionArchive,
 					),
 					appCredentials: oauthClient.appCredentials,
-					atprotoClient: ATProtoClient(
+					atprotoClient: AtprotoClient(
 						responseProvider: URLSession.defaultProvider
 					)
 				)
@@ -95,7 +95,7 @@ import SwiftUI
 		do {
 			return try await Slingshot.resolve(handle: handle)
 		} catch {
-			return try await ATProtoOAuthClient.resolve(
+			return try await AtprotoOAuthClient.resolve(
 				handle: handle
 			)
 		}

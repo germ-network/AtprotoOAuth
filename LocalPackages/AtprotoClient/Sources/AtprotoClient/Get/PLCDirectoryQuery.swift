@@ -1,6 +1,6 @@
 //
 //  PLCDirectoryQuery.swift
-//  ATProtoClient
+//  AtprotoClient
 //
 //  Created by Mark @ Germ on 2/19/26.
 //
@@ -8,7 +8,7 @@
 import AtprotoTypes
 import Foundation
 
-extension ATProtoClient {
+extension AtprotoClient {
 	public func plcDirectoryQuery(
 		_ did: Atproto.DID
 	) async throws -> DIDDocument {
@@ -27,7 +27,7 @@ extension ATProtoClient {
 		components.path = "/\(did.fullId)"
 
 		guard let url = components.url else {
-			throw ATProtoClientError.couldntConstructUrl
+			throw AtprotoClientError.couldntConstructUrl
 		}
 		return url
 	}

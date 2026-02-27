@@ -47,7 +47,7 @@ extension P256.Signing.PrivateKey {
 				}
 			}()
 
-			return try await JWTSerializerLite.sign(
+			return try JWTSerializerLite.sign(
 				payload,
 				with: JWTLexiconLite.JWTHeader(
 					typ: parameters.keyType,

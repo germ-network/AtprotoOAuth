@@ -17,8 +17,6 @@ extension OAuthSession {
 			isolation: self
 		)
 
-		let dpopKey = try sessionState.dPopKey.tryUnwrap
-		
 		let dataResponse = try await dpopResponse(
 			for: request,
 			token: sessionState.mutable.accessToken.value,

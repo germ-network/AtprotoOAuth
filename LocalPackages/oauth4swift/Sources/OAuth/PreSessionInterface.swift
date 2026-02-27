@@ -5,7 +5,6 @@
 //  Created by Mark @ Germ on 2/26/26.
 //
 
-import AtprotoTypes
 import Foundation
 import GermConvenience
 import Logging
@@ -15,13 +14,13 @@ public protocol PreSessionInterface: DPoPNonceHolding {
 	var stateToken: String { get }
 	var dpopKey: DPoPKey { get }
 	var pkceVerifier: PKCEVerifier { get }
-	
+
 	static func authorizationURL(
 		authEndpoint: String,
 		parRequestURI: String,
 		clientId: String,
 	) throws -> URL
-	
+
 	static func login(
 		authorizationUrl: URL,
 		stateToken: String,
@@ -29,10 +28,10 @@ public protocol PreSessionInterface: DPoPNonceHolding {
 		pkceVerifier: PKCEVerifier,
 		appCredentials: AppCredentials,
 		authServerMetadata: AuthServerMetadata,
-		dpopKey: DPoPKey, //only for archiving
+		dpopKey: DPoPKey,  //only for archiving
 		dpopRequester: HTTPDataResponse.Requester
 	) async throws -> SessionState.Archive
-	
+
 	associatedtype TokenResponse
 	static func tokenSubscriberValidator(
 		response: TokenResponse,
@@ -53,7 +52,7 @@ extension PreSessionInterface {
 			dPoPKey: dpopKey,
 		)
 
-		let tokenURL = try await Self.authorizationURL(
+		let tokenURL = try Self.authorizationURL(
 			authEndpoint: authServerMetadata.authorizationEndpoint,
 			parRequestURI: parRequestURI,
 			clientId: appCredentials.clientId
@@ -62,7 +61,7 @@ extension PreSessionInterface {
 		let scheme = try appCredentials.callbackURLScheme
 
 		let callbackURL = try await userAuthenticator(tokenURL, scheme)
-		
+
 		return try await Self.login(
 			authorizationUrl: tokenURL,
 			stateToken: stateToken,
@@ -94,10 +93,10 @@ extension PreSessionInterface {
 			stateToken: stateToken,
 			dPoPKey: dPoPKey,
 		)
-		
+
 		Logger(label: "PreSessionInterface")
 			.debug("Received PAR response that expires in \(result.expiresIn)")
-		
+
 		return result.requestURI
 	}
 
@@ -144,4 +143,3 @@ extension PreSessionInterface {
 		).successDecode()
 	}
 }
-

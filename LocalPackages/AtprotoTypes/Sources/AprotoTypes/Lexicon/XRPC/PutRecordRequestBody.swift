@@ -1,6 +1,6 @@
 //
 //  PutRecordRequestBody.swift
-//  ATProtoTypes
+//  AtprotoTypes
 //
 //  Pulled in by Anna Mistele on 4/16/25.
 //  Created by Christopher Jr Riley on 5/20/24.

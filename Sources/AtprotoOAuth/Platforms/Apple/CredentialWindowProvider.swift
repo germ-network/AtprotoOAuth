@@ -1,6 +1,6 @@
 //
 //  CredentialWindowProvider.swift
-//  ATProtoOAuth
+//  AtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/24/26.
 //

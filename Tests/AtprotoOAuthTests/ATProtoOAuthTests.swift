@@ -14,11 +14,11 @@ struct APITests {
 	//move this to the handle resolution library
 	@Test func testHandleResolution() async throws {
 		let parsedDid = try Atproto.DID(fullId: "did:plc:4yvwfwxfz5sney4twepuzdu7")
-		let resolvedDid = try await ATProtoOAuthClient.resolve(handle: "germnetwork.com")
+		let resolvedDid = try await AtprotoOAuthClient.resolve(handle: "germnetwork.com")
 		#expect(parsedDid == resolvedDid)
 
 		await #expect(throws: OAuthClientError.noDidForHandle) {
-			let _ = try await ATProtoOAuthClient.resolve(handle: "example.com")
+			let _ = try await AtprotoOAuthClient.resolve(handle: "example.com")
 		}
 	}
 
@@ -28,20 +28,20 @@ struct APITests {
 			provider: URLSession.defaultProvider
 		)
 
-		let _ = ATProtoOAuthClient(
+		let _ = AtprotoOAuthClient(
 			appCredentials: .init(
 				clientId: APITests.clientId,
 				scopes: [Self.genericScope],
 				callbackURL: APITests.redirectUri
 			),
-			userAuthenticator: ATProtoClient.failingUserAuthenticator(_:_:),
+			userAuthenticator: AtprotoClient.failingUserAuthenticator(_:_:),
 			responseProvider: URLSession.defaultProvider,
-			atprotoClient: MockATProtoClient()
+			atprotoClient: MockAtprotoClient()
 		)
 	}
 }
 
-extension ATProtoClient {
+extension AtprotoClient {
 	@Sendable
 	public static func failingUserAuthenticator(_ url: URL, _ user: String) throws -> URL {
 		throw OAuthClientError.generic("failed user autheticator")
@@ -49,7 +49,7 @@ extension ATProtoClient {
 }
 
 struct ClientAPITests {
-	let oauthClient: ATProtoOAuthClient
+	let oauthClient: AtprotoOAuthClient
 
 	init() async throws {
 		oauthClient = .init(
@@ -58,21 +58,21 @@ struct ClientAPITests {
 				scopes: [APITests.genericScope],
 				callbackURL: APITests.redirectUri
 			),
-			userAuthenticator: ATProtoClient.failingUserAuthenticator(_:_:),
+			userAuthenticator: AtprotoClient.failingUserAuthenticator(_:_:),
 			responseProvider: URLSession.defaultProvider,
-			atprotoClient: MockATProtoClient()
+			atprotoClient: MockAtprotoClient()
 		)
 	}
 
 	@Test func exampleUsage() async throws {
 		let inputHandle = "markmx.bsky.social"
-		let resolvedDid = try await ATProtoOAuthClient.resolve(
+		let resolvedDid = try await AtprotoOAuthClient.resolve(
 			handle: inputHandle
 		)
 		#expect(resolvedDid.fullId == "did:plc:lbu36k4mysk5g6gcrpw4dbwm")
 
 		//make some unauthed requests. e.g. is this did already using germ?
-		let messageDelegate = try await ATProtoClient(
+		let messageDelegate = try await AtprotoClient(
 			responseProvider: oauthClient.responseProvider
 		).getGermMessagingDelegate(did: resolvedDid)
 

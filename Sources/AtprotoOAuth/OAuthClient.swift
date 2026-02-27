@@ -5,17 +5,17 @@ import GermConvenience
 import OAuth
 import os
 
-public protocol ATProtoOAuthInterface {
+public protocol AtprotoOAuthInterface {
 	//MARK: Resolution
 	static func resolve(handle: String) async throws -> Atproto.DID
 
 	//MARK: Authentication
 	//want to end up with a valid archive, not a live object
-	func authorize(identity: ATProtoOAuthClient.AuthIdentity) async throws
+	func authorize(identity: AtprotoOAuthClient.AuthIdentity) async throws
 		-> SessionState.Archive
 }
 
-public actor ATProtoOAuthClient {
+public actor AtprotoOAuthClient {
 	static let logger = Logger(
 		subsystem: "com.germnetwork",
 		category: "BlueskyOAuthenticator")
@@ -24,7 +24,7 @@ public actor ATProtoOAuthClient {
 	public typealias UserAuthenticator = @Sendable (URL, String) async throws -> URL
 	public let userAuthenticator: UserAuthenticator
 	public let responseProvider: HTTPDataResponse.Requester
-	public let atprotoClient: ATProtoClientInterface
+	public let atprotoClient: AtprotoClientInterface
 
 	//didResolver
 	//handleResolver
@@ -34,7 +34,7 @@ public actor ATProtoOAuthClient {
 		appCredentials: AppCredentials,
 		userAuthenticator: @escaping UserAuthenticator,
 		responseProvider: @escaping HTTPDataResponse.Requester,
-		atprotoClient: ATProtoClientInterface,
+		atprotoClient: AtprotoClientInterface,
 	) {
 		self.appCredentials = appCredentials
 		self.userAuthenticator = userAuthenticator

@@ -98,12 +98,12 @@ extension SessionState {
 		let dPopKey: DPoPKey?
 
 		public let additionalParams: [String: String]?
-		
+
 		public let mutable: SessionState.Mutable
-		
+
 		public init(
 			dPopKey: DPoPKey?,
-			additionalParams: [String : String]?,
+			additionalParams: [String: String]?,
 			mutable: SessionState.Mutable
 		) {
 			self.dPopKey = dPopKey

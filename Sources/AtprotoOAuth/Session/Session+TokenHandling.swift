@@ -1,6 +1,6 @@
 //
 //  Session+TokenHandling.swift
-//  ATProtoOAuth
+//  AtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/25/26.
 //
@@ -9,7 +9,7 @@ import AtprotoTypes
 import Foundation
 import OAuth
 
-extension ATProtoOAuthSession: TokenHandling {
+extension AtprotoOAuthSession: TokenHandling {
 	//	public static func loginProvider(params: OAuth.LoginProviderParameters) async throws -> OAuth.SessionState.Archive {
 	//		<#code#>
 	//	}
@@ -42,7 +42,7 @@ extension ATProtoOAuthSession: TokenHandling {
 		let tokenResponse: Atproto.TokenResponse = try await Self.response(
 			for: request
 		)
-			.successDecode()
+		.successDecode()
 
 		guard tokenResponse.tokenType == "DPoP" else {
 			throw

@@ -1,6 +1,6 @@
 //
 //  Runtime+Interface.swift
-//  ATProtoOAuth
+//  AtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/17/26.
 //
@@ -11,7 +11,7 @@ import Crypto
 import Foundation
 import OAuth
 
-extension ATProtoOAuthClient: ATProtoOAuthInterface {
+extension AtprotoOAuthClient: AtprotoOAuthInterface {
 
 	//Germ will always do pre-processing so we will know did,
 	//but you can start from handle
@@ -85,7 +85,8 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 			throw OAuthClientError.missingUrlHost
 		}
 
-		let pdsMetadata = try await ProtectedResourceMetadata
+		let pdsMetadata =
+			try await ProtectedResourceMetadata
 			.load(
 				for: pdsHost,
 				provider: URLSession.defaultProvider
@@ -109,19 +110,18 @@ extension ATProtoOAuthClient: ATProtoOAuthInterface {
 		return authorizationServerUrl
 	}
 
-//	private static func loginProvider(
-//		server: AuthServerMetadata, validator: @escaping TokenSubscriberValidator
-//	) -> LoginProvider {
-//		{
-//			params,
-//			dpopKey in
-//			
-//	}
-//
-//	typealias TokenSubscriberValidator =
-//		@Sendable (ATProtoOAuthSession.TokenResponse, _ issuer: String) async throws -> Bool
+	//	private static func loginProvider(
+	//		server: AuthServerMetadata, validator: @escaping TokenSubscriberValidator
+	//	) -> LoginProvider {
+	//		{
+	//			params,
+	//			dpopKey in
+	//
+	//	}
+	//
+	//	typealias TokenSubscriberValidator =
+	//		@Sendable (AtprotoOAuthSession.TokenResponse, _ issuer: String) async throws -> Bool
 }
-
 
 extension Atproto {
 	struct TokenError: Hashable, Sendable, Codable {

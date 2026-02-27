@@ -11,20 +11,19 @@ import GermConvenience
 import Logging
 import OAuth
 
-
 //a container for a nonce cache for getting authorization
 //it should only make requests as necessary to authorize
 
 actor PreSession {
 	static let logger = Logger(label: "PreSession")
-	
+
 	let appCredentials: AppCredentials
-	
+
 	let stateToken = UUID().uuidString
 	let dpopKey = DPoPKey.generateP256()
 	private let nonceCache: NSCache<NSString, NonceValue> = NSCache()
 	let pkceVerifier = PKCEVerifier()
-	
+
 	init(appCredentials: AppCredentials) {
 		self.appCredentials = appCredentials
 	}
@@ -45,11 +44,11 @@ extension PreSession: DPoPNonceHolding {
 			forKey: origin as NSString
 		)
 	}
-	
+
 	public static func decode(
 		dataResponse: HTTPDataResponse
 	) throws -> OAuth.NonceValue? {
-		try ATProtoOAuthSession.decode(dataResponse: dataResponse)
+		try AtprotoOAuthSession.decode(dataResponse: dataResponse)
 	}
 }
 
@@ -60,19 +59,19 @@ extension PreSession: PreSessionInterface {
 		clientId: String,
 	) throws -> URL {
 		var components = URLComponents(string: authEndpoint)
-		
+
 		components?.queryItems = [
 			URLQueryItem(name: "request_uri", value: parRequestURI),
 			URLQueryItem(name: "client_id", value: clientId),
 		]
-		
+
 		guard let url = components?.url else {
 			throw OAuthSessionError.cantFormURL
 		}
-		
+
 		return url
 	}
-	
+
 	static func login(
 		authorizationUrl: URL,
 		stateToken: String,
@@ -84,7 +83,7 @@ extension PreSession: PreSessionInterface {
 		dpopRequester: (URLRequest) async throws -> HTTPDataResponse
 	) async throws -> SessionState.Archive {
 		// decode the params in the redirectURL
-		
+
 		let redirectComponents = try URLComponents(
 			url: redirectURI,
 			resolvingAgainstBaseURL: false
@@ -109,14 +108,14 @@ extension PreSession: PreSessionInterface {
 		}
 
 		if iss != authServerMetadata.issuer {
-			throw OAuthClientError
+			throw
+				OAuthClientError
 				.issuingServerMismatch(iss, authServerMetadata.issuer)
 		}
 
 		// and use them (plus just a little more) to construct the token request
 		let tokenURL = try URL(string: authServerMetadata.tokenEndpoint)
 			.tryUnwrap(OAuthClientError.missingTokenURL)
-
 
 		let tokenRequest = Atproto.TokenRequest(
 			code: authCode,
@@ -145,13 +144,12 @@ extension PreSession: PreSessionInterface {
 				throw OAuthClientError.dpopTokenExpected(
 					tokenResponse.tokenType)
 			}
-			
+
 			try await Self.tokenSubscriberValidator(
 				response: tokenResponse,
 				sub: authServerMetadata.issuer
 			)
 
-			
 			return tokenResponse.session(for: iss, dpopKey: dpopKey)
 		case .error(let tokenError, let int):
 			if tokenError.errorDescription == "Code challenge already used" {
@@ -163,7 +161,7 @@ extension PreSession: PreSessionInterface {
 			throw OAuthClientError.remoteTokenError(tokenError)
 		}
 	}
-	
+
 	static func tokenSubscriberValidator(
 		response: Atproto.TokenResponse,
 		sub: String

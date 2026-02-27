@@ -17,7 +17,6 @@ public protocol OAuthSession: Actor, TokenHandling, DPoPNonceHolding {
 
 	var lazyServerMetadata: LazyResource<AuthServerMetadata> { get }
 
-	
 	var session: SessionState { get throws }
 	func refreshed(sessionMutable: SessionState.Mutable) throws
 	var refreshTask: Task<SessionState.Mutable, Error>? { get set }
@@ -33,4 +32,3 @@ public protocol TokenHandling {
 		//URLResponseProvider expect to use the response
 	) async throws -> SessionState.Mutable
 }
-

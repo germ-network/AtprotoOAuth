@@ -1,6 +1,6 @@
 //
 //  MessagingDelegateRecord.swift
-//  ATProtoClient
+//  AtprotoClient
 //
 //  Created by Anna Mistele on 5/14/25.
 //
@@ -53,7 +53,7 @@ extension Lexicon.Com.GermNetwork {
 				try container
 				.decode(String.self, forKey: CodingKeys.id)
 			guard self.id == Self.nsid else {
-				throw ATProtoTypeError.invalidRecordType
+				throw AtprotoTypeError.invalidRecordType
 			}
 
 			self.version = try container.decode(String.self, forKey: CodingKeys.version)

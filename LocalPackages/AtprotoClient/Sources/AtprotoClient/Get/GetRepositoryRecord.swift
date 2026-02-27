@@ -9,7 +9,7 @@ import AtprotoTypes
 import Foundation
 import GermConvenience
 
-extension ATProtoClient {
+extension AtprotoClient {
 
 	/// Searches for and validates a record from the repository.
 	///
@@ -27,7 +27,7 @@ extension ATProtoClient {
 	///   - recordCID: The CID hash of the record. Optional.
 	/// - Returns: The record itself, as well as its URI and CID.
 	///
-	/// - Throws: An ``ATProtoError``-conforming error type, depending on the issue. Go to
+	/// - Throws: An ``AtprotoError``-conforming error type, depending on the issue. Go to
 	/// ``ATAPIError`` and ``ATRequestPrepareError`` for more details.
 	public func getRepository<Result: AtprotoRecord>(
 		recordType: Result.Type,
@@ -70,7 +70,7 @@ extension ATProtoClient {
 			if statusCode == 400, errorStruct.error == "RecordNotFound" {
 				return nil
 			} else {
-				throw ATProtoClientError.requestFailed(
+				throw AtprotoClientError.requestFailed(
 					responseCode: statusCode,
 					error: errorStruct.error
 				)
@@ -89,14 +89,14 @@ extension ATProtoClient {
 		//though the spec allows it, don't allow http
 		components.scheme = "https"
 		guard let host = serviceUrl.host else {
-			throw ATProtoClientError.improperServiceUrl
+			throw AtprotoClientError.improperServiceUrl
 		}
 		components.host = host
 		components.port = serviceUrl.port
 		components.path = "/xrpc/com.atproto.repo.getRecord"
 		components.queryItems = queryItems
 		guard let url = components.url else {
-			throw ATProtoClientError.couldntConstructUrl
+			throw AtprotoClientError.couldntConstructUrl
 		}
 		return url
 	}

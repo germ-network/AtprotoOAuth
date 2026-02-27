@@ -11,18 +11,18 @@ import GermConvenience
 
 public protocol DPoPNonceHolding: Actor {
 	var dpopKey: DPoPKey { get throws }
-	
+
 	func getNonce(origin: String) -> NonceValue?
 	func store(nonce: String, for: String)
 	func response(request: URLRequest) async throws -> HTTPDataResponse
-	
+
 	static func decode(dataResponse: HTTPDataResponse) throws -> NonceValue?
 }
 
 extension DPoPNonceHolding {
 	//needs to be actor constrained so it can safely mutate the nonce cache
 	//takes a base request, adds a dpop token, retrying if needed
-	
+
 	//this method is shared with the session object and the initial login
 	public func dpopResponse(
 		for request: URLRequest,
@@ -47,10 +47,10 @@ extension DPoPNonceHolding {
 		let initNonce = getNonce(origin: requestOrigin)
 
 		let method = try request.httpMethod.tryUnwrap(OAuthError.missingHTTPMethod)
-		
+
 		let url = try request.url.tryUnwrap(OAuthError.missingUrl)
 
-		let jwt = try await try dpopKey.sign(
+		let jwt = try dpopKey.sign(
 			.init(
 				keyType: "dpop+jwt",
 				httpMethod: method,
@@ -60,7 +60,7 @@ extension DPoPNonceHolding {
 				issuingServer: issuer
 			)
 		)
-		
+
 		request.setValue(jwt, forHTTPHeaderField: "DPoP")
 
 		if let token {
@@ -99,7 +99,7 @@ extension DPoPNonceHolding {
 		}
 
 		// repeat once, using newly-established nonce
-		let secondJwt = try await dpopKey.sign(
+		let secondJwt = try dpopKey.sign(
 			.init(
 				keyType: "dpop+jwt",
 				httpMethod: method,

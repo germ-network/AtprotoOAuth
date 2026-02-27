@@ -1,22 +1,22 @@
 //
-//  ATProtoDIDTests.swift
-//  SwiftATProtoOAuth
+//  AtprotoDIDTests.swift
+//  SwiftAtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/17/26.
 //
 
-import ATProtoTypes
+import AtprotoTypes
 import Testing
 
-struct ATProtoDIDTests {
+struct AtprotoDIDTests {
 
 	@Test func testParse() throws {
-		#expect(throws: ATProtoDIDError.invalidPrefix) {
-			let _ = try ATProtoDID(fullId: "di:plc:example")
+		#expect(throws: AtprotoDIDError.invalidPrefix) {
+			let _ = try Atproto.DID(fullId: "di:plc:example")
 		}
 
-		#expect(throws: ATProtoDIDError.invalidMethod) {
-			let _ = try ATProtoDID(fullId: "did:method:example")
+		#expect(throws: AtprotoDIDError.invalidMethod) {
+			let _ = try Atproto.DID(fullId: "did:method:example")
 		}
 	}
 }

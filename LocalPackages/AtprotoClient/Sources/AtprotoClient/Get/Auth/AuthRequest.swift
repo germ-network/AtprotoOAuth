@@ -8,7 +8,7 @@
 import AtprotoTypes
 import Foundation
 
-extension ATProtoClient {
+extension AtprotoClient {
 	public func authRequest<X: XRPCInterface>(
 		for xrpc: X.Type,
 		pdsUrl: URL,
@@ -27,7 +27,7 @@ extension ATProtoClient {
 
 		switch result {
 		case .error(let errorStruct, let statusCode):
-			throw ATProtoClientError.requestFailed(
+			throw AtprotoClientError.requestFailed(
 				responseCode: statusCode,
 				error: errorStruct.error
 			)

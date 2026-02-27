@@ -1,6 +1,6 @@
 //
 //  MessageDelegate.swift
-//  ATProtoClient
+//  AtprotoClient
 //
 //  Created by Mark @ Germ on 2/17/26.
 //
@@ -8,7 +8,7 @@
 import AtprotoTypes
 import Foundation
 
-extension ATProtoClient {
+extension AtprotoClient {
 	public func getGermMessagingDelegate(
 		did: Atproto.DID,
 	) async throws -> Lexicon.Com.GermNetwork.Declaration? {

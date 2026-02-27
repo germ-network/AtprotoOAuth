@@ -1,6 +1,6 @@
 //
 //  OAuthClient+AuthenticationServices.swift
-//  ATProtoOAuth
+//  AtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/19/26 from OAuthenticate
 //
@@ -13,7 +13,7 @@ enum WebAuthenticationSessionError: Error {
 	import AuthenticationServices
 
 	extension ASWebAuthenticationSession {
-		static public func userAuthenticator() -> ATProtoOAuthClient.UserAuthenticator {
+		static public func userAuthenticator() -> AtprotoOAuthClient.UserAuthenticator {
 			{
 				try await begin(with: $0, callbackURLScheme: $1)
 			}

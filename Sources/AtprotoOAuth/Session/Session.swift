@@ -1,6 +1,6 @@
 //
-//  ATProtoOAuthSession.swift
-//  ATProtoOAuth
+//  AtprotoOAuthSession.swift
+//  AtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/17/26.
 //
@@ -14,10 +14,10 @@ import OAuth
 ///Usage pattern: A session starts out authenticated. May degrade to lose auth
 ///Parent should recognize it has an expired session and re-auth
 
-public actor ATProtoOAuthSession {
+public actor AtprotoOAuthSession {
 	let did: Atproto.DID
 	public let appCredentials: AppCredentials
-	let atprotoClient: ATProtoClientInterface
+	let atprotoClient: AtprotoClientInterface
 
 	public let pkceVerifier = PKCEVerifier()
 	private let nonceCache: NSCache<NSString, NonceValue> = NSCache()
@@ -42,7 +42,7 @@ public actor ATProtoOAuthSession {
 		did: Atproto.DID,
 		appCredentials: AppCredentials,
 		state: State,
-		atprotoClient: ATProtoClientInterface
+		atprotoClient: AtprotoClientInterface
 	) {
 		self.did = did
 		self.appCredentials = appCredentials
@@ -58,16 +58,18 @@ public actor ATProtoOAuthSession {
 						for: pdsHost.host().tryUnwrap,
 						provider: URLSession.defaultProvider
 					)
-					
+
 					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 					//PDS doesn't actually fill this field, so we only check it if present
-					if let supportedAlgs = pdsMetadata.dpopSigningAlgValuesSupported {
+					if let supportedAlgs = pdsMetadata
+						.dpopSigningAlgValuesSupported
+					{
 						guard supportedAlgs.contains("ES256")
 						else {
 							throw OAuthSessionError.unsupported
 						}
 					}
-					
+
 					guard
 						let authorizationServerUrl = pdsMetadata
 							.authorizationServers?.first,
@@ -76,17 +78,17 @@ public actor ATProtoOAuthSession {
 					else {
 						throw OAuthSessionError.cantFormURL
 					}
-					
+
 					return try await AuthServerMetadata.load(
 						for: authorizationServerHost,
 						provider: URLSession.defaultProvider
 					)
 				}
 			})
-		
+
 		nonceCache.countLimit = 25
 	}
-	
+
 	public func authRequest<X: XRPCInterface>(
 		for xrpc: X.Type,
 		parameters: X.Parameters
@@ -100,21 +102,21 @@ public actor ATProtoOAuthSession {
 	}
 }
 
-extension ATProtoOAuthSession {
+extension AtprotoOAuthSession {
 	public struct Archive {
 		let did: String
 		let session: SessionState.Archive?
-		
+
 		public init(did: String, session: SessionState.Archive?) {
 			self.did = did
 			self.session = session
 		}
 	}
-	
+
 	public init(
 		archive: Archive,
 		appCredentials: AppCredentials,
-		atprotoClient: ATProtoClientInterface
+		atprotoClient: AtprotoClientInterface
 	) throws {
 		try self.init(
 			did: .init(fullId: archive.did),
@@ -123,7 +125,7 @@ extension ATProtoOAuthSession {
 			atprotoClient: atprotoClient
 		)
 	}
-	
+
 	//if expired not worth saving
 	var archive: SessionState.Archive? {
 		guard case .active(let sessionState) = state else {
@@ -133,7 +135,7 @@ extension ATProtoOAuthSession {
 	}
 }
 
-extension ATProtoOAuthSession: OAuthSession {
+extension AtprotoOAuthSession: OAuthSession {
 	public var session: OAuth.SessionState {
 		get throws {
 			guard case .active(let sessionState) = state else {
@@ -142,32 +144,30 @@ extension ATProtoOAuthSession: OAuthSession {
 			return sessionState
 		}
 	}
-	
+
 	public func refreshed(sessionMutable: OAuth.SessionState.Mutable) throws {
 		let session = try session
-		
+
 		session.updated(mutable: sessionMutable)
 		//TODO: save this
 	}
-	
-	
-	
+
 	public static func response(for request: URLRequest) async throws -> HTTPDataResponse {
 		try await URLSession.defaultProvider(request)
 	}
 }
 
-extension ATProtoOAuthSession: DPoPNonceHolding {
+extension AtprotoOAuthSession: DPoPNonceHolding {
 	public var dpopKey: OAuth.DPoPKey {
 		get throws {
 			try session.dPopKey.tryUnwrap
 		}
 	}
-	
+
 	public func response(request: URLRequest) async throws -> GermConvenience.HTTPDataResponse {
 		try await URLSession.defaultProvider(request)
 	}
-	
+
 	public static func decode(
 		dataResponse: HTTPDataResponse
 	) throws -> OAuth.NonceValue? {
@@ -175,7 +175,7 @@ extension ATProtoOAuthSession: DPoPNonceHolding {
 		else {
 			return nil
 		}
-		
+
 		// I'm not sure why response.url is optional, but maybe we need the request
 		// passed into the decoder here, to fallback to request.url.origin
 		guard let responseOrigin = dataResponse.response.url?.origin else {
@@ -184,7 +184,7 @@ extension ATProtoOAuthSession: DPoPNonceHolding {
 
 		return NonceValue(origin: responseOrigin, nonce: value)
 	}
-	
+
 	public func getNonce(origin: String) -> NonceValue? {
 		nonceCache.object(forKey: origin as NSString)
 	}
@@ -198,7 +198,7 @@ extension ATProtoOAuthSession: DPoPNonceHolding {
 	}
 }
 
-extension ATProtoOAuthSession {
+extension AtprotoOAuthSession {
 	func getPDSUrl() async throws -> URL {
 		try await atprotoClient.plcDirectoryQuery(did)
 			.pdsUrl

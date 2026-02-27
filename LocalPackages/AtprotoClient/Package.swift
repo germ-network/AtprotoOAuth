@@ -16,7 +16,7 @@ let package = Package(
 	dependencies: [
 		.package(path: "../AtprotoTypes"),
 		.package(path: "../GermConvenience"),
-		.package(url: "https://github.com/apple/swift-log", from: "1.6.0")
+		.package(url: "https://github.com/apple/swift-log", from: "1.6.0"),
 	],
 	targets: [
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -26,7 +26,7 @@ let package = Package(
 			dependencies: [
 				"AtprotoTypes",
 				"GermConvenience",
-				.product(name: "Logging", package: "swift-log")
+				.product(name: "Logging", package: "swift-log"),
 			]
 		),
 		.testTarget(
