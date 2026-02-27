@@ -89,12 +89,24 @@ public actor AtprotoOAuthSession {
 		nonceCache.countLimit = 25
 	}
 
-	public func authRequest<X: XRPCInterface>(
-		for xrpc: X.Type,
+	public func authProcedure<X: XRPCProcedure>(
+		_ xrpc: X.Type,
+		parameters: X.Parameters
+	) async throws -> X.Result {
+		try await atprotoClient.authProcedure(
+			_: xrpc,
+			pdsUrl: try await getPDSUrl(),
+			parameters: parameters,
+			session: self
+		)
+	}
+
+	public func authRequest<X: XRPCRequest>(
+		_ xrpc: X.Type,
 		parameters: X.Parameters
 	) async throws -> X.Result {
 		try await atprotoClient.authRequest(
-			for: xrpc,
+			xrpc,
 			pdsUrl: try await getPDSUrl(),
 			parameters: parameters,
 			session: self

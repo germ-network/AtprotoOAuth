@@ -15,13 +15,14 @@ extension AtprotoClient {
 		//rely on url caching for this value
 		let pdsUrl = try await plcDirectoryQuery(did)
 			.pdsUrl
-		let response = try await getRepository(
-			recordType: Lexicon.Com.GermNetwork.Declaration.self,
-			pdsUrl: pdsUrl,
-			repo: .did(did),
-			recordKey: "self",
-		)
 
-		return response?.value
+		return try await getRecord(
+			pdsUrl: pdsUrl,
+			parameters: .init(
+				repo: .did(did),
+				rkey: "self",
+				cid: nil
+			)
+		)
 	}
 }

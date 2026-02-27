@@ -7,21 +7,23 @@
 
 import Foundation
 
+///https://docs.bsky.app/docs/api/app-bsky-actor-get-profile
+///https://lexicon.garden/lexicon/did:plc:4v4y5r3lwsbtmsxhile2ljac/app.bsky.actor.getProfile/docs
 extension Lexicon.App.Bsky.Actor {
-	public enum GetProfile: XRPCInterface {
+	public enum GetProfile: XRPCRequest {
 		public typealias Result = Lexicon.App.Bsky.Actor.Defs.ProfileViewDetailed
 
 		public static let nsid = "app.bsky.actor.getProfile"
 
-		public struct Parameters: XRPCParameters {
-			public let did: Atproto.DID
+		public struct Parameters: QueryParameters {
+			public let actor: AtIdentifier
 
-			public init(did: Atproto.DID) {
-				self.did = did
+			public init(actor: AtIdentifier) {
+				self.actor = actor
 			}
 
 			public func asQueryItems() -> [URLQueryItem] {
-				[.init(name: "actor", value: did.fullId)]
+				[.init(name: "actor", value: actor.wireFormat)]
 			}
 		}
 	}
