@@ -1,6 +1,6 @@
 //
 //  AtprotoRecord.swift
-//  ATProtoTypes
+//  AtprotoTypes
 //
 //  Created by Mark @ Germ on 2/24/26.
 //

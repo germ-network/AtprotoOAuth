@@ -1,6 +1,6 @@
 //
 //  SessionError.swift
-//  ATProtoOAuth
+//  AtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/23/26.
 //

@@ -1,13 +1,13 @@
 //
 //  StrongReference.swift
-//  ATProtoTypes
+//  AtprotoTypes
 //
 //  Created by Mark @ Germ on 2/24/26.
 //
 
 //
 //  RepoStrongRef.swift
-//  ATProtoLiteClient
+//  AtprotoLiteClient
 //
 //  Pulled in by Anna Mistele on 4/16/25.
 //  Created by Christopher Jr Riley on 5/20/24.

@@ -21,7 +21,7 @@ struct UnauthenticatedView: View {
 	@State private var avatarBlob: Data?
 	@State private var bannerBlob: Data?
 	@State private var pdsURL: URL?
-	@State private var did: ATProtoDID?
+	@State private var did: Atproto.DID?
 	//	@State private var keyPackage: GermLexicon.ArchivedKeyPackageRecord?
 	@State private var messagingDelegate: Lexicon.Com.GermNetwork.Declaration?
 
@@ -60,7 +60,7 @@ struct UnauthenticatedView: View {
 
 			if let did {
 				List {
-					Section("ATProto") {
+					Section("Atproto") {
 						Text("**DID:** \(did.fullId)")
 						Text("**PDS:** \(pdsURL?.absoluteString ?? "N/A")")
 						Text("**Handle:** \(handle ?? "N/A")")
@@ -157,7 +157,7 @@ struct UnauthenticatedView: View {
 				//consider loading the whole did doc instead
 				//				print("Loading PDS...")
 				//				do {
-				//					if let pds = try await ATProtoPublicAPI.getPds(
+				//					if let pds = try await AtprotoPublicAPI.getPds(
 				//						for: did.fullId)
 				//					{
 				//						pdsURL = URL(string: pds)
@@ -168,7 +168,7 @@ struct UnauthenticatedView: View {
 				//				if let pdsURL {
 				//				print("Loading handle...")
 				//				do {
-				//					handle = try await ATProtoPublicAPI.getHandle(
+				//					handle = try await AtprotoPublicAPI.getHandle(
 				//						did: did.fullId,
 				//						pdsURL: pdsURL
 				//					)
@@ -177,14 +177,14 @@ struct UnauthenticatedView: View {
 				//				}
 				//				print("Loading relationship with Germ...")
 				//				do {
-				//					let germ = try await ATProtoPublicAPI.getTypedDID(
+				//					let germ = try await AtprotoPublicAPI.getTypedDID(
 				//						handle: "germnetwork.com")
-				//					followsGerm = try await ATProtoPublicAPI.checkIf(
+				//					followsGerm = try await AtprotoPublicAPI.checkIf(
 				//						did: did.fullId,
 				//						follows: germ.fullId
 				//					)
 				//					isFollowedByGerm =
-				//					try await ATProtoPublicAPI.checkIf(
+				//					try await AtprotoPublicAPI.checkIf(
 				//						did: did.fullId,
 				//						isFollowedBy: germ.fullId
 				//					)
@@ -194,14 +194,14 @@ struct UnauthenticatedView: View {
 				//					)
 				//				}
 				//				print("Loading follows...")
-				//				follows = await ATProtoPublicAPI.getFollows(
+				//				follows = await AtprotoPublicAPI.getFollows(
 				//					for: did.fullId,
 				//					pdsURL: pdsURL
 				//				).0
 				//				print("Loading profile...")
 				//				do {
 				//					profileRecord =
-				//					try await ATProtoPublicAPI.getProfileRecord(
+				//					try await AtprotoPublicAPI.getProfileRecord(
 				//						did: did.fullId,
 				//						pdsURL: pdsURL
 				//					)
@@ -213,7 +213,7 @@ struct UnauthenticatedView: View {
 				//				{
 				//					do {
 				//						avatarBlob =
-				//						try await ATProtoPublicAPI.getBlob(
+				//						try await AtprotoPublicAPI.getBlob(
 				//							from: did.fullId,
 				//							cid: avatarCid,
 				//							pdsURL: pdsURL
@@ -227,7 +227,7 @@ struct UnauthenticatedView: View {
 				//				{
 				//					do {
 				//						bannerBlob =
-				//						try await ATProtoPublicAPI.getBlob(
+				//						try await AtprotoPublicAPI.getBlob(
 				//							from: did.fullId,
 				//							cid: bannerCid,
 				//							pdsURL: pdsURL
@@ -239,7 +239,7 @@ struct UnauthenticatedView: View {
 				//				print("Loading key package...")
 				//				do {
 				//					keyPackage =
-				//					try await ATProtoPublicAPI.getKeyPackage(
+				//					try await AtprotoPublicAPI.getKeyPackage(
 				//						did: did.fullId,
 				//						pdsURL: pdsURL
 				//					)
@@ -249,7 +249,7 @@ struct UnauthenticatedView: View {
 				//				print("Loading messaging delegate...")
 				//				do {
 				//					messagingDelegate =
-				//					try await ATProtoPublicAPI
+				//					try await AtprotoPublicAPI
 				//						.getGermMessagingDelegate(
 				//							did: did.fullId,
 				//							pdsURL: pdsURL

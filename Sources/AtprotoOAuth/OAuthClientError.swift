@@ -1,10 +1,11 @@
 //
 //  OAuthRuntimeError.swift
-//  SwiftATProtoOAuth
+//  SwiftAtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/17/26.
 //
 
+import AtprotoTypes
 import Foundation
 
 enum OAuthClientError: Error, Equatable {
@@ -18,7 +19,7 @@ enum OAuthClientError: Error, Equatable {
 	case tokenInvalid
 	case stateTokenMismatch(String, String)
 	case issuingServerMismatch(String, String)
-	case remoteTokenError(ATProto.TokenError)
+	case remoteTokenError(Atproto.TokenError)
 	case dpopTokenExpected(String)
 	case generic(String)
 	case notImplemented

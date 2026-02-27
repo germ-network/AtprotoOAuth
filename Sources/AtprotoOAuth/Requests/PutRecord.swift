@@ -1,6 +1,6 @@
 //
 //  PutRecord.swift
-//  ATProtoOAuth
+//  AtprotoOAuth
 //
 //  Created by Anna Mistele on 6/2/25.
 //  Created by Christopher Jr Riley on 2024-03-11.
@@ -9,8 +9,9 @@
 import AtprotoClient
 import AtprotoTypes
 import Foundation
+import GermConvenience
 
-extension ATProtoOAuthSession {
+extension AtprotoOAuthSession {
 	/// Writes a record in the repository, which may replace a previous record.
 	///
 	/// - Note: According to the AT Protocol specifications: "Write a repository record, creating
@@ -20,7 +21,7 @@ extension ATProtoOAuthSession {
 	public func put<Record: AtprotoRecord>(
 		record: Record,
 		repo: AtIdentifier,
-		recordKey: RecordKey,  // The record key of the collection.
+		recordKey: Atproto.RecordKey,  // The record key of the collection.
 		// Indicates whether the record should be validated. Optional.
 		shouldValidate: Bool? = true,
 	) async throws -> Lexicon.Com.Atproto.Repo.StrongReference {
@@ -61,7 +62,7 @@ extension ATProtoOAuthSession {
 	//			urlRequest.httpBody = try JSONEncoder().encode(body)
 	//		}
 	//		let (data, resp) = try await dpopResponse(for: request)
-	//		try ATProtoAPIErrorHandling.validate(data: data, resp: resp)
+	//		try AtprotoAPIErrorHandling.validate(data: data, resp: resp)
 	//		return data
 	//	}
 	//

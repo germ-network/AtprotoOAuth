@@ -1,5 +1,5 @@
 {
-  "originHash" : "b1024f9bece55a3b305647c9bb9d64e34b5ddfbb1a2b8c50c7f9472f2f8f4355",
+  "originHash" : "c67b84cef6b314cc5f0e56840f4feab0eec9bd122855121642da846188d5a7d3",
   "pins" : [
     {
       "identity" : "base32",
@@ -11,12 +11,12 @@
       }
     },
     {
-      "identity" : "oauthenticator",
+      "identity" : "swift-log",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/germ-network/OAuthenticator",
+      "location" : "https://github.com/apple/swift-log",
       "state" : {
-        "branch" : "mark/build-runtime",
-        "revision" : "9c48ddf76b9d42a143be55594113f18e522ffdb1"
+        "revision" : "bbd81b6725ae874c69e9b8c8804d462356b55523",
+        "version" : "1.10.1"
       }
     }
   ],

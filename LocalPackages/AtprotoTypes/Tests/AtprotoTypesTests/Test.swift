@@ -1,11 +1,11 @@
 //
 //  Test.swift
-//  ATProtoTypes
+//  AtprotoTypes
 //
 //  Created by Mark @ Germ on 2/18/26.
 //
 
-import ATProtoTypes
+import AtprotoTypes
 import Testing
 
 struct CIDTests {

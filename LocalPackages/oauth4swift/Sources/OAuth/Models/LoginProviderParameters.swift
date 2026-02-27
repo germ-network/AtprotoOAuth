@@ -6,12 +6,13 @@
 //
 
 import Foundation
+import GermConvenience
 
 public struct LoginProviderParameters: Sendable {
 	public let authorizationURL: URL
 	public let credentials: AppCredentials
 	public let redirectURL: URL
-	public let responseProvider: HTTPURLResponseProvider
+	public let responseProvider: HTTPDataResponse.Requester
 	public let stateToken: String
 	public let pkceVerifier: PKCEVerifier?
 
@@ -19,7 +20,7 @@ public struct LoginProviderParameters: Sendable {
 		authorizationURL: URL,
 		credentials: AppCredentials,
 		redirectURL: URL,
-		responseProvider: @escaping HTTPURLResponseProvider,
+		responseProvider: @escaping HTTPDataResponse.Requester,
 		stateToken: String,
 		pkceVerifier: PKCEVerifier?
 	) {
@@ -31,6 +32,3 @@ public struct LoginProviderParameters: Sendable {
 		self.pkceVerifier = pkceVerifier
 	}
 }
-
-public typealias LoginProvider =
-	@Sendable (LoginProviderParameters, DPoPKey) async throws -> SessionState

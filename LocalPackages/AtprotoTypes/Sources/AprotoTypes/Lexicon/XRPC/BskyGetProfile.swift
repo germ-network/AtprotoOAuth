@@ -14,9 +14,9 @@ extension Lexicon.App.Bsky.Actor {
 		public static let nsid = "app.bsky.actor.getProfile"
 
 		public struct Parameters: XRPCParameters {
-			public let did: ATProtoDID
+			public let did: Atproto.DID
 
-			public init(did: ATProtoDID) {
+			public init(did: Atproto.DID) {
 				self.did = did
 			}
 
@@ -30,7 +30,7 @@ extension Lexicon.App.Bsky.Actor {
 extension Lexicon.App.Bsky.Actor.Defs.ProfileViewDetailed: Mockable {
 	public static func mock() -> Lexicon.App.Bsky.Actor.Defs.ProfileViewDetailed {
 		.init(
-			did: ATProtoDID.mock().fullId,
+			did: Atproto.DID.mock().fullId,
 			handle: "germnetwork.com",
 			displayName: "Germ Network",
 			pronouns: "it/them",

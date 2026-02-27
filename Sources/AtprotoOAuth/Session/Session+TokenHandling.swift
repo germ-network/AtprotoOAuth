@@ -1,14 +1,15 @@
 //
 //  Session+TokenHandling.swift
-//  ATProtoOAuth
+//  AtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/25/26.
 //
 
+import AtprotoTypes
 import Foundation
 import OAuth
 
-extension ATProtoOAuthSession: TokenHandling {
+extension AtprotoOAuthSession: TokenHandling {
 	//	public static func loginProvider(params: OAuth.LoginProviderParameters) async throws -> OAuth.SessionState.Archive {
 	//		<#code#>
 	//	}
@@ -17,7 +18,7 @@ extension ATProtoOAuthSession: TokenHandling {
 		sessionState: SessionState.Archive,
 		appCredentials: AppCredentials
 	) async throws -> SessionState.Mutable {
-		let refreshToken = try sessionState.refreshToken.tryUnwrap
+		let refreshToken = try sessionState.mutable.refreshToken.tryUnwrap
 		let serverMetadata = try await lazyServerMetadata.lazyValue(
 			isolation: self
 		)
@@ -25,7 +26,7 @@ extension ATProtoOAuthSession: TokenHandling {
 		let tokenURL = try URL(string: serverMetadata.tokenEndpoint)
 			.tryUnwrap(OAuthSessionError.cantFormURL)
 
-		let tokenRequest = RefreshTokenRequest(
+		let tokenRequest = Atproto.RefreshTokenRequest(
 			refreshToken: refreshToken.value,
 			redirectUri: appCredentials.callbackURL.absoluteString,
 			grantType: "refresh_token",
@@ -38,8 +39,10 @@ extension ATProtoOAuthSession: TokenHandling {
 		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 		request.httpBody = try JSONEncoder().encode(tokenRequest)
 
-		let tokenResponse: TokenResponse = try await Self.response(for: request)
-			.successDecode()
+		let tokenResponse: Atproto.TokenResponse = try await Self.response(
+			for: request
+		)
+		.successDecode()
 
 		guard tokenResponse.tokenType == "DPoP" else {
 			throw
@@ -57,7 +60,7 @@ extension ATProtoOAuthSession: TokenHandling {
 
 	//throws if invalid
 	private func tokenSubscriberValidator(
-		response: TokenResponse,
+		response: Atproto.TokenResponse,
 		sub: String
 	) async throws {
 		// TODO: GER-1343 - Implement validator
@@ -68,7 +71,7 @@ extension ATProtoOAuthSession: TokenHandling {
 	}
 }
 
-extension ATProtoOAuthSession {
+extension Atproto {
 	struct TokenRequest: Hashable, Sendable, Codable {
 		public let code: String
 		public let codeVerifier: String
@@ -142,8 +145,10 @@ extension ATProtoOAuthSession {
 			)
 		}
 
-		public func login(for issuingServer: String, dpopKey: OAuth.DPoPKey) -> SessionState
-		{
+		public func session(
+			for issuingServer: String,
+			dpopKey: OAuth.DPoPKey
+		) -> SessionState.Archive {
 			.init(
 				dPopKey: dpopKey,
 				additionalParams: ["did": sub],
@@ -167,5 +172,4 @@ extension ATProtoOAuthSession {
 
 		}
 	}
-
 }

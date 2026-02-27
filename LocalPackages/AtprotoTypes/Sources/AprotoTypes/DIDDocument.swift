@@ -1,9 +1,9 @@
 //
 //  DIDDocument.swift
-//  ATProtoTypes
+//  AtprotoTypes
 //
 //  Created by Mark @ Germ on 2/18/26.
-//  Derived from the type in ATProtoKit by CJ Riley
+//  Derived from the type in AtprotoKit by CJ Riley
 //
 
 import Foundation
@@ -42,7 +42,7 @@ public struct DIDDocument: Sendable, Codable, Equatable {
 	///
 	/// - Throws: ``DIDDocumentError`` if ``service`` is empty or if none of the items
 	/// contain `#atproto_pds`.
-	public func checkServiceForATProto() throws -> ATService {
+	public func checkServiceForAtproto() throws -> ATService {
 		let services = self.service
 
 		guard services.count > 0 else {
@@ -55,7 +55,7 @@ public struct DIDDocument: Sendable, Codable, Equatable {
 			}
 		}
 
-		throw DIDDocumentError.noATProtoPDSValue
+		throw DIDDocumentError.noAtprotoPDSValue
 	}
 
 	enum CodingKeys: String, CodingKey {
@@ -74,7 +74,7 @@ public struct DIDDocument: Sendable, Codable, Equatable {
 
 		/// None of the items in the ``DIDDocument/service`` array contains a `#atproto_pds`
 		/// value in the ``ATService/id`` property.
-		case noATProtoPDSValue
+		case noAtprotoPDSValue
 
 		case urlConstructionError
 		case missingServiceUrl

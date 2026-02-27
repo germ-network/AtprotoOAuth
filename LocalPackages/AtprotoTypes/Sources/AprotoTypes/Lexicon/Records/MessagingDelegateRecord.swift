@@ -1,6 +1,6 @@
 //
 //  MessagingDelegateRecord.swift
-//  ATProtoClient
+//  AtprotoClient
 //
 //  Created by Anna Mistele on 5/14/25.
 //
@@ -13,9 +13,9 @@ extension Lexicon.Com.GermNetwork {
 		///
 		/// - Warning: The value must not change.
 		//is "id" in the lexicon but avoid conflict with Swift id
-		public static let nsid: NSID = "com.germnetwork.declaration"
+		public static let nsid: Atproto.NSID = "com.germnetwork.declaration"
 		//for encoding
-		private(set) var id: NSID = Self.nsid
+		private(set) var id: Atproto.NSID = Self.nsid
 
 		/// Required, Opaque.
 		/// Expected to parse to a SemVer. While the lexicon is fixed, the version applies to the format of opaque content
@@ -53,7 +53,7 @@ extension Lexicon.Com.GermNetwork {
 				try container
 				.decode(String.self, forKey: CodingKeys.id)
 			guard self.id == Self.nsid else {
-				throw ATProtoTypeError.invalidRecordType
+				throw AtprotoTypeError.invalidRecordType
 			}
 
 			self.version = try container.decode(String.self, forKey: CodingKeys.version)

@@ -1,6 +1,6 @@
 //
 //  CID.swift
-//  ATProtoTypes
+//  AtprotoTypes
 //
 //  Created by Mark @ Germ on 2/18/26.
 //
@@ -20,17 +20,17 @@ public struct CID: Sendable {
 
 	public init(string: String) throws {
 		guard let prefix = string.first, prefix == "b" else {
-			throw ATProtoTypeError.invalidPrefix
+			throw AtprotoTypeError.invalidPrefix
 		}
 		let body = String(string.dropFirst())
 
 		//cautious about the force unwraps in the Base32 module
 		guard !body.isEmpty else {
-			throw ATProtoTypeError.invalidBase32Data
+			throw AtprotoTypeError.invalidBase32Data
 		}
 
 		guard let decoded = body.base32DecodedData else {
-			throw ATProtoTypeError.invalidBase32Data
+			throw AtprotoTypeError.invalidBase32Data
 		}
 
 		bytes = decoded

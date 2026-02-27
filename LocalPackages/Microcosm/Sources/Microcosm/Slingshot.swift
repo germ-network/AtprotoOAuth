@@ -10,7 +10,7 @@ import Foundation
 
 // namespaces
 public enum Slingshot {
-	public static func resolve(handle: String) async throws -> ATProtoDID {
+	public static func resolve(handle: String) async throws -> Atproto.DID {
 		throw SlingshotError.notImplemented
 	}
 }

@@ -1,6 +1,6 @@
 //
 //  GetRecordOutput.swift
-//  ATProtoTypes
+//  AtprotoTypes
 //
 //  Created by Mark @ Germ on 2/24/26.
 //  Created by Christopher Jr Riley on 2024-05-20.

@@ -13,16 +13,14 @@ extension OAuthSession {
 		for request: URLRequest,
 	) async throws -> HTTPDataResponse {
 		let sessionState = try session
-
-		guard let dpopKey = sessionState.dPopKey else {
-			throw OAuthError.missingDPoPKey
-		}
+		let serverMetadata = try await lazyServerMetadata.lazyValue(
+			isolation: self
+		)
 
 		let dataResponse = try await dpopResponse(
 			for: request,
-			login: sessionState.mutable,
-			dPoPKey: dpopKey,
-			pkceVerifier: pkceVerifier
+			token: sessionState.mutable.accessToken.value,
+			issuingServer: serverMetadata.issuer
 		)
 
 		// FIXME: This isn't really to spec: 401 doesn't mean "refresh", it just means unauthorized.
@@ -36,16 +34,13 @@ extension OAuthSession {
 		}
 
 		//try to refresh the token
-		throw OAuthError.notImplemented
-
 		let refreshed = try await refresh(state: sessionState)
 
 		//try again
 		return try await dpopResponse(
 			for: request,
-			login: refreshed,
-			dPoPKey: dpopKey,
-			pkceVerifier: pkceVerifier
+			token: refreshed.accessToken.value,
+			issuingServer: serverMetadata.issuer
 		)
 	}
 
@@ -68,7 +63,6 @@ extension OAuthSession {
 		}
 
 		//handle successful refresh
-
 		return try await newRefreshTask.value
 	}
 }
