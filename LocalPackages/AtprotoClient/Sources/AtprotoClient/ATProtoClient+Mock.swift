@@ -39,23 +39,29 @@ public struct MockAtprotoClient: AtprotoClientInterface {
 	//		)
 	//	}
 
-	public func getRepository<Result>(
-		recordType: Result.Type,
-		pdsUrl: URL,
-		repo: AtprotoTypes.AtIdentifier,
-		recordKey: Atproto.RecordKey,
-		recordCID: CID?
-	) async throws -> AtprotoTypes.Lexicon.Com.Atproto.Repo.GetRecordOutput<Result>?
-	where Result: AtprotoTypes.AtprotoRecord {
-		.mock(cid: nil)
-	}
-
-	public func authRequest<X: XRPCInterface>(
-		for xrpc: X.Type,
+	public func authProcedure<X: XRPCProcedure>(
+		_ xrpc: X.Type,
 		pdsUrl: URL,
 		parameters: X.Parameters,
 		session: AtprotoSession
 	) async throws -> X.Result {
+		.mock()
+	}
+
+	public func authRequest<X: XRPCRequest>(
+		_ xrpc: X.Type,
+		pdsUrl: URL,
+		parameters: X.Parameters,
+		session: AtprotoSession
+	) async throws -> X.Result {
+		.mock()
+	}
+
+	public func request<X>(
+		_: X.Type,
+		pdsUrl: URL,
+		parameters: X.Parameters
+	) async throws -> X.Result where X: XRPCRequest {
 		.mock()
 	}
 }

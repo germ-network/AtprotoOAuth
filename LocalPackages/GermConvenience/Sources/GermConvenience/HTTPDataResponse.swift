@@ -43,10 +43,20 @@ public struct HTTPDataResponse: Sendable {
 		errorType: E.Type
 	) throws -> ErrorResult<R, E> {
 		guard response.statusCode >= 200 && response.statusCode < 300 else {
-			return try .error(
-				JSONDecoder().decode(E.self, from: data),
-				response.statusCode
-			)
+			do {
+				let decoded = try JSONDecoder().decode(E.self, from: data)
+				return .error(decoded, response.statusCode)
+			} catch {
+				if let stringResponse = String(data: data, encoding: .utf8) {
+					throw
+						HTTPResponseError
+						.unsuccessfulString(
+							response.statusCode, stringResponse)
+				} else {
+					throw HTTPResponseError.unsuccessful(
+						response.statusCode, data)
+				}
+			}
 		}
 		return try .result(JSONDecoder().decode(R.self, from: data))
 	}

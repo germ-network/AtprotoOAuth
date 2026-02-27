@@ -41,6 +41,13 @@ public struct CID: Sendable {
 	}
 }
 
+extension CID: Encodable {
+	public func encode(to encoder: any Encoder) throws {
+		var container = encoder.singleValueContainer()
+		try container.encode(self.bytes)
+	}
+}
+
 extension CID {
 	static func mock() -> Self {
 		//TODO, mock the internal mechanics of CID
