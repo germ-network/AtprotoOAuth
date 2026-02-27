@@ -16,3 +16,10 @@ public struct HTTPMethod: Hashable, Sendable {
 
 	public let rawValue: String
 }
+
+public struct URLScheme: Sendable {
+	public static let http = URLScheme(rawValue: "http")
+	public static let https = URLScheme(rawValue: "https")
+
+	public let rawValue: String
+}

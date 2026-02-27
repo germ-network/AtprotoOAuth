@@ -50,18 +50,17 @@ public struct AuthServerMetadata: Codable, Hashable, Sendable {
 		case clientIdMetadataDocumentSupported = "client_id_metadata_document_supported"
 	}
 
-	public static func load(for host: String, provider: HTTPURLResponseProvider) async throws
-		-> AuthServerMetadata
-	{
+	public static func load(
+		for host: String,
+		provider: HTTPDataResponse.Responder
+	) async throws -> AuthServerMetadata {
 		var components = URLComponents()
 
-		components.scheme = "https"
+		components.scheme = URLScheme.https.rawValue
 		components.host = host
 		components.path = "/.well-known/oauth-authorization-server"
 
-		guard let url = components.url else {
-			throw MetadataError.urlInvalid
-		}
+		let url = try components.url.tryUnwrap(MetadataError.urlInvalid)
 
 		var request = URLRequest(url: url)
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
@@ -87,7 +86,7 @@ public struct ClientMetadata: Hashable, Codable, Sendable {
 
 	public static func load(
 		for clientId: String,
-		provider: HTTPURLResponseProvider
+		provider: HTTPDataResponse.Responder
 	) async throws -> ClientMetadata {
 		let url = try URL(string: clientId).tryUnwrap(MetadataError.urlInvalid)
 
@@ -148,17 +147,16 @@ public struct ProtectedResourceMetadata: Codable, Hashable, Sendable {
 		case signedMetadata = "signed_metadata"
 	}
 
-	public static func load(for host: String, provider: HTTPURLResponseProvider) async throws
-		-> ProtectedResourceMetadata
-	{
+	public static func load(
+		for host: String,
+		provider: HTTPDataResponse.Responder
+	) async throws -> ProtectedResourceMetadata {
 		var components = URLComponents()
 		components.scheme = "https"
 		components.host = host
 		components.path = "/.well-known/oauth-protected-resource"
 
-		guard let url = components.url else {
-			throw MetadataError.urlInvalid
-		}
+		let url = try components.url.tryUnwrap(MetadataError.urlInvalid)
 
 		var request = URLRequest(url: url)
 		request.setValue("application/json", forHTTPHeaderField: "Accept")

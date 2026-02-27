@@ -177,7 +177,7 @@ extension OAuthSession {
 		for request: URLRequest,
 		token: String?,
 		issuingServer: String?,
-		provider: HTTPURLResponseProvider,
+		provider: HTTPDataResponse.Responder,
 		dPoPKey: DPoPKey,
 	) async throws -> HTTPDataResponse {
 		var request = request
@@ -322,8 +322,3 @@ extension OAuthSession {
 		return false
 	}
 }
-
-//to deprecate and depend on the session protocol
-
-public typealias HTTPURLResponseProvider =
-	@Sendable (URLRequest) async throws -> HTTPDataResponse

@@ -6,11 +6,8 @@
 //
 
 import Foundation
+import GermConvenience
 import OAuth
-
-#if canImport(FoundationNetworking)
-	import FoundationNetworking
-#endif
 
 enum URLResponseProviderError: Error {
 	case missingResponseComponents
@@ -18,7 +15,7 @@ enum URLResponseProviderError: Error {
 
 extension URLSession {
 	/// Convert a `URLSession` instance into a `URLResponseProvider`.
-	public var responseProvider: HTTPURLResponseProvider {
+	public var responseProvider: HTTPDataResponse.Responder {
 		{ request in
 			let (data, urlResponse) = try await self.data(for: request)
 			if let httpResponse = urlResponse as? HTTPURLResponse {
@@ -30,7 +27,7 @@ extension URLSession {
 	}
 
 	/// Convert a `URLSession` with a default configuration into a `URLResponseProvider`.
-	public static var defaultProvider: HTTPURLResponseProvider {
+	public static var defaultProvider: HTTPDataResponse.Responder {
 		URLSession(configuration: .default).responseProvider
 	}
 }

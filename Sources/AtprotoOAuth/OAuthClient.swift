@@ -1,6 +1,7 @@
 import AtprotoClient
 import AtprotoTypes
 import Foundation
+import GermConvenience
 import OAuth
 import os
 
@@ -21,7 +22,7 @@ public actor ATProtoOAuthClient {
 	public nonisolated let appCredentials: AppCredentials
 	public typealias UserAuthenticator = @Sendable (URL, String) async throws -> URL
 	public let userAuthenticator: UserAuthenticator
-	public let responseProvider: HTTPURLResponseProvider
+	public let responseProvider: HTTPDataResponse.Responder
 	public let atprotoClient: ATProtoClientInterface
 
 	//didResolver
@@ -31,7 +32,7 @@ public actor ATProtoOAuthClient {
 	public init(
 		appCredentials: AppCredentials,
 		userAuthenticator: @escaping UserAuthenticator,
-		responseProvider: @escaping HTTPURLResponseProvider,
+		responseProvider: @escaping HTTPDataResponse.Responder,
 		atprotoClient: ATProtoClientInterface,
 	) {
 		self.appCredentials = appCredentials

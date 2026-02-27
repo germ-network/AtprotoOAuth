@@ -38,9 +38,9 @@ public protocol AtprotoSession {
 }
 
 public struct ATProtoClient {
-	let responseProvider: HTTPURLResponseProvider
+	let responseProvider: HTTPDataResponse.Responder
 
-	public init(responseProvider: @escaping HTTPURLResponseProvider) {
+	public init(responseProvider: @escaping HTTPDataResponse.Responder) {
 		self.responseProvider = responseProvider
 	}
 }
