@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CollectHandleView: View {
 	@State private var handle: String = ""
-	let viewModel: LoginVM
+	let viewModel: LoginDemoVM
 
 	var body: some View {
 		VStack {

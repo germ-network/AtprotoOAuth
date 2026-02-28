@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct LoginView: View {
-	@State private var viewModel = LoginVM()
+struct LoginDemoView: View {
+	@State private var viewModel = LoginDemoVM()
 
 	var body: some View {
 		VStack {
@@ -33,5 +33,5 @@ struct LoginView: View {
 }
 
 #Preview {
-	LoginView()
+	LoginDemoView()
 }

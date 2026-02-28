@@ -14,7 +14,7 @@ import Microcosm
 import OAuth
 import SwiftUI
 
-@Observable final class LoginVM {
+@Observable final class LoginDemoVM {
 	let oauthClient = AtprotoOAuthClient(
 		appCredentials: .init(
 			clientId: "https://static.germnetwork.com/client-metadata.json",

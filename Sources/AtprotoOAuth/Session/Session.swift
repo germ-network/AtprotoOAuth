@@ -15,7 +15,7 @@ import OAuth
 ///Parent should recognize it has an expired session and re-auth
 
 public actor AtprotoOAuthSession {
-	let did: Atproto.DID
+	public nonisolated let did: Atproto.DID
 	public let appCredentials: AppCredentials
 	let atprotoClient: AtprotoClientInterface
 
