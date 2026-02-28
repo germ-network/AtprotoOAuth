@@ -35,10 +35,9 @@ public actor AtprotoOAuthSessionImpl {
 	public var lazyServerMetadata: LazyResource<AuthServerMetadata>
 	public var refreshTask: Task<SessionState.Mutable, Error>?
 
-	private let saveStream: AsyncStream<SessionState.Mutable>
-	private let saveContinuation: AsyncStream<SessionState.Mutable>.Continuation
+	private let saveStream: AsyncStream<SessionState.Mutable?>
+	private let saveContinuation: AsyncStream<SessionState.Mutable?>.Continuation
 	public enum StateUpdate {
-		case mutable(SessionState.Mutable)
 		case loggedOut
 	}
 	public let updateStream: AsyncStream<StateUpdate>
@@ -94,7 +93,7 @@ public actor AtprotoOAuthSessionImpl {
 
 		nonceCache.countLimit = 25
 
-		(saveStream, saveContinuation) = AsyncStream<SessionState.Mutable>
+		(saveStream, saveContinuation) = AsyncStream<SessionState.Mutable?>
 			.makeStream(bufferingPolicy: .bufferingNewest(1))
 
 		(updateStream, updateContinuation) = AsyncStream<StateUpdate>
@@ -127,12 +126,20 @@ public actor AtprotoOAuthSessionImpl {
 
 	//propagate new state to our in-memory opject properties
 	//then through the async streams
+
 	private func save(sessionMutable: OAuth.SessionState.Mutable) throws {
 		try session.updated(mutable: sessionMutable)
 
 		saveContinuation.yield(sessionMutable)
 		//don't need to undestand refresh in the UI yet
-		//		updateContinuation.yield(StateUpdate)
+		//		updateContinuation.yield( )
+	}
+
+	//TODO: determine when we are expired and call this
+	//so clients know they need to get a new session
+	private func expired() {
+		saveContinuation.yield(nil)
+		updateContinuation.yield(.loggedOut)
 	}
 }
 
@@ -151,7 +158,7 @@ extension AtprotoOAuthSessionImpl {
 		archive: Archive,
 		appCredentials: AppCredentials,
 		atprotoClient: AtprotoClientInterface
-	) throws -> (AtprotoOAuthSession, AsyncStream<SessionState.Mutable>) {
+	) throws -> (AtprotoOAuthSession, AsyncStream<SessionState.Mutable?>) {
 		let session = try AtprotoOAuthSessionImpl(
 			archive: archive,
 			appCredentials: appCredentials,

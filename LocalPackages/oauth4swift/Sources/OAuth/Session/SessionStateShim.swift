@@ -110,6 +110,14 @@ extension SessionState {
 			self.additionalParams = additionalParams
 			self.mutable = mutable
 		}
+
+		public func merge(update: SessionState.Mutable) -> Self {
+			.init(
+				dPopKey: dPopKey,
+				additionalParams: additionalParams,
+				mutable: update
+			)
+		}
 	}
 
 	public convenience init(archive: Archive) {

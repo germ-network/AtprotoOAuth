@@ -10,18 +10,13 @@ import AtprotoTypes
 import SwiftUI
 import os
 
-//ATProtoLiteClientViewModel can't actually tell you if a login exists without
-//async consulting its LoginStorage
-
 struct LoginView: View {
 	static let logger = Logger(
 		subsystem: "com.germnetwork.ATProtoLiteClient",
 		category: "LoginView")
 
 	let handle: String
-	let did: Atproto.DID
-
-	let viewModel = LoginVM()
+	let viewModel: SessionVM
 
 	// Relationally
 	@AppStorage("otherHandle") private var otherHandle: String = ""
@@ -32,34 +27,35 @@ struct LoginView: View {
 
 	var body: some View {
 		Group {
-			Section {
-				//This would normally be automatically sequenced, but
-				//making this manual for the sake of testbed
-				if viewModel.authenticatingTask == nil {
-					Button("Login", action: login)
-				} else {
+			Section("Session") {
+				if viewModel.sessionStorage.sessionArchive != nil {
+					Text("Logged in")
+				}
+				switch (
+					viewModel.session,
+					viewModel.processingTask,
+					viewModel.sessionStorage.sessionArchive,
+				) {
+				//bug if session but nil sessionArchive
+				//_? means non nil
+				case (_?, _, _):
+					Text("Instantiated session")
+					Button("Sleep", action: viewModel.sleep)
+					Button("Log out", action: viewModel.logout)
+				case (nil, let processing?, _):
 					HStack {
-						Text("Authenticating....")
+						Text(processing.1)
 						ProgressView()
 					}
+				case (nil, nil, _?):
+					Text("stored session")
+				case (nil, nil, nil):
+					Button("Login", action: login)
 				}
-
-				if viewModel.session != nil {
-					Text("logged in")
-					Button("Log out", action: viewModel.clearLogin)
-				} else {
-					Text("Not logged in")
-				}
-				//the authenticator is an actor which is hard to introspect
-				//from @MainActor
-				//			if viewModel._authenticator == nil {
-				//				Text("No Authenticator")
-				//			} else {
-				//				Text("Authenticator Set")
-				//			}
 			}
+
 			if let session = viewModel.session {
-				Section {
+				Section("Auth Session Query") {
 					HStack {
 						Text("@")
 						TextField(
@@ -68,7 +64,7 @@ struct LoginView: View {
 						Spacer()
 					}
 					Button("Make authed fetch") {
-						getMetadata(session: session)
+						getMetadata(session: session.session)
 					}
 					//						Button("Post messaging delegate") {
 					//							Task {
@@ -93,7 +89,7 @@ struct LoginView: View {
 	}
 
 	func login() {
-		viewModel.login(did: did)
+		viewModel.login()
 	}
 
 	func getMetadata(session: AtprotoOAuthSession) {
@@ -120,8 +116,9 @@ struct LoginView: View {
 }
 
 #Preview {
+	let did = try! Atproto.DID(fullId: "did:plc:4yvwfwxfz5sney4twepuzdu7")
 	LoginView(
 		handle: "germnetwork.com",
-		did: try! .init(fullId: "did:plc:4yvwfwxfz5sney4twepuzdu7")
+		viewModel: .init(did: did)
 	)
 }
