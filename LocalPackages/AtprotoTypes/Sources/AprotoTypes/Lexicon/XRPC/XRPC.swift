@@ -11,7 +11,7 @@ import Foundation
 public protocol XRPC: Sendable {
 	static var nsid: Atproto.NSID { get }
 
-	associatedtype Result: Decodable, Mockable
+	associatedtype Result: Decodable, Mockable, Sendable
 }
 
 //these are GET queries

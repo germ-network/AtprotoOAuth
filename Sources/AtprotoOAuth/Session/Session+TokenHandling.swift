@@ -9,11 +9,7 @@ import AtprotoTypes
 import Foundation
 import OAuth
 
-extension AtprotoOAuthSession: TokenHandling {
-	//	public static func loginProvider(params: OAuth.LoginProviderParameters) async throws -> OAuth.SessionState.Archive {
-	//		<#code#>
-	//	}
-
+extension AtprotoOAuthSessionImpl: TokenHandling {
 	public func refreshProvider(
 		sessionState: SessionState.Archive,
 		appCredentials: AppCredentials

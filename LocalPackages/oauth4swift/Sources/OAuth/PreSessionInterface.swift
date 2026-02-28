@@ -108,7 +108,7 @@ extension PreSessionInterface {
 		dPoPKey: DPoPKey,
 	) async throws -> PARResponse {
 		let challenge = pkceVerifier.challenge
-		let scopes = appCredentials.scopes.joined(separator: " ")
+		let scopes = appCredentials.requestedScopes.joined(separator: " ")
 		let callbackURI = appCredentials.callbackURL
 		let clientId = appCredentials.clientId
 

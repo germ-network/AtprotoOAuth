@@ -45,7 +45,7 @@ import os
 				try await oauthClient
 				.authorize(identity: .did(did))
 
-			let session = try AtprotoOAuthSession(
+			let session = try AtprotoOAuthSessionImpl(
 				archive: .init(
 					did: did.fullId,
 					session: sessionArchive,
@@ -81,6 +81,22 @@ import os
 		session = nil
 	}
 
+	func postMessagingDelegate(did: Atproto.DID) async throws {
+		guard let session else {
+			return
+		}
+		
+		try await session.authProcedure(
+			Lexicon.Com.Atproto.Repo.PutRecord<Lexicon.Com.GermNetwork.Declaration>.self,
+			parameters: .init(
+				repo: .did(did),
+				collection: Lexicon.Com.GermNetwork.Declaration.nsid,
+				rkey: "self",
+				record: .mock(),
+				validate: true,
+			)
+		)
+	}
 	//	func postMessagingDelegate() {}
 
 	//	func postMessagingDelegate(

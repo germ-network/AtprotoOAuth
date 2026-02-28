@@ -63,7 +63,7 @@ import SwiftUI
 					try await oauthClient
 					.authorize(identity: .did(resolvedDid))
 
-				let session = try AtprotoOAuthSession(
+				let session = try AtprotoOAuthSessionImpl(
 					archive: .init(
 						did: resolvedDid.fullId,
 						session: sessionArchive,
