@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+//replace this with the CachedAuthenticationView
+
 struct LoginDemoView: View {
 	@State private var viewModel = LoginDemoVM()
 

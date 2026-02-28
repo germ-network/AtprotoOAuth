@@ -80,4 +80,33 @@ import os
 		authenticatingTask = nil
 		session = nil
 	}
+
+	//	func postMessagingDelegate() {}
+
+	//	func postMessagingDelegate(
+	//		loginViewModel: ATProtoLiteClientViewModel
+	//	) async throws {
+	//		let myDID = try await ATProtoPublicAPI.getTypedDID(handle: storedHandle)
+	//		if let myPDS = try await ATProtoPublicAPI.getPds(for: loginViewModel.did.fullId),
+	//			let pdsURL = URL(string: myPDS)
+	//		{
+	//			let authenticator = try await loginViewModel.getAuthenticator(
+	//				pdsURL: pdsURL)
+	//			let _ = try await ATProtoAuthAPI.update(
+	//				delegateRecord: GermLexicon.MessagingDelegateRecord(
+	//					version: "2.3.0",
+	//					currentKey: "testingKey".utf8Data,
+	//					keyPackage: "testingKeyPackage".utf8Data,
+	//					messageMe: GermLexicon.MessageMeInstructions(
+	//						showButtonTo: .everyone,
+	//						messageMeUrl: "message-me-url.com"
+	//					),
+	//					continuityProofs: ["proof1".utf8Data, "proof2".utf8Data]
+	//				),
+	//				for: myDID.fullId,
+	//				pdsURL: pdsURL,
+	//				authenticator: authenticator.authenticator
+	//			)
+	//		}
+	//	}
 }
