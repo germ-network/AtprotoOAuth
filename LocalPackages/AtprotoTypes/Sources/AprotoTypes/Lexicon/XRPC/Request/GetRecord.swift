@@ -44,7 +44,7 @@ extension Lexicon.Com.Atproto.Repo {
 			public func asQueryItems() -> [URLQueryItem] {
 				var base: [URLQueryItem] = [
 					.init(name: "repo", value: repo.wireFormat),
-					.init(name: "collection", value: GetRecord.nsid),
+					.init(name: "collection", value: Result.nsid),
 					.init(name: "rkey", value: rkey),
 				]
 				if let cid {
