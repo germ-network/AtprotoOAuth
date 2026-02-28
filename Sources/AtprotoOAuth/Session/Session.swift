@@ -23,6 +23,4 @@ public protocol AtprotoOAuthSession {
 	) async throws -> X.Result
 }
 
-extension AtprotoOAuthSessionImpl: AtprotoOAuthSession {
-	
-}
+extension AtprotoOAuthSessionImpl: AtprotoOAuthSession {}

@@ -22,7 +22,7 @@ extension Lexicon.Com.Atproto.Repo {
 			let validate: Bool?
 			let swapCommit: CID?
 			let swapRecord: CID?
-			
+
 			public init(
 				repo: AtIdentifier,
 				collection: Atproto.NSID,

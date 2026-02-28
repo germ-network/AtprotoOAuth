@@ -31,7 +31,7 @@ import SwiftUI
 	enum State {
 		case collectHandle
 		case validating(String)
-		case loggedIn(OAuthSession)
+		case loggedIn(AtprotoOAuthSession)
 	}
 	var state: State = .collectHandle
 	struct LogEntry: Identifiable {
@@ -63,16 +63,18 @@ import SwiftUI
 					try await oauthClient
 					.authorize(identity: .did(resolvedDid))
 
-				let session = try AtprotoOAuthSessionImpl(
-					archive: .init(
-						did: resolvedDid.fullId,
-						session: sessionArchive,
-					),
-					appCredentials: oauthClient.appCredentials,
-					atprotoClient: AtprotoClient(
-						responseProvider: URLSession.defaultProvider
+				let (session, saveStream) =
+					try AtprotoOAuthSessionImpl
+					.restore(
+						archive: .init(
+							did: resolvedDid.fullId,
+							session: sessionArchive,
+						),
+						appCredentials: oauthClient.appCredentials,
+						atprotoClient: AtprotoClient(
+							responseProvider: URLSession.defaultProvider
+						)
 					)
-				)
 				state = .loggedIn(session)
 
 				//make an auth request

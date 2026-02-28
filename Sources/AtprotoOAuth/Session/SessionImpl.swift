@@ -35,6 +35,15 @@ public actor AtprotoOAuthSessionImpl {
 	public var lazyServerMetadata: LazyResource<AuthServerMetadata>
 	public var refreshTask: Task<SessionState.Mutable, Error>?
 
+	private let saveStream: AsyncStream<SessionState.Mutable>
+	private let saveContinuation: AsyncStream<SessionState.Mutable>.Continuation
+	public enum StateUpdate {
+		case mutable(SessionState.Mutable)
+		case loggedOut
+	}
+	public let updateStream: AsyncStream<StateUpdate>
+	private let updateContinuation: AsyncStream<StateUpdate>.Continuation
+
 	private init(
 		did: Atproto.DID,
 		appCredentials: AppCredentials,
@@ -84,6 +93,12 @@ public actor AtprotoOAuthSessionImpl {
 			})
 
 		nonceCache.countLimit = 25
+
+		(saveStream, saveContinuation) = AsyncStream<SessionState.Mutable>
+			.makeStream(bufferingPolicy: .bufferingNewest(1))
+
+		(updateStream, updateContinuation) = AsyncStream<StateUpdate>
+			.makeStream(bufferingPolicy: .bufferingNewest(1))
 	}
 
 	public func authProcedure<X: XRPCProcedure>(
@@ -112,7 +127,7 @@ public actor AtprotoOAuthSessionImpl {
 }
 
 extension AtprotoOAuthSessionImpl {
-	public struct Archive {
+	public struct Archive: Sendable, Codable {
 		let did: String
 		let session: SessionState.Archive?
 
@@ -122,7 +137,20 @@ extension AtprotoOAuthSessionImpl {
 		}
 	}
 
-	public init(
+	public static func restore(
+		archive: Archive,
+		appCredentials: AppCredentials,
+		atprotoClient: AtprotoClientInterface
+	) throws -> (AtprotoOAuthSession, AsyncStream<SessionState.Mutable>) {
+		let session = try AtprotoOAuthSessionImpl(
+			archive: archive,
+			appCredentials: appCredentials,
+			atprotoClient: atprotoClient
+		)
+		return (session, session.saveStream)
+	}
+
+	private init(
 		archive: Archive,
 		appCredentials: AppCredentials,
 		atprotoClient: AtprotoClientInterface

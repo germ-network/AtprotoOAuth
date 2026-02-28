@@ -45,7 +45,7 @@ import os
 				try await oauthClient
 				.authorize(identity: .did(did))
 
-			let session = try AtprotoOAuthSessionImpl(
+			let (session, saveStream) = try AtprotoOAuthSessionImpl.restore(
 				archive: .init(
 					did: did.fullId,
 					session: sessionArchive,
@@ -85,9 +85,10 @@ import os
 		guard let session else {
 			return
 		}
-		
+
 		try await session.authProcedure(
-			Lexicon.Com.Atproto.Repo.PutRecord<Lexicon.Com.GermNetwork.Declaration>.self,
+			Lexicon.Com.Atproto.Repo.PutRecord<Lexicon.Com.GermNetwork.Declaration>
+				.self,
 			parameters: .init(
 				repo: .did(did),
 				collection: Lexicon.Com.GermNetwork.Declaration.nsid,
