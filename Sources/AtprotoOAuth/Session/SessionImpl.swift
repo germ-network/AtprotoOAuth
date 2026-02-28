@@ -124,6 +124,16 @@ public actor AtprotoOAuthSessionImpl {
 			session: self
 		)
 	}
+
+	//propagate new state to our in-memory opject properties
+	//then through the async streams
+	private func save(sessionMutable: OAuth.SessionState.Mutable) throws {
+		try session.updated(mutable: sessionMutable)
+
+		saveContinuation.yield(sessionMutable)
+		//don't need to undestand refresh in the UI yet
+		//		updateContinuation.yield(StateUpdate)
+	}
 }
 
 extension AtprotoOAuthSessionImpl {
@@ -185,10 +195,7 @@ extension AtprotoOAuthSessionImpl: OAuthSession {
 	}
 
 	public func refreshed(sessionMutable: OAuth.SessionState.Mutable) throws {
-		let session = try session
-
-		session.updated(mutable: sessionMutable)
-		//TODO: save this
+		try save(sessionMutable: sessionMutable)
 	}
 
 	public static func response(for request: URLRequest) async throws -> HTTPDataResponse {
