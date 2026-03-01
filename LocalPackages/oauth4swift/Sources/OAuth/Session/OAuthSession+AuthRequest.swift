@@ -8,7 +8,7 @@
 import Foundation
 import GermConvenience
 
-extension OAuthSessionComponents {
+extension OAuthSessionCapabilities {
 	public func authResponse(
 		for request: URLRequest,
 	) async throws -> HTTPDataResponse {

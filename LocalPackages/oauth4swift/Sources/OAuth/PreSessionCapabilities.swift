@@ -9,7 +9,7 @@ import Foundation
 import GermConvenience
 import Logging
 
-public protocol PreSessionInterface: DPoPNonceHolding {
+public protocol PreSessionCapabilities: DPoPNonceHolding {
 	var appCredentials: AppCredentials { get }
 	var stateToken: String { get }
 	var dpopKey: DPoPKey { get }
@@ -39,7 +39,7 @@ public protocol PreSessionInterface: DPoPNonceHolding {
 	) async throws
 }
 
-extension PreSessionInterface {
+extension PreSessionCapabilities {
 	public func performUserAuthentication(
 		parConfig: PARConfiguration,
 		authServerMetadata: AuthServerMetadata,

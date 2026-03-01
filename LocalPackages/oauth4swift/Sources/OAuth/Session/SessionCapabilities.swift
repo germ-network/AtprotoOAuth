@@ -1,5 +1,5 @@
 //
-//  SessionProtocol.swift
+//  SessionCapabilities.swift
 //  OAuth
 //
 //  Created by Mark @ Germ on 2/22/26.
@@ -9,7 +9,7 @@ import Crypto
 import Foundation
 import GermConvenience
 
-public protocol OAuthSessionComponents: Actor, TokenHandling, DPoPNonceHolding {
+public protocol OAuthSessionCapabilities: Actor, TokenHandling, DPoPNonceHolding {
 	static func response(for: URLRequest) async throws -> HTTPDataResponse
 
 	var appCredentials: AppCredentials { get }

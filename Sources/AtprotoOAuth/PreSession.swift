@@ -52,7 +52,7 @@ extension PreSession: DPoPNonceHolding {
 	}
 }
 
-extension PreSession: PreSessionInterface {
+extension PreSession: PreSessionCapabilities {
 	public static func authorizationURL(
 		authEndpoint: String,
 		parRequestURI: String,
