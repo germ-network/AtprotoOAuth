@@ -7,14 +7,16 @@
 
 import Foundation
 
+//related to but not equivalent to the ClientMetadata
 public struct AppCredentials: Codable, Hashable, Sendable {
 	public let clientId: String
-	public let scopes: [String]
+	//should be a subset of the scopes in our client metadata
+	public let requestedScopes: [String]
 	public let callbackURL: URL
 
 	public init(clientId: String, scopes: [String], callbackURL: URL) {
 		self.clientId = clientId
-		self.scopes = scopes
+		self.requestedScopes = scopes
 		self.callbackURL = callbackURL
 	}
 

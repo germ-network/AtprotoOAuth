@@ -48,7 +48,7 @@ extension PreSession: DPoPNonceHolding {
 	public static func decode(
 		dataResponse: HTTPDataResponse
 	) throws -> OAuth.NonceValue? {
-		try AtprotoOAuthSession.decode(dataResponse: dataResponse)
+		try AtprotoOAuthSessionImpl.decode(dataResponse: dataResponse)
 	}
 }
 

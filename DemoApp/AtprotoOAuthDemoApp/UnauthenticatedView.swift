@@ -149,7 +149,7 @@ struct UnauthenticatedView: View {
 		let newTask = Task {
 			print("Loading DID...")
 			do {
-				did = try await LoginVM.fallbackResolve(handle: handleEntry)
+				did = try await LoginDemoVM.fallbackResolve(handle: handleEntry)
 			} catch {
 				print("Error loading DID: \(error)")
 			}

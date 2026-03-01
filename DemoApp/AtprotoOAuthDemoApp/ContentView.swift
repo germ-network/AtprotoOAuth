@@ -12,7 +12,10 @@ struct ContentView: View {
 	var body: some View {
 		TabView {
 			Tab("Authenticated", systemImage: "person") {
-				LoginView()
+				LoginDemoView()
+			}
+			Tab("CachedAuthenticatedView", systemImage: "person") {
+				CachedAuthenticatedView()
 			}
 			Tab("Unauthenticated", systemImage: "smartphone") {
 				UnauthenticatedView()

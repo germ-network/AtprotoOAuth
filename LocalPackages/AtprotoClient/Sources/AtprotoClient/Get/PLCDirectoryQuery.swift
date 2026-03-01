@@ -7,6 +7,7 @@
 
 import AtprotoTypes
 import Foundation
+import GermConvenience
 
 extension AtprotoClient {
 	public func plcDirectoryQuery(
@@ -26,9 +27,7 @@ extension AtprotoClient {
 		components.host = "plc.directory"
 		components.path = "/\(did.fullId)"
 
-		guard let url = components.url else {
-			throw AtprotoClientError.couldntConstructUrl
-		}
-		return url
+		return try components.url
+			.tryUnwrap(AtprotoClientError.couldntConstructUrl)
 	}
 }

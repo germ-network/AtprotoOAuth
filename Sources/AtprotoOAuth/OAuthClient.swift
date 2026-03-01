@@ -15,7 +15,7 @@ public protocol AtprotoOAuthInterface {
 		-> SessionState.Archive
 }
 
-public actor AtprotoOAuthClient {
+public struct AtprotoOAuthClient: Sendable {
 	static let logger = Logger(
 		subsystem: "com.germnetwork",
 		category: "BlueskyOAuthenticator")
