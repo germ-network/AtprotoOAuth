@@ -17,10 +17,12 @@ extension OAuthSessionCapabilities {
 			isolation: self
 		)
 
+		let issuerOrigin = try URL(string: serverMetadata.issuer).tryUnwrap.origin.tryUnwrap
 		let dataResponse = try await dpopResponse(
 			for: request,
+			issuerOrigin: issuerOrigin,
 			token: sessionState.mutable.accessToken.value,
-			issuingServer: serverMetadata.issuer
+
 		)
 
 		// FIXME: This isn't really to spec: 401 doesn't mean "refresh", it just means unauthorized.
@@ -39,8 +41,9 @@ extension OAuthSessionCapabilities {
 		//try again
 		return try await dpopResponse(
 			for: request,
+			issuerOrigin: issuerOrigin,
 			token: refreshed.accessToken.value,
-			issuingServer: serverMetadata.issuer
+
 		)
 	}
 

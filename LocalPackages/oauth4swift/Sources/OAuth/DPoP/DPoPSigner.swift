@@ -6,24 +6,21 @@
 //
 
 import Foundation
+import GermConvenience
 
-#if canImport(FoundationNetworking)
-	import FoundationNetworking
-#endif
-
-public struct DPoPRequestPayload: Codable, Hashable, Sendable {
-	public let uniqueCode: String
-	public let httpMethod: String
-	public let httpRequestURL: String
+struct DPoPRequestPayload: Codable, Hashable, Sendable {
+	let uniqueCode: String
+	let httpMethod: String
+	let httpRequestURL: String
 	/// UNIX type, seconds since epoch
-	public let createdAt: Int
+	let createdAt: Int
 	/// UNIX type, seconds since epoch
-	public let expiresAt: Int
-	public let nonce: String?
-	public let authorizationServerIssuer: String
-	public let accessTokenHash: String
+	let expiresAt: Int
+	let nonce: String?
+	let authorizationServerIssuer: String?
+	let accessTokenHash: String?
 
-	public enum CodingKeys: String, CodingKey {
+	enum CodingKeys: String, CodingKey {
 		case uniqueCode = "jti"
 		case httpMethod = "htm"
 		case httpRequestURL = "htu"
@@ -34,27 +31,25 @@ public struct DPoPRequestPayload: Codable, Hashable, Sendable {
 		case accessTokenHash = "ath"
 	}
 
-	public init(
+	init(
+		endpointUrl: URL,
 		httpMethod: String,
-		httpRequestURL: String,
-		createdAt: Int,
-		expiresAt: Int,
-		nonce: String,
-		authorizationServerIssuer: String,
-		accessTokenHash: String
-	) {
+		nonce: String?,
+		issuingServer: String?,
+		accessTokenHash: String?
+	) throws {
 		self.uniqueCode = UUID().uuidString
 		self.httpMethod = httpMethod
-		self.httpRequestURL = httpRequestURL
-		self.createdAt = createdAt
-		self.expiresAt = expiresAt
+		self.httpRequestURL = endpointUrl.absoluteString
+		self.createdAt = Int(Date.now.timeIntervalSince1970)
+		self.expiresAt = Int(Date.now.timeIntervalSince1970 + 3600)
 		self.nonce = nonce
-		self.authorizationServerIssuer = authorizationServerIssuer
+		self.authorizationServerIssuer = issuingServer
 		self.accessTokenHash = accessTokenHash
 	}
 }
 
-public enum DPoPError: Error {
+enum DPoPError: Error {
 	case nonceExpected(URLResponse)
 	case requestInvalid(URLRequest)
 }
@@ -64,14 +59,28 @@ public enum DPoPError: Error {
 /// Currently only uses ES256.
 ///
 /// Details here: https://datatracker.ietf.org/doc/html/rfc9449
-public final class DPoPSigner {
+public enum DPoPSigner {
 	public struct JWTParameters: Sendable, Hashable {
-		public let keyType: String
+		let keyType: String
+		let nonce: String?
+		let issuingServer: String?
 
-		public let httpMethod: String
-		public let requestEndpoint: String
-		public let nonce: String?
-		public let tokenHash: String?
-		public let issuingServer: String?
+		public init(
+			keyType: String,
+			nonce: String?,
+			issuingServer: String?
+		) {
+			self.keyType = keyType
+			self.nonce = nonce
+			self.issuingServer = issuingServer
+		}
+
+		func substitute(newNonce: String) -> Self {
+			.init(
+				keyType: keyType,
+				nonce: newNonce,
+				issuingServer: issuingServer
+			)
+		}
 	}
 }

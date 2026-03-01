@@ -26,51 +26,26 @@ public struct DPoPKey: Codable, Hashable, Sendable {
 		self.keyData = keyData
 	}
 
-	func sign(_ parameters: DPoPSigner.JWTParameters) throws -> JWT {
+	func sign(payload: DPoPRequestPayload) throws -> JWT {
 		switch alg {
-		case .es256: try signSha256(parameters)
+		case .es256:
+			try signSha256(
+				keyType: "dpop+jwt",
+				payload: payload
+			)
 		}
 	}
 
-	private func signSha256(_ parameters: DPoPSigner.JWTParameters) throws -> JWT {
-		let payload: any Encodable = {
-			if let nonce = parameters.nonce,
-				let authorizationServerIssuer = parameters
-					.issuingServer,
-				let accessTokenHash = parameters.tokenHash
-			{
-				DPoPRequestPayload(
-					httpMethod: parameters.httpMethod,
-					httpRequestURL: parameters.requestEndpoint,
-					createdAt: Int(
-						Date.now.timeIntervalSince1970),
-					expiresAt: Int(
-						Date.now.timeIntervalSince1970
-							+ 3600),
-					nonce: nonce,
-					authorizationServerIssuer:
-						authorizationServerIssuer,
-					accessTokenHash: accessTokenHash
-				)
-			} else {
-				DPoPTokenPayload(
-					httpMethod: parameters.httpMethod,
-					httpRequestURL: parameters.requestEndpoint,
-					createdAt: Int(
-						Date.now.timeIntervalSince1970),
-					expiresAt: Int(
-						Date.now.timeIntervalSince1970
-							+ 3600),
-					nonce: parameters.nonce
-				)
-			}
-		}()
+	private func signSha256(
+		keyType: String,
+		payload: DPoPRequestPayload
+	) throws -> JWT {
 
 		let key = try P256.Signing.PrivateKey(rawRepresentation: keyData)
 
 		return try ECDSASigner(key: key).sign(
 			header: JWT.JWTHeader(
-				typ: parameters.keyType,
+				typ: keyType,
 				jwk: JWT.JWK(key: key)
 			),
 			payload: payload,

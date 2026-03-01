@@ -73,8 +73,8 @@ extension PreSessionCapabilities {
 			dpopRequester: {
 				try await dpopResponse(
 					for: $0,
+					issuerOrigin: nil,
 					token: nil,
-					issuingServer: nil
 				)
 			}
 		)
@@ -138,8 +138,8 @@ extension PreSessionCapabilities {
 
 		return try await dpopResponse(
 			for: request,
+			issuerOrigin: nil,
 			token: nil,
-			issuingServer: nil
 		).successDecode()
 	}
 }

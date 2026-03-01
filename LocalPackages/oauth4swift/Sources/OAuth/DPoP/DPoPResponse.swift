@@ -26,14 +26,10 @@ extension DPoPNonceHolding {
 	//this method is shared with the session object and the initial login
 	public func dpopResponse(
 		for request: URLRequest,
+		issuerOrigin: String?,
 		token: String?,
-		issuingServer: String?,
 	) async throws -> HTTPDataResponse {
 		var request = request
-		var issuer: String? = nil
-		if let iss = issuingServer {
-			issuer = URL(string: iss)?.origin
-		}
 
 		let tokenHash = token.map {
 			SHA256.hash(data: $0.utf8Data)
@@ -47,17 +43,15 @@ extension DPoPNonceHolding {
 		let initNonce = getNonce(origin: requestOrigin)
 
 		let method = try request.httpMethod.tryUnwrap(OAuthError.missingHTTPMethod)
-
 		let url = try request.url.tryUnwrap(OAuthError.missingUrl)
 
 		let jwt = try dpopKey.sign(
-			.init(
-				keyType: "dpop+jwt",
+			payload: .init(
+				endpointUrl: url,
 				httpMethod: method,
-				requestEndpoint: url.absoluteString,
 				nonce: initNonce?.nonce,
-				tokenHash: tokenHash,
-				issuingServer: issuer
+				issuingServer: issuerOrigin,
+				accessTokenHash: tokenHash
 			)
 		)
 
@@ -83,8 +77,8 @@ extension DPoPNonceHolding {
 
 		//FIXME: revised logic
 		let isAuthServer: Bool? = {
-			if let issuer {
-				issuer == requestOrigin
+			if let issuerOrigin {
+				issuerOrigin == requestOrigin
 			} else {
 				nil
 			}
@@ -99,14 +93,13 @@ extension DPoPNonceHolding {
 		}
 
 		// repeat once, using newly-established nonce
-		let secondJwt = try dpopKey.sign(
-			.init(
-				keyType: "dpop+jwt",
+		let secondJwt = try try dpopKey.sign(
+			payload: .init(
+				endpointUrl: url,
 				httpMethod: method,
-				requestEndpoint: url.absoluteString,
 				nonce: nextNonce.nonce,
-				tokenHash: tokenHash,
-				issuingServer: issuer
+				issuingServer: issuerOrigin,
+				accessTokenHash: tokenHash
 			)
 		)
 		request.setValue(secondJwt.string, forHTTPHeaderField: "DPoP")
