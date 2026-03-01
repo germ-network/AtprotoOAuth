@@ -9,7 +9,7 @@ import Crypto
 import Foundation
 import GermConvenience
 
-public protocol OAuthSession: Actor, TokenHandling, DPoPNonceHolding {
+public protocol OAuthSessionComponents: Actor, TokenHandling, DPoPNonceHolding {
 	static func response(for: URLRequest) async throws -> HTTPDataResponse
 
 	var appCredentials: AppCredentials { get }
@@ -23,12 +23,8 @@ public protocol OAuthSession: Actor, TokenHandling, DPoPNonceHolding {
 }
 
 public protocol TokenHandling {
-	//	static func loginProvider(params: LoginProviderParameters) async throws -> SessionState.Archive
-
 	func refreshProvider(
 		sessionState: SessionState.Archive,
 		appCredentials: AppCredentials,
-		//		urlResponseProvider: URLResponseProvider
-		//URLResponseProvider expect to use the response
 	) async throws -> SessionState.Mutable
 }

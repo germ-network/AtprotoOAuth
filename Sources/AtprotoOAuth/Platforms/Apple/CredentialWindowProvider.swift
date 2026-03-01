@@ -2,7 +2,7 @@
 //  CredentialWindowProvider.swift
 //  AtprotoOAuth
 //
-//  Created by Mark @ Germ on 2/24/26.
+//  Created by Mark @ Germ on 2/24/26 from OAuthenticator
 //
 
 #if (os(iOS) || os(macOS)) && canImport(AuthenticationServices)

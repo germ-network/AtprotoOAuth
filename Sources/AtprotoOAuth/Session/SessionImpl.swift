@@ -191,7 +191,7 @@ extension AtprotoOAuthSessionImpl {
 
 extension AtprotoOAuthSessionImpl: AtprotoSession {}
 
-extension AtprotoOAuthSessionImpl: OAuthSession {
+extension AtprotoOAuthSessionImpl: OAuthSessionComponents {
 	public var session: OAuth.SessionState {
 		get throws {
 			guard case .active(let sessionState) = state else {

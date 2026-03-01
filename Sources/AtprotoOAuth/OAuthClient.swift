@@ -18,7 +18,7 @@ public protocol AtprotoOAuthInterface {
 public struct AtprotoOAuthClient: Sendable {
 	static let logger = Logger(
 		subsystem: "com.germnetwork",
-		category: "BlueskyOAuthenticator")
+		category: "AtprotoOAuthClient")
 
 	public nonisolated let appCredentials: AppCredentials
 	public typealias UserAuthenticator = @Sendable (URL, String) async throws -> URL
