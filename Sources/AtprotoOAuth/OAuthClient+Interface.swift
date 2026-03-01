@@ -1,5 +1,5 @@
 //
-//  Runtime+Interface.swift
+//  OAuthClient+Interface.swift
 //  AtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/17/26.
@@ -35,7 +35,7 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 	) async throws -> SessionState.Archive {
 		let did: Atproto.DID
 		switch identity {
-		case .did(let _did, let handle):
+		case .did(let _did, _):
 			did = _did
 		case .handle(let handle):
 			//resolve handle to pds, uncached
@@ -50,15 +50,10 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 			}
 		}
 
-		let authorizationServerUrl = try await getAuthorizationUrl(
-			didDoc: didDoc
-		)
+		let authorizationServerUrl = try await getAuthorizationUrl(didDoc: didDoc)
 
-		guard
-			let authorizationServerHost = authorizationServerUrl.host()
-		else {
-			throw OAuthClientError.missingUrlHost
-		}
+		let authorizationServerHost = try authorizationServerUrl.host()
+			.tryUnwrap(OAuthClientError.missingUrlHost)
 
 		let authServerMetadata = try await AuthServerMetadata.load(
 			for: authorizationServerHost,
@@ -81,9 +76,8 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 	}
 
 	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {
-		guard let pdsHost = try didDoc.pdsUrl.host() else {
-			throw OAuthClientError.missingUrlHost
-		}
+		let pdsHost = try didDoc.pdsUrl.host()
+			.tryUnwrap(OAuthClientError.missingUrlHost)
 
 		let pdsMetadata =
 			try await ProtectedResourceMetadata
@@ -109,18 +103,6 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 		}
 		return authorizationServerUrl
 	}
-
-	//	private static func loginProvider(
-	//		server: AuthServerMetadata, validator: @escaping TokenSubscriberValidator
-	//	) -> LoginProvider {
-	//		{
-	//			params,
-	//			dpopKey in
-	//
-	//	}
-	//
-	//	typealias TokenSubscriberValidator =
-	//		@Sendable (AtprotoOAuthSession.TokenResponse, _ issuer: String) async throws -> Bool
 }
 
 extension Atproto {

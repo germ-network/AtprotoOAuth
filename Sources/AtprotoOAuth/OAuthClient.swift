@@ -11,8 +11,9 @@ public protocol AtprotoOAuthInterface {
 
 	//MARK: Authentication
 	//want to end up with a valid archive, not a live object
-	func authorize(identity: AtprotoOAuthClient.AuthIdentity) async throws
-		-> SessionState.Archive
+	func authorize(
+		identity: AtprotoOAuthClient.AuthIdentity
+	) async throws -> SessionState.Archive
 }
 
 public struct AtprotoOAuthClient: Sendable {
@@ -27,7 +28,6 @@ public struct AtprotoOAuthClient: Sendable {
 
 	//didResolver
 	//handleResolver
-	//stateStorage
 
 	public init(
 		appCredentials: AppCredentials,
