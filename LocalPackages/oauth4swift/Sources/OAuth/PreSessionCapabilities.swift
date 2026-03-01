@@ -134,7 +134,7 @@ extension PreSessionCapabilities {
 			.map({ [$0, $1].joined(separator: "=") })
 			.joined(separator: "&")
 
-		request.httpBody = Data(body.utf8)
+		request.httpBody = body.utf8Data
 
 		return try await dpopResponse(
 			for: request,

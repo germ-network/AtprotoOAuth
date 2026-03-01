@@ -18,32 +18,27 @@ struct ECDSASigner {
 	}
 
 	func sign(
-		_ payload: some Encodable, with header: JWT.JWTHeader,
-	) throws -> String {
-		let signingInput = try header.makeSigningInput(
-			payload: payload,
+		header: JWT.JWTHeader, payload: some Encodable,
+	) throws -> JWT {
+		let headerEncoded = try header.jwtEncoded
+		let payloadEncoded = try payload.jwtEncoded
+
+		let signatureInput = (headerEncoded + [JWT.period] + payloadEncoded).utf8
+		let signatureData = try sign(Data(signatureInput))
+
+		return .init(
+			header: headerEncoded,
+			payload: payloadEncoded,
+			signature: signatureData.base64URLEncodedString()
 		)
-		let signatureData = try sign(signingInput)
-		let bytes: Data =
-			signingInput + [JWT.period] + signatureData.base64URLEncodedBytes()
-		return String(decoding: bytes, as: UTF8.self)
 	}
 
-	private func sign(_ plaintext: some DataProtocol) throws -> [UInt8] {
-		let digest = SHA256.hash(data: plaintext)
+	private func sign(_ plaintext: some DataProtocol) throws -> Data {
 		guard let privateKey else {
 			throw JWTError.badKey
 		}
-		let signature = try privateKey.signature(for: digest)
-		return [UInt8](signature.rawRepresentation)
-	}
-
-	func verify(
-		_ signature: some DataProtocol,
-		signs plaintext: some DataProtocol
-	) throws -> Bool {
 		let digest = SHA256.hash(data: plaintext)
-		let signature = try P256.Signing.ECDSASignature(rawRepresentation: signature)
-		return publicKey.isValidSignature(signature, for: digest)
+		let signature = try privateKey.signature(for: digest)
+		return signature.rawRepresentation
 	}
 }

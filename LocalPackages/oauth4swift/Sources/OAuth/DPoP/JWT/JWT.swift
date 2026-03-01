@@ -10,8 +10,26 @@ import Foundation
 
 //super compact es256 JWT implmentation instead of BYO JWT signer
 
-enum JWT {
-	static var period: UInt8 {
+struct JWT {
+	let header: String
+	let payload: String
+	let signature: String
+
+	var string: String {
+		header + [JWT.period] + payload + [JWT.period] + signature
+	}
+
+	var signingInput: String {
+		header + [JWT.period] + payload
+	}
+}
+
+extension JWT {
+	static var period: Character {
+		.init(".")
+	}
+
+	static var periodByte: UInt8 {
 		Character(".").asciiValue ?? 46
 	}
 
@@ -53,26 +71,27 @@ enum JWT {
 			self.typ = typ ?? "JWT"
 			self.jwk = jwk
 		}
-
-		func makeSigningInput(
-			payload: some Encodable,
-		) throws -> Data {
-			// Make the encoder
-			let encoder = JSONEncoder()
-			encoder.dateEncodingStrategy = .secondsSince1970
-
-			// Make the header
-			let encodedHeader = try encoder.encode(self).base64URLEncodedBytes()
-			let encodedPayload = try Data(
-				encoder.encode(payload).base64URLEncodedBytes())
-			return encodedHeader + [JWT.period] + encodedPayload
-		}
 	}
 
 	struct JWTConstants {
 		static let keySize = 256
 		static let keyMarker = 0x04
 		static let ecdsaSignerAlg = "ES256"
+	}
+}
+
+extension Encodable {
+	var jwtEncoded: String {
+		get throws {
+			let encoder = JSONEncoder()
+			encoder.dateEncodingStrategy = .secondsSince1970
+			let encodedHeader = try encoder.encode(self).base64URLEncodedBytes()
+
+			return try String(
+				data: .init(encodedHeader),
+				encoding: .utf8
+			).tryUnwrap
+		}
 	}
 }
 

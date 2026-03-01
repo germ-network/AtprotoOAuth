@@ -26,13 +26,13 @@ public struct DPoPKey: Codable, Hashable, Sendable {
 		self.keyData = keyData
 	}
 
-	func sign(_ parameters: DPoPSigner.JWTParameters) throws -> String {
+	func sign(_ parameters: DPoPSigner.JWTParameters) throws -> JWT {
 		switch alg {
 		case .es256: try signSha256(parameters)
 		}
 	}
 
-	private func signSha256(_ parameters: DPoPSigner.JWTParameters) throws -> String {
+	private func signSha256(_ parameters: DPoPSigner.JWTParameters) throws -> JWT {
 		let payload: any Encodable = {
 			if let nonce = parameters.nonce,
 				let authorizationServerIssuer = parameters
@@ -69,11 +69,11 @@ public struct DPoPKey: Codable, Hashable, Sendable {
 		let key = try P256.Signing.PrivateKey(rawRepresentation: keyData)
 
 		return try ECDSASigner(key: key).sign(
-			payload,
-			with: JWT.JWTHeader(
+			header: JWT.JWTHeader(
 				typ: parameters.keyType,
 				jwk: JWT.JWK(key: key)
 			),
+			payload: payload,
 		)
 	}
 }

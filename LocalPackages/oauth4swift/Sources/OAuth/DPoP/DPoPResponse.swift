@@ -36,7 +36,7 @@ extension DPoPNonceHolding {
 		}
 
 		let tokenHash = token.map {
-			SHA256.hash(data: Data($0.utf8))
+			SHA256.hash(data: $0.utf8Data)
 				.data.base64URLEncodedString()
 		}
 
@@ -61,7 +61,7 @@ extension DPoPNonceHolding {
 			)
 		)
 
-		request.setValue(jwt, forHTTPHeaderField: "DPoP")
+		request.setValue(jwt.string, forHTTPHeaderField: "DPoP")
 
 		if let token {
 			request.setValue("DPoP \(token)", forHTTPHeaderField: "Authorization")
@@ -109,7 +109,7 @@ extension DPoPNonceHolding {
 				issuingServer: issuer
 			)
 		)
-		request.setValue(secondJwt, forHTTPHeaderField: "DPoP")
+		request.setValue(secondJwt.string, forHTTPHeaderField: "DPoP")
 		let retryDataResponse = try await httpRequester(request)
 
 		if let retryNonce = try Self.decode(dataResponse: retryDataResponse) {
