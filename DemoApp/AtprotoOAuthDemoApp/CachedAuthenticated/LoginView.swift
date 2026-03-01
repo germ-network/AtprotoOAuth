@@ -48,6 +48,7 @@ struct LoginView: View {
 					}
 				case (nil, nil, _?):
 					Text("stored session")
+					Button("Restore", action: viewModel.restore)
 				case (nil, nil, nil):
 					Button("Login", action: login)
 				}
