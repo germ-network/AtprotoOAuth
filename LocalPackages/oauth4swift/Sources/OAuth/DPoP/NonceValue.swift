@@ -10,6 +10,7 @@ import GermConvenience
 
 public typealias NonceDecoder = (HTTPDataResponse) throws -> NonceValue?
 
+//NSCache requires class values
 public final class NonceValue {
 	public let origin: String
 	public let nonce: String

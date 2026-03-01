@@ -24,13 +24,15 @@ extension DPoPNonceHolding {
 	//takes a base request, adds a dpop token, retrying if needed
 
 	//this method is shared with the session object and the initial login
-	public func dpopResponse(
+	func dpopResponse(
 		for request: URLRequest,
 		issuerOrigin: String?,
 		token: String?,
 	) async throws -> HTTPDataResponse {
 		var request = request
 
+		//right now the RFC has SHA256 baked into the RFC and a new draft needed
+		//to specify alg agility
 		let tokenHash = token.map {
 			SHA256.hash(data: $0.utf8Data)
 				.data.base64URLEncodedString()

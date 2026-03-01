@@ -12,7 +12,7 @@ public enum DPoPAlg: Codable, Hashable, Sendable {
 	case es256
 }
 
-//keep this a primitive type and let
+//keep this a primitive type
 public struct DPoPKey: Codable, Hashable, Sendable {
 	let alg: DPoPAlg
 	let keyData: Data
