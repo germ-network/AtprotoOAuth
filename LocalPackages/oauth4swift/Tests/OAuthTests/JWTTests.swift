@@ -23,10 +23,7 @@ struct TestJWTSigning {
 		let jwt =
 			try signer
 			.sign(
-				header: JWT.JWTHeader(
-					typ: "dpop+jwt",
-					jwk: JWT.JWK(key: privateKey)
-				),
+				keyType: "dpop+jwt",
 				payload: payload
 			)
 

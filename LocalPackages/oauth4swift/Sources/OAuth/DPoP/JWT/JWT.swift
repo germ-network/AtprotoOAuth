@@ -41,12 +41,12 @@ extension JWT {
 		let x: String
 		let y: String
 
-		init(key: P256.Signing.PrivateKey) throws {
+		init(key: P256.Signing.PublicKey) throws {
 			// Public key consists of 04 | X | Y where X and Y are the same length
 			// (Which, for P256, is 256 / 8 = 32 bytes each.)
 			// https://developer.apple.com/forums/thread/680554
 			let componentSize = JWT.JWTConstants.keySize / 8
-			let keyBytes = key.publicKey.x963Representation
+			let keyBytes = key.x963Representation
 			guard keyBytes.count == (componentSize * 2 + 1) else {
 				throw JWTError.badKey
 			}

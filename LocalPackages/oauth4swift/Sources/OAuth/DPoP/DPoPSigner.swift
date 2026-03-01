@@ -53,34 +53,3 @@ enum DPoPError: Error {
 	case nonceExpected(URLResponse)
 	case requestInvalid(URLRequest)
 }
-
-/// Manages state and operations for OAuth Demonstrating Proof-of-Possession (DPoP).
-///
-/// Currently only uses ES256.
-///
-/// Details here: https://datatracker.ietf.org/doc/html/rfc9449
-public enum DPoPSigner {
-	public struct JWTParameters: Sendable, Hashable {
-		let keyType: String
-		let nonce: String?
-		let issuingServer: String?
-
-		public init(
-			keyType: String,
-			nonce: String?,
-			issuingServer: String?
-		) {
-			self.keyType = keyType
-			self.nonce = nonce
-			self.issuingServer = issuingServer
-		}
-
-		func substitute(newNonce: String) -> Self {
-			.init(
-				keyType: keyType,
-				nonce: newNonce,
-				issuingServer: issuingServer
-			)
-		}
-	}
-}

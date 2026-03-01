@@ -18,9 +18,13 @@ struct ECDSASigner {
 	}
 
 	func sign(
-		header: JWT.JWTHeader, payload: some Encodable,
+		keyType: String,
+		payload: some Encodable,
 	) throws -> JWT {
-		let headerEncoded = try header.jwtEncoded
+		let headerEncoded = try JWT.JWTHeader(
+			typ: keyType,
+			jwk: JWT.JWK(key: publicKey)
+		).jwtEncoded
 		let payloadEncoded = try payload.jwtEncoded
 
 		let signatureInput = (headerEncoded + [JWT.period] + payloadEncoded).utf8

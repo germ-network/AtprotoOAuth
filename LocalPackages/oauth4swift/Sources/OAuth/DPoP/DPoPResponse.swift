@@ -93,7 +93,7 @@ extension DPoPNonceHolding {
 		}
 
 		// repeat once, using newly-established nonce
-		let secondJwt = try try dpopKey.sign(
+		let secondJwt = try dpopKey.sign(
 			payload: .init(
 				endpointUrl: url,
 				httpMethod: method,

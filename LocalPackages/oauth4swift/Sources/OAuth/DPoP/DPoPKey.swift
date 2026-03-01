@@ -44,10 +44,7 @@ public struct DPoPKey: Codable, Hashable, Sendable {
 		let key = try P256.Signing.PrivateKey(rawRepresentation: keyData)
 
 		return try ECDSASigner(key: key).sign(
-			header: JWT.JWTHeader(
-				typ: keyType,
-				jwk: JWT.JWK(key: key)
-			),
+			keyType: keyType,
 			payload: payload,
 		)
 	}
