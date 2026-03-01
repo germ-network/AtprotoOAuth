@@ -21,7 +21,6 @@ public struct AtprotoOAuthClient: Sendable {
 		category: "AtprotoOAuthClient")
 
 	public nonisolated let appCredentials: AppCredentials
-	public typealias UserAuthenticator = @Sendable (URL, String) async throws -> URL
 	public let userAuthenticator: UserAuthenticator
 	public let responseProvider: HTTPDataResponse.Requester
 	public let atprotoClient: AtprotoClientInterface

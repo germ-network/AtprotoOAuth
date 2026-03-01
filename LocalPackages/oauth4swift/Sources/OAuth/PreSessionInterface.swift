@@ -43,7 +43,7 @@ extension PreSessionInterface {
 	public func performUserAuthentication(
 		parConfig: PARConfiguration,
 		authServerMetadata: AuthServerMetadata,
-		userAuthenticator: @Sendable (URL, String) async throws -> URL
+		userAuthenticator: UserAuthenticator
 	) async throws -> SessionState.Archive {
 		let parRequestURI = try await getPARRequestURI(
 			appCredentials: appCredentials,

@@ -22,3 +22,6 @@ extension OAuthError: LocalizedError {
 		}
 	}
 }
+
+//Abstraction of ASWebAuthentication or AuthTabIntent
+public typealias UserAuthenticator = @Sendable (URL, String) async throws -> URL
