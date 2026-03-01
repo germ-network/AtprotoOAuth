@@ -55,9 +55,8 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 		let authorizationServerHost = try authorizationServerUrl.host()
 			.tryUnwrap(OAuthClientError.missingUrlHost)
 
-		let authServerMetadata = try await AuthServerMetadata.load(
-			for: authorizationServerHost,
-			provider: URLSession.defaultProvider
+		let authServerMetadata = try await oauthMetadataFetcher.fetchMetadata(
+			authServerHost: authorizationServerHost
 		)
 
 		let parConfig = PARConfiguration(
@@ -67,12 +66,15 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 			parameters: ["login_hint": identity.serverHint]
 		)
 
-		return try await PreSession(appCredentials: appCredentials)
-			.performUserAuthentication(
-				parConfig: parConfig,
-				authServerMetadata: authServerMetadata,
-				userAuthenticator: { try await userAuthenticator($0, $1) }
-			)
+		return try await PreSession(
+			appCredentials: appCredentials,
+			httpRequester: httpRequester
+		)
+		.performUserAuthentication(
+			parConfig: parConfig,
+			authServerMetadata: authServerMetadata,
+			userAuthenticator: { try await userAuthenticator($0, $1) }
+		)
 	}
 
 	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {
@@ -80,10 +82,8 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 			.tryUnwrap(OAuthClientError.missingUrlHost)
 
 		let pdsMetadata =
-			try await ProtectedResourceMetadata
-			.load(
-				for: pdsHost,
-				provider: URLSession.defaultProvider
+			try await oauthMetadataFetcher.fetchMetadata(
+				protectedResourceHost: pdsHost
 			)
 
 		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1

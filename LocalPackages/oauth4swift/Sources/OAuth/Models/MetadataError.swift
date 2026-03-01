@@ -1,5 +1,5 @@
 //
-//  MetadataError.swift
+//  Metadata.swift
 //  OAuth
 //
 //  Created by Mark @ Germ on 2/23/26 from OAuthenticator
@@ -52,7 +52,7 @@ public struct AuthServerMetadata: Codable, Hashable, Sendable {
 
 	public static func load(
 		for host: String,
-		provider: HTTPDataResponse.Requester
+		httpRequester: HTTPDataResponse.Requester
 	) async throws -> AuthServerMetadata {
 		var components = URLComponents()
 
@@ -65,7 +65,7 @@ public struct AuthServerMetadata: Codable, Hashable, Sendable {
 		var request = URLRequest(url: url)
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
 
-		return try await provider(request)
+		return try await httpRequester(request)
 			.successDecode()
 	}
 }
@@ -86,14 +86,14 @@ public struct ClientMetadata: Hashable, Codable, Sendable {
 
 	public static func load(
 		for clientId: String,
-		provider: HTTPDataResponse.Requester
+		httpRequester: HTTPDataResponse.Requester
 	) async throws -> ClientMetadata {
 		let url = try URL(string: clientId).tryUnwrap(MetadataError.urlInvalid)
 
 		var request = URLRequest(url: url)
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
 
-		return try await provider(request)
+		return try await httpRequester(request)
 			.successDecode()
 	}
 }
@@ -149,7 +149,7 @@ public struct ProtectedResourceMetadata: Codable, Hashable, Sendable {
 
 	public static func load(
 		for host: String,
-		provider: HTTPDataResponse.Requester
+		httpRequester: HTTPDataResponse.Requester
 	) async throws -> ProtectedResourceMetadata {
 		var components = URLComponents()
 		components.scheme = "https"
@@ -161,7 +161,7 @@ public struct ProtectedResourceMetadata: Codable, Hashable, Sendable {
 		var request = URLRequest(url: url)
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
 
-		return try await provider(request)
+		return try await httpRequester(request)
 			.successDecode()
 	}
 }

@@ -1,15 +1,15 @@
 //
-//  URLResponseProviderError.swift
-//  AtprotoClient
+//  URLSession+HTTPRequester.swift
+//  AtprotoOAuth
 //
-//  Created by Mark @ Germ on 2/24/26.
+//  Created by Mark @ Germ on 3/1/26.
 //
 
 import Foundation
 import GermConvenience
 
-enum URLResponseProviderError: Error {
-	case missingResponseComponents
+enum URLSessionError: Error {
+	case nonHttpResponse
 }
 
 extension URLSession {
@@ -20,7 +20,7 @@ extension URLSession {
 			if let httpResponse = urlResponse as? HTTPURLResponse {
 				return .init(data: data, response: httpResponse)
 			} else {
-				throw AtprotoClientError.nonHTTPResponse
+				throw URLSessionError.nonHttpResponse
 			}
 		}
 	}

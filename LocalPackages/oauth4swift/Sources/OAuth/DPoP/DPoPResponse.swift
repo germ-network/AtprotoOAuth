@@ -14,7 +14,7 @@ public protocol DPoPNonceHolding: Actor {
 
 	func getNonce(origin: String) -> NonceValue?
 	func store(nonce: String, for: String)
-	func response(request: URLRequest) async throws -> HTTPDataResponse
+	var httpRequester: HTTPDataResponse.Requester { get }
 
 	static func decode(dataResponse: HTTPDataResponse) throws -> NonceValue?
 }
@@ -67,7 +67,7 @@ extension DPoPNonceHolding {
 			request.setValue("DPoP \(token)", forHTTPHeaderField: "Authorization")
 		}
 
-		let dataResponse = try await response(request: request)
+		let dataResponse = try await httpRequester(request)
 
 		// Extract the next nonce value if any; if we don't have a new nonce, return the response:
 		guard let nextNonce = try Self.decode(dataResponse: dataResponse) else {
@@ -110,7 +110,7 @@ extension DPoPNonceHolding {
 			)
 		)
 		request.setValue(secondJwt, forHTTPHeaderField: "DPoP")
-		let retryDataResponse = try await response(request: request)
+		let retryDataResponse = try await httpRequester(request)
 
 		if let retryNonce = try Self.decode(dataResponse: retryDataResponse) {
 			store(nonce: retryNonce.nonce, for: retryNonce.origin)

@@ -18,21 +18,23 @@ actor PreSession {
 	static let logger = Logger(label: "PreSession")
 
 	let appCredentials: AppCredentials
+	let httpRequester: HTTPDataResponse.Requester
 
 	let stateToken = UUID().uuidString
 	let dpopKey = DPoPKey.generateP256()
 	private let nonceCache: NSCache<NSString, NonceValue> = NSCache()
 	let pkceVerifier = PKCEVerifier()
 
-	init(appCredentials: AppCredentials) {
+	init(
+		appCredentials: AppCredentials,
+		httpRequester: @escaping HTTPDataResponse.Requester
+	) {
 		self.appCredentials = appCredentials
+		self.httpRequester = httpRequester
 	}
 }
 
 extension PreSession: DPoPNonceHolding {
-	func response(request: URLRequest) async throws -> HTTPDataResponse {
-		try await URLSession.defaultProvider(request)
-	}
 
 	public func getNonce(origin: String) -> NonceValue? {
 		nonceCache.object(forKey: origin as NSString)
@@ -151,12 +153,12 @@ extension PreSession: PreSessionCapabilities {
 			)
 
 			return tokenResponse.session(for: iss, dpopKey: dpopKey)
-		case .error(let tokenError, let int):
+		case .error(let tokenError, let statusCode):
 			if tokenError.errorDescription == "Code challenge already used" {
 				throw OAuthClientError.codeChallengeAlreadyUsed
 			}
 			Self.logger.error(
-				"Login error: \(tokenError.errorDescription)"
+				"Login error: \(tokenError.errorDescription), with status code \(statusCode)"
 			)
 			throw OAuthClientError.remoteTokenError(tokenError)
 		}

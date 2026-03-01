@@ -10,8 +10,6 @@ import Foundation
 import GermConvenience
 
 public protocol OAuthSessionCapabilities: Actor, TokenHandling, DPoPNonceHolding {
-	static func response(for: URLRequest) async throws -> HTTPDataResponse
-
 	var appCredentials: AppCredentials { get }
 	var pkceVerifier: PKCEVerifier { get }
 

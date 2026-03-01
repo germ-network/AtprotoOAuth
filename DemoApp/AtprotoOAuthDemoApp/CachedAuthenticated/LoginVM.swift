@@ -30,7 +30,9 @@ import os
 		responseProvider: URLSession.defaultProvider,
 		atprotoClient: AtprotoClient(
 			responseProvider: URLSession.defaultProvider
-		)
+		),
+		oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
+			httpRequester: URLSession.defaultProvider)
 	)
 
 	let handle: String
@@ -68,9 +70,12 @@ import os
 					session: sessionArchive,
 				),
 				appCredentials: oauthClient.appCredentials,
+				httpRequester: URLSession.defaultProvider,
 				atprotoClient: AtprotoClient(
 					responseProvider: URLSession.defaultProvider
-				)
+				),
+				oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
+					httpRequester: URLSession.defaultProvider)
 			)
 
 			if !Task.isCancelled {
@@ -141,9 +146,12 @@ import os
 					session: archive,
 				),
 				appCredentials: oauthClient.appCredentials,
+				httpRequester: URLSession.defaultProvider,
 				atprotoClient: AtprotoClient(
 					responseProvider: URLSession.defaultProvider
-				)
+				),
+				oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
+					httpRequester: URLSession.defaultProvider)
 			)
 			if !Task.isCancelled {
 				self.session = .init(

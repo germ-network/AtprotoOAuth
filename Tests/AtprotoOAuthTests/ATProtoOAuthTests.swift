@@ -22,11 +22,7 @@ struct APITests {
 		}
 	}
 
-	@Test func testRuntimeCreation() async throws {
-		let clientMetadata = try await ClientMetadata.load(
-			for: Self.clientId,
-			provider: URLSession.defaultProvider
-		)
+	@Test func testclientCreation() async throws {
 
 		let _ = AtprotoOAuthClient(
 			appCredentials: .init(
@@ -36,7 +32,10 @@ struct APITests {
 			),
 			userAuthenticator: AtprotoClient.failingUserAuthenticator(_:_:),
 			responseProvider: URLSession.defaultProvider,
-			atprotoClient: MockAtprotoClient()
+			atprotoClient: MockAtprotoClient(),
+			oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
+				httpRequester: URLSession.defaultProvider
+			)
 		)
 	}
 }
@@ -60,7 +59,11 @@ struct ClientAPITests {
 			),
 			userAuthenticator: AtprotoClient.failingUserAuthenticator(_:_:),
 			responseProvider: URLSession.defaultProvider,
-			atprotoClient: MockAtprotoClient()
+			atprotoClient: MockAtprotoClient(),
+			oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
+				httpRequester: URLSession.defaultProvider
+			)
+
 		)
 	}
 
@@ -73,7 +76,7 @@ struct ClientAPITests {
 
 		//make some unauthed requests. e.g. is this did already using germ?
 		let messageDelegate = try await AtprotoClient(
-			responseProvider: oauthClient.responseProvider
+			responseProvider: oauthClient.httpRequester
 		).getGermMessagingDelegate(did: resolvedDid)
 
 		#expect(messageDelegate != nil)
