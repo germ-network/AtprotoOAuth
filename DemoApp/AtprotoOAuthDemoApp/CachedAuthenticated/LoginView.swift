@@ -15,7 +15,6 @@ struct LoginView: View {
 		subsystem: "com.germnetwork.ATProtoLiteClient",
 		category: "LoginView")
 
-	let handle: String
 	let viewModel: SessionVM
 
 	// Relationally
@@ -118,7 +117,6 @@ struct LoginView: View {
 #Preview {
 	let did = try! Atproto.DID(fullId: "did:plc:4yvwfwxfz5sney4twepuzdu7")
 	LoginView(
-		handle: "germnetwork.com",
-		viewModel: .init(did: did)
+		viewModel: .init(did: did, handle: "germnetwork.com")
 	)
 }

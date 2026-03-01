@@ -61,7 +61,7 @@ import SwiftUI
 
 				let sessionArchive =
 					try await oauthClient
-					.authorize(identity: .did(resolvedDid))
+					.authorize(identity: .did(resolvedDid, handle: handle))
 
 				let (session, saveStream) =
 					try AtprotoOAuthSessionImpl

@@ -18,14 +18,14 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 	public enum AuthIdentity: Sendable {
 		case handle(String)
 		//optionally pass in handle to fill into the UI of the web auth sheet
-		case did(Atproto.DID)
+		case did(Atproto.DID, handle: String?)
 
 		var serverHint: String {
 			switch self {
 			case .handle(let string):
 				string
-			case .did(let did):
-				did.fullId
+			case .did(let did, let handle):
+				handle ?? did.fullId
 			}
 		}
 	}
@@ -35,7 +35,7 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 	) async throws -> SessionState.Archive {
 		let did: Atproto.DID
 		switch identity {
-		case .did(let _did):
+		case .did(let _did, let handle):
 			did = _did
 		case .handle(let handle):
 			//resolve handle to pds, uncached
