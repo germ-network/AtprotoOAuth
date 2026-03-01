@@ -68,13 +68,12 @@ public struct DPoPKey: Codable, Hashable, Sendable {
 
 		let key = try P256.Signing.PrivateKey(rawRepresentation: keyData)
 
-		return try JWTSerializerLite.sign(
+		return try ECDSASigner(key: key).sign(
 			payload,
-			with: JWTLexiconLite.JWTHeader(
+			with: JWT.JWTHeader(
 				typ: parameters.keyType,
-				jwk: JWTLexiconLite.JWK(key: key)
+				jwk: JWT.JWK(key: key)
 			),
-			using: ECDSASigner(key: key)
 		)
 	}
 }

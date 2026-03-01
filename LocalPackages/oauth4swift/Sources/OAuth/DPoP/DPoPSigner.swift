@@ -74,6 +74,4 @@ public final class DPoPSigner {
 		public let tokenHash: String?
 		public let issuingServer: String?
 	}
-
-	public typealias JWTGenerator = @Sendable (JWTParameters) async throws -> String
 }
