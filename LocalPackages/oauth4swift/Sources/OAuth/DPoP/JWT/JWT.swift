@@ -29,11 +29,7 @@ extension JWT {
 		.init(".")
 	}
 
-	static var periodByte: UInt8 {
-		Character(".").asciiValue ?? 46
-	}
-
-	// periphery:ignore
+	//periphery: ignore
 	//ignore codable properties
 	struct JWK: Sendable, Encodable {
 		let kty: String = "EC"
@@ -60,7 +56,7 @@ extension JWT {
 		}
 	}
 
-	// periphery:ignore
+	//periphery:ignore
 	//ignore codable properties
 	struct JWTHeader: Encodable {
 		let typ: String
@@ -97,5 +93,4 @@ extension Encodable {
 
 enum JWTError: Error, Equatable {
 	case badKey
-	case notImplemented
 }

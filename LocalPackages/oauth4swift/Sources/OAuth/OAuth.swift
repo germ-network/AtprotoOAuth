@@ -10,7 +10,7 @@ public enum OAuthError: Error {
 }
 
 extension OAuthError: LocalizedError {
-	var localizedDescription: String? {
+	public var errorDescription: String? {
 		switch self {
 		case .missingScheme: "Missing scheme"
 		case .missingHTTPMethod: "Missing HTTP method"

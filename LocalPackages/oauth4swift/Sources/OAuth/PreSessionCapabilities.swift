@@ -12,7 +12,6 @@ import Logging
 public protocol PreSessionCapabilities: DPoPNonceHolding {
 	var appCredentials: AppCredentials { get }
 	var stateToken: String { get }
-	var dpopKey: DPoPKey { get }
 	var pkceVerifier: PKCEVerifier { get }
 
 	static func authorizationURL(
@@ -49,7 +48,6 @@ extension PreSessionCapabilities {
 			appCredentials: appCredentials,
 			parConfig: parConfig,
 			stateToken: stateToken,
-			dPoPKey: dpopKey,
 		)
 
 		let tokenURL = try Self.authorizationURL(
@@ -84,14 +82,12 @@ extension PreSessionCapabilities {
 		appCredentials: AppCredentials,
 		parConfig: PARConfiguration,
 		stateToken: String,
-		dPoPKey: DPoPKey,
 	) async throws -> String {
 		let result = try await parRequest(
 			appCredentials: appCredentials,
 			url: parConfig.url,
 			params: parConfig.parameters,
 			stateToken: stateToken,
-			dPoPKey: dPoPKey,
 		)
 
 		Logger(label: "PreSessionInterface")
@@ -105,7 +101,6 @@ extension PreSessionCapabilities {
 		url: URL,
 		params: [String: String],
 		stateToken: String,
-		dPoPKey: DPoPKey,
 	) async throws -> PARResponse {
 		let challenge = pkceVerifier.challenge
 		let scopes = appCredentials.requestedScopes.joined(separator: " ")

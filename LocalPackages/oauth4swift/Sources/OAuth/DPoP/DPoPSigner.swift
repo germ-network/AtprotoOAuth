@@ -8,6 +8,8 @@
 import Foundation
 import GermConvenience
 
+//periphery: ignore
+//codable properties
 struct DPoPRequestPayload: Codable, Hashable, Sendable {
 	let uniqueCode: String
 	let httpMethod: String
@@ -50,6 +52,5 @@ struct DPoPRequestPayload: Codable, Hashable, Sendable {
 }
 
 enum DPoPError: Error {
-	case nonceExpected(URLResponse)
 	case requestInvalid(URLRequest)
 }

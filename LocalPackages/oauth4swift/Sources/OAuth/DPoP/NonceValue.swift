@@ -22,25 +22,25 @@ public final class NonceValue {
 }
 
 extension NSCache where KeyType == NSString, ObjectType == NonceValue {
-	subscript(_ url: URL) -> String? {
-		get {
-			guard let key = url.origin else {
-				return nil
-			}
-			let value = object(forKey: key as NSString)
-			return value?.nonce
-		}
-		set {
-			guard let key = url.origin else {
-				return
-			}
-
-			if let entry = newValue {
-				let value = NonceValue(origin: key, nonce: entry)
-				setObject(value, forKey: key as NSString)
-			} else {
-				removeObject(forKey: key as NSString)
-			}
-		}
-	}
+	//	subscript(_ url: URL) -> String? {
+	//		get {
+	//			guard let key = url.origin else {
+	//				return nil
+	//			}
+	//			let value = object(forKey: key as NSString)
+	//			return value?.nonce
+	//		}
+	//		set {
+	//			guard let key = url.origin else {
+	//				return
+	//			}
+	//
+	//			if let entry = newValue {
+	//				let value = NonceValue(origin: key, nonce: entry)
+	//				setObject(value, forKey: key as NSString)
+	//			} else {
+	//				removeObject(forKey: key as NSString)
+	//			}
+	//		}
+	//	}
 }

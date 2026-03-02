@@ -1,5 +1,5 @@
 //
-//  Token.swift
+//  SessionState.swift
 //  OAuth
 //
 //  Created by Mark @ Germ on 2/22/26 from OAuthenticator

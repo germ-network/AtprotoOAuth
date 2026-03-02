@@ -7,7 +7,6 @@
 
 import Crypto
 import Foundation
-import GermConvenience
 
 public protocol OAuthSessionCapabilities: Actor, TokenHandling, DPoPNonceHolding {
 	var appCredentials: AppCredentials { get }

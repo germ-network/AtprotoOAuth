@@ -20,7 +20,7 @@ public struct AppCredentials: Codable, Hashable, Sendable {
 		self.callbackURL = callbackURL
 	}
 
-	public var callbackURLScheme: String {
+	var callbackURLScheme: String {
 		get throws {
 			guard let scheme = callbackURL.scheme else {
 				throw OAuthError.missingScheme
