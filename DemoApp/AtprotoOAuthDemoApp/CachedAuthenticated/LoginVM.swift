@@ -30,20 +30,20 @@ import os
 		responseProvider: URLSession.defaultProvider,
 		atprotoClient: AtprotoClient(
 			responseProvider: URLSession.defaultProvider
-		)
+		),
+		oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
+			httpRequester: URLSession.defaultProvider)
 	)
 
+	let handle: String
 	let sessionStorage: InMemorySessionStore
 
 	var processingTask: (Task<Void, Error>, String)? = nil
 	var session: SessionWrapper? = nil
 
-	init(did: Atproto.DID) {
+	init(did: Atproto.DID, handle: String) {
+		self.handle = handle
 		self.sessionStorage = .init(did: did)
-	}
-
-	init(sessionStorage: InMemorySessionStore) {
-		self.sessionStorage = sessionStorage
 	}
 
 	func login() {
@@ -59,7 +59,7 @@ import os
 		let authenticatingTask = Task {
 			let sessionArchive =
 				try await oauthClient
-				.authorize(identity: .did(sessionStorage.did))
+				.authorize(identity: .did(sessionStorage.did, handle: handle))
 
 			assert(sessionStorage.sessionArchive == nil)
 			sessionStorage.sessionArchive = sessionArchive
@@ -70,9 +70,12 @@ import os
 					session: sessionArchive,
 				),
 				appCredentials: oauthClient.appCredentials,
+				httpRequester: URLSession.defaultProvider,
 				atprotoClient: AtprotoClient(
 					responseProvider: URLSession.defaultProvider
-				)
+				),
+				oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
+					httpRequester: URLSession.defaultProvider)
 			)
 
 			if !Task.isCancelled {
@@ -143,9 +146,12 @@ import os
 					session: archive,
 				),
 				appCredentials: oauthClient.appCredentials,
+				httpRequester: URLSession.defaultProvider,
 				atprotoClient: AtprotoClient(
 					responseProvider: URLSession.defaultProvider
-				)
+				),
+				oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
+					httpRequester: URLSession.defaultProvider)
 			)
 			if !Task.isCancelled {
 				self.session = .init(

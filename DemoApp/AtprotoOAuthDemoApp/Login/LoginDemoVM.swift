@@ -25,7 +25,9 @@ import SwiftUI
 		responseProvider: URLSession.defaultProvider,
 		atprotoClient: AtprotoClient(
 			responseProvider: URLSession.defaultProvider
-		)
+		),
+		oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
+			httpRequester: URLSession.defaultProvider)
 	)
 
 	enum State {
@@ -61,7 +63,7 @@ import SwiftUI
 
 				let sessionArchive =
 					try await oauthClient
-					.authorize(identity: .did(resolvedDid))
+					.authorize(identity: .did(resolvedDid, handle: handle))
 
 				let (session, saveStream) =
 					try AtprotoOAuthSessionImpl
@@ -71,8 +73,12 @@ import SwiftUI
 							session: sessionArchive,
 						),
 						appCredentials: oauthClient.appCredentials,
+						httpRequester: URLSession.defaultProvider,
 						atprotoClient: AtprotoClient(
 							responseProvider: URLSession.defaultProvider
+						),
+						oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
+							httpRequester: URLSession.defaultProvider
 						)
 					)
 				state = .loggedIn(session)

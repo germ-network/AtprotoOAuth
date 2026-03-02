@@ -33,16 +33,16 @@ struct CachedAuthenticatedView: View {
 						Text("Checking @\(storedHandle)...")
 						ProgressView()
 					}
-				case .login(let handle, let sessionVM):
-					Text("Handle: @\(handle)")
+				case .login(let sessionVM):
+					Text("Handle: @\(sessionVM.handle)")
 					Text(
 						"Resolves to DID \(sessionVM.sessionStorage.did.fullId)"
 					)
 					Button("Start Over", action: viewModel.reset)
 				}
 			}
-			if case .login(let handle, let viewModel) = viewModel.state {
-				LoginView(handle: handle, viewModel: viewModel)
+			if case .login(let viewModel) = viewModel.state {
+				LoginView(viewModel: viewModel)
 			}
 		}
 	}

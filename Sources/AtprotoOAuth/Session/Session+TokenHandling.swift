@@ -35,10 +35,8 @@ extension AtprotoOAuthSessionImpl: TokenHandling {
 		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 		request.httpBody = try JSONEncoder().encode(tokenRequest)
 
-		let tokenResponse: Atproto.TokenResponse = try await Self.response(
-			for: request
-		)
-		.successDecode()
+		let tokenResponse: Atproto.TokenResponse = try await httpRequester(request)
+			.successDecode()
 
 		guard tokenResponse.tokenType == "DPoP" else {
 			throw

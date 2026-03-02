@@ -22,7 +22,7 @@ import os
 	enum State {
 		case entry(Error?)
 		case handleToDid(Task<Atproto.DID, Error>)
-		case login(handle: String, SessionVM)
+		case login(SessionVM)
 	}
 	private(set) var state: State = .entry(nil)
 
@@ -47,8 +47,7 @@ import os
 			do {
 				let resolvedDid = try await task.value
 				state = .login(
-					handle: handle,
-					.init(did: resolvedDid)
+					.init(did: resolvedDid, handle: handle)
 				)
 			} catch {
 				Self.logger.error(

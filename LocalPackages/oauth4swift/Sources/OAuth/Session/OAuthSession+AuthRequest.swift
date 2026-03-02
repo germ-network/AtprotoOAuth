@@ -8,7 +8,7 @@
 import Foundation
 import GermConvenience
 
-extension OAuthSession {
+extension OAuthSessionCapabilities {
 	public func authResponse(
 		for request: URLRequest,
 	) async throws -> HTTPDataResponse {
@@ -17,10 +17,12 @@ extension OAuthSession {
 			isolation: self
 		)
 
+		let issuerOrigin = try URL(string: serverMetadata.issuer).tryUnwrap.origin.tryUnwrap
 		let dataResponse = try await dpopResponse(
 			for: request,
+			issuerOrigin: issuerOrigin,
 			token: sessionState.mutable.accessToken.value,
-			issuingServer: serverMetadata.issuer
+
 		)
 
 		// FIXME: This isn't really to spec: 401 doesn't mean "refresh", it just means unauthorized.
@@ -39,8 +41,9 @@ extension OAuthSession {
 		//try again
 		return try await dpopResponse(
 			for: request,
+			issuerOrigin: issuerOrigin,
 			token: refreshed.accessToken.value,
-			issuingServer: serverMetadata.issuer
+
 		)
 	}
 

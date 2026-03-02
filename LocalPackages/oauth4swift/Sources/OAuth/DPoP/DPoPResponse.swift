@@ -14,7 +14,7 @@ public protocol DPoPNonceHolding: Actor {
 
 	func getNonce(origin: String) -> NonceValue?
 	func store(nonce: String, for: String)
-	func response(request: URLRequest) async throws -> HTTPDataResponse
+	var httpRequester: HTTPDataResponse.Requester { get }
 
 	static func decode(dataResponse: HTTPDataResponse) throws -> NonceValue?
 }
@@ -24,19 +24,17 @@ extension DPoPNonceHolding {
 	//takes a base request, adds a dpop token, retrying if needed
 
 	//this method is shared with the session object and the initial login
-	public func dpopResponse(
+	func dpopResponse(
 		for request: URLRequest,
+		issuerOrigin: String?,
 		token: String?,
-		issuingServer: String?,
 	) async throws -> HTTPDataResponse {
 		var request = request
-		var issuer: String? = nil
-		if let iss = issuingServer {
-			issuer = URL(string: iss)?.origin
-		}
 
+		//right now the RFC has SHA256 baked into the RFC and a new draft needed
+		//to specify alg agility
 		let tokenHash = token.map {
-			SHA256.hash(data: Data($0.utf8))
+			SHA256.hash(data: $0.utf8Data)
 				.data.base64URLEncodedString()
 		}
 
@@ -47,27 +45,25 @@ extension DPoPNonceHolding {
 		let initNonce = getNonce(origin: requestOrigin)
 
 		let method = try request.httpMethod.tryUnwrap(OAuthError.missingHTTPMethod)
-
 		let url = try request.url.tryUnwrap(OAuthError.missingUrl)
 
 		let jwt = try dpopKey.sign(
-			.init(
-				keyType: "dpop+jwt",
+			payload: .init(
+				endpointUrl: url,
 				httpMethod: method,
-				requestEndpoint: url.absoluteString,
 				nonce: initNonce?.nonce,
-				tokenHash: tokenHash,
-				issuingServer: issuer
+				issuingServer: issuerOrigin,
+				accessTokenHash: tokenHash
 			)
 		)
 
-		request.setValue(jwt, forHTTPHeaderField: "DPoP")
+		request.setValue(jwt.string, forHTTPHeaderField: "DPoP")
 
 		if let token {
 			request.setValue("DPoP \(token)", forHTTPHeaderField: "Authorization")
 		}
 
-		let dataResponse = try await response(request: request)
+		let dataResponse = try await httpRequester(request)
 
 		// Extract the next nonce value if any; if we don't have a new nonce, return the response:
 		guard let nextNonce = try Self.decode(dataResponse: dataResponse) else {
@@ -83,8 +79,8 @@ extension DPoPNonceHolding {
 
 		//FIXME: revised logic
 		let isAuthServer: Bool? = {
-			if let issuer {
-				issuer == requestOrigin
+			if let issuerOrigin {
+				issuerOrigin == requestOrigin
 			} else {
 				nil
 			}
@@ -100,17 +96,16 @@ extension DPoPNonceHolding {
 
 		// repeat once, using newly-established nonce
 		let secondJwt = try dpopKey.sign(
-			.init(
-				keyType: "dpop+jwt",
+			payload: .init(
+				endpointUrl: url,
 				httpMethod: method,
-				requestEndpoint: url.absoluteString,
 				nonce: nextNonce.nonce,
-				tokenHash: tokenHash,
-				issuingServer: issuer
+				issuingServer: issuerOrigin,
+				accessTokenHash: tokenHash
 			)
 		)
-		request.setValue(secondJwt, forHTTPHeaderField: "DPoP")
-		let retryDataResponse = try await response(request: request)
+		request.setValue(secondJwt.string, forHTTPHeaderField: "DPoP")
+		let retryDataResponse = try await httpRequester(request)
 
 		if let retryNonce = try Self.decode(dataResponse: retryDataResponse) {
 			store(nonce: retryNonce.nonce, for: retryNonce.origin)

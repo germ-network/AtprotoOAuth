@@ -14,7 +14,9 @@ import OAuth
 public actor AtprotoOAuthSessionImpl {
 	public nonisolated let did: Atproto.DID
 	public let appCredentials: AppCredentials
+	public let httpRequester: HTTPDataResponse.Requester
 	let atprotoClient: AtprotoClientInterface
+	let oauthMetadataFetcher: OAuthMetadataFetcher
 
 	public let pkceVerifier = PKCEVerifier()
 	private let nonceCache: NSCache<NSString, NonceValue> = NSCache()
@@ -47,22 +49,28 @@ public actor AtprotoOAuthSessionImpl {
 		did: Atproto.DID,
 		appCredentials: AppCredentials,
 		state: State,
-		atprotoClient: AtprotoClientInterface
+		httpRequester: @escaping HTTPDataResponse.Requester,
+		atprotoClient: AtprotoClientInterface,
+		oauthMetadataFetcher: OAuthMetadataFetcher
 	) {
 		self.did = did
 		self.appCredentials = appCredentials
 		self.state = state
+		self.httpRequester = httpRequester
 		self.atprotoClient = atprotoClient
+		self.oauthMetadataFetcher = oauthMetadataFetcher
 
 		self.lazyServerMetadata = .init(
 			fetchTaskGenerator: {
 				Task {
 					let pdsHost = try await atprotoClient.plcDirectoryQuery(did)
 						.pdsUrl
-					let pdsMetadata = try await ProtectedResourceMetadata.load(
-						for: pdsHost.host().tryUnwrap,
-						provider: URLSession.defaultProvider
-					)
+					let pdsMetadata =
+						try await oauthMetadataFetcher
+						.fetchMetadata(
+							protectedResourceHost: pdsHost.host()
+								.tryUnwrap
+						)
 
 					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 					//PDS doesn't actually fill this field, so we only check it if present
@@ -84,10 +92,10 @@ public actor AtprotoOAuthSessionImpl {
 						throw OAuthSessionError.cantFormURL
 					}
 
-					return try await AuthServerMetadata.load(
-						for: authorizationServerHost,
-						provider: URLSession.defaultProvider
-					)
+					return
+						try await oauthMetadataFetcher
+						.fetchMetadata(
+							authServerHost: authorizationServerHost)
 				}
 			})
 
@@ -157,12 +165,16 @@ extension AtprotoOAuthSessionImpl {
 	public static func restore(
 		archive: Archive,
 		appCredentials: AppCredentials,
-		atprotoClient: AtprotoClientInterface
+		httpRequester: @escaping HTTPDataResponse.Requester,
+		atprotoClient: AtprotoClientInterface,
+		oauthMetadataFetcher: OAuthMetadataFetcher
 	) throws -> (AtprotoOAuthSession, AsyncStream<SessionState.Mutable?>) {
 		let session = try AtprotoOAuthSessionImpl(
 			archive: archive,
 			appCredentials: appCredentials,
-			atprotoClient: atprotoClient
+			httpRequester: httpRequester,
+			atprotoClient: atprotoClient,
+			oauthMetadataFetcher: oauthMetadataFetcher
 		)
 		return (session, session.saveStream)
 	}
@@ -170,13 +182,17 @@ extension AtprotoOAuthSessionImpl {
 	private init(
 		archive: Archive,
 		appCredentials: AppCredentials,
-		atprotoClient: AtprotoClientInterface
+		httpRequester: @escaping HTTPDataResponse.Requester,
+		atprotoClient: AtprotoClientInterface,
+		oauthMetadataFetcher: OAuthMetadataFetcher
 	) throws {
 		try self.init(
 			did: .init(fullId: archive.did),
 			appCredentials: appCredentials,
 			state: .init(archive: archive.session),
-			atprotoClient: atprotoClient
+			httpRequester: httpRequester,
+			atprotoClient: atprotoClient,
+			oauthMetadataFetcher: oauthMetadataFetcher
 		)
 	}
 
@@ -191,7 +207,7 @@ extension AtprotoOAuthSessionImpl {
 
 extension AtprotoOAuthSessionImpl: AtprotoSession {}
 
-extension AtprotoOAuthSessionImpl: OAuthSession {
+extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
 	public var session: OAuth.SessionState {
 		get throws {
 			guard case .active(let sessionState) = state else {
@@ -204,10 +220,6 @@ extension AtprotoOAuthSessionImpl: OAuthSession {
 	public func refreshed(sessionMutable: OAuth.SessionState.Mutable) throws {
 		try save(sessionMutable: sessionMutable)
 	}
-
-	public static func response(for request: URLRequest) async throws -> HTTPDataResponse {
-		try await URLSession.defaultProvider(request)
-	}
 }
 
 extension AtprotoOAuthSessionImpl: DPoPNonceHolding {
@@ -215,10 +227,6 @@ extension AtprotoOAuthSessionImpl: DPoPNonceHolding {
 		get throws {
 			try session.dPopKey.tryUnwrap
 		}
-	}
-
-	public func response(request: URLRequest) async throws -> GermConvenience.HTTPDataResponse {
-		try await URLSession.defaultProvider(request)
 	}
 
 	public static func decode(

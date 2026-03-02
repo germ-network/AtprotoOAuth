@@ -1,5 +1,5 @@
 //
-//  Runtime+Interface.swift
+//  OAuthClient+Interface.swift
 //  AtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/17/26.
@@ -18,14 +18,14 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 	public enum AuthIdentity: Sendable {
 		case handle(String)
 		//optionally pass in handle to fill into the UI of the web auth sheet
-		case did(Atproto.DID)
+		case did(Atproto.DID, handle: String?)
 
 		var serverHint: String {
 			switch self {
 			case .handle(let string):
 				string
-			case .did(let did):
-				did.fullId
+			case .did(let did, let handle):
+				handle ?? did.fullId
 			}
 		}
 	}
@@ -35,7 +35,7 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 	) async throws -> SessionState.Archive {
 		let did: Atproto.DID
 		switch identity {
-		case .did(let _did):
+		case .did(let _did, _):
 			did = _did
 		case .handle(let handle):
 			//resolve handle to pds, uncached
@@ -50,19 +50,13 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 			}
 		}
 
-		let authorizationServerUrl = try await getAuthorizationUrl(
-			didDoc: didDoc
-		)
+		let authorizationServerUrl = try await getAuthorizationUrl(didDoc: didDoc)
 
-		guard
-			let authorizationServerHost = authorizationServerUrl.host()
-		else {
-			throw OAuthClientError.missingUrlHost
-		}
+		let authorizationServerHost = try authorizationServerUrl.host()
+			.tryUnwrap(OAuthClientError.missingUrlHost)
 
-		let authServerMetadata = try await AuthServerMetadata.load(
-			for: authorizationServerHost,
-			provider: URLSession.defaultProvider
+		let authServerMetadata = try await oauthMetadataFetcher.fetchMetadata(
+			authServerHost: authorizationServerHost
 		)
 
 		let parConfig = PARConfiguration(
@@ -72,24 +66,24 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 			parameters: ["login_hint": identity.serverHint]
 		)
 
-		return try await PreSession(appCredentials: appCredentials)
-			.performUserAuthentication(
-				parConfig: parConfig,
-				authServerMetadata: authServerMetadata,
-				userAuthenticator: { try await userAuthenticator($0, $1) }
-			)
+		return try await PreSession(
+			appCredentials: appCredentials,
+			httpRequester: httpRequester
+		)
+		.performUserAuthentication(
+			parConfig: parConfig,
+			authServerMetadata: authServerMetadata,
+			userAuthenticator: { try await userAuthenticator($0, $1) }
+		)
 	}
 
 	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {
-		guard let pdsHost = try didDoc.pdsUrl.host() else {
-			throw OAuthClientError.missingUrlHost
-		}
+		let pdsHost = try didDoc.pdsUrl.host()
+			.tryUnwrap(OAuthClientError.missingUrlHost)
 
 		let pdsMetadata =
-			try await ProtectedResourceMetadata
-			.load(
-				for: pdsHost,
-				provider: URLSession.defaultProvider
+			try await oauthMetadataFetcher.fetchMetadata(
+				protectedResourceHost: pdsHost
 			)
 
 		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
@@ -109,18 +103,6 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 		}
 		return authorizationServerUrl
 	}
-
-	//	private static func loginProvider(
-	//		server: AuthServerMetadata, validator: @escaping TokenSubscriberValidator
-	//	) -> LoginProvider {
-	//		{
-	//			params,
-	//			dpopKey in
-	//
-	//	}
-	//
-	//	typealias TokenSubscriberValidator =
-	//		@Sendable (AtprotoOAuthSession.TokenResponse, _ issuer: String) async throws -> Bool
 }
 
 extension Atproto {
