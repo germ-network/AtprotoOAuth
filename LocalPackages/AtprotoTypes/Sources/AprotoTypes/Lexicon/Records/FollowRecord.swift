@@ -8,18 +8,25 @@
 import Foundation
 
 extension Lexicon.App.Bsky.Graph {
-	public struct Follow: Sendable, Decodable {
+	public struct Follow: Sendable, Codable {
 		/// The identifier of the lexicon.
 		///
 		/// - Warning: The value must not change.
 		//is "id" in the lexicon but avoid conflict with Swift id
 		public static let nsid: Atproto.NSID = "app.bsky.graph.follow"
+		//for encoding
+		private(set) var id: Atproto.NSID = Self.nsid
 
 		public let subject: String  // DID
 		// Ignoring the createdAt field until we can easily decode
 		// public let createdAt: Date
 
 		// Ignore `via` field
+		
+		enum CodingKeys: String, CodingKey {
+			case id = "$type"
+			case subject
+		}
 	}
 }
 
