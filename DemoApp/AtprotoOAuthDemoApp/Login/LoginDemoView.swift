@@ -7,8 +7,10 @@
 
 import SwiftUI
 
-struct LoginView: View {
-	@State private var viewModel = LoginVM()
+//replace this with the CachedAuthenticationView
+
+struct LoginDemoView: View {
+	@State private var viewModel = LoginDemoVM()
 
 	var body: some View {
 		VStack {
@@ -33,5 +35,5 @@ struct LoginView: View {
 }
 
 #Preview {
-	LoginView()
+	LoginDemoView()
 }

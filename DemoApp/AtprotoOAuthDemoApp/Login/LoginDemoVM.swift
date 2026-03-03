@@ -14,7 +14,7 @@ import Microcosm
 import OAuth
 import SwiftUI
 
-@Observable final class LoginVM {
+@Observable final class LoginDemoVM {
 	let oauthClient = AtprotoOAuthClient(
 		appCredentials: .init(
 			clientId: "https://static.germnetwork.com/client-metadata.json",
@@ -25,13 +25,15 @@ import SwiftUI
 		responseProvider: URLSession.defaultProvider,
 		atprotoClient: AtprotoClient(
 			responseProvider: URLSession.defaultProvider
-		)
+		),
+		oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
+			httpRequester: URLSession.defaultProvider)
 	)
 
 	enum State {
 		case collectHandle
 		case validating(String)
-		case loggedIn(OAuthSession)
+		case loggedIn(AtprotoOAuthSession)
 	}
 	var state: State = .collectHandle
 	struct LogEntry: Identifiable {
@@ -61,18 +63,24 @@ import SwiftUI
 
 				let sessionArchive =
 					try await oauthClient
-					.authorize(identity: .did(resolvedDid))
+					.authorize(identity: .did(resolvedDid, handle: handle))
 
-				let session = try AtprotoOAuthSession(
-					archive: .init(
-						did: resolvedDid.fullId,
-						session: sessionArchive,
-					),
-					appCredentials: oauthClient.appCredentials,
-					atprotoClient: AtprotoClient(
-						responseProvider: URLSession.defaultProvider
+				let (session, saveStream) =
+					try AtprotoOAuthSessionImpl
+					.restore(
+						archive: .init(
+							did: resolvedDid.fullId,
+							session: sessionArchive,
+						),
+						appCredentials: oauthClient.appCredentials,
+						httpRequester: URLSession.defaultProvider,
+						atprotoClient: AtprotoClient(
+							responseProvider: URLSession.defaultProvider
+						),
+						oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
+							httpRequester: URLSession.defaultProvider
+						)
 					)
-				)
 				state = .loggedIn(session)
 
 				//make an auth request

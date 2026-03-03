@@ -9,11 +9,7 @@ import AtprotoTypes
 import Foundation
 import OAuth
 
-extension AtprotoOAuthSession: TokenHandling {
-	//	public static func loginProvider(params: OAuth.LoginProviderParameters) async throws -> OAuth.SessionState.Archive {
-	//		<#code#>
-	//	}
-
+extension AtprotoOAuthSessionImpl: TokenHandling {
 	public func refreshProvider(
 		sessionState: SessionState.Archive,
 		appCredentials: AppCredentials
@@ -39,10 +35,8 @@ extension AtprotoOAuthSession: TokenHandling {
 		request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 		request.httpBody = try JSONEncoder().encode(tokenRequest)
 
-		let tokenResponse: Atproto.TokenResponse = try await Self.response(
-			for: request
-		)
-		.successDecode()
+		let tokenResponse: Atproto.TokenResponse = try await httpRequester(request)
+			.successDecode()
 
 		guard tokenResponse.tokenType == "DPoP" else {
 			throw

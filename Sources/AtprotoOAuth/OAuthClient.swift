@@ -11,34 +11,36 @@ public protocol AtprotoOAuthInterface {
 
 	//MARK: Authentication
 	//want to end up with a valid archive, not a live object
-	func authorize(identity: AtprotoOAuthClient.AuthIdentity) async throws
-		-> SessionState.Archive
+	func authorize(
+		identity: AtprotoOAuthClient.AuthIdentity
+	) async throws -> SessionState.Archive
 }
 
-public actor AtprotoOAuthClient {
+public struct AtprotoOAuthClient: Sendable {
 	static let logger = Logger(
 		subsystem: "com.germnetwork",
-		category: "BlueskyOAuthenticator")
+		category: "AtprotoOAuthClient")
 
 	public nonisolated let appCredentials: AppCredentials
-	public typealias UserAuthenticator = @Sendable (URL, String) async throws -> URL
 	public let userAuthenticator: UserAuthenticator
-	public let responseProvider: HTTPDataResponse.Requester
+	public let httpRequester: HTTPDataResponse.Requester
 	public let atprotoClient: AtprotoClientInterface
+	let oauthMetadataFetcher: OAuthMetadataFetcher
 
 	//didResolver
 	//handleResolver
-	//stateStorage
 
 	public init(
 		appCredentials: AppCredentials,
 		userAuthenticator: @escaping UserAuthenticator,
 		responseProvider: @escaping HTTPDataResponse.Requester,
 		atprotoClient: AtprotoClientInterface,
+		oauthMetadataFetcher: OAuthMetadataFetcher,
 	) {
 		self.appCredentials = appCredentials
 		self.userAuthenticator = userAuthenticator
-		self.responseProvider = responseProvider
+		self.httpRequester = responseProvider
 		self.atprotoClient = atprotoClient
+		self.oauthMetadataFetcher = oauthMetadataFetcher
 	}
 }

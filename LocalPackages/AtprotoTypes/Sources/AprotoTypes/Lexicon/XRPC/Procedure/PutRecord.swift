@@ -23,13 +23,31 @@ extension Lexicon.Com.Atproto.Repo {
 			let swapCommit: CID?
 			let swapRecord: CID?
 
+			public init(
+				repo: AtIdentifier,
+				collection: Atproto.NSID,
+				rkey: Atproto.RecordKey,
+				record: Record,
+				validate: Bool? = nil,
+				swapCommit: CID? = nil,
+				swapRecord: CID? = nil,
+			) {
+				self.repo = repo
+				self.collection = collection
+				self.rkey = rkey
+				self.record = record
+				self.validate = validate
+				self.swapCommit = swapCommit
+				self.swapRecord = swapRecord
+			}
+
 			public func httpBody() throws -> Data {
 				try JSONEncoder().encode(self)
 			}
 		}
 	}
 
-	public struct PutRecordResult: Decodable {
+	public struct PutRecordResult: Decodable, Sendable {
 		public let uri: String
 		public let cid: String
 		//commit: CommitMeta

@@ -9,10 +9,9 @@ import Foundation
 import GermConvenience
 import Logging
 
-public protocol PreSessionInterface: DPoPNonceHolding {
+public protocol PreSessionCapabilities: DPoPNonceHolding {
 	var appCredentials: AppCredentials { get }
 	var stateToken: String { get }
-	var dpopKey: DPoPKey { get }
 	var pkceVerifier: PKCEVerifier { get }
 
 	static func authorizationURL(
@@ -39,17 +38,16 @@ public protocol PreSessionInterface: DPoPNonceHolding {
 	) async throws
 }
 
-extension PreSessionInterface {
+extension PreSessionCapabilities {
 	public func performUserAuthentication(
 		parConfig: PARConfiguration,
 		authServerMetadata: AuthServerMetadata,
-		userAuthenticator: @Sendable (URL, String) async throws -> URL
+		userAuthenticator: UserAuthenticator
 	) async throws -> SessionState.Archive {
 		let parRequestURI = try await getPARRequestURI(
 			appCredentials: appCredentials,
 			parConfig: parConfig,
 			stateToken: stateToken,
-			dPoPKey: dpopKey,
 		)
 
 		let tokenURL = try Self.authorizationURL(
@@ -73,8 +71,8 @@ extension PreSessionInterface {
 			dpopRequester: {
 				try await dpopResponse(
 					for: $0,
+					issuerOrigin: nil,
 					token: nil,
-					issuingServer: nil
 				)
 			}
 		)
@@ -84,14 +82,12 @@ extension PreSessionInterface {
 		appCredentials: AppCredentials,
 		parConfig: PARConfiguration,
 		stateToken: String,
-		dPoPKey: DPoPKey,
 	) async throws -> String {
 		let result = try await parRequest(
 			appCredentials: appCredentials,
 			url: parConfig.url,
 			params: parConfig.parameters,
 			stateToken: stateToken,
-			dPoPKey: dPoPKey,
 		)
 
 		Logger(label: "PreSessionInterface")
@@ -105,10 +101,9 @@ extension PreSessionInterface {
 		url: URL,
 		params: [String: String],
 		stateToken: String,
-		dPoPKey: DPoPKey,
 	) async throws -> PARResponse {
 		let challenge = pkceVerifier.challenge
-		let scopes = appCredentials.scopes.joined(separator: " ")
+		let scopes = appCredentials.requestedScopes.joined(separator: " ")
 		let callbackURI = appCredentials.callbackURL
 		let clientId = appCredentials.clientId
 
@@ -134,12 +129,12 @@ extension PreSessionInterface {
 			.map({ [$0, $1].joined(separator: "=") })
 			.joined(separator: "&")
 
-		request.httpBody = Data(body.utf8)
+		request.httpBody = body.utf8Data
 
 		return try await dpopResponse(
 			for: request,
+			issuerOrigin: nil,
 			token: nil,
-			issuingServer: nil
 		).successDecode()
 	}
 }

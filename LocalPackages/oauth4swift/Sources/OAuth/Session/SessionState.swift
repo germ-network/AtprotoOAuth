@@ -1,5 +1,5 @@
 //
-//  Token.swift
+//  SessionState.swift
 //  OAuth
 //
 //  Created by Mark @ Germ on 2/22/26 from OAuthenticator
@@ -109,6 +109,14 @@ extension SessionState {
 			self.dPopKey = dPopKey
 			self.additionalParams = additionalParams
 			self.mutable = mutable
+		}
+
+		public func merge(update: SessionState.Mutable) -> Self {
+			.init(
+				dPopKey: dPopKey,
+				additionalParams: additionalParams,
+				mutable: update
+			)
 		}
 	}
 
