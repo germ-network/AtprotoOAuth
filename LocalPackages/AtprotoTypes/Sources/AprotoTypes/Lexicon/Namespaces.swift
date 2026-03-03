@@ -19,6 +19,7 @@ public enum Lexicon {
 			public enum Actor {
 				public enum Defs {}
 			}
+			public enum Graph {}
 		}
 	}
 }

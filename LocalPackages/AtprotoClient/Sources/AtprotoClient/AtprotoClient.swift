@@ -64,4 +64,17 @@ extension AtprotoClientInterface {
 			}
 		}
 	}
+
+	func listRecords<R: AtprotoRecord>(
+		pdsUrl: URL,
+		parameters: Lexicon.Com.Atproto.Repo.ListRecords<R>.Parameters,
+	) async throws -> ([R], String?) {
+		let result = try await request(
+			Lexicon.Com.Atproto.Repo.ListRecords<R>.self,
+			pdsUrl: pdsUrl,
+			parameters: parameters
+		)
+		let records = result.records.map { $0.value }
+		return (records, result.cursor)
+	}
 }
