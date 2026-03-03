@@ -70,14 +70,15 @@ struct UnauthenticatedView: View {
 						Text("**PDS:** \(pdsURL?.absoluteString ?? "N/A")")
 						Text("**Handle:** \(handle ?? "N/A")")
 					}
-					Section("Relationship with Germ") {
-						Text(
-							"**Follows:** \(followsGerm?.description ?? "N/A")"
-						)
-						Text(
-							"**Is followed by:** \(isFollowedByGerm?.description ?? "N/A")"
-						)
-					}
+					// Authed call
+					//					Section("Relationship with Germ") {
+					//						Text(
+					//							"**Follows:** \(followsGerm?.description ?? "N/A")"
+					//						)
+					//						Text(
+					//							"**Is followed by:** \(isFollowedByGerm?.description ?? "N/A")"
+					//						)
+					//					}
 					Section("Profile") {
 						if let profileRecord {
 							Text(
@@ -112,6 +113,9 @@ struct UnauthenticatedView: View {
 						if let messagingDelegate {
 							Text(
 								"**Current key:** \(messagingDelegate.currentKey.bytes.base64EncodedString())"
+							)
+							Text(
+								"**Key package:** \(messagingDelegate.keyPackage?.bytes.base64EncodedString() ?? "None")"
 							)
 							Text(
 								"**Version:** \(messagingDelegate.version)"
