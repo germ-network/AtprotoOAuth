@@ -11,6 +11,7 @@ public enum Lexicon {
 	public enum Com {
 		public enum Atproto {
 			public enum Repo {}
+			public enum Sync {}
 		}
 	}
 

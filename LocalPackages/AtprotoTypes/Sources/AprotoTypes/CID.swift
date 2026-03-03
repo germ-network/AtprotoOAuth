@@ -37,7 +37,9 @@ public struct CID: Sendable {
 	}
 
 	public var string: String {
-		"b" + bytes.base32EncodedStringNoPadding
+		// TODO: Lowercasing this feels like a bandaid, but otherwise
+		// it doesn't work
+		"b" + bytes.base32EncodedStringNoPadding.lowercased()
 	}
 }
 
