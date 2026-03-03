@@ -133,7 +133,7 @@ struct UnauthenticatedView: View {
 							)
 						}
 					}
-					Section("Follows") {
+					Section("\(follows.count) Follows") {
 						ForEach(follows.map { $0.subject }, id: \.self) {
 							Text($0)
 						}
