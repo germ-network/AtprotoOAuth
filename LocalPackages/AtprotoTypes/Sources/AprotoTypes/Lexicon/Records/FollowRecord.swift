@@ -22,7 +22,7 @@ extension Lexicon.App.Bsky.Graph {
 		// public let createdAt: Date
 
 		// Ignore `via` field
-		
+
 		enum CodingKeys: String, CodingKey {
 			case id = "$type"
 			case subject

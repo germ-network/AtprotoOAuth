@@ -16,7 +16,7 @@ struct UnauthenticatedView: View {
 	@State private var followsGerm: Bool?
 	@State private var isFollowedByGerm: Bool?
 
-	@State private var follows: [Lexicon.App.Bsky.Graph.Follow] = []
+	@State private var follows: [Atproto.DID] = []
 	//	@State private var profileRecord: AppBskyLexiconLite.ProfileRecord?
 	@State private var handle: String?
 	@State private var avatarBlob: Data?
@@ -108,12 +108,6 @@ struct UnauthenticatedView: View {
 							}
 						}
 					}
-					//					Section("Key package") {
-					//						Text(
-					//							keyPackage?.anchorHello
-					//								.base64EncodedString()
-					//								?? "None found")
-					//					}
 					Section("Messaging delegate") {
 						if let messagingDelegate {
 							Text(
@@ -134,8 +128,8 @@ struct UnauthenticatedView: View {
 						}
 					}
 					Section("\(follows.count) Follows") {
-						ForEach(follows.map { $0.subject }, id: \.self) {
-							Text($0)
+						ForEach(follows, id: \.self) {
+							Text($0.fullId)
 						}
 					}
 				}
@@ -195,7 +189,11 @@ struct UnauthenticatedView: View {
 			// Follows
 			print("Loading follows...")
 			do {
-				follows = try await client.getAllFollows(did: did)
+				let stream = try await client.getFollowsStream(did: did)
+				follows = []
+				for try await batch in stream {
+					follows += batch
+				}
 			} catch {
 				print("Error loading follows: \(error)")
 			}
