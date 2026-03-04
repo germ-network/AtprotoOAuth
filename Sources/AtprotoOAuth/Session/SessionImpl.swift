@@ -18,7 +18,6 @@ public actor AtprotoOAuthSessionImpl {
 	let atprotoClient: AtprotoClientInterface
 	let oauthMetadataFetcher: OAuthMetadataFetcher
 
-	public let pkceVerifier = PKCEVerifier()
 	private let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
 
 	enum State {

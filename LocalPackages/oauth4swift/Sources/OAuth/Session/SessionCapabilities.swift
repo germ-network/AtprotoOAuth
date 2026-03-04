@@ -10,7 +10,6 @@ import Foundation
 
 public protocol OAuthSessionCapabilities: Actor, TokenHandling, DPoPNonceHolding {
 	var appCredentials: AppCredentials { get }
-	var pkceVerifier: PKCEVerifier { get }
 
 	var lazyServerMetadata: LazyResource<AuthServerMetadata> { get }
 
