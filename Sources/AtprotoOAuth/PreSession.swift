@@ -22,7 +22,7 @@ actor PreSession {
 
 	let stateToken = UUID().uuidString
 	let dpopKey = DPoPKey.generateP256()
-	private let nonceCache: NSCache<NSString, NonceValue> = NSCache()
+	private let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
 	let pkceVerifier = PKCEVerifier()
 
 	init(
@@ -36,21 +36,25 @@ actor PreSession {
 
 extension PreSession: DPoPNonceHolding {
 
-	public func getNonce(origin: String) -> NonceValue? {
+	public func getNonce(origin: String) -> IndexedNonce? {
 		nonceCache.object(forKey: origin as NSString)
 	}
 
-	public func store(nonce: String, for origin: String) {
+	public func store(indexedNonce: IndexedNonce) {
 		nonceCache.setObject(
-			.init(origin: origin, nonce: nonce),
-			forKey: origin as NSString
+			indexedNonce,
+			forKey: indexedNonce.origin as NSString
 		)
 	}
 
 	public static func decode(
-		dataResponse: HTTPDataResponse
-	) throws -> OAuth.NonceValue? {
-		try AtprotoOAuthSessionImpl.decode(dataResponse: dataResponse)
+		dataResponse: HTTPDataResponse,
+		requestUrl: URL
+	) throws -> OAuth.IndexedNonce? {
+		try AtprotoOAuthSessionImpl.decode(
+			dataResponse: dataResponse,
+			requestUrl: requestUrl
+		)
 	}
 }
 

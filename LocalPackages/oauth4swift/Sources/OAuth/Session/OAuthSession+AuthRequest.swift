@@ -17,7 +17,7 @@ extension OAuthSessionCapabilities {
 			isolation: self
 		)
 
-		let issuerOrigin = try URL(string: serverMetadata.issuer).tryUnwrap.origin.tryUnwrap
+		let issuerOrigin = try URL(string: serverMetadata.issuer).tryUnwrap.origin
 		let dataResponse = try await dpopResponse(
 			for: request,
 			issuerOrigin: issuerOrigin,

@@ -99,14 +99,20 @@ public struct ClientMetadata: Hashable, Codable, Sendable {
 }
 
 extension ClientMetadata {
-	public var credentials: AppCredentials {
-		let url = redirectURIs.first.map({ URL(string: $0)! })!
 
-		return AppCredentials(
-			clientId: clientId,
-			scopes: scope.components(separatedBy: " "),
-			callbackURL: url
-		)
+	//The client metadata is the declaration of all scopes the app may request
+	//the app does not have to request them all. this initializer sends them
+	//all
+	public var credentials: AppCredentials {
+		get throws {
+			let url = try redirectURIs.first.map({ URL(string: $0)! }).tryUnwrap
+
+			return AppCredentials(
+				clientId: clientId,
+				scopes: scope.components(separatedBy: " "),
+				callbackURL: url
+			)
+		}
 	}
 }
 
