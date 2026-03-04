@@ -35,7 +35,6 @@ actor PreSession {
 }
 
 extension PreSession: DPoPNonceHolding {
-
 	public func getNonce(origin: String) -> IndexedNonce? {
 		nonceCache.object(forKey: origin as NSString)
 	}
