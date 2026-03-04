@@ -1,5 +1,5 @@
 //
-//  PreSessionInterface.swift
+//  AuthorizerCapabilities.swift
 //  OAuth
 //
 //  Created by Mark @ Germ on 2/26/26.
@@ -9,7 +9,7 @@ import Foundation
 import GermConvenience
 import Logging
 
-public protocol PreSessionCapabilities: DPoPNonceHolding {
+public protocol AuthorizerCapabilities: DPoPNonceHolding {
 	var appCredentials: AppCredentials { get }
 	var stateToken: String { get }
 	var pkceVerifier: PKCEVerifier { get }
@@ -38,7 +38,7 @@ public protocol PreSessionCapabilities: DPoPNonceHolding {
 	) async throws
 }
 
-extension PreSessionCapabilities {
+extension AuthorizerCapabilities {
 	public func performUserAuthentication(
 		parConfig: PARConfiguration,
 		authServerMetadata: AuthServerMetadata,

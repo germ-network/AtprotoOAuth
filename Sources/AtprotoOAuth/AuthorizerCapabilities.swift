@@ -14,7 +14,7 @@ import OAuth
 //a container for a nonce cache for getting authorization
 //it should only make requests as necessary to authorize
 
-actor PreSession {
+actor AuthorizerImpl {
 	static let logger = Logger(label: "PreSession")
 
 	let appCredentials: AppCredentials
@@ -34,7 +34,7 @@ actor PreSession {
 	}
 }
 
-extension PreSession: DPoPNonceHolding {
+extension AuthorizerImpl: DPoPNonceHolding {
 	public func getNonce(origin: String) -> IndexedNonce? {
 		nonceCache.object(forKey: origin as NSString)
 	}
@@ -57,7 +57,7 @@ extension PreSession: DPoPNonceHolding {
 	}
 }
 
-extension PreSession: PreSessionCapabilities {
+extension AuthorizerImpl: AuthorizerCapabilities {
 	public static func authorizationURL(
 		authEndpoint: String,
 		parRequestURI: String,
@@ -88,7 +88,6 @@ extension PreSession: PreSessionCapabilities {
 		dpopRequester: (URLRequest) async throws -> HTTPDataResponse
 	) async throws -> SessionState.Archive {
 		// decode the params in the redirectURL
-
 		let redirectComponents = try URLComponents(
 			url: redirectURI,
 			resolvingAgainstBaseURL: false
