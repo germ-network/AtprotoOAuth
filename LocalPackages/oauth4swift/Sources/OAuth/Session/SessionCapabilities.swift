@@ -8,7 +8,7 @@
 import Crypto
 import Foundation
 
-public protocol OAuthSessionCapabilities: Actor, TokenHandling, DPoPNonceHolding {
+public protocol OAuthSessionCapabilities: Actor, TokenHandling, DPoPNonceHolding, AuthRequestable {
 	var appCredentials: AppCredentials { get }
 
 	var lazyServerMetadata: LazyResource<AuthServerMetadata> { get }

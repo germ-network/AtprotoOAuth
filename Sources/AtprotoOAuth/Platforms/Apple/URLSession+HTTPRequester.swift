@@ -29,4 +29,24 @@ extension URLSession {
 	public static var defaultProvider: HTTPDataResponse.Requester {
 		URLSession(configuration: .default).responseProvider
 	}
+
+	public static var manualRefreshFetcher: HTTPDataResponse.Requester {
+		URLSession(
+			configuration: .default,
+			delegate: ManualRedirect(),
+			delegateQueue: nil
+		)
+		.responseProvider
+	}
+}
+
+final class ManualRedirect: NSObject, URLSessionTaskDelegate {
+	func urlSession(
+		_ session: URLSession,
+		task: URLSessionTask,
+		willPerformHTTPRedirection response: HTTPURLResponse,
+		newRequest request: URLRequest
+	) async -> URLRequest? {
+		nil
+	}
 }

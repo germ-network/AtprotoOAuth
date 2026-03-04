@@ -71,6 +71,7 @@ import os
 				),
 				appCredentials: oauthClient.appCredentials,
 				httpRequester: URLSession.defaultProvider,
+				manualRedirectFetch: URLSession.manualRefreshFetcher,
 				atprotoClient: AtprotoClient(
 					responseProvider: URLSession.defaultProvider
 				),
@@ -147,6 +148,7 @@ import os
 				),
 				appCredentials: oauthClient.appCredentials,
 				httpRequester: URLSession.defaultProvider,
+				manualRedirectFetch: URLSession.manualRefreshFetcher,
 				atprotoClient: AtprotoClient(
 					responseProvider: URLSession.defaultProvider
 				),

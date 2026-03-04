@@ -12,64 +12,6 @@ enum MetadataError: Error {
 	case urlInvalid
 }
 
-// See: https://www.rfc-editor.org/rfc/rfc8414.html
-public struct AuthServerMetadata: Codable, Hashable, Sendable {
-	public let issuer: String
-	public let authorizationEndpoint: String
-	public let tokenEndpoint: String
-	public let responseTypesSupported: [String]
-	public let grantTypesSupported: [String]
-	public let codeChallengeMethodsSupported: [String]
-	public let tokenEndpointAuthMethodsSupported: [String]
-	public let tokenEndpointAuthSigningAlgValuesSupported: [String]
-	public let scopesSupported: [String]
-	public let authorizationResponseIssParameterSupported: Bool
-	public let requirePushedAuthorizationRequests: Bool
-	public let pushedAuthorizationRequestEndpoint: String
-	public let dpopSigningAlgValuesSupported: [String]
-	public let requireRequestUriRegistration: Bool
-	public let clientIdMetadataDocumentSupported: Bool
-
-	enum CodingKeys: String, CodingKey {
-		case issuer
-		case authorizationEndpoint = "authorization_endpoint"
-		case tokenEndpoint = "token_endpoint"
-		case responseTypesSupported = "response_types_supported"
-		case grantTypesSupported = "grant_types_supported"
-		case codeChallengeMethodsSupported = "code_challenge_methods_supported"
-		case tokenEndpointAuthMethodsSupported = "token_endpoint_auth_methods_supported"
-		case tokenEndpointAuthSigningAlgValuesSupported =
-			"token_endpoint_auth_signing_alg_values_supported"
-		case scopesSupported = "scopes_supported"
-		case authorizationResponseIssParameterSupported =
-			"authorization_response_iss_parameter_supported"
-		case requirePushedAuthorizationRequests = "require_pushed_authorization_requests"
-		case pushedAuthorizationRequestEndpoint = "pushed_authorization_request_endpoint"
-		case dpopSigningAlgValuesSupported = "dpop_signing_alg_values_supported"
-		case requireRequestUriRegistration = "require_request_uri_registration"
-		case clientIdMetadataDocumentSupported = "client_id_metadata_document_supported"
-	}
-
-	public static func load(
-		for host: String,
-		httpRequester: HTTPDataResponse.Requester
-	) async throws -> AuthServerMetadata {
-		var components = URLComponents()
-
-		components.scheme = URLScheme.https.rawValue
-		components.host = host
-		components.path = "/.well-known/oauth-authorization-server"
-
-		let url = try components.url.tryUnwrap(MetadataError.urlInvalid)
-
-		var request = URLRequest(url: url)
-		request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-		return try await httpRequester(request)
-			.successDecode()
-	}
-}
-
 // See: https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/
 public struct ClientMetadata: Hashable, Codable, Sendable {
 	public let clientId: String

@@ -20,8 +20,16 @@ public struct HTTPDataResponse: Sendable {
 		self.response = response
 	}
 
-	public func successDecode<R: Decodable>() throws -> R {
-		guard response.statusCode >= 200 && response.statusCode < 300 else {
+	public func successDecode<R: Decodable>(
+		successCode: Int
+	) throws -> R {
+		try successDecode(successCodes: successCode...successCode)
+	}
+
+	public func successDecode<R: Decodable>(
+		successCodes: RangeExpression<Int> = 200..<300
+	) throws -> R {
+		guard successCodes.contains(response.statusCode) else {
 			if let stringResponse = String(data: data, encoding: .utf8) {
 				throw
 					HTTPResponseError

@@ -74,6 +74,8 @@ import SwiftUI
 						),
 						appCredentials: oauthClient.appCredentials,
 						httpRequester: URLSession.defaultProvider,
+						manualRedirectFetch: URLSession
+							.manualRefreshFetcher,
 						atprotoClient: AtprotoClient(
 							responseProvider: URLSession.defaultProvider
 						),

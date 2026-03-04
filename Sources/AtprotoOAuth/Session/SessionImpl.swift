@@ -15,6 +15,7 @@ public actor AtprotoOAuthSessionImpl {
 	public nonisolated let did: Atproto.DID
 	public let appCredentials: AppCredentials
 	public let httpRequester: HTTPDataResponse.Requester
+	public let manualRedirectFetcher: HTTPDataResponse.Requester
 	let atprotoClient: AtprotoClientInterface
 	let oauthMetadataFetcher: OAuthMetadataFetcher
 
@@ -34,6 +35,7 @@ public actor AtprotoOAuthSessionImpl {
 	}
 	var state: State
 	public var lazyServerMetadata: LazyResource<AuthServerMetadata>
+	public var lazyIssuer: LazyResource<URL>
 	public var refreshTask: Task<SessionState.Mutable, Error>?
 
 	private let saveStream: AsyncStream<SessionState.Mutable?>
@@ -49,6 +51,7 @@ public actor AtprotoOAuthSessionImpl {
 		appCredentials: AppCredentials,
 		state: State,
 		httpRequester: @escaping HTTPDataResponse.Requester,
+		manualRedirectFetch: @escaping HTTPDataResponse.Requester,
 		atprotoClient: AtprotoClientInterface,
 		oauthMetadataFetcher: OAuthMetadataFetcher
 	) {
@@ -56,6 +59,7 @@ public actor AtprotoOAuthSessionImpl {
 		self.appCredentials = appCredentials
 		self.state = state
 		self.httpRequester = httpRequester
+		self.manualRedirectFetcher = manualRedirectFetch
 		self.atprotoClient = atprotoClient
 		self.oauthMetadataFetcher = oauthMetadataFetcher
 
@@ -95,6 +99,42 @@ public actor AtprotoOAuthSessionImpl {
 						try await oauthMetadataFetcher
 						.fetchMetadata(
 							authServerHost: authorizationServerHost)
+				}
+			})
+
+		self.lazyIssuer = .init(
+			fetchTaskGenerator: {
+				Task {
+					let pdsHost = try await atprotoClient.plcDirectoryQuery(did)
+						.pdsUrl
+					let pdsMetadata =
+						try await oauthMetadataFetcher
+						.fetchMetadata(
+							protectedResourceHost: pdsHost.host()
+								.tryUnwrap
+						)
+
+					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
+					//PDS doesn't actually fill this field, so we only check it if present
+					if let supportedAlgs = pdsMetadata
+						.dpopSigningAlgValuesSupported
+					{
+						guard supportedAlgs.contains("ES256")
+						else {
+							throw OAuthSessionError.unsupported
+						}
+					}
+
+					guard
+						let authorizationServerUrl = pdsMetadata
+							.authorizationServers?.first,
+						let authorizationServer = URL(
+							string: authorizationServerUrl)
+					else {
+						throw OAuthSessionError.cantFormURL
+					}
+
+					return authorizationServer
 				}
 			})
 
@@ -165,6 +205,7 @@ extension AtprotoOAuthSessionImpl {
 		archive: Archive,
 		appCredentials: AppCredentials,
 		httpRequester: @escaping HTTPDataResponse.Requester,
+		manualRedirectFetch: @escaping HTTPDataResponse.Requester,
 		atprotoClient: AtprotoClientInterface,
 		oauthMetadataFetcher: OAuthMetadataFetcher
 	) throws -> (AtprotoOAuthSession, AsyncStream<SessionState.Mutable?>) {
@@ -172,6 +213,7 @@ extension AtprotoOAuthSessionImpl {
 			archive: archive,
 			appCredentials: appCredentials,
 			httpRequester: httpRequester,
+			manualRedirectFetch: manualRedirectFetch,
 			atprotoClient: atprotoClient,
 			oauthMetadataFetcher: oauthMetadataFetcher
 		)
@@ -182,6 +224,7 @@ extension AtprotoOAuthSessionImpl {
 		archive: Archive,
 		appCredentials: AppCredentials,
 		httpRequester: @escaping HTTPDataResponse.Requester,
+		manualRedirectFetch: @escaping HTTPDataResponse.Requester,
 		atprotoClient: AtprotoClientInterface,
 		oauthMetadataFetcher: OAuthMetadataFetcher
 	) throws {
@@ -190,6 +233,7 @@ extension AtprotoOAuthSessionImpl {
 			appCredentials: appCredentials,
 			state: .init(archive: archive.session),
 			httpRequester: httpRequester,
+			manualRedirectFetch: manualRedirectFetch,
 			atprotoClient: atprotoClient,
 			oauthMetadataFetcher: oauthMetadataFetcher
 		)
@@ -264,4 +308,37 @@ extension AtprotoOAuthSessionImpl {
 		try await atprotoClient.plcDirectoryQuery(did)
 			.pdsUrl
 	}
+}
+
+extension AtprotoOAuthSessionImpl: AuthRequestable {
+	public var additionalParameters: [String: String] {
+		[
+			"client_id": appCredentials.clientId,
+			"redirect_url": appCredentials.callbackURL.absoluteString,
+		]
+	}
+
+	public func manualRedirectFetch(request: URLRequest) async throws
+		-> GermConvenience.HTTPDataResponse
+	{
+		try await manualRedirectFetcher(request)
+	}
+
+	public func validate(
+		authMetadata: AuthServerMetadata,
+		tokenResponse: OAuth.TokenEndpointResponse
+	) throws -> OAuth.SessionState.Mutable {
+		//TODO: finish validation
+
+		.init(
+			accessToken: .init(
+				value: tokenResponse.accessToken, expiresIn: tokenResponse.expiresIn
+			),
+			refreshToken: .init(refreshToken: tokenResponse.refreshToken),
+			scopes: tokenResponse.scope,
+			//REVIEW: where should this come from?
+			issuingServer: authMetadata.issuer
+		)
+	}
+
 }

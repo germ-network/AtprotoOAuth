@@ -36,7 +36,7 @@ extension OAuthSessionCapabilities {
 		}
 
 		//try to refresh the token
-		let refreshed = try await refresh(state: sessionState)
+		let refreshed = try await conservingRefresh(state: sessionState)
 
 		//try again
 		return try await dpopResponse(
@@ -47,7 +47,8 @@ extension OAuthSessionCapabilities {
 		)
 	}
 
-	private func refresh(state: SessionState) async throws -> SessionState.Mutable {
+	//conserving in that it reuses result if a refresh is alread in flght
+	private func conservingRefresh(state: SessionState) async throws -> SessionState.Mutable {
 		if let refreshTask {
 			return try await refreshTask.value
 		}
@@ -68,4 +69,24 @@ extension OAuthSessionCapabilities {
 		//handle successful refresh
 		return try await newRefreshTask.value
 	}
+
+	//compare to refreshTokenGrantRequest
+	//and processRefreshTokenResponse in
+	private func refresh(
+		state: SessionState,
+		appCredentials: AppCredentials,
+	) async throws -> SessionState.Mutable {
+		let authServerMetadata = try await getAuthServerMetadata()
+		let httpResponse = try await refreshTokenGrantRequest(
+			authServerMetadata: authServerMetadata,
+			refreshToken: state.mutable.refreshToken.tryUnwrap.value
+		)
+		let response = try await processRefreshTokenResponse(response: httpResponse)
+
+		return try validate(
+			authMetadata: authServerMetadata,
+			tokenResponse: response
+		)
+	}
+
 }

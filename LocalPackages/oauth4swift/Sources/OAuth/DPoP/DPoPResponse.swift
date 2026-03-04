@@ -9,6 +9,16 @@ import Crypto
 import Foundation
 import GermConvenience
 
+public protocol DPoPSigning {
+	func cacheNonce(response: URLResponse, requestUrl: URL)
+}
+
+extension DPoPSigning {
+	func addProof(request: inout URLRequest) throws {
+
+	}
+}
+
 public protocol DPoPNonceHolding: Actor {
 	var dpopKey: DPoPKey { get throws }
 
