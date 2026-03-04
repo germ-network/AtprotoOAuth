@@ -58,7 +58,6 @@ public struct HTTPDataResponse: Sendable {
 				}
 			}
 		}
-		// TODO: Is there a better way to avoid JSON decoding raw Data?
 		if resultType == Data?.self || resultType == Data.self,
 			let rawData = data as? R
 		{

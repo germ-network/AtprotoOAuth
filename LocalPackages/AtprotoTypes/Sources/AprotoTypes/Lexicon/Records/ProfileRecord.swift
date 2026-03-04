@@ -17,7 +17,7 @@ extension Lexicon.App.Bsky.Actor {
 		//is "id" in the lexicon but avoid conflict with Swift id
 		public static let nsid: Atproto.NSID = "app.bsky.actor.profile"
 		//for encoding
-		private(set) var id: Atproto.NSID = Self.nsid
+		private(set) var nsid: Atproto.NSID = Self.nsid
 
 		/// Optional
 		/// Small image to be displayed next to posts from account. AKA, 'profile picture'
@@ -56,7 +56,7 @@ extension Lexicon.App.Bsky.Actor {
 		public let website: URL?
 
 		enum CodingKeys: String, CodingKey {
-			case id = "$type"
+			case nsid = "$type"
 			case avatar
 			case banner
 			case description

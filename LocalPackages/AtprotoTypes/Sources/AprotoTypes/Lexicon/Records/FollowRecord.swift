@@ -15,7 +15,7 @@ extension Lexicon.App.Bsky.Graph {
 		//is "id" in the lexicon but avoid conflict with Swift id
 		public static let nsid: Atproto.NSID = "app.bsky.graph.follow"
 		//for encoding
-		private(set) var id: Atproto.NSID = Self.nsid
+		private(set) var nsid: Atproto.NSID = Self.nsid
 
 		public let subject: String  // DID
 		// Ignoring the createdAt field until we can easily decode
@@ -24,7 +24,7 @@ extension Lexicon.App.Bsky.Graph {
 		// Ignore `via` field
 
 		enum CodingKeys: String, CodingKey {
-			case id = "$type"
+			case nsid = "$type"
 			case subject
 		}
 	}

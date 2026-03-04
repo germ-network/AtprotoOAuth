@@ -28,7 +28,7 @@ struct UnauthenticatedView: View {
 
 	@State private var processing: Task<Void, Never>? = nil
 
-	let client = AtprotoClient.init(
+	let client: AtprotoClientInterface = AtprotoClient.init(
 		responseProvider: URLSession.defaultProvider
 	)
 
@@ -163,20 +163,14 @@ struct UnauthenticatedView: View {
 				return
 			}
 
-			// PDS
-			print("Loading PDS...")
+			// PDS and handle
+			print("Loading DID document...")
 			do {
-				pdsURL = try await client.plcDirectoryQuery(did).pdsUrl
+				let didDoc = try await client.plcDirectoryQuery(did)
+				pdsURL = try didDoc.pdsUrl
+				handle = didDoc.handle
 			} catch {
-				print("Error loading PDS: \(error)")
-			}
-
-			// Handle
-			print("Loading handle...")
-			do {
-				handle = try await client.plcDirectoryQuery(did).handle
-			} catch {
-				print("Error loading handle: \(error)")
+				print("Error loading DID doc and/or PDS URL: \(error)")
 			}
 
 			// Messaging delegate
@@ -237,6 +231,7 @@ struct UnauthenticatedView: View {
 				print("Error loading follows: \(error)")
 			}
 		}
+
 		processing = newTask
 		Task {
 			await newTask.value

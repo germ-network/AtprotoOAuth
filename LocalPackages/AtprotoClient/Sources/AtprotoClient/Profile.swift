@@ -8,7 +8,7 @@
 import AtprotoTypes
 import Foundation
 
-extension AtprotoClient {
+extension AtprotoClientInterface {
 	public func getProfile(
 		did: Atproto.DID
 	) async throws -> Lexicon.App.Bsky.Actor.Profile? {

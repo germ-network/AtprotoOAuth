@@ -15,7 +15,7 @@ extension Lexicon.Com.GermNetwork {
 		//is "id" in the lexicon but avoid conflict with Swift id
 		public static let nsid: Atproto.NSID = "com.germnetwork.declaration"
 		//for encoding
-		private(set) var id: Atproto.NSID = Self.nsid
+		private(set) var nsid: Atproto.NSID = Self.nsid
 
 		/// Required, Opaque.
 		/// Expected to parse to a SemVer. While the lexicon is fixed, the version applies to the format of opaque content
@@ -38,7 +38,7 @@ extension Lexicon.Com.GermNetwork {
 		public let continuityProofs: [Data]?
 
 		enum CodingKeys: String, CodingKey {
-			case id = "$type"
+			case nsid = "$type"
 			case version
 			case currentKey
 			case keyPackage
@@ -49,10 +49,10 @@ extension Lexicon.Com.GermNetwork {
 		public init(from decoder: any Decoder) throws {
 			let container = try decoder.container(keyedBy: CodingKeys.self)
 
-			self.id =
+			self.nsid =
 				try container
-				.decode(String.self, forKey: CodingKeys.id)
-			guard self.id == Self.nsid else {
+				.decode(String.self, forKey: CodingKeys.nsid)
+			guard self.nsid == Self.nsid else {
 				throw AtprotoTypeError.invalidRecordType
 			}
 

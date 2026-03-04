@@ -37,8 +37,8 @@ public struct CID: Sendable {
 	}
 
 	public var string: String {
-		// TODO: Lowercasing this feels like a bandaid, but otherwise
-		// it doesn't work
+		// CID is DASL-compatible (https://atproto.com/specs/data-model)
+		// and DASL CID uses lowercase base-32 (https://dasl.ing/cid.html)
 		"b" + bytes.base32EncodedStringNoPadding.lowercased()
 	}
 }
