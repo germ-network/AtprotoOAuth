@@ -8,7 +8,7 @@
 import Foundation
 
 extension URL {
-	public var origin: String? {
+	var origin: String? {
 		guard
 			let host = self.host,
 			let scheme = self.scheme
