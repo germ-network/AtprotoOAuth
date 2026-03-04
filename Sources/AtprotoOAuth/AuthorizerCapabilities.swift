@@ -77,7 +77,7 @@ extension AuthorizerImpl: AuthorizerCapabilities {
 		return url
 	}
 
-	static func login(
+	static func validateAuthResponse(
 		authorizationUrl: URL,
 		stateToken: String,
 		redirectURI: URL,

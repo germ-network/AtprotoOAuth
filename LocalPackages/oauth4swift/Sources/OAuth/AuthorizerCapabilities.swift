@@ -20,7 +20,7 @@ public protocol AuthorizerCapabilities: DPoPNonceHolding {
 		clientId: String,
 	) throws -> URL
 
-	static func login(
+	static func validateAuthResponse(
 		authorizationUrl: URL,
 		stateToken: String,
 		redirectURI: URL,
@@ -60,7 +60,7 @@ extension AuthorizerCapabilities {
 
 		let callbackURL = try await userAuthenticator(tokenURL, scheme)
 
-		return try await Self.login(
+		return try await Self.validateAuthResponse(
 			authorizationUrl: tokenURL,
 			stateToken: stateToken,
 			redirectURI: callbackURL,
