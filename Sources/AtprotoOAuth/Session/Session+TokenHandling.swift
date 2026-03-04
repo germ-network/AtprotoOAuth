@@ -141,7 +141,7 @@ extension Atproto {
 
 		public func session(
 			for issuingServer: String,
-			dpopKey: OAuth.DPoPKey
+			dpopKey: DPoPKey
 		) -> SessionState.Archive {
 			.init(
 				dPopKey: dpopKey,

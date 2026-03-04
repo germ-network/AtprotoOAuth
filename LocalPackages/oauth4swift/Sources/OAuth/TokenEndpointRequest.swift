@@ -33,6 +33,74 @@ extension AuthRequestable {
 		.successDecode(successCode: 200)
 	}
 
+	func finishAuthorization(
+		authorizationUrl: URL,
+		stateToken: String,
+		redirectURI: URL,
+		pkceVerifier: PKCEVerifier,
+		appCredentials: AppCredentials,
+		authServerMetadata: AuthServerMetadata,
+		dpopKey: DPoPKey,
+		dpopRequester: (URLRequest) async throws -> HTTPDataResponse
+	) async throws -> SessionState.Archive {
+		let parsedRedirect = try OAuthComponents.validateAuthResponse(
+			authServerMetadata: authServerMetadata,
+			redirectURL: redirectURI,
+			expectedState: stateToken
+		)
+
+		let httpResponse = try await authorizationCodeGrantRequest(
+			authServerMetadata: authServerMetadata,
+			redirectUrl: redirectURI,
+			parsedRedirect: parsedRedirect,
+			verifier: pkceVerifier.verifier,
+			additionalParameters: additionalParameters,
+			manualRedirectFetch: manualRedirectFetch
+		)
+
+		let result = try processAuthorizationCodeOAuth2Response(
+			authServerMetadata: authServerMetadata,
+			response: httpResponse
+		)
+
+		let mutable = try validate(authMetadata: authServerMetadata, tokenResponse: result)
+
+		return .init(dPopKey: dpopKey, additionalParams: nil, mutable: mutable)
+
+		//		let result = try await dpopRequester(request)
+		//			.successErrorDecode(
+		//				resultType: Atproto.TokenResponse.self,
+		//				errorType: Atproto.TokenError.self,
+		//			)
+
+		//		switch result {
+		//		case .result(let tokenResponse):
+		//			guard tokenResponse.tokenType == "DPoP" else {
+		//				throw OAuthClientError.dpopTokenExpected(
+		//					tokenResponse.tokenType)
+		//			}
+		//
+		//			try await Self.tokenSubscriberValidator(
+		//				response: tokenResponse,
+		//				sub: authServerMetadata.issuer
+		//			)
+		//
+		//			return tokenResponse.session(
+		//				for: parsedRedirect.issuer,
+		//				dpopKey: dpopKey
+		//			)
+		//		case .error(let tokenError, let statusCode):
+
+		//			if tokenError.errorDescription == "Code challenge already used" {
+		//				throw OAuthClientError.codeChallengeAlreadyUsed
+		//			}
+		//			Self.logger.error(
+		//				"Login error: \(tokenError.errorDescription), with status code \(statusCode)"
+		//			)
+		//			throw OAuthClientError.remoteTokenError(tokenError)
+		//		}
+	}
+
 	private func authServerDiscovery(issuer: URL) async throws -> HTTPDataResponse {
 		guard issuer.scheme == "https" else {
 			throw OAuthError.insecureScheme
@@ -46,64 +114,26 @@ extension AuthRequestable {
 		return try await manualRedirectFetch(request: request)
 	}
 
-	func refreshTokenGrantRequest(
-		authServerMetadata: AuthServerMetadata,
-		refreshToken: String
-	) async throws -> HTTPDataResponse {
-		var parameters = additionalParameters
-		parameters["refresh_token"] = refreshToken
-
-		return try await tokenEndpointRequest(
-			authServerMetadata: authServerMetadata,
-			grantType: .refreshToken,
-			parameters: parameters,
-			headers: [:]
-		)
-	}
-
 	func processRefreshTokenResponse(
 		response: HTTPDataResponse
 	) throws -> TokenEndpointResponse {
-		try OAuth.processGenericAccessToken(response: response)
+		try OAuthComponents.processGenericAccessToken(response: response)
 	}
 
-	func tokenEndpointRequest(
+	func processAuthorizationCodeOAuth2Response(
 		authServerMetadata: AuthServerMetadata,
-		grantType: GrantType,
-		parameters: [String: String],
-		headers: [String: String]
-	) async throws -> HTTPDataResponse {
-		let url = try authServerMetadata.resolve(endpoint: .token)
+		response: HTTPDataResponse
+	) throws -> TokenEndpointResponse {
+		let result = try OAuthComponents.processGenericAccessToken(response: response)
 
-		var modifiedParams = parameters
-		modifiedParams["grant_type"] = grantType.rawValue
+		//check the claims
+		try validate(authMetadata: authServerMetadata, tokenResponse: result)
+		// TODO: GER-1343 - Implement validator
+		// after a token is issued, it is critical that the returned
+		// identity be resolved and its PDS match the issuing server
+		//
+		// check out draft-ietf-oauth-v2-1 section 7.3.1 for details
 
-		var headers = headers
-		//swift4web sets the "accept" header, but both may be appropriate
-		headers["accept"] = "application/json"
-		headers["Content-Type"] = "application/json"
-		//swift4web sets the "accept" header, but Content-Type seems
-
-		var request = URLRequest(url: url)
-
-		if let dpopSigner = self as? DPoPSigning {
-			try dpopSigner.addProof(request: &request)
-		}
-
-		request.httpMethod = HTTPMethod.post.rawValue
-		request.httpBody = try JSONEncoder().encode(headers)
-
-		let response = try await authenticated(request: request)
-		if let dpopSigner = self as? DPoPSigning {
-			try dpopSigner.cacheNonce(response: response.response, requestUrl: url)
-		}
-
-		return response
-	}
-
-	//here for shadowing of oauth4web.authenticatedRequest
-	//but most functionality has been lifted out
-	func authenticated(request: URLRequest) async throws -> HTTPDataResponse {
-		return try await manualRedirectFetch(request: request)
+		return result
 	}
 }

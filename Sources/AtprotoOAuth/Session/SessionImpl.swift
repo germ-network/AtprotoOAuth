@@ -174,7 +174,7 @@ public actor AtprotoOAuthSessionImpl {
 	//propagate new state to our in-memory opject properties
 	//then through the async streams
 
-	private func save(sessionMutable: OAuth.SessionState.Mutable) throws {
+	private func save(sessionMutable: SessionState.Mutable) throws {
 		try session.updated(mutable: sessionMutable)
 
 		saveContinuation.yield(sessionMutable)
@@ -251,7 +251,7 @@ extension AtprotoOAuthSessionImpl {
 extension AtprotoOAuthSessionImpl: AtprotoSession {}
 
 extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
-	public var session: OAuth.SessionState {
+	public var session: SessionState {
 		get throws {
 			guard case .active(let sessionState) = state else {
 				throw OAuthSessionError.sessionInactive
@@ -260,13 +260,13 @@ extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
 		}
 	}
 
-	public func refreshed(sessionMutable: OAuth.SessionState.Mutable) throws {
+	public func refreshed(sessionMutable: SessionState.Mutable) throws {
 		try save(sessionMutable: sessionMutable)
 	}
 }
 
 extension AtprotoOAuthSessionImpl: DPoPNonceHolding {
-	public var dpopKey: OAuth.DPoPKey {
+	public var dpopKey: DPoPKey {
 		get throws {
 			try session.dPopKey.tryUnwrap
 		}
@@ -276,7 +276,7 @@ extension AtprotoOAuthSessionImpl: DPoPNonceHolding {
 	public static func decode(
 		dataResponse: HTTPDataResponse,
 		requestUrl: URL,
-	) throws -> OAuth.IndexedNonce? {
+	) throws -> IndexedNonce? {
 		guard let nonce = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce")
 		else {
 			return nil
@@ -326,8 +326,8 @@ extension AtprotoOAuthSessionImpl: AuthRequestable {
 
 	public func validate(
 		authMetadata: AuthServerMetadata,
-		tokenResponse: OAuth.TokenEndpointResponse
-	) throws -> OAuth.SessionState.Mutable {
+		tokenResponse: TokenEndpointResponse
+	) throws -> SessionState.Mutable {
 		//TODO: finish validation
 
 		.init(

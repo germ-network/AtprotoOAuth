@@ -49,7 +49,7 @@ extension AuthorizerImpl: DPoPNonceHolding {
 	public static func decode(
 		dataResponse: HTTPDataResponse,
 		requestUrl: URL
-	) throws -> OAuth.IndexedNonce? {
+	) throws -> IndexedNonce? {
 		try AtprotoOAuthSessionImpl.decode(
 			dataResponse: dataResponse,
 			requestUrl: requestUrl
@@ -77,7 +77,7 @@ extension AuthorizerImpl: AuthorizerCapabilities {
 		return url
 	}
 
-	static func validateAuthResponse(
+	static func finishAuthorization(
 		authorizationUrl: URL,
 		stateToken: String,
 		redirectURI: URL,
