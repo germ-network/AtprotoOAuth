@@ -60,9 +60,6 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 		)
 
 		let parConfig = PARConfiguration(
-			url: try URL(
-				string: authServerMetadata.pushedAuthorizationRequestEndpoint
-			).tryUnwrap,
 			parameters: ["login_hint": identity.serverHint]
 		)
 

@@ -18,34 +18,92 @@ extension OAuthSessionCapabilities {
 		)
 
 		let issuerOrigin = try URL(string: serverMetadata.issuer).tryUnwrap.origin
-		let dataResponse = try await dpopResponse(
-			for: request,
-			issuerOrigin: issuerOrigin,
-			token: sessionState.mutable.accessToken.value,
 
-		)
+		let result = try await retryNonceRequest(request: request)
 
 		// FIXME: This isn't really to spec: 401 doesn't mean "refresh", it just means unauthorized.
-		switch dataResponse.response.statusCode {
+		switch result.response.statusCode {
 		case 200..<300:
-			return dataResponse
+			return result
 		case 401:
 			break
 		default:
-			throw OAuthError.httpResponse(response: dataResponse.response)
+			throw OAuthError.httpResponse(response: result.response)
 		}
 
 		//try to refresh the token
 		let refreshed = try await conservingRefresh(state: sessionState)
 
-		//try again
-		return try await dpopResponse(
-			for: request,
-			issuerOrigin: issuerOrigin,
-			token: refreshed.accessToken.value,
+		return try await retryNonceRequest(request: request)
+	}
 
+	func retryNonceRequest(
+		request: URLRequest,
+	) async throws -> HTTPDataResponse {
+		let response = try await protectedResourceRequest(
+			request: request
+		)
+		//retry if nonceError
+		if response.isDPoPNonceError {
+			return try await protectedResourceRequest(
+				request: request
+			)
+		}
+		return response
+	}
+
+	//needs to have optional access to a dpopSigner, so it is a method
+	//on a OAutSessionCapabilities and not a static method
+	func protectedResourceRequest(
+		request: URLRequest,
+	) async throws -> HTTPDataResponse {
+		let session = try session
+
+		return try await resourceRequest(
+			accessToken: session.mutable.accessToken.value,
+			tokenIssuerOrigin: session.mutable.issuingServer,
+			request: request
 		)
 	}
+
+	func resourceRequest(
+		accessToken: String,
+		tokenIssuerOrigin: String?,
+		request: URLRequest,
+	) async throws -> HTTPDataResponse {
+		var request = request
+
+		if let dpopSigner = self as? DPoPSigning {
+			request = try await dpopSigner.addProof(
+				request: request,
+				issuerOrigin: tokenIssuerOrigin,
+				token: accessToken
+			)
+			request.setValue("DPoP", forHTTPHeaderField: "authorization")
+		} else {
+			request.setValue("Bearer", forHTTPHeaderField: "authorization")
+		}
+
+		let response = try await manualRedirectFetch(request: request)
+
+		if let dpopSigner = self as? DPoPSigning {
+			try await dpopSigner.cacheNonce(
+				response: response,
+				requestUrl: request.url.tryUnwrap
+			)
+		}
+
+		return response
+	}
+
+	//	async function resourceRequest(
+	//	  accessToken: string,
+	//	  method: string,
+	//	  url: URL,
+	//	  headers?: Headers,
+	//	  body?: ProtectedResourceRequestBody,
+	//	  options?: ProtectedResourceRequestOptions,
+	//	): Promise<Response> {
 
 	//conserving in that it reuses result if a refresh is alread in flght
 	private func conservingRefresh(state: SessionState) async throws -> SessionState.Mutable {
@@ -54,8 +112,8 @@ extension OAuthSessionCapabilities {
 		}
 
 		let newRefreshTask = Task {
-			try await refreshProvider(
-				sessionState: state.archive,
+			try await refresh(
+				state: state,
 				appCredentials: appCredentials
 			)
 		}
@@ -89,4 +147,35 @@ extension OAuthSessionCapabilities {
 		)
 	}
 
+}
+
+extension HTTPDataResponse {
+
+	///is very different from oauth4web that seems to just parse the header
+	var isDPoPNonceError: Bool {
+		switch response.statusCode {
+		case 401:
+			//this only works if it is the first challenge in the header error
+			if let wwwAuthHeader = response.value(
+				forHTTPHeaderField: "WWW-Authenticate")
+			{
+				if wwwAuthHeader.starts(with: "DPoP") {
+					return wwwAuthHeader.contains("error=\"use_dpop_nonce\"")
+				}
+			}
+		// https://datatracker.ietf.org/doc/html/rfc9449#name-authorization-server-provid
+		case 400:
+			do {
+				let err = try JSONDecoder().decode(
+					OAuthErrorResponse.self, from: data)
+				return err.error == "use_dpop_nonce"
+			} catch {
+				return false
+			}
+		default:
+			return false
+		}
+
+		return false
+	}
 }

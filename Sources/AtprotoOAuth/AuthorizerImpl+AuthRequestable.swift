@@ -45,6 +45,10 @@ extension AuthorizerImpl: AuthRequestable {
 }
 
 extension AuthorizerImpl: DPoPSigning {
+	func getNonce(origin: String) -> OAuth.IndexedNonce? {
+		nonceCache.object(forKey: origin as NSString)
+	}
+
 	func cacheNonce(response: HTTPDataResponse, requestUrl: URL) throws {
 		let indexedNonce = try Self.decode(dataResponse: response, requestUrl: requestUrl)
 		if let indexedNonce {

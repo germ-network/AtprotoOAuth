@@ -265,43 +265,43 @@ extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
 	}
 }
 
-extension AtprotoOAuthSessionImpl: DPoPNonceHolding {
-	public var dpopKey: DPoPKey {
-		get throws {
-			try session.dPopKey.tryUnwrap
-		}
-	}
-
-	//throws if we are unable to construct the origin (missing host of
-	public static func decode(
-		dataResponse: HTTPDataResponse,
-		requestUrl: URL,
-	) throws -> IndexedNonce? {
-		guard let nonce = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce")
-		else {
-			return nil
-		}
-
-		//henceforth should throw instead of return nil as nonce is expected
-		return try IndexedNonce(
-			responseUrl: dataResponse.response.url,
-			requestUrl: requestUrl,
-			nonce: nonce
-		)
-	}
-
-	public func getNonce(origin: String) -> IndexedNonce? {
-		nonceCache.object(forKey: origin as NSString)
-	}
-
-	public func store(indexedNonce: IndexedNonce) {
-		nonceCache.setObject(
-			indexedNonce,
-			forKey: indexedNonce.origin as NSString
-		)
-
-	}
-}
+//extension AtprotoOAuthSessionImpl: DPoPNonceHolding {
+//	public var dpopKey: DPoPKey {
+//		get throws {
+//			try session.dPopKey.tryUnwrap
+//		}
+//	}
+//
+//	//throws if we are unable to construct the origin (missing host of
+//	public static func decode(
+//		dataResponse: HTTPDataResponse,
+//		requestUrl: URL,
+//	) throws -> IndexedNonce? {
+//		guard let nonce = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce")
+//		else {
+//			return nil
+//		}
+//
+//		//henceforth should throw instead of return nil as nonce is expected
+//		return try IndexedNonce(
+//			responseUrl: dataResponse.response.url,
+//			requestUrl: requestUrl,
+//			nonce: nonce
+//		)
+//	}
+//
+//	public func getNonce(origin: String) -> IndexedNonce? {
+//		nonceCache.object(forKey: origin as NSString)
+//	}
+//
+//	public func store(indexedNonce: IndexedNonce) {
+//		nonceCache.setObject(
+//			indexedNonce,
+//			forKey: indexedNonce.origin as NSString
+//		)
+//
+//	}
+//}
 
 extension AtprotoOAuthSessionImpl {
 	func getPDSUrl() async throws -> URL {

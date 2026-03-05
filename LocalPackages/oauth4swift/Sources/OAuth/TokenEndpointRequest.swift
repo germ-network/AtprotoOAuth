@@ -44,7 +44,6 @@ extension AuthRequestable {
 		appCredentials: AppCredentials,
 		authServerMetadata: AuthServerMetadata,
 		dpopKey: DPoPKey,
-		dpopRequester: (URLRequest) async throws -> HTTPDataResponse
 	) async throws -> SessionState.Archive {
 		let parsedRedirect = try OAuthComponents.validateAuthResponse(
 			authServerMetadata: authServerMetadata,
@@ -69,39 +68,6 @@ extension AuthRequestable {
 		let mutable = try validate(authMetadata: authServerMetadata, tokenResponse: result)
 
 		return .init(dPopKey: dpopKey, additionalParams: nil, mutable: mutable)
-
-		//		let result = try await dpopRequester(request)
-		//			.successErrorDecode(
-		//				resultType: Atproto.TokenResponse.self,
-		//				errorType: Atproto.TokenError.self,
-		//			)
-
-		//		switch result {
-		//		case .result(let tokenResponse):
-		//			guard tokenResponse.tokenType == "DPoP" else {
-		//				throw OAuthClientError.dpopTokenExpected(
-		//					tokenResponse.tokenType)
-		//			}
-		//
-		//			try await Self.tokenSubscriberValidator(
-		//				response: tokenResponse,
-		//				sub: authServerMetadata.issuer
-		//			)
-		//
-		//			return tokenResponse.session(
-		//				for: parsedRedirect.issuer,
-		//				dpopKey: dpopKey
-		//			)
-		//		case .error(let tokenError, let statusCode):
-
-		//			if tokenError.errorDescription == "Code challenge already used" {
-		//				throw OAuthClientError.codeChallengeAlreadyUsed
-		//			}
-		//			Self.logger.error(
-		//				"Login error: \(tokenError.errorDescription), with status code \(statusCode)"
-		//			)
-		//			throw OAuthClientError.remoteTokenError(tokenError)
-		//		}
 	}
 
 	private func authServerDiscovery(issuer: URL) async throws -> HTTPDataResponse {
@@ -138,5 +104,49 @@ extension AuthRequestable {
 		// check out draft-ietf-oauth-v2-1 section 7.3.1 for details
 
 		return result
+	}
+
+	func pushedAuthorizationRequest(
+		authServerMetadata: AuthServerMetadata,
+		appCredentials: AppCredentials,
+		params: [String: String],
+		headers: [String: String],
+	) async throws -> HTTPDataResponse {
+		let parEndpoint = try authServerMetadata.resolve(
+			endpoint: .pushedAuthorizationRequest)
+
+		var bodyParams = params
+		bodyParams["client_id"] = appCredentials.clientId
+
+		var headers = headers
+		headers["accept"] = "application/json"
+
+		var request = URLRequest(url: parEndpoint)
+		for (key, value) in headers {
+			request.setValue(value, forHTTPHeaderField: key)
+		}
+		request.httpMethod = HTTPMethod.post.rawValue
+		let paramsString =
+			try bodyParams
+			.map({ [$0, $1].joined(separator: "=") })
+			.joined(separator: "&")
+		request.httpBody = paramsString.utf8Data
+
+		if let dpopSigner = self as? DPoPSigning {
+			request = try await dpopSigner.addProof(
+				request: request,
+				//Review: what's correct here
+				issuerOrigin: nil,
+				token: nil,
+			)
+		}
+
+		let response = try await nonceRetryAuthenticated(
+			request: request,
+			issuerOrigin: nil,
+			token: nil
+		)
+
+		return response
 	}
 }

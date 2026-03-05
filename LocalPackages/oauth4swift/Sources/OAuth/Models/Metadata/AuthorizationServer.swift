@@ -69,6 +69,7 @@ public struct AuthServerMetadata: Codable, Hashable, Sendable {
 	enum Endpoint {
 		case authorization
 		case token
+		case pushedAuthorizationRequest
 
 		var metadataPath: KeyPath<AuthServerMetadata, String> {
 			switch self {
@@ -76,6 +77,8 @@ public struct AuthServerMetadata: Codable, Hashable, Sendable {
 				\.authorizationEndpoint
 			case .token:
 				\.tokenEndpoint
+			case .pushedAuthorizationRequest:
+				\.pushedAuthorizationRequestEndpoint
 			}
 		}
 	}

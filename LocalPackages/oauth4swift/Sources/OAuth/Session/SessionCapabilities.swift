@@ -8,7 +8,7 @@
 import Crypto
 import Foundation
 
-public protocol OAuthSessionCapabilities: Actor, TokenHandling, DPoPNonceHolding, AuthRequestable {
+public protocol OAuthSessionCapabilities: Actor, AuthRequestable {
 	var appCredentials: AppCredentials { get }
 
 	var lazyServerMetadata: LazyResource<AuthServerMetadata> { get }
@@ -16,11 +16,4 @@ public protocol OAuthSessionCapabilities: Actor, TokenHandling, DPoPNonceHolding
 	var session: SessionState { get throws }
 	func refreshed(sessionMutable: SessionState.Mutable) throws
 	var refreshTask: Task<SessionState.Mutable, Error>? { get set }
-}
-
-public protocol TokenHandling {
-	func refreshProvider(
-		sessionState: SessionState.Archive,
-		appCredentials: AppCredentials,
-	) async throws -> SessionState.Mutable
 }

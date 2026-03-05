@@ -10,6 +10,12 @@ import GermConvenience
 
 ///Direct analog to oauth4web's OAuth module in providing stateless API as building blocks for a full client
 public enum OAuthComponents {
+	static public func processPushedAuthorizationResponse(
+		response: HTTPDataResponse
+	) throws -> PARResponse {
+		try response.successDecode(successCode: 201)
+	}
+
 	static public func validateAuthResponse(
 		authServerMetadata: AuthServerMetadata,
 		redirectURL: URL,
@@ -169,6 +175,45 @@ extension AuthRequestable {
 		)
 		if let dpopSigner = self as? DPoPSigning {
 			try await dpopSigner.cacheNonce(response: response, requestUrl: url)
+		}
+
+		return response
+	}
+
+	//todo: unify with OAuthSessionCapabilities.retryNonceRequest
+	func nonceRetryAuthenticated(
+		request: URLRequest,
+		issuerOrigin: String?,
+		token: String?
+	) async throws -> HTTPDataResponse {
+		let response = try await authenticated(
+			request: request
+		)
+
+		if let dpopSigner = self as? DPoPSigning {
+			try await dpopSigner.cacheNonce(
+				response: response,
+				requestUrl: request.url.tryUnwrap
+			)
+
+			//retry if nonceError
+			if response.isDPoPNonceError {
+				let request = try await dpopSigner.addProof(
+					request: request,
+					issuerOrigin: issuerOrigin,
+					token: token
+				)
+
+				let secondResponse = try await authenticated(
+					request: request
+				)
+
+				try await dpopSigner.cacheNonce(
+					response: response,
+					requestUrl: request.url.tryUnwrap
+				)
+				return secondResponse
+			}
 		}
 
 		return response
