@@ -98,7 +98,7 @@ extension AuthRequestable {
 		manualRedirectFetch: HTTPDataResponse.Requester
 	) async throws -> HTTPDataResponse {
 		var parameters = additionalParameters
-		parameters["redirect_url"] = redirectUrl.absoluteString
+		parameters["redirect_uri"] = redirectUrl.absoluteString
 		parameters["code"] = parsedRedirect.authCode
 
 		if let verifier {
@@ -143,25 +143,32 @@ extension AuthRequestable {
 		modifiedParams["grant_type"] = grantType.rawValue
 
 		var headers = headers
-		//swift4web sets the "accept" header, but both may be appropriate
 		headers["accept"] = "application/json"
-		headers["Content-Type"] = "application/json"
-		//swift4web sets the "accept" header, but Content-Type seems
+		headers["content-type"] = "application/json"
 
 		var request = URLRequest(url: url)
-
-		if let dpopSigner = self as? DPoPSigning {
-			try dpopSigner.addProof(request: &request)
+		for (key, value) in headers {
+			request.setValue(value, forHTTPHeaderField: key)
 		}
 
 		request.httpMethod = HTTPMethod.post.rawValue
-		request.httpBody = try JSONEncoder().encode(headers)
+		request.httpBody = try JSONEncoder().encode(modifiedParams)
+
+		//annoyingly compiler doesn't understand cast isolation is the same
+		if let dpopSigner = self as? DPoPSigning {
+			request = try await dpopSigner.addProof(
+				request: request,
+				//Review: what's correct here
+				issuerOrigin: authServerMetadata.issuer,
+				token: nil,
+			)
+		}
 
 		let response = try await authenticated(
 			request: request,
 		)
 		if let dpopSigner = self as? DPoPSigning {
-			try dpopSigner.cacheNonce(response: response.response, requestUrl: url)
+			try await dpopSigner.cacheNonce(response: response, requestUrl: url)
 		}
 
 		return response

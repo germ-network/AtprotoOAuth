@@ -311,6 +311,12 @@ extension AtprotoOAuthSessionImpl {
 }
 
 extension AtprotoOAuthSessionImpl: AuthRequestable {
+	public var retriableIssuer: URL {
+		get async throws {
+			try await lazyIssuer.lazyValue(isolation: self)
+		}
+	}
+
 	public var additionalParameters: [String: String] {
 		[
 			"client_id": appCredentials.clientId,

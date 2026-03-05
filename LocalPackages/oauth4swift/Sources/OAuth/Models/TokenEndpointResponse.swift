@@ -24,7 +24,7 @@ public struct TokenEndpointResponse {
 		case dpop
 
 		init(string: String) throws {
-			switch string {
+			switch string.lowercased() {
 			case TokenType.dpop.rawValue:
 				self = .dpop
 			default:
@@ -47,10 +47,10 @@ extension TokenEndpointResponse: Decodable {
 		// 1. Decode standard keys
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 		accessToken = try container.decode(String.self, forKey: .accessToken)
-		expiresIn = try container.decode(Int?.self, forKey: .expiresIn)
-		idToken = try container.decode(String?.self, forKey: .idToken)
-		refreshToken = try container.decode(String?.self, forKey: .refreshToken)
-		scope = try container.decode(String?.self, forKey: .scope)
+		expiresIn = try container.decodeIfPresent(Int.self, forKey: .expiresIn)
+		idToken = try container.decodeIfPresent(String.self, forKey: .idToken)
+		refreshToken = try container.decodeIfPresent(String.self, forKey: .refreshToken)
+		scope = try container.decodeIfPresent(String.self, forKey: .scope)
 		let tokenString = try container.decode(String.self, forKey: .tokenType)
 		tokenType = try .init(string: tokenString)
 

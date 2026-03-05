@@ -21,14 +21,17 @@ public protocol AuthRequestable: Actor {
 		authMetadata: AuthServerMetadata,
 		tokenResponse: TokenEndpointResponse
 	) throws -> SessionState.Mutable
-	var lazyIssuer: LazyResource<URL> { get }
+	//	var lazyIssuer: LazyResource<URL> { get }
+	//want to be able to create a session offline and eventually resolve
+	//the issuer for the fixed session id
+	var retriableIssuer: URL { get async throws }
 }
 
 extension AuthRequestable {
 	//initially rely on network stack caching
 	func getAuthServerMetadata() async throws -> AuthServerMetadata {
 		try await authServerDiscovery(
-			issuer: lazyIssuer.lazyValue(isolation: self)
+			issuer: try await retriableIssuer
 		)
 		.successDecode(successCode: 200)
 	}
@@ -51,7 +54,7 @@ extension AuthRequestable {
 
 		let httpResponse = try await authorizationCodeGrantRequest(
 			authServerMetadata: authServerMetadata,
-			redirectUrl: redirectURI,
+			redirectUrl: appCredentials.callbackURL,
 			parsedRedirect: parsedRedirect,
 			verifier: pkceVerifier.verifier,
 			additionalParameters: additionalParameters,

@@ -1,5 +1,5 @@
 //
-//  PreSession.swift
+//  AuthorizerImpl.swift
 //  AtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/26/26.
@@ -19,18 +19,25 @@ actor AuthorizerImpl {
 
 	let appCredentials: AppCredentials
 	let httpRequester: HTTPDataResponse.Requester
+	let manualRedirectFetcher: HTTPDataResponse.Requester
+
+	let issuer: URL
 
 	let stateToken = UUID().uuidString
 	let dpopKey = DPoPKey.generateP256()
-	private let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
+	let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
 	let pkceVerifier = PKCEVerifier()
 
 	init(
+		issuer: URL,
 		appCredentials: AppCredentials,
-		httpRequester: @escaping HTTPDataResponse.Requester
+		httpRequester: @escaping HTTPDataResponse.Requester,
+		manualRedirectFetcher: @escaping HTTPDataResponse.Requester
 	) {
+		self.issuer = issuer
 		self.appCredentials = appCredentials
 		self.httpRequester = httpRequester
+		self.manualRedirectFetcher = manualRedirectFetcher
 	}
 }
 
@@ -46,15 +53,6 @@ extension AuthorizerImpl: DPoPNonceHolding {
 		)
 	}
 
-	public static func decode(
-		dataResponse: HTTPDataResponse,
-		requestUrl: URL
-	) throws -> IndexedNonce? {
-		try AtprotoOAuthSessionImpl.decode(
-			dataResponse: dataResponse,
-			requestUrl: requestUrl
-		)
-	}
 }
 
 extension AuthorizerImpl: AuthorizerCapabilities {

@@ -9,13 +9,45 @@ import Crypto
 import Foundation
 import GermConvenience
 
-public protocol DPoPSigning {
-	func cacheNonce(response: URLResponse, requestUrl: URL)
+public protocol DPoPSigning: Actor {
+	var dpopKey: DPoPKey { get throws }
+
+	func getNonce(origin: String) -> IndexedNonce?
+	func cacheNonce(response: HTTPDataResponse, requestUrl: URL) throws
 }
 
 extension DPoPSigning {
-	func addProof(request: inout URLRequest) throws {
+	func addProof(
+		request: URLRequest,
+		issuerOrigin: String?,
+		token: String?
+	) throws -> URLRequest {
+		let requestOrigin = try (request.url?.origin)
+			.tryUnwrap(DPoPError.requestInvalid(request))
 
+		let nonce = getNonce(origin: requestOrigin)
+
+		//right now the RFC has SHA256 baked into the RFC and a new draft needed
+		//to specify alg agility
+		let tokenHash = token.map {
+			SHA256.hash(data: $0.utf8Data)
+				.data.base64URLEncodedString()
+		}
+		let jwt = try dpopKey.sign(
+			payload: .init(
+				endpointUrl: request.url.tryUnwrap,
+				httpMethod: request.httpMethod.tryUnwrap(
+					OAuthError.missingHTTPMethod),
+				nonce: nonce?.nonce,
+				issuingServer: issuerOrigin,
+				accessTokenHash: tokenHash
+			)
+		)
+
+		var output = request
+		output.setValue(jwt.string, forHTTPHeaderField: "DPoP")
+
+		return output
 	}
 }
 

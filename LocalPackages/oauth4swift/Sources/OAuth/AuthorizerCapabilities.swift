@@ -9,7 +9,7 @@ import Foundation
 import GermConvenience
 import Logging
 
-public protocol AuthorizerCapabilities: DPoPNonceHolding {
+public protocol AuthorizerCapabilities: DPoPNonceHolding, AuthRequestable {
 	var appCredentials: AppCredentials { get }
 	var stateToken: String { get }
 	var pkceVerifier: PKCEVerifier { get }
@@ -60,7 +60,7 @@ extension AuthorizerCapabilities {
 
 		let callbackURL = try await userAuthenticator(tokenURL, scheme)
 
-		return try await Self.finishAuthorization(
+		return try await finishAuthorization(
 			authorizationUrl: tokenURL,
 			stateToken: stateToken,
 			redirectURI: callbackURL,

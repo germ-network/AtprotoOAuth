@@ -28,6 +28,7 @@ import os
 		),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
 		responseProvider: URLSession.defaultProvider,
+		manualRedirectFetcher: URLSession.manualRefreshFetcher,
 		atprotoClient: AtprotoClient(
 			responseProvider: URLSession.defaultProvider
 		),
