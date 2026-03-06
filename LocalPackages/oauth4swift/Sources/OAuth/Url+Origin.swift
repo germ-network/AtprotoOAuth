@@ -18,7 +18,7 @@ extension URL {
 		}
 	}
 
-	private func nonDefaultHTTPort() -> Int? {
+	func nonDefaultHTTPort() -> Int? {
 		switch (scheme, port) {
 		case ("http", 80): nil
 		case ("https", 443): nil
