@@ -173,6 +173,14 @@ struct UnauthenticatedView: View {
 				print("Error loading DID doc and/or PDS URL: \(error)")
 			}
 
+			guard let pdsURL else {
+				follows = []
+				messagingDelegate = nil
+				avatarBlob = nil
+				bannerBlob = nil
+				return
+			}
+
 			// Messaging delegate
 			print("Loading messaging delegate...")
 			do {
@@ -198,8 +206,10 @@ struct UnauthenticatedView: View {
 			if let avatarCid = profileRecord?.avatar?.ref.link {
 				do {
 					avatarBlob = try await client.getBlob(
-						did: did,
-						cid: .init(string: avatarCid),
+						pdsUrl: pdsURL,
+						parameters: .init(
+							did: .did(did),
+							cid: .init(string: avatarCid))
 					)
 				} catch {
 					print("Error loading avatar: \(error)")
@@ -211,8 +221,10 @@ struct UnauthenticatedView: View {
 			if let bannerCid = profileRecord?.banner?.ref.link {
 				do {
 					bannerBlob = try await client.getBlob(
-						did: did,
-						cid: .init(string: bannerCid),
+						pdsUrl: pdsURL,
+						parameters: .init(
+							did: .did(did),
+							cid: .init(string: bannerCid))
 					)
 				} catch {
 					print("Error loading banner: \(error)")

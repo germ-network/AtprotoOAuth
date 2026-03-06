@@ -79,18 +79,14 @@ extension AtprotoClientInterface {
 	}
 
 	public func getBlob(
-		did: Atproto.DID,
-		cid: CID
+		pdsUrl: URL,
+		parameters: Lexicon.Com.Atproto.Sync.GetBlob.Parameters,
 	) async throws -> Data? {
 		do {
-			//rely on url caching for this value
-			let pdsUrl = try await plcDirectoryQuery(did)
-				.pdsUrl
-
 			return try await request(
 				Lexicon.Com.Atproto.Sync.GetBlob.self,
 				pdsUrl: pdsUrl,
-				parameters: .init(did: .did(did), cid: cid)
+				parameters: parameters
 			)
 		} catch AtprotoClientError.requestFailed(400, let error) {
 			if error == "BlobNotFound" {
