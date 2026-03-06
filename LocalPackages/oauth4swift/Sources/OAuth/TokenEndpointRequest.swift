@@ -136,14 +136,12 @@ extension AuthRequestable {
 			request = try await dpopSigner.addProof(
 				request: request,
 				//Review: what's correct here
-				issuerOrigin: nil,
 				token: nil,
 			)
 		}
 
 		let response = try await nonceRetryAuthenticated(
 			request: request,
-			issuerOrigin: nil,
 			token: nil
 		)
 

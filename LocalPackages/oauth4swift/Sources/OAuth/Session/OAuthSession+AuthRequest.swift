@@ -61,14 +61,12 @@ extension OAuthSessionCapabilities {
 
 		return try await resourceRequest(
 			accessToken: session.mutable.accessToken.value,
-			tokenIssuerOrigin: session.mutable.issuingServer,
 			request: request
 		)
 	}
 
 	func resourceRequest(
 		accessToken: String,
-		tokenIssuerOrigin: String?,
 		request: URLRequest,
 	) async throws -> HTTPDataResponse {
 		var request = request
@@ -76,7 +74,6 @@ extension OAuthSessionCapabilities {
 		if let dpopSigner = self as? DPoPSigning {
 			request = try await dpopSigner.addProof(
 				request: request,
-				issuerOrigin: tokenIssuerOrigin,
 				token: accessToken
 			)
 			request.setValue("DPoP", forHTTPHeaderField: "authorization")

@@ -164,8 +164,6 @@ extension AuthRequestable {
 		if let dpopSigner = self as? DPoPSigning {
 			request = try await dpopSigner.addProof(
 				request: request,
-				//Review: what's correct here
-				issuerOrigin: authServerMetadata.issuer,
 				token: nil,
 			)
 		}
@@ -183,7 +181,6 @@ extension AuthRequestable {
 	//todo: unify with OAuthSessionCapabilities.retryNonceRequest
 	func nonceRetryAuthenticated(
 		request: URLRequest,
-		issuerOrigin: String?,
 		token: String?
 	) async throws -> HTTPDataResponse {
 		let response = try await authenticated(
@@ -200,7 +197,6 @@ extension AuthRequestable {
 			if response.isDPoPNonceError {
 				let request = try await dpopSigner.addProof(
 					request: request,
-					issuerOrigin: issuerOrigin,
 					token: token
 				)
 

@@ -19,7 +19,6 @@ public protocol DPoPSigning: Actor {
 extension DPoPSigning {
 	func addProof(
 		request: URLRequest,
-		issuerOrigin: String?,
 		token: String?
 	) throws -> URLRequest {
 		let requestOrigin = try (request.url?.origin)
@@ -39,7 +38,6 @@ extension DPoPSigning {
 				httpMethod: request.httpMethod.tryUnwrap(
 					OAuthError.missingHTTPMethod),
 				nonce: nonce?.nonce,
-				issuingServer: issuerOrigin,
 				accessTokenHash: tokenHash
 			)
 		)
