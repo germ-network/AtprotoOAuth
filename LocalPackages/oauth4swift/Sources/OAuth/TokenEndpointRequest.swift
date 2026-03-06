@@ -114,7 +114,7 @@ extension AuthRequestable {
 		headers: [String: String],
 	) async throws -> HTTPDataResponse {
 		let parEndpoint = try authServerMetadata.resolve(
-			endpoint: .pushedAuthorizationRequest)
+			endpoint: .par)
 
 		var bodyParams = params
 		bodyParams["client_id"] = appCredentials.clientId
