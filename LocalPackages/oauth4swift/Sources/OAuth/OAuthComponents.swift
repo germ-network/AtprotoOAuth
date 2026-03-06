@@ -13,7 +13,9 @@ public enum OAuthComponents {
 	static public func processPushedAuthorizationResponse(
 		response: HTTPDataResponse
 	) throws -> PARResponse {
-		try response.successDecode(successCode: 201)
+		try response
+			.expect(successCode: 201)
+			.decode()
 	}
 
 	static public func validateAuthResponse(
@@ -74,7 +76,10 @@ public enum OAuthComponents {
 	static func processGenericAccessToken(
 		response: HTTPDataResponse
 	) throws -> TokenEndpointResponse {
-		let decoded: TokenEndpointResponse = try response.successDecode(successCode: 200)
+		let decoded: TokenEndpointResponse =
+			try response
+			.expect(successCode: 200)
+			.decode()
 
 		return decoded
 	}

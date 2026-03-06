@@ -18,7 +18,8 @@ extension AtprotoClient {
 		request.addValue("application/json", forHTTPHeaderField: "Accept")
 
 		return try await responseProvider(request)
-			.successDecode()
+			.expectSuccess()
+			.decode()
 	}
 
 	private func constructPlcQueryUrl(did: Atproto.DID) throws -> URL {

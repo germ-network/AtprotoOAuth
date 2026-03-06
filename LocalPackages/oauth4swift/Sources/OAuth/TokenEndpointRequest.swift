@@ -33,7 +33,8 @@ extension AuthRequestable {
 		try await authServerDiscovery(
 			issuer: try await retriableIssuer
 		)
-		.successDecode(successCode: 200)
+		.expect(successCode: 200)
+		.decode()
 	}
 
 	func finishAuthorization(

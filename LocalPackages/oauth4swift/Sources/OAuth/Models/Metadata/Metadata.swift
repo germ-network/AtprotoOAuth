@@ -36,7 +36,8 @@ public struct ClientMetadata: Hashable, Codable, Sendable {
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
 
 		return try await httpRequester(request)
-			.successDecode()
+			.expectSuccess()
+			.decode()
 	}
 }
 
@@ -110,6 +111,7 @@ public struct ProtectedResourceMetadata: Codable, Hashable, Sendable {
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
 
 		return try await httpRequester(request)
-			.successDecode()
+			.expectSuccess()
+			.decode()
 	}
 }

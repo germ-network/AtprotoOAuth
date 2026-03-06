@@ -63,7 +63,8 @@ public struct AuthServerMetadata: Codable, Hashable, Sendable {
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
 
 		return try await httpRequester(request)
-			.successDecode()
+			.expectSuccess()
+			.decode()
 	}
 
 	enum Endpoint {

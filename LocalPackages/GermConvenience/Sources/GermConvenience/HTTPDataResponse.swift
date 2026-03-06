@@ -7,7 +7,7 @@
 
 import Foundation
 
-//type the (data, responese) tuple so we can chain handlers
+//type the (data, response) tuple so we can chain handlers
 //these patterns are available in Vapor
 public struct HTTPDataResponse: Sendable {
 	public let data: Data
@@ -20,16 +20,12 @@ public struct HTTPDataResponse: Sendable {
 		self.response = response
 	}
 
-	public func successDecode<R: Decodable>(
-		successCode: Int
-	) throws -> R {
-		try successDecode(successCodes: successCode...successCode)
+	public func expect(successCode: Int) throws -> Data {
+		try expectSuccess(range: successCode...successCode)
 	}
 
-	public func successDecode<R: Decodable>(
-		successCodes: RangeExpression<Int> = 200..<300
-	) throws -> R {
-		guard successCodes.contains(response.statusCode) else {
+	public func expectSuccess(range: RangeExpression<Int> = 200..<300) throws -> Data {
+		guard range.contains(response.statusCode) else {
 			if let stringResponse = String(data: data, encoding: .utf8) {
 				throw
 					HTTPResponseError
@@ -38,7 +34,7 @@ public struct HTTPDataResponse: Sendable {
 				throw HTTPResponseError.unsuccessful(response.statusCode, data)
 			}
 		}
-		return try JSONDecoder().decode(R.self, from: data)
+		return data
 	}
 
 	public enum ErrorResult<R: Decodable, E: Decodable> {
@@ -48,25 +44,30 @@ public struct HTTPDataResponse: Sendable {
 
 	public func successErrorDecode<R: Decodable, E: Decodable>(
 		resultType: R.Type,
-		errorType: E.Type
+		errorType: E.Type,
+		successRange: RangeExpression<Int> = 200..<300
 	) throws -> ErrorResult<R, E> {
-		guard response.statusCode >= 200 && response.statusCode < 300 else {
-			do {
-				let decoded = try JSONDecoder().decode(E.self, from: data)
-				return .error(decoded, response.statusCode)
-			} catch {
-				if let stringResponse = String(data: data, encoding: .utf8) {
-					throw
-						HTTPResponseError
-						.unsuccessfulString(
-							response.statusCode, stringResponse)
-				} else {
-					throw HTTPResponseError.unsuccessful(
-						response.statusCode, data)
-				}
+		do {
+			let result: R = try expectSuccess(range: successRange)
+				.decode()
+			return .result(result)
+		} catch {
+			if let stringResponse = String(data: data, encoding: .utf8) {
+				throw
+					HTTPResponseError
+					.unsuccessfulString(
+						response.statusCode, stringResponse)
+			} else {
+				throw HTTPResponseError.unsuccessful(
+					response.statusCode, data)
 			}
 		}
-		return try .result(JSONDecoder().decode(R.self, from: data))
+	}
+}
+
+extension Data {
+	public func decode<R: Decodable>() throws -> R {
+		try JSONDecoder().decode(R.self, from: self)
 	}
 }
 
