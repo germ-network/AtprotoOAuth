@@ -210,7 +210,7 @@ extension AuthRequestable {
 				)
 
 				try await dpopSigner.cacheNonce(
-					response: response,
+					response: secondResponse,
 					requestUrl: request.url.tryUnwrap
 				)
 				return secondResponse
