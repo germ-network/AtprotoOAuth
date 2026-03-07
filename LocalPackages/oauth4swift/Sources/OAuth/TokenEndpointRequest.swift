@@ -121,17 +121,14 @@ extension AuthRequestable {
 
 		var headers = headers
 		headers["accept"] = "application/json"
+		headers["content-type"] = "application/x-www-form-urlencoded;charset=UTF-8"
 
 		var request = URLRequest(url: parEndpoint)
 		for (key, value) in headers {
 			request.setValue(value, forHTTPHeaderField: key)
 		}
 		request.httpMethod = HTTPMethod.post.rawValue
-		let paramsString =
-			try bodyParams
-			.map({ [$0, $1].joined(separator: "=") })
-			.joined(separator: "&")
-		request.httpBody = paramsString.utf8Data
+		request.httpBody = bodyParams.urlEncodedHTTPBody
 
 		if let dpopSigner = self as? DPoPSigning {
 			request = try await dpopSigner.addProof(
@@ -147,5 +144,13 @@ extension AuthRequestable {
 		)
 
 		return response
+	}
+}
+
+extension [String: String] {
+	var urlEncodedHTTPBody: Data {
+		map({ [$0, $1].joined(separator: "=") })
+			.joined(separator: "&")
+			.utf8Data
 	}
 }

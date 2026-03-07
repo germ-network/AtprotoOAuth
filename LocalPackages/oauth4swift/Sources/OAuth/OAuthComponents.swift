@@ -155,7 +155,7 @@ extension AuthRequestable {
 
 		var headers = headers
 		headers["accept"] = "application/json"
-		headers["content-type"] = "application/json"
+		headers["content-type"] = "application/x-www-form-urlencoded;charset=UTF-8"
 
 		var request = URLRequest(url: url)
 		for (key, value) in headers {
@@ -163,7 +163,11 @@ extension AuthRequestable {
 		}
 
 		request.httpMethod = HTTPMethod.post.rawValue
-		request.httpBody = try JSONEncoder().encode(modifiedParams)
+		let paramsString =
+			try modifiedParams
+			.map({ [$0, $1].joined(separator: "=") })
+			.joined(separator: "&")
+		request.httpBody = try modifiedParams.urlEncodedHTTPBody
 
 		//annoyingly compiler doesn't understand cast isolation is the same
 		if let dpopSigner = self as? DPoPSigning {

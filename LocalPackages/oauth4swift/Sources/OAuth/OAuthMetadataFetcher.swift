@@ -26,17 +26,3 @@ public struct HTTPOAuthMetadataFetcher {
 		self.httpRequester = httpRequester
 	}
 }
-
-extension HTTPOAuthMetadataFetcher: OAuthMetadataFetcher {
-	public func fetchMetadata(
-		authServerHost: String
-	) async throws -> AuthServerMetadata {
-		try await .load(for: authServerHost, httpRequester: httpRequester)
-	}
-
-	public func fetchMetadata(
-		protectedResourceHost: String
-	) async throws -> ProtectedResourceMetadata {
-		try await .load(for: protectedResourceHost, httpRequester: httpRequester)
-	}
-}

@@ -197,27 +197,6 @@ public struct AuthServerMetadata: Codable, Hashable, Sendable {
 		case protectedResources = "protected_resources"
 	}
 
-	//deprecate
-	public static func load(
-		for host: String,
-		httpRequester: HTTPDataResponse.Requester
-	) async throws -> AuthServerMetadata {
-		var components = URLComponents()
-
-		components.scheme = URLScheme.https.rawValue
-		components.host = host
-		components.path = "/.well-known/oauth-authorization-server"
-
-		let url = try components.url.tryUnwrap(MetadataError.urlInvalid)
-
-		var request = URLRequest(url: url)
-		request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-		return try await httpRequester(request)
-			.expectSuccess()
-			.decode()
-	}
-
 	enum Endpoint {
 		case authorization
 		case token
