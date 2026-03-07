@@ -104,7 +104,7 @@ extension AuthRequestable {
 		authServerMetadata: AuthServerMetadata,
 		redirectUrl: URL,
 		parsedRedirect: OAuthComponents.ParsedRedirect,
-		verifier: String?,
+		pkceVerifier: String?,
 		additionalParameters: [String: String],
 		manualRedirectFetch: HTTPDataResponse.Requester
 	) async throws -> HTTPDataResponse {
@@ -112,8 +112,8 @@ extension AuthRequestable {
 		parameters["redirect_uri"] = redirectUrl.absoluteString
 		parameters["code"] = parsedRedirect.authCode
 
-		if let verifier {
-			parameters["code_verifier"] = verifier
+		if let pkceVerifier {
+			parameters["code_verifier"] = pkceVerifier
 		}
 
 		return try await tokenEndpointRequest(

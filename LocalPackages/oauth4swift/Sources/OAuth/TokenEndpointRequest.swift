@@ -56,7 +56,7 @@ extension AuthRequestable {
 			authServerMetadata: authServerMetadata,
 			redirectUrl: appCredentials.callbackURL,
 			parsedRedirect: parsedRedirect,
-			verifier: pkceVerifier.verifier,
+			pkceVerifier: pkceVerifier.verifier,
 			additionalParameters: additionalParameters,
 			manualRedirectFetch: manualRedirectFetch
 		)
