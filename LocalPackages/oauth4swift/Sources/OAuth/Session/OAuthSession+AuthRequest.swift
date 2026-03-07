@@ -76,9 +76,9 @@ extension OAuthSessionCapabilities {
 				request: request,
 				token: accessToken
 			)
-			request.setValue("DPoP", forHTTPHeaderField: "authorization")
+			request.setValue("DPoP \(accessToken)", forHTTPHeaderField: "authorization")
 		} else {
-			request.setValue("Bearer", forHTTPHeaderField: "authorization")
+			request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "authorization")
 		}
 
 		let response = try await manualRedirectFetch(request: request)
