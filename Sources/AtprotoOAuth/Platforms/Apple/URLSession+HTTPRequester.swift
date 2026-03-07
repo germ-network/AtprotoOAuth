@@ -30,7 +30,7 @@ extension URLSession {
 		URLSession(configuration: .default).responseProvider
 	}
 
-	public static var manualRefreshFetcher: HTTPDataResponse.Requester {
+	public static var manualRedirectFetcher: HTTPDataResponse.Requester {
 		URLSession(
 			configuration: .default,
 			delegate: ManualRedirect(),

@@ -32,7 +32,7 @@ struct APITests {
 			),
 			userAuthenticator: AtprotoClient.failingUserAuthenticator(_:_:),
 			responseProvider: URLSession.defaultProvider,
-			manualRedirectFetcher: URLSession.manualRefreshFetcher,
+			manualRedirectFetcher: URLSession.manualRedirectFetcher,
 			atprotoClient: MockAtprotoClient(),
 			oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
 				httpRequester: URLSession.defaultProvider
@@ -60,7 +60,7 @@ struct ClientAPITests {
 			),
 			userAuthenticator: AtprotoClient.failingUserAuthenticator(_:_:),
 			responseProvider: URLSession.defaultProvider,
-			manualRedirectFetcher: URLSession.manualRefreshFetcher,
+			manualRedirectFetcher: URLSession.manualRedirectFetcher,
 			atprotoClient: MockAtprotoClient(),
 			oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
 				httpRequester: URLSession.defaultProvider
