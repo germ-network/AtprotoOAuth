@@ -16,7 +16,7 @@ public protocol AuthorizerCapabilities: AuthRequestable, DPoPSigning {
 	var pkceVerifier: PKCEVerifier { get }
 
 	static func authorizationURL(
-		authEndpoint: String,
+		authEndpoint: URL,
 		parRequestURI: String,
 		clientId: String,
 	) throws -> URL

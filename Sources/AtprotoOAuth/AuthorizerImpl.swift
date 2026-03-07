@@ -41,27 +41,13 @@ actor AuthorizerImpl {
 	}
 }
 
-//extension AuthorizerImpl: DPoPNonceHolding {
-//	public func getNonce(origin: String) -> IndexedNonce? {
-//		nonceCache.object(forKey: origin as NSString)
-//	}
-//
-//	public func store(indexedNonce: IndexedNonce) {
-//		nonceCache.setObject(
-//			indexedNonce,
-//			forKey: indexedNonce.origin as NSString
-//		)
-//	}
-//
-//}
-
 extension AuthorizerImpl: AuthorizerCapabilities {
 	public static func authorizationURL(
-		authEndpoint: String,
+		authEndpoint: URL,
 		parRequestURI: String,
 		clientId: String,
 	) throws -> URL {
-		var components = URLComponents(string: authEndpoint)
+		var components = URLComponents(url: authEndpoint, resolvingAgainstBaseURL: false)
 
 		components?.queryItems = [
 			URLQueryItem(name: "request_uri", value: parRequestURI),
