@@ -40,34 +40,30 @@ extension OAuthSessionCapabilities {
 	func retryNonceRequest(
 		request: URLRequest,
 	) async throws -> HTTPDataResponse {
-		let response = try await protectedResourceRequest(
-			request: request
-		)
+		let response = try await protectedResource(for: request)
 		//retry if nonceError
 		if response.isDPoPNonceError {
-			return try await protectedResourceRequest(
-				request: request
-			)
+			return try await protectedResource(for: request)
 		}
 		return response
 	}
 
 	//needs to have optional access to a dpopSigner, so it is a method
 	//on a OAutSessionCapabilities and not a static method
-	func protectedResourceRequest(
-		request: URLRequest,
+	func protectedResource(
+		for request: URLRequest,
 	) async throws -> HTTPDataResponse {
 		let session = try session
 
-		return try await resourceRequest(
+		return try await resource(
+			for: request,
 			accessToken: session.mutable.accessToken.value,
-			request: request
 		)
 	}
 
-	func resourceRequest(
+	func resource(
+		for request: URLRequest,
 		accessToken: String,
-		request: URLRequest,
 	) async throws -> HTTPDataResponse {
 		var request = request
 
