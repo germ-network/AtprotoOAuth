@@ -11,6 +11,7 @@ public enum Lexicon {
 	public enum Com {
 		public enum Atproto {
 			public enum Repo {}
+			public enum Sync {}
 		}
 	}
 
@@ -19,6 +20,7 @@ public enum Lexicon {
 			public enum Actor {
 				public enum Defs {}
 			}
+			public enum Graph {}
 		}
 	}
 }

@@ -8,7 +8,7 @@
 import AtprotoTypes
 import Foundation
 
-extension AtprotoClient {
+extension AtprotoClientInterface {
 	public func getGermMessagingDelegate(
 		did: Atproto.DID,
 	) async throws -> Lexicon.Com.GermNetwork.Declaration? {

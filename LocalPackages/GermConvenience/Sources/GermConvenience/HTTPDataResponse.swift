@@ -58,7 +58,13 @@ public struct HTTPDataResponse: Sendable {
 				}
 			}
 		}
-		return try .result(JSONDecoder().decode(R.self, from: data))
+		if resultType == Data?.self || resultType == Data.self,
+			let rawData = data as? R
+		{
+			return .result(rawData)
+		} else {
+			return try .result(JSONDecoder().decode(R.self, from: data))
+		}
 	}
 }
 
