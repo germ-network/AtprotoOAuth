@@ -42,7 +42,7 @@ public protocol AuthorizerCapabilities: AuthRequestable, DPoPSigning {
 extension AuthorizerCapabilities {
 	public func performUserAuthentication(
 		parConfig: PARConfiguration,
-		authServerMetadata: AuthServerMetadata,
+		//		authServerMetadata: AuthServerMetadata,
 		userAuthenticator: UserAuthenticator
 	) async throws -> SessionState.Archive {
 		let challenge = pkceVerifier.challenge
@@ -59,6 +59,10 @@ extension AuthorizerCapabilities {
 			"code_challenge": challenge.value,
 			"code_challenge_method": challenge.method,
 		].merging(parConfig.parameters, uniquingKeysWith: { a, b in a })
+
+		let authServerMetadata = try await authFetcher.authServerDiscovery(
+			issuer: try await retriableIssuer
+		)
 
 		let parHTTPResponse = try await pushedAuthorizationRequest(
 			authServerMetadata: authServerMetadata,

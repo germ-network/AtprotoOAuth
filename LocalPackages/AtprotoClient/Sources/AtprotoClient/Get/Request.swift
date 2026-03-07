@@ -21,7 +21,7 @@ extension AtprotoClient {
 			httpMethod: .get
 		)
 
-		let result = try await responseProvider(request)
+		let result = try await resourceFetcher.data(for: request)
 			.successErrorDecode(
 				resultType: X.Result.self,
 				errorType: Lexicon.XRPCError.self

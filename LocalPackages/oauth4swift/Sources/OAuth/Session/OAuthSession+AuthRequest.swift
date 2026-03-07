@@ -78,7 +78,8 @@ extension OAuthSessionCapabilities {
 				"Bearer \(accessToken)", forHTTPHeaderField: "authorization")
 		}
 
-		let response = try await manualRedirectFetch(request: request)
+		//Review: oauth4web doesn't retry this with a new nonce
+		let response = try await resourceFetcher.data(for: request)
 
 		if let dpopSigner = self as? DPoPSigning {
 			try await dpopSigner.cacheNonce(
@@ -128,7 +129,9 @@ extension OAuthSessionCapabilities {
 		state: SessionState,
 		appCredentials: AppCredentials,
 	) async throws -> SessionState.Mutable {
-		let authServerMetadata = try await getAuthServerMetadata()
+		let authServerMetadata = try await authFetcher.authServerDiscovery(
+			issuer: try await retriableIssuer
+		)
 		let httpResponse = try await refreshTokenGrantRequest(
 			authServerMetadata: authServerMetadata,
 			refreshToken: state.mutable.refreshToken.tryUnwrap.value

@@ -16,7 +16,9 @@ enum GrantType: String {
 //make this a protocol so both the Authorizer and Session can use it
 public protocol AuthRequestable: Actor {
 	var additionalParameters: [String: String] { get }
-	func manualRedirectFetch(request: URLRequest) async throws -> HTTPDataResponse
+
+	//should not follow redirects
+	var authFetcher: HTTPFetcher { get }
 	func validate(
 		authMetadata: AuthServerMetadata,
 		tokenResponse: TokenEndpointResponse
@@ -28,15 +30,6 @@ public protocol AuthRequestable: Actor {
 }
 
 extension AuthRequestable {
-	//initially rely on network stack caching
-	func getAuthServerMetadata() async throws -> AuthServerMetadata {
-		try await authServerDiscovery(
-			issuer: try await retriableIssuer
-		)
-		.expect(successCode: 200)
-		.decode()
-	}
-
 	func finishAuthorization(
 		authorizationUrl: URL,
 		stateToken: String,
@@ -58,7 +51,6 @@ extension AuthRequestable {
 			parsedRedirect: parsedRedirect,
 			pkceVerifier: pkceVerifier.verifier,
 			additionalParameters: additionalParameters,
-			manualRedirectFetch: manualRedirectFetch
 		)
 
 		let result = try processAuthorizationCodeOAuth2Response(
@@ -81,7 +73,7 @@ extension AuthRequestable {
 		request.setValue("application/json", forHTTPHeaderField: "Accept")
 		request.httpMethod = HTTPMethod.get.rawValue
 
-		return try await manualRedirectFetch(request: request)
+		return try await authFetcher.data(for: request)
 	}
 
 	func processRefreshTokenResponse(

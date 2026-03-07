@@ -14,10 +14,9 @@ import OAuth
 public actor AtprotoOAuthSessionImpl {
 	public nonisolated let did: Atproto.DID
 	public let appCredentials: AppCredentials
-	public let httpRequester: HTTPDataResponse.Requester
-	public let manualRedirectFetcher: HTTPDataResponse.Requester
+	public let resourceFetcher: HTTPFetcher
+	public let authFetcher: HTTPFetcher
 	let atprotoClient: AtprotoClientInterface
-	let oauthMetadataFetcher: OAuthMetadataFetcher
 
 	private let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
 
@@ -50,18 +49,16 @@ public actor AtprotoOAuthSessionImpl {
 		did: Atproto.DID,
 		appCredentials: AppCredentials,
 		state: State,
-		httpRequester: @escaping HTTPDataResponse.Requester,
-		manualRedirectFetch: @escaping HTTPDataResponse.Requester,
+		resourceFetcher: HTTPFetcher,
+		authFetcher: HTTPFetcher,
 		atprotoClient: AtprotoClientInterface,
-		oauthMetadataFetcher: OAuthMetadataFetcher
 	) {
 		self.did = did
 		self.appCredentials = appCredentials
 		self.state = state
-		self.httpRequester = httpRequester
-		self.manualRedirectFetcher = manualRedirectFetch
+		self.resourceFetcher = resourceFetcher
+		self.authFetcher = authFetcher
 		self.atprotoClient = atprotoClient
-		self.oauthMetadataFetcher = oauthMetadataFetcher
 
 		self.lazyServerMetadata = .init(
 			fetchTaskGenerator: {
@@ -69,11 +66,8 @@ public actor AtprotoOAuthSessionImpl {
 					let pdsHost = try await atprotoClient.plcDirectoryQuery(did)
 						.pdsUrl
 					let pdsMetadata =
-						try await oauthMetadataFetcher
-						.fetchMetadata(
-							protectedResourceHost: pdsHost.host()
-								.tryUnwrap
-						)
+						try await authFetcher.resourceDiscoveryRequest(
+							url: pdsHost)
 
 					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 					//PDS doesn't actually fill this field, so we only check it if present
@@ -88,18 +82,16 @@ public actor AtprotoOAuthSessionImpl {
 					}
 
 					guard
-						let authorizationServerUrl = pdsMetadata
+						let authorizationServerUrlString = pdsMetadata
 							.authorizationServers?.first,
-						let authorizationServerHost = URL(
-							string: authorizationServerUrl)?.host()
+						let authorizationServerUrl = URL(
+							string: authorizationServerUrlString)
 					else {
 						throw OAuthSessionError.cantFormURL
 					}
 
-					return
-						try await oauthMetadataFetcher
-						.fetchMetadata(
-							authServerHost: authorizationServerHost)
+					return try await authFetcher.authServerDiscovery(
+						issuer: authorizationServerUrl)
 				}
 			})
 
@@ -109,11 +101,8 @@ public actor AtprotoOAuthSessionImpl {
 					let pdsHost = try await atprotoClient.plcDirectoryQuery(did)
 						.pdsUrl
 					let pdsMetadata =
-						try await oauthMetadataFetcher
-						.fetchMetadata(
-							protectedResourceHost: pdsHost.host()
-								.tryUnwrap
-						)
+						try await authFetcher.resourceDiscoveryRequest(
+							url: pdsHost)
 
 					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 					//PDS doesn't actually fill this field, so we only check it if present
@@ -205,18 +194,16 @@ extension AtprotoOAuthSessionImpl {
 	public static func restore(
 		archive: Archive,
 		appCredentials: AppCredentials,
-		httpRequester: @escaping HTTPDataResponse.Requester,
-		manualRedirectFetch: @escaping HTTPDataResponse.Requester,
+		resourceFetcher: HTTPFetcher,
+		authFetcher: HTTPFetcher,
 		atprotoClient: AtprotoClientInterface,
-		oauthMetadataFetcher: OAuthMetadataFetcher
 	) throws -> (AtprotoOAuthSession, AsyncStream<SessionState.Mutable?>) {
 		let session = try AtprotoOAuthSessionImpl(
 			archive: archive,
 			appCredentials: appCredentials,
-			httpRequester: httpRequester,
-			manualRedirectFetch: manualRedirectFetch,
+			resourceFetcher: resourceFetcher,
+			authFetcher: authFetcher,
 			atprotoClient: atprotoClient,
-			oauthMetadataFetcher: oauthMetadataFetcher
 		)
 		return (session, session.saveStream)
 	}
@@ -224,19 +211,17 @@ extension AtprotoOAuthSessionImpl {
 	private init(
 		archive: Archive,
 		appCredentials: AppCredentials,
-		httpRequester: @escaping HTTPDataResponse.Requester,
-		manualRedirectFetch: @escaping HTTPDataResponse.Requester,
+		resourceFetcher: HTTPFetcher,
+		authFetcher: HTTPFetcher,
 		atprotoClient: AtprotoClientInterface,
-		oauthMetadataFetcher: OAuthMetadataFetcher
 	) throws {
 		try self.init(
 			did: .init(fullId: archive.did),
 			appCredentials: appCredentials,
 			state: .init(archive: archive.session),
-			httpRequester: httpRequester,
-			manualRedirectFetch: manualRedirectFetch,
+			resourceFetcher: resourceFetcher,
+			authFetcher: authFetcher,
 			atprotoClient: atprotoClient,
-			oauthMetadataFetcher: oauthMetadataFetcher
 		)
 	}
 
@@ -285,12 +270,6 @@ extension AtprotoOAuthSessionImpl: AuthRequestable {
 			"client_id": appCredentials.clientId,
 			"redirect_url": appCredentials.callbackURL.absoluteString,
 		]
-	}
-
-	public func manualRedirectFetch(request: URLRequest) async throws
-		-> GermConvenience.HTTPDataResponse
-	{
-		try await manualRedirectFetcher(request)
 	}
 
 	public func validate(

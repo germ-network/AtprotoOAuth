@@ -1,5 +1,6 @@
 import AtprotoClient
 import Foundation
+import GermConvenience
 import OAuth
 import Testing
 
@@ -31,12 +32,9 @@ struct APITests {
 				callbackURL: APITests.redirectUri
 			),
 			userAuthenticator: AtprotoClient.failingUserAuthenticator(_:_:),
-			responseProvider: URLSession.defaultProvider,
-			manualRedirectFetcher: URLSession.manualRedirectFetcher,
+			resourceFetcher: URLSession.shared,
+			authFetcher: URLSession.manualRedirect(),
 			atprotoClient: MockAtprotoClient(),
-			oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
-				httpRequester: URLSession.defaultProvider
-			)
 		)
 	}
 }
@@ -59,12 +57,9 @@ struct ClientAPITests {
 				callbackURL: APITests.redirectUri
 			),
 			userAuthenticator: AtprotoClient.failingUserAuthenticator(_:_:),
-			responseProvider: URLSession.defaultProvider,
-			manualRedirectFetcher: URLSession.manualRedirectFetcher,
+			resourceFetcher: URLSession.shared,
+			authFetcher: URLSession.manualRedirect(),
 			atprotoClient: MockAtprotoClient(),
-			oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
-				httpRequester: URLSession.defaultProvider
-			)
 
 		)
 	}
@@ -78,8 +73,9 @@ struct ClientAPITests {
 
 		//make some unauthed requests. e.g. is this did already using germ?
 		let messageDelegate = try await AtprotoClient(
-			responseProvider: oauthClient.httpRequester
-		).getGermMessagingDelegate(did: resolvedDid)
+			resourceFetcher: URLSession.shared
+		)
+		.getGermMessagingDelegate(did: resolvedDid)
 
 		#expect(messageDelegate != nil)
 	}

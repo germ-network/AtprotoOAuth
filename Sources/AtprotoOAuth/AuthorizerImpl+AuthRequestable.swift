@@ -21,12 +21,6 @@ extension AuthorizerImpl: AuthRequestable {
 		]
 	}
 
-	func manualRedirectFetch(request: URLRequest) async throws
-		-> GermConvenience.HTTPDataResponse
-	{
-		try await manualRedirectFetcher(request)
-	}
-
 	func validate(
 		authMetadata: OAuth.AuthServerMetadata, tokenResponse: OAuth.TokenEndpointResponse
 	) throws -> OAuth.SessionState.Mutable {

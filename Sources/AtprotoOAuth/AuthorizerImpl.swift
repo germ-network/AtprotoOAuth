@@ -18,8 +18,8 @@ actor AuthorizerImpl {
 	static let logger = Logger(label: "PreSession")
 
 	let appCredentials: AppCredentials
-	let httpRequester: HTTPDataResponse.Requester
-	let manualRedirectFetcher: HTTPDataResponse.Requester
+	let resourceFetcher: HTTPFetcher
+	let authFetcher: HTTPFetcher
 
 	let issuer: URL
 
@@ -31,13 +31,13 @@ actor AuthorizerImpl {
 	init(
 		issuer: URL,
 		appCredentials: AppCredentials,
-		httpRequester: @escaping HTTPDataResponse.Requester,
-		manualRedirectFetcher: @escaping HTTPDataResponse.Requester
+		resourceFetcher: HTTPFetcher,
+		authFetcher: HTTPFetcher
 	) {
 		self.issuer = issuer
 		self.appCredentials = appCredentials
-		self.httpRequester = httpRequester
-		self.manualRedirectFetcher = manualRedirectFetcher
+		self.resourceFetcher = resourceFetcher
+		self.authFetcher = authFetcher
 	}
 }
 

@@ -8,6 +8,10 @@
 import Foundation
 import GermConvenience
 
+#if canImport(FoundationNetworking)
+	import FoundationNetworking
+#endif
+
 ///Direct analog to oauth4web's OAuth module in providing stateless API as building blocks for a full client
 public enum OAuthComponents {
 	static public func processPushedAuthorizationResponse(
@@ -99,6 +103,51 @@ public enum OAuthComponents {
 	}
 }
 
+extension HTTPFetcher {
+	//should not redirect
+	public func resourceDiscoveryRequest(
+		url: URL,
+		//Review: what kind of
+	) async throws -> ProtectedResourceMetadata {
+		//TODO: should properly prepend, not append
+		let url = url.appending(
+			path: "/.well-known/oauth-protected-resource"
+		)
+
+		var request = URLRequest(url: url)
+		request.httpMethod = HTTPMethod.get.rawValue
+		request.setValue("application/json", forHTTPHeaderField: "accept")
+
+		return try await performDiscovery(request: request)
+			.expectSuccess()
+			.decode()
+
+	}
+
+	public func authServerDiscovery(issuer: URL) async throws -> AuthServerMetadata {
+		let url = issuer.appending(
+			path: "/.well-known/oauth-authorization-server"
+		)
+
+		var request = URLRequest(url: url)
+		request.httpMethod = HTTPMethod.get.rawValue
+		request.setValue("application/json", forHTTPHeaderField: "accept")
+
+		return try await performDiscovery(request: request)
+			.expect(successCode: 200)
+			.decode()
+	}
+
+	func performDiscovery(
+		request: URLRequest
+	) async throws -> HTTPDataResponse {
+		guard request.url?.scheme == "https" else {
+			throw OAuthError.insecureScheme
+		}
+		return try await data(for: request)
+	}
+}
+
 extension AuthRequestable {
 	public func authorizationCodeGrantRequest(
 		authServerMetadata: AuthServerMetadata,
@@ -106,7 +155,6 @@ extension AuthRequestable {
 		parsedRedirect: OAuthComponents.ParsedRedirect,
 		pkceVerifier: String?,
 		additionalParameters: [String: String],
-		manualRedirectFetch: HTTPDataResponse.Requester
 	) async throws -> HTTPDataResponse {
 		var parameters = additionalParameters
 		parameters["redirect_uri"] = redirectUrl.absoluteString
@@ -121,7 +169,6 @@ extension AuthRequestable {
 			grantType: .authorizationCode,
 			parameters: parameters,
 			headers: [:],
-			manualRedirectFetch: manualRedirectFetch
 		)
 	}
 
@@ -137,7 +184,6 @@ extension AuthRequestable {
 			grantType: .refreshToken,
 			parameters: parameters,
 			headers: [:],
-			manualRedirectFetch: manualRedirectFetch
 		)
 	}
 
@@ -146,7 +192,6 @@ extension AuthRequestable {
 		grantType: GrantType,
 		parameters: [String: String],
 		headers: [String: String],
-		manualRedirectFetch: HTTPDataResponse.Requester
 	) async throws -> HTTPDataResponse {
 		let url = try authServerMetadata.resolve(endpoint: .token)
 
@@ -229,6 +274,6 @@ extension AuthRequestable {
 	func authenticated(
 		request: URLRequest,
 	) async throws -> HTTPDataResponse {
-		try await manualRedirectFetch(request: request)
+		try await authFetcher.data(for: request)
 	}
 }

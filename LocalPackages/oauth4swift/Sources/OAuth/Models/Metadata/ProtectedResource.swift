@@ -48,23 +48,4 @@ public struct ProtectedResourceMetadata: Codable, Hashable, Sendable {
 		case dpopBoundAccessTokensRequired = "dpop_bound_access_tokens_required"
 		case signedMetadata = "signed_metadata"
 	}
-
-	public static func load(
-		for host: String,
-		httpRequester: HTTPDataResponse.Requester
-	) async throws -> ProtectedResourceMetadata {
-		var components = URLComponents()
-		components.scheme = "https"
-		components.host = host
-		components.path = "/.well-known/oauth-protected-resource"
-
-		let url = try components.url.tryUnwrap(MetadataError.urlInvalid)
-
-		var request = URLRequest(url: url)
-		request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-		return try await httpRequester(request)
-			.expectSuccess()
-			.decode()
-	}
 }

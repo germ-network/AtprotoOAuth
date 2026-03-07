@@ -17,7 +17,7 @@ extension AtprotoClient {
 		var request = URLRequest(url: url)
 		request.addValue("application/json", forHTTPHeaderField: "Accept")
 
-		return try await responseProvider(request)
+		return try await resourceFetcher.data(for: request)
 			.expectSuccess()
 			.decode()
 	}

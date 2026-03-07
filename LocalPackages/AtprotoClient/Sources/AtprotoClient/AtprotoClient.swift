@@ -32,10 +32,10 @@ public protocol AtprotoSession {
 }
 
 public struct AtprotoClient {
-	let responseProvider: HTTPDataResponse.Requester
+	let resourceFetcher: HTTPFetcher
 
-	public init(responseProvider: @escaping HTTPDataResponse.Requester) {
-		self.responseProvider = responseProvider
+	public init(resourceFetcher: HTTPFetcher) {
+		self.resourceFetcher = resourceFetcher
 	}
 }
 

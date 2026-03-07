@@ -7,6 +7,7 @@
 
 import Crypto
 import Foundation
+import GermConvenience
 
 public protocol OAuthSessionCapabilities: Actor, AuthRequestable {
 	var appCredentials: AppCredentials { get }
@@ -16,4 +17,7 @@ public protocol OAuthSessionCapabilities: Actor, AuthRequestable {
 	var session: SessionState { get throws }
 	func refreshed(sessionMutable: SessionState.Mutable) throws
 	var refreshTask: Task<SessionState.Mutable, Error>? { get set }
+
+	//should follow redirects
+	var resourceFetcher: HTTPFetcher { get }
 }
