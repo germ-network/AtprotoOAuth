@@ -1,5 +1,5 @@
 //
-//  Metadata.swift
+//  ProtectedResource.swift
 //  OAuth
 //
 //  Created by Mark @ Germ on 2/23/26 from OAuthenticator
@@ -10,53 +10,6 @@ import GermConvenience
 
 enum MetadataError: Error {
 	case urlInvalid
-}
-
-// See: https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/
-public struct ClientMetadata: Hashable, Codable, Sendable {
-	public let clientId: String
-	public let scope: String
-	public let redirectURIs: [String]
-	public let dpopBoundAccessTokens: Bool
-
-	enum CodingKeys: String, CodingKey {
-		case clientId = "client_id"
-		case scope
-		case redirectURIs = "redirect_uris"
-		case dpopBoundAccessTokens = "dpop_bound_access_tokens"
-	}
-
-	public static func load(
-		for clientId: String,
-		httpRequester: HTTPDataResponse.Requester
-	) async throws -> ClientMetadata {
-		let url = try URL(string: clientId).tryUnwrap(MetadataError.urlInvalid)
-
-		var request = URLRequest(url: url)
-		request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-		return try await httpRequester(request)
-			.expectSuccess()
-			.decode()
-	}
-}
-
-extension ClientMetadata {
-
-	//The client metadata is the declaration of all scopes the app may request
-	//the app does not have to request them all. this initializer sends them
-	//all
-	public var credentials: AppCredentials {
-		get throws {
-			let url = try redirectURIs.first.map({ URL(string: $0)! }).tryUnwrap
-
-			return AppCredentials(
-				clientId: clientId,
-				scopes: scope.components(separatedBy: " "),
-				callbackURL: url
-			)
-		}
-	}
 }
 
 // See: https://www.rfc-editor.org/rfc/rfc9728.html

@@ -17,10 +17,6 @@ public protocol OAuthMetadataFetcher: Sendable {
 	func fetchMetadata(
 		authServerHost: String
 	) async throws -> AuthServerMetadata
-
-	func fetchMetadata(
-		clientHost: String
-	) async throws -> ClientMetadata
 }
 
 public struct HTTPOAuthMetadataFetcher {
@@ -32,10 +28,6 @@ public struct HTTPOAuthMetadataFetcher {
 }
 
 extension HTTPOAuthMetadataFetcher: OAuthMetadataFetcher {
-	public func fetchMetadata(clientHost: String) async throws -> ClientMetadata {
-		try await .load(for: clientHost, httpRequester: httpRequester)
-	}
-
 	public func fetchMetadata(
 		authServerHost: String
 	) async throws -> AuthServerMetadata {
