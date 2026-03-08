@@ -64,4 +64,38 @@ extension AtprotoClientInterface {
 			}
 		}
 	}
+
+	func listRecords<R: AtprotoRecord>(
+		pdsUrl: URL,
+		parameters: Lexicon.Com.Atproto.Repo.ListRecords<R>.Parameters,
+	) async throws -> ([R], String?) {
+		let result = try await request(
+			Lexicon.Com.Atproto.Repo.ListRecords<R>.self,
+			pdsUrl: pdsUrl,
+			parameters: parameters
+		)
+		let records = result.records.map { $0.value }
+		return (records, result.cursor)
+	}
+
+	public func getBlob(
+		pdsUrl: URL,
+		parameters: Lexicon.Com.Atproto.Sync.GetBlob.Parameters,
+	) async throws -> Data? {
+		do {
+			return try await request(
+				Lexicon.Com.Atproto.Sync.GetBlob.self,
+				pdsUrl: pdsUrl,
+				parameters: parameters
+			)
+		} catch AtprotoClientError.requestFailed(400, let error) {
+			if error == "BlobNotFound" {
+				return nil
+			} else {
+				throw
+					AtprotoClientError
+					.requestFailed(responseCode: 400, error: error)
+			}
+		}
+	}
 }

@@ -5,6 +5,7 @@
 //  Created by Mark @ Germ on 8/1/25.
 //
 
+import AtprotoClient
 import AtprotoOAuth
 import AtprotoTypes
 import SwiftUI
@@ -15,8 +16,8 @@ struct UnauthenticatedView: View {
 	@State private var followsGerm: Bool?
 	@State private var isFollowedByGerm: Bool?
 
-	@State private var follows: [String] = []
-	//	@State private var profileRecord: AppBskyLexiconLite.ProfileRecord?
+	@State private var follows: [Atproto.DID] = []
+	@State private var profileRecord: Lexicon.App.Bsky.Actor.Profile?
 	@State private var handle: String?
 	@State private var avatarBlob: Data?
 	@State private var bannerBlob: Data?
@@ -26,6 +27,10 @@ struct UnauthenticatedView: View {
 	@State private var messagingDelegate: Lexicon.Com.GermNetwork.Declaration?
 
 	@State private var processing: Task<Void, Never>? = nil
+
+	let client: AtprotoClientInterface = AtprotoClient.init(
+		responseProvider: URLSession.defaultProvider
+	)
 
 	var body: some View {
 		VStack {
@@ -65,23 +70,24 @@ struct UnauthenticatedView: View {
 						Text("**PDS:** \(pdsURL?.absoluteString ?? "N/A")")
 						Text("**Handle:** \(handle ?? "N/A")")
 					}
-					Section("Relationship with Germ") {
-						Text(
-							"**Follows:** \(followsGerm?.description ?? "N/A")"
-						)
-						Text(
-							"**Is followed by:** \(isFollowedByGerm?.description ?? "N/A")"
-						)
-					}
+					// Authed call
+					//					Section("Relationship with Germ") {
+					//						Text(
+					//							"**Follows:** \(followsGerm?.description ?? "N/A")"
+					//						)
+					//						Text(
+					//							"**Is followed by:** \(isFollowedByGerm?.description ?? "N/A")"
+					//						)
+					//					}
 					Section("Profile") {
-						//						if let profileRecord {
-						//							Text(
-						//								"**Display name:** \(profileRecord.displayName ?? "N/A")"
-						//							)
-						//							Text(
-						//								"**Bio:** \(profileRecord.description ?? "N/A")"
-						//							)
-						//						}
+						if let profileRecord {
+							Text(
+								"**Display name:** \(profileRecord.displayName ?? "N/A")"
+							)
+							Text(
+								"**Bio:** \(profileRecord.description ?? "N/A")"
+							)
+						}
 						if let avatarBlob {
 							if let image = Image(jpegData: avatarBlob) {
 								image
@@ -103,20 +109,14 @@ struct UnauthenticatedView: View {
 							}
 						}
 					}
-					//					Section("Key package") {
-					//						Text(
-					//							keyPackage?.anchorHello
-					//								.base64EncodedString()
-					//								?? "None found")
-					//					}
 					Section("Messaging delegate") {
 						if let messagingDelegate {
 							Text(
 								"**Current key:** \(messagingDelegate.currentKey.bytes.base64EncodedString())"
 							)
-							//							Text(
-							//								"**Key package:** \(messagingDelegate.keyPackage?.base64EncodedString() ?? "None")"
-							//							)
+							Text(
+								"**Key package:** \(messagingDelegate.keyPackage?.bytes.base64EncodedString() ?? "None")"
+							)
 							Text(
 								"**Version:** \(messagingDelegate.version)"
 							)
@@ -131,9 +131,9 @@ struct UnauthenticatedView: View {
 							)
 						}
 					}
-					Section("Follows") {
+					Section("\(follows.count) Follows") {
 						ForEach(follows, id: \.self) {
-							Text($0)
+							Text($0.fullId)
 						}
 					}
 				}
@@ -153,120 +153,97 @@ struct UnauthenticatedView: View {
 			} catch {
 				print("Error loading DID: \(error)")
 			}
-			if let did {
-				//consider loading the whole did doc instead
-				//				print("Loading PDS...")
-				//				do {
-				//					if let pds = try await AtprotoPublicAPI.getPds(
-				//						for: did.fullId)
-				//					{
-				//						pdsURL = URL(string: pds)
-				//					}
-				//				} catch {
-				//					print("Error loading PDS: \(error)")
-				//				}
-				//				if let pdsURL {
-				//				print("Loading handle...")
-				//				do {
-				//					handle = try await AtprotoPublicAPI.getHandle(
-				//						did: did.fullId,
-				//						pdsURL: pdsURL
-				//					)
-				//				} catch {
-				//					print("Error loading handle: \(error)")
-				//				}
-				//				print("Loading relationship with Germ...")
-				//				do {
-				//					let germ = try await AtprotoPublicAPI.getTypedDID(
-				//						handle: "germnetwork.com")
-				//					followsGerm = try await AtprotoPublicAPI.checkIf(
-				//						did: did.fullId,
-				//						follows: germ.fullId
-				//					)
-				//					isFollowedByGerm =
-				//					try await AtprotoPublicAPI.checkIf(
-				//						did: did.fullId,
-				//						isFollowedBy: germ.fullId
-				//					)
-				//				} catch {
-				//					print(
-				//						"Error loading relationship with Germ: \(error)"
-				//					)
-				//				}
-				//				print("Loading follows...")
-				//				follows = await AtprotoPublicAPI.getFollows(
-				//					for: did.fullId,
-				//					pdsURL: pdsURL
-				//				).0
-				//				print("Loading profile...")
-				//				do {
-				//					profileRecord =
-				//					try await AtprotoPublicAPI.getProfileRecord(
-				//						did: did.fullId,
-				//						pdsURL: pdsURL
-				//					)
-				//				} catch {
-				//					print("Error loading profile: \(error)")
-				//				}
-				//				print("Loading avatar image...")
-				//				if let avatarCid = profileRecord?.avatarBlob?.reference.link
-				//				{
-				//					do {
-				//						avatarBlob =
-				//						try await AtprotoPublicAPI.getBlob(
-				//							from: did.fullId,
-				//							cid: avatarCid,
-				//							pdsURL: pdsURL
-				//						)
-				//					} catch {
-				//						print("Error loading avatar: \(error)")
-				//					}
-				//				}
-				//				print("Loading banner image...")
-				//				if let bannerCid = profileRecord?.bannerBlob?.reference.link
-				//				{
-				//					do {
-				//						bannerBlob =
-				//						try await AtprotoPublicAPI.getBlob(
-				//							from: did.fullId,
-				//							cid: bannerCid,
-				//							pdsURL: pdsURL
-				//						)
-				//					} catch {
-				//						print("Error loading banner: \(error)")
-				//					}
-				//				}
-				//				print("Loading key package...")
-				//				do {
-				//					keyPackage =
-				//					try await AtprotoPublicAPI.getKeyPackage(
-				//						did: did.fullId,
-				//						pdsURL: pdsURL
-				//					)
-				//				} catch {
-				//					print("Error loading key package: \(error)")
-				//				}
-				//				print("Loading messaging delegate...")
-				//				do {
-				//					messagingDelegate =
-				//					try await AtprotoPublicAPI
-				//						.getGermMessagingDelegate(
-				//							did: did.fullId,
-				//							pdsURL: pdsURL
-				//						)
-				//				} catch {
-				//					print("Error loading messaging delegate: \(error)")
-				//				}
-				//				}
-			} else {
+
+			guard let did else {
 				follows = []
-				//				profileRecord = nil
+				messagingDelegate = nil
 				avatarBlob = nil
 				bannerBlob = nil
-				//				keyPackage = nil
 				pdsURL = nil
+				return
+			}
+
+			// PDS and handle
+			print("Loading DID document...")
+			do {
+				let didDoc = try await client.plcDirectoryQuery(did)
+				pdsURL = try didDoc.pdsUrl
+				handle = didDoc.handle
+			} catch {
+				print("Error loading DID doc and/or PDS URL: \(error)")
+			}
+
+			guard let pdsURL else {
+				follows = []
+				messagingDelegate = nil
+				avatarBlob = nil
+				bannerBlob = nil
+				return
+			}
+
+			// Messaging delegate
+			print("Loading messaging delegate...")
+			do {
+				messagingDelegate =
+					try await client.getGermMessagingDelegate(
+						did: did
+					)
+			} catch {
+				print("Error loading messaging delegate: \(error)")
+			}
+
+			// Profile
+			print("Loading profile...")
+			do {
+				profileRecord =
+					try await client.getProfile(did: did)
+			} catch {
+				print("Error loading profile: \(error)")
+			}
+
+			// Avatar
+			print("Loading avatar image...")
+			if let avatarCid = profileRecord?.avatar?.ref.link {
+				do {
+					avatarBlob = try await client.getBlob(
+						pdsUrl: pdsURL,
+						parameters: .init(
+							did: .did(did),
+							cid: .init(string: avatarCid))
+					)
+				} catch {
+					print("Error loading avatar: \(error)")
+				}
+			}
+
+			// Banner
+			print("Loading banner image...")
+			if let bannerCid = profileRecord?.banner?.ref.link {
+				do {
+					bannerBlob = try await client.getBlob(
+						pdsUrl: pdsURL,
+						parameters: .init(
+							did: .did(did),
+							cid: .init(string: bannerCid))
+					)
+				} catch {
+					print("Error loading banner: \(error)")
+				}
+			}
+
+			// Follows
+			print("Loading follows...")
+			do {
+				let stream = try await client.getFollowsStream(did: did)
+				follows = []
+				for try await batch in stream {
+					follows += batch
+				}
+			} catch {
+				print("Error loading follows: \(error)")
 			}
 		}
+
 		processing = newTask
 		Task {
 			await newTask.value

@@ -65,12 +65,13 @@ public struct HTTPDataResponse: Sendable {
 		} catch {
 			return .error(try data.decode(), response.statusCode)
 		}
-	}
-}
-
-extension Data {
-	public func decode<R: Decodable>() throws -> R {
-		try JSONDecoder().decode(R.self, from: self)
+		if resultType == Data?.self || resultType == Data.self,
+			let rawData = data as? R
+		{
+			return .result(rawData)
+		} else {
+			return try .result(JSONDecoder().decode(R.self, from: data))
+		}
 	}
 }
 
