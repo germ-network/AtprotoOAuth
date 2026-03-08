@@ -91,7 +91,7 @@ extension AuthRequestable {
 
 		//check the claims
 		try validate(authMetadata: authServerMetadata, tokenResponse: result)
-		// TODO: GER-1343 - Implement validator
+		// TODO: GER-1388 - Implement validator
 		// after a token is issued, it is critical that the returned
 		// identity be resolved and its PDS match the issuing server
 		//
