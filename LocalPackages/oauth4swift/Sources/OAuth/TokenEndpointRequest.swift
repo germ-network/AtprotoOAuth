@@ -11,6 +11,7 @@ import GermConvenience
 enum GrantType: String {
 	case authorizationCode = "authorization_code"
 	case refreshToken = "refresh_token"
+	case clientCredentials = "client_credentials"
 }
 
 //make this a protocol so both the Authorizer and Session can use it
