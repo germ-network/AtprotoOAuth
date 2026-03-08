@@ -22,9 +22,9 @@ extension AtprotoClient {
 		)
 
 		let result = try await resourceFetcher.data(for: request)
-			.successErrorDecode(
-				resultType: X.Result.self,
-				errorType: Lexicon.XRPCError.self
+			.success(
+				decodeResult: X.Result.self,
+				orError: Lexicon.XRPCError.self
 			)
 
 		switch result {

@@ -17,9 +17,20 @@ public enum OAuthComponents {
 	static public func processPushedAuthorizationResponse(
 		response: HTTPDataResponse
 	) throws -> PARResponse {
-		try response
-			.expect(successCode: 201)
-			.decode()
+		let parsed =
+			try response
+			.success(
+				code: 201,
+				decodeResult: PARResponse.self,
+				orError: OAuthErrorResponse.self
+			)
+
+		switch parsed {
+		case .result(let result):
+			return result
+		case .error(let errorResponse, _):
+			throw OAuthError.oauthError(errorResponse, response.response)
+		}
 	}
 
 	static public func validateAuthResponse(

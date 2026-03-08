@@ -40,25 +40,30 @@ public struct HTTPDataResponse: Sendable {
 		case error(E, Int)
 	}
 
-	public func successErrorDecode<R: Decodable, E: Decodable>(
-		resultType: R.Type,
-		errorType: E.Type,
-		successRange: RangeExpression<Int> = 200..<300
+	public func success<R: Decodable, E: Decodable>(
+		code: Int,
+		decodeResult resultType: R.Type,
+		orError error: E.Type,
+	) throws -> ErrorResult<R, E> {
+		try success(
+			range: code...code,
+			decodeResult: R.self,
+			orError: E.self
+		)
+	}
+
+	public func success<R: Decodable, E: Decodable>(
+		range: RangeExpression<Int> = 200..<300,
+		decodeResult resultType: R.Type,
+		orError error: E.Type,
 	) throws -> ErrorResult<R, E> {
 		do {
-			let result: R = try expectSuccess(range: successRange)
-				.decode()
-			return .result(result)
+			return .result(
+				try expectSuccess(range: range)
+					.decode()
+			)
 		} catch {
-			if let stringResponse = String(data: data, encoding: .utf8) {
-				throw
-					HTTPResponseError
-					.unsuccessfulString(
-						response.statusCode, stringResponse)
-			} else {
-				throw HTTPResponseError.unsuccessful(
-					response.statusCode, data)
-			}
+			return .error(try data.decode(), response.statusCode)
 		}
 	}
 }

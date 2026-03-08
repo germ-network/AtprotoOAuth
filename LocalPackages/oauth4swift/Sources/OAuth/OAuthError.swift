@@ -13,6 +13,7 @@ enum OAuthError: Error {
 	case stateTokenMismatch(String, String)
 	case issuingServerMismatch(String, String)
 	case httpResponse(response: HTTPURLResponse)
+	case oauthError(OAuthErrorResponse, HTTPURLResponse)
 	case notImplemented
 }
 
@@ -35,6 +36,8 @@ extension OAuthError: LocalizedError {
 		case .redirectError(let errorString): "Redirect error: \(errorString)"
 		case .httpResponse(let response):
 			"HTTP error with status code: \(response.statusCode), response: \(response)"
+		case .oauthError(let errorBody, let response):
+			"OAuth error with status code: \(response.statusCode), response: \(response), body: \(errorBody)"
 		case .notImplemented: "Not implemented"
 		}
 	}
