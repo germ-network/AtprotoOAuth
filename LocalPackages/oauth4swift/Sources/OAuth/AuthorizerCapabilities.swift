@@ -20,23 +20,6 @@ public protocol AuthorizerCapabilities: AuthRequestable, DPoPSigning {
 		parRequestURI: String,
 		clientId: String,
 	) throws -> URL
-
-	//	static func finishAuthorization(
-	//		authorizationUrl: URL,
-	//		stateToken: String,
-	//		redirectURI: URL,
-	//		pkceVerifier: PKCEVerifier,
-	//		appCredentials: AppCredentials,
-	//		authServerMetadata: AuthServerMetadata,
-	//		dpopKey: DPoPKey,  //only for archiving
-	//		dpopRequester: HTTPDataResponse.Requester
-	//	) async throws -> SessionState.Archive
-
-	//	associatedtype TokenResponse
-	//	static func tokenSubscriberValidator(
-	//		response: TokenResponse,
-	//		sub: String
-	//	) async throws
 }
 
 extension AuthorizerCapabilities {

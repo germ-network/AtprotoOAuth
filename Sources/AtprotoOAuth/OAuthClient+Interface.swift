@@ -60,7 +60,6 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 		return try await AuthorizerImpl(
 			issuer: authorizationServerUrl,
 			appCredentials: appCredentials,
-			resourceFetcher: resourceFetcher,
 			authFetcher: authFetcher
 		)
 		.performUserAuthentication(

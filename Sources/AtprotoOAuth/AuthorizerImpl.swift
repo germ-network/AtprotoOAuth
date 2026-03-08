@@ -15,10 +15,9 @@ import OAuth
 //it should only make requests as necessary to authorize
 
 actor AuthorizerImpl {
-	static let logger = Logger(label: "PreSession")
+	static let logger = Logger(label: "AuthorizerImpl")
 
 	let appCredentials: AppCredentials
-	let resourceFetcher: HTTPFetcher
 	let authFetcher: HTTPFetcher
 
 	let issuer: URL
@@ -31,12 +30,10 @@ actor AuthorizerImpl {
 	init(
 		issuer: URL,
 		appCredentials: AppCredentials,
-		resourceFetcher: HTTPFetcher,
 		authFetcher: HTTPFetcher
 	) {
 		self.issuer = issuer
 		self.appCredentials = appCredentials
-		self.resourceFetcher = resourceFetcher
 		self.authFetcher = authFetcher
 	}
 }
