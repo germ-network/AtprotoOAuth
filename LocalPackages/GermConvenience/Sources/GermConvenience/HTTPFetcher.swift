@@ -20,6 +20,22 @@ public protocol HTTPFetcher: Sendable {
 	func data(for: URLRequest) async throws -> HTTPDataResponse
 }
 
+///Authorization fetches should not follow redirects. This includes
+///the protected resource metadata
+///https://www.rfc-editor.org/rfc/rfc9728.html#section-3.2
+///and auth server metadata
+///https://datatracker.ietf.org/doc/html/rfc8414#section-3.2
+extension URLSession {
+	static public func manualRedirect() -> URLSession {
+		URLSession(
+			configuration: .default,
+			delegate: ManualRedirect(),
+			delegateQueue: nil
+		)
+	}
+}
+
+///The default (shared) urlsession does follow redirects, which is permitted for resource requests
 extension URLSession: HTTPFetcher {
 	public func data(for request: URLRequest) async throws -> HTTPDataResponse {
 		let (data, urlResponse) = try await self.data(for: request)
@@ -28,16 +44,6 @@ extension URLSession: HTTPFetcher {
 		} else {
 			throw URLSessionError.nonHttpResponse
 		}
-	}
-}
-
-extension URLSession {
-	static public func manualRedirect() -> URLSession {
-		URLSession(
-			configuration: .default,
-			delegate: ManualRedirect(),
-			delegateQueue: nil
-		)
 	}
 }
 
