@@ -44,15 +44,45 @@ public enum OAuthComponents {
 			resolvingAgainstBaseURL: false
 		).tryUnwrap
 
+		//first check for iss and state and bail if not present
 		guard
-			let authCode = redirectComponents.queryItems?.first(where: {
-				$0.name == "code"
-			})?.value,
 			let iss = redirectComponents.queryItems?.first(where: {
 				$0.name == "iss"
 			})?.value,
 			let state = redirectComponents.queryItems?.first(where: {
 				$0.name == "state"
+			})?.value
+		else {
+			throw OAuthError.redirectMissingComponents
+		}
+
+		//check for error_description or error
+		if let errorItem = redirectComponents.queryItems?.first(where: {
+			$0.name == "error_description"
+		}) {
+			throw OAuthError.redirectError(errorItem.value ?? "")
+		}
+
+		if let errorItem = redirectComponents.queryItems?.first(where: {
+			$0.name == "error"
+		}) {
+			throw OAuthError.redirectError(errorItem.value ?? "")
+		}
+
+		//assert we do not support insecure flows
+		assert(
+			redirectComponents.queryItems?.first(where: {
+				$0.name == "id_token"
+			})?.value == nil)
+		assert(
+			redirectComponents.queryItems?.first(where: {
+				$0.name == "token"
+			})?.value == nil)
+
+		//finally can check for presence of code
+		guard
+			let authCode = redirectComponents.queryItems?.first(where: {
+				$0.name == "code"
 			})?.value
 		else {
 			throw OAuthError.redirectMissingComponents
@@ -66,12 +96,6 @@ public enum OAuthComponents {
 			throw
 				OAuthError
 				.issuingServerMismatch(iss, authServerMetadata.issuer)
-		}
-
-		if let errorItem = redirectComponents.queryItems?.first(where: {
-			$0.name == "error"
-		}) {
-			throw OAuthError.redirectError(errorItem.value ?? "")
 		}
 
 		return .init(
