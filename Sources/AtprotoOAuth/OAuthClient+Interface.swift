@@ -99,16 +99,6 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 				try await userAuthenticator($0, $1)
 			}
 		)
-
-		//		return try await AuthorizerImpl(
-		//			issuer: authorizationServerUrl,
-		//			appCredentials: appCredentials,
-		//			authFetcher: authFetcher
-		//		)
-		//		.performUserAuthentication(
-		//			parConfig: parConfig,
-		//			userAuthenticator: { try await userAuthenticator($0, $1) }
-		//		)
 	}
 
 	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {

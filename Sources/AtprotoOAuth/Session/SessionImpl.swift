@@ -249,16 +249,7 @@ extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
 	public func refreshed(sessionMutable: SessionState.Mutable) throws {
 		try save(sessionMutable: sessionMutable)
 	}
-}
 
-extension AtprotoOAuthSessionImpl {
-	func getPDSUrl() async throws -> URL {
-		try await atprotoClient.plcDirectoryQuery(did)
-			.pdsUrl
-	}
-}
-
-extension AtprotoOAuthSessionImpl: AuthRequestable {
 	public var retriableIssuer: URL {
 		get async throws {
 			try await lazyIssuer.lazyValue(isolation: self)
@@ -289,4 +280,11 @@ extension AtprotoOAuthSessionImpl: AuthRequestable {
 		)
 	}
 
+}
+
+extension AtprotoOAuthSessionImpl {
+	func getPDSUrl() async throws -> URL {
+		try await atprotoClient.plcDirectoryQuery(did)
+			.pdsUrl
+	}
 }

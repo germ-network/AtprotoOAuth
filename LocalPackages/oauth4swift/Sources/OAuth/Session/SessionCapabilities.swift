@@ -9,7 +9,7 @@ import Crypto
 import Foundation
 import GermConvenience
 
-public protocol OAuthSessionCapabilities: Actor, AuthRequestable {
+public protocol OAuthSessionCapabilities: Actor {
 	var appCredentials: AppCredentials { get }
 
 	var lazyServerMetadata: LazyResource<AuthServerMetadata> { get }
@@ -20,4 +20,13 @@ public protocol OAuthSessionCapabilities: Actor, AuthRequestable {
 
 	//should follow redirects
 	var resourceFetcher: HTTPFetcher { get }
+
+	//auth
+	var authFetcher: HTTPFetcher { get }
+	var retriableIssuer: URL { get async throws }
+	func validate(
+		authMetadata: AuthServerMetadata,
+		tokenResponse: TokenEndpointResponse
+	) throws -> SessionState.Mutable
+	var additionalParameters: [String: String] { get }
 }

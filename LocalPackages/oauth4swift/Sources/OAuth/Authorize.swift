@@ -285,6 +285,7 @@ extension DPoPSigning {
 		}
 	}
 
+	//tries just once
 	func authenticated(
 		request: URLRequest,
 		token: String?,
@@ -303,5 +304,13 @@ extension DPoPSigning {
 		)
 
 		return response
+	}
+}
+
+extension [String: String] {
+	var urlEncodedHTTPBody: Data {
+		map({ [$0, $1].joined(separator: "=") })
+			.joined(separator: "&")
+			.utf8Data
 	}
 }

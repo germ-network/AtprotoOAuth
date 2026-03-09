@@ -112,6 +112,12 @@ public enum OAuthComponents {
 		public let components: URLComponents
 	}
 
+	static func processRefreshTokenResponse(
+		response: HTTPDataResponse
+	) throws -> TokenEndpointResponse {
+		try processGenericAccessToken(response: response)
+	}
+
 	static func processGenericAccessToken(
 		response: HTTPDataResponse
 	) throws -> TokenEndpointResponse {
@@ -183,33 +189,12 @@ extension HTTPFetcher {
 	}
 }
 
-extension AuthRequestable {
-	public func authorizationCodeGrantRequest(
-		authServerMetadata: AuthServerMetadata,
-		redirectUrl: URL,
-		parsedRedirect: OAuthComponents.ParsedRedirect,
-		pkceVerifier: String?,
-		additionalParameters: [String: String],
-	) async throws -> HTTPDataResponse {
-		var parameters = additionalParameters
-		parameters["redirect_uri"] = redirectUrl.absoluteString
-		parameters["code"] = parsedRedirect.authCode
-
-		if let pkceVerifier {
-			parameters["code_verifier"] = pkceVerifier
-		}
-
-		return try await tokenEndpointRequest(
-			authServerMetadata: authServerMetadata,
-			grantType: .authorizationCode,
-			parameters: parameters,
-			headers: [:],
-		)
-	}
-
-	func refreshTokenGrantRequest(
+extension OAuthComponents {
+	static func refreshTokenGrantRequest(
 		authServerMetadata: AuthServerMetadata,
 		refreshToken: String,
+		additionalParameters: [String: String],
+		authFetcher: HTTPFetcher
 	) async throws -> HTTPDataResponse {
 		var parameters = additionalParameters
 		parameters["refresh_token"] = refreshToken
@@ -219,14 +204,16 @@ extension AuthRequestable {
 			grantType: .refreshToken,
 			parameters: parameters,
 			headers: [:],
+			authFetcher: authFetcher
 		)
 	}
 
-	func tokenEndpointRequest(
+	static func tokenEndpointRequest(
 		authServerMetadata: AuthServerMetadata,
 		grantType: GrantType,
 		parameters: [String: String],
 		headers: [String: String],
+		authFetcher: HTTPFetcher
 	) async throws -> HTTPDataResponse {
 		let url = try authServerMetadata.resolve(endpoint: .token)
 
@@ -249,66 +236,14 @@ extension AuthRequestable {
 			.joined(separator: "&")
 		request.httpBody = try modifiedParams.urlEncodedHTTPBody
 
-		//annoyingly compiler doesn't understand cast isolation is the same
 		if let dpopSigner = self as? DPoPSigning {
-			request = try await dpopSigner.addProof(
+			return try await dpopSigner.authenticated(
 				request: request,
 				token: nil,
+				authFetcher: authFetcher
 			)
+		} else {
+			return try await authFetcher.data(for: request)
 		}
-
-		let response = try await authenticated(
-			request: request,
-		)
-		if let dpopSigner = self as? DPoPSigning {
-			try await dpopSigner.cacheNonce(response: response, requestUrl: url)
-		}
-
-		return response
-	}
-
-	//todo: unify with OAuthSessionCapabilities.retryNonceRequest
-	func nonceRetryAuthenticated(
-		request: URLRequest,
-		token: String?
-	) async throws -> HTTPDataResponse {
-		let response = try await authenticated(
-			request: request
-		)
-
-		if let dpopSigner = self as? DPoPSigning {
-			try await dpopSigner.cacheNonce(
-				response: response,
-				requestUrl: request.url.tryUnwrap
-			)
-
-			//retry if nonceError
-			if response.isDPoPNonceError {
-				let request = try await dpopSigner.addProof(
-					request: request,
-					token: token
-				)
-
-				let secondResponse = try await authenticated(
-					request: request
-				)
-
-				try await dpopSigner.cacheNonce(
-					response: secondResponse,
-					requestUrl: request.url.tryUnwrap
-				)
-				return secondResponse
-			}
-		}
-
-		return response
-	}
-
-	//here for shadowing of oauth4web.authenticatedRequest
-	//but most functionality has been lifted out
-	func authenticated(
-		request: URLRequest,
-	) async throws -> HTTPDataResponse {
-		try await authFetcher.data(for: request)
 	}
 }
