@@ -65,7 +65,7 @@ public struct HTTPDataResponse: Sendable {
 		} catch {
 			return .error(try data.decode(), response.statusCode)
 		}
-		
+
 	}
 }
 

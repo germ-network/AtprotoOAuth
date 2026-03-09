@@ -57,15 +57,58 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 			parameters: ["login_hint": identity.serverHint]
 		)
 
-		return try await AuthorizerImpl(
+		let additionaParameters = [
+			"client_id": appCredentials.clientId,
+			"redirect_url": appCredentials.callbackURL.absoluteString,
+		]
+
+		let validator:
+			(
+				AuthServerMetadata,
+				TokenEndpointResponse
+			) -> SessionState.Mutable = { authServerMetadata, tokenResponse in
+				//TODO: finish validation
+
+				.init(
+					accessToken: .init(
+						value: tokenResponse.accessToken,
+						expiresIn: tokenResponse.expiresIn
+					),
+					refreshToken: .init(
+						refreshToken: tokenResponse.refreshToken),
+					scopes: tokenResponse.scope,
+					//REVIEW: where should this come from?
+					issuingServer: authServerMetadata.issuer
+				)
+			}
+
+		return try await AuthComponents(
+			additionalParameters: additionaParameters,
+			authFetcher: authFetcher,
+			validator: validator,
 			issuer: authorizationServerUrl,
-			appCredentials: appCredentials,
-			authFetcher: authFetcher
-		)
-		.performUserAuthentication(
+			dpopSigner: AuthDPopState(dpopKey: .generateP256())
+		).performUserAuthentication(
+			inputs: .init(
+				appCredentials: appCredentials,
+				stateToken: UUID().uuidString,
+				pkceVerifier: .init()
+			),
 			parConfig: parConfig,
-			userAuthenticator: { try await userAuthenticator($0, $1) }
+			userAuthenticator: {
+				try await userAuthenticator($0, $1)
+			}
 		)
+
+		//		return try await AuthorizerImpl(
+		//			issuer: authorizationServerUrl,
+		//			appCredentials: appCredentials,
+		//			authFetcher: authFetcher
+		//		)
+		//		.performUserAuthentication(
+		//			parConfig: parConfig,
+		//			userAuthenticator: { try await userAuthenticator($0, $1) }
+		//		)
 	}
 
 	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {

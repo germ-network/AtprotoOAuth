@@ -50,7 +50,7 @@ extension AuthorizerImpl: DPoPSigning {
 		}
 	}
 
-	public static func decode(
+	static func decode(
 		dataResponse: HTTPDataResponse,
 		requestUrl: URL,
 	) throws -> IndexedNonce? {
