@@ -265,7 +265,7 @@ public struct AuthServerRequestOptions: Sendable {
 			return try await dpopSigner.authenticated(
 				request: request,
 				token: nil,
-				authFetcher: authFetcher
+				fetcher: authFetcher
 			)
 		} else {
 			return try await authFetcher.data(for: request)
@@ -282,7 +282,7 @@ extension DPoPSigning {
 		let firstResponse = try await authenticated(
 			request: request,
 			token: token,
-			authFetcher: authFetcher
+			fetcher: authFetcher
 		)
 
 		//retry if nonceError
@@ -290,7 +290,7 @@ extension DPoPSigning {
 			return try await authenticated(
 				request: request,
 				token: token,
-				authFetcher: authFetcher
+				fetcher: authFetcher
 			)
 		} else {
 			return firstResponse
@@ -301,14 +301,14 @@ extension DPoPSigning {
 	func authenticated(
 		request: URLRequest,
 		token: String?,
-		authFetcher: HTTPFetcher
+		fetcher: HTTPFetcher
 	) async throws -> HTTPDataResponse {
 		let proofRequest = try addProof(
 			request: request,
 			token: nil,
 		)
 
-		let response = try await authFetcher.data(for: proofRequest)
+		let response = try await fetcher.data(for: proofRequest)
 
 		try cacheNonce(
 			response: response,

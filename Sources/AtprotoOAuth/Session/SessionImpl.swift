@@ -259,6 +259,7 @@ extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
 	public var authServerRequestOptions: AuthServerRequestOptions {
 		.atproto(
 			appCredentials: appCredentials,
+			did: did,
 			authFetcher: authFetcher,
 			dpopSigner: self
 		)

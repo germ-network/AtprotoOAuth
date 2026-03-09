@@ -55,6 +55,7 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 
 		return try await AuthServerRequestOptions.atproto(
 			appCredentials: appCredentials,
+			did: did,
 			authFetcher: authFetcher,
 			dpopSigner: AuthDPopState(
 				dpopKey: .generateP256(),

@@ -65,40 +65,19 @@ extension OAuthSessionCapabilities {
 		for request: URLRequest,
 		accessToken: String,
 	) async throws -> HTTPDataResponse {
-		var request = request
-
 		if let dpopSigner = self as? DPoPSigning {
-			request = try await dpopSigner.addProof(
+			return try await dpopSigner.authenticated(
 				request: request,
-				token: accessToken
+				token: accessToken,
+				fetcher: resourceFetcher
 			)
-			request.setValue("DPoP \(accessToken)", forHTTPHeaderField: "authorization")
 		} else {
+			var request = request
 			request.setValue(
 				"Bearer \(accessToken)", forHTTPHeaderField: "authorization")
+			return try await resourceFetcher.data(for: request)
 		}
-
-		//Review: oauth4web doesn't retry this with a new nonce
-		let response = try await resourceFetcher.data(for: request)
-
-		if let dpopSigner = self as? DPoPSigning {
-			try await dpopSigner.cacheNonce(
-				response: response,
-				requestUrl: request.url.tryUnwrap
-			)
-		}
-
-		return response
 	}
-
-	//	async function resourceRequest(
-	//	  accessToken: string,
-	//	  method: string,
-	//	  url: URL,
-	//	  headers?: Headers,
-	//	  body?: ProtectedResourceRequestBody,
-	//	  options?: ProtectedResourceRequestOptions,
-	//	): Promise<Response> {
 
 	//conserving in that it reuses result if a refresh is alread in flght
 	private func conservingRefresh(state: SessionState) async throws -> SessionState.Mutable {

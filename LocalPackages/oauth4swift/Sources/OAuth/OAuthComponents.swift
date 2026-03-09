@@ -239,7 +239,7 @@ extension OAuthComponents {
 			return try await dpopSigner.authenticated(
 				request: request,
 				token: nil,
-				authFetcher: authFetcher
+				fetcher: authFetcher
 			)
 		} else {
 			return try await authFetcher.data(for: request)
