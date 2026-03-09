@@ -124,7 +124,7 @@ extension OAuthSessionCapabilities {
 	}
 
 	//compare to refreshTokenGrantRequest
-	//and processRefreshTokenResponse in
+	//and processRefreshTokenResponse in oauth4web
 	private func refresh(
 		state: SessionState,
 		appCredentials: AppCredentials,

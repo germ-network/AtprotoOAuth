@@ -53,51 +53,19 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 
 		let authorizationServerUrl = try await getAuthorizationUrl(didDoc: didDoc)
 
-		let parConfig = PARConfiguration(
-			parameters: ["login_hint": identity.serverHint]
-		)
-
-		let additionaParameters = [
-			"client_id": appCredentials.clientId,
-			"redirect_url": appCredentials.callbackURL.absoluteString,
-		]
-
-		let validator:
-			(
-				AuthServerMetadata,
-				TokenEndpointResponse
-			) -> SessionState.Mutable = { authServerMetadata, tokenResponse in
-				//TODO: finish validation
-
-				.init(
-					accessToken: .init(
-						value: tokenResponse.accessToken,
-						expiresIn: tokenResponse.expiresIn
-					),
-					refreshToken: .init(
-						refreshToken: tokenResponse.refreshToken),
-					scopes: tokenResponse.scope,
-					//REVIEW: where should this come from?
-					issuingServer: authServerMetadata.issuer
-				)
-			}
-
-		return try await AuthComponents(
-			additionalParameters: additionaParameters,
+		return try await AuthComponents.atproto(
+			appCredentials: appCredentials,
 			authFetcher: authFetcher,
-			validator: validator,
-			issuer: authorizationServerUrl,
 			dpopSigner: AuthDPopState(dpopKey: .generateP256())
 		).performUserAuthentication(
-			inputs: .init(
+			authorizeInputs: .init(
 				appCredentials: appCredentials,
-				stateToken: UUID().uuidString,
-				pkceVerifier: .init()
+				parConfig: .init(
+					parameters: ["login_hint": identity.serverHint]
+				),
+				issuer: authorizationServerUrl
 			),
-			parConfig: parConfig,
-			userAuthenticator: {
-				try await userAuthenticator($0, $1)
-			}
+			userAuthenticator: { try await userAuthenticator($0, $1) },
 		)
 	}
 

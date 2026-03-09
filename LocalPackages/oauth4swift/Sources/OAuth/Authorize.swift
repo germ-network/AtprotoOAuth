@@ -13,12 +13,21 @@ public struct AuthorizeInputs {
 	let appCredentials: AppCredentials
 	let stateToken: String
 	let pkceVerifier: PKCEVerifier
+	let parConfig: PARConfiguration?
+	let issuer: URL
 
-	public init(appCredentials: AppCredentials, stateToken: String, pkceVerifier: PKCEVerifier)
-	{
+	public init(
+		appCredentials: AppCredentials,
+		stateToken: String = UUID().uuidString,
+		pkceVerifier: PKCEVerifier = .init(),
+		parConfig: PARConfiguration?,
+		issuer: URL
+	) {
 		self.appCredentials = appCredentials
 		self.stateToken = stateToken
 		self.pkceVerifier = pkceVerifier
+		self.parConfig = parConfig
+		self.issuer = issuer
 	}
 }
 
@@ -27,7 +36,6 @@ public struct AuthComponents {
 	let additionalParameters: [String: String]
 	let authFetcher: HTTPFetcher
 	let validator: (AuthServerMetadata, TokenEndpointResponse) throws -> SessionState.Mutable
-	let issuer: URL
 	let dpopSigner: DPoPSigning?
 
 	public init(
@@ -38,67 +46,69 @@ public struct AuthComponents {
 				AuthServerMetadata,
 				TokenEndpointResponse
 			) throws -> SessionState.Mutable,
-		issuer: URL,
 		dpopSigner: DPoPSigning?
 	) {
 		self.additionalParameters = additionalParameters
 		self.authFetcher = authFetcher
 		self.validator = validator
-		self.issuer = issuer
 		self.dpopSigner = dpopSigner
 	}
 
 	public func performUserAuthentication(
-		inputs: AuthorizeInputs,
-		parConfig: PARConfiguration,
+		authorizeInputs: AuthorizeInputs,
 		userAuthenticator: UserAuthenticator,
 	) async throws -> SessionState.Archive {
-		let clientId = inputs.appCredentials.clientId
-		let challenge = inputs.pkceVerifier.challenge
-		let scopes = inputs.appCredentials.requestedScopes.joined(separator: " ")
-		let callbackURI = inputs.appCredentials.callbackURL
-
-		let parParams = [
-			"client_id": clientId,
-			"state": inputs.stateToken,
-			"scope": scopes,
-			"response_type": "code",
-			"redirect_uri": inputs.appCredentials.callbackURL.absoluteString,
-			"code_challenge": challenge.value,
-			"code_challenge_method": challenge.method,
-		].merging(parConfig.parameters, uniquingKeysWith: { a, b in a })
+		let clientId = authorizeInputs.appCredentials.clientId
+		let challenge = authorizeInputs.pkceVerifier.challenge
+		let scopes = authorizeInputs.appCredentials.requestedScopes.joined(separator: " ")
+		let callbackURI = authorizeInputs.appCredentials.callbackURL
 
 		let authServerMetadata = try await authFetcher.authServerDiscovery(
-			issuer: issuer
+			issuer: authorizeInputs.issuer
 		)
 
-		let parHTTPResponse = try await pushedAuthorizationRequest(
-			authServerMetadata: authServerMetadata,
-			appCredentials: inputs.appCredentials,
-			params: parParams,
-			headers: [:],
-		)
+		if let parConfig = authorizeInputs.parConfig {
+			let parParams = [
+				"client_id": clientId,
+				"state": authorizeInputs.stateToken,
+				"scope": scopes,
+				"response_type": "code",
+				"redirect_uri": authorizeInputs.appCredentials.callbackURL
+					.absoluteString,
+				"code_challenge": challenge.value,
+				"code_challenge_method": challenge.method,
+			].merging(parConfig.parameters, uniquingKeysWith: { a, b in a })
 
-		let parResponse = try OAuthComponents.processPushedAuthorizationResponse(
-			response: parHTTPResponse
-		)
+			let parHTTPResponse = try await pushedAuthorizationRequest(
+				authServerMetadata: authServerMetadata,
+				appCredentials: authorizeInputs.appCredentials,
+				params: parParams,
+				headers: [:],
+			)
 
-		let tokenURL = try Self.authorizationURL(
-			authEndpoint: authServerMetadata.authorizationEndpoint,
-			parRequestURI: parResponse.requestURI,
-			clientId: clientId
-		)
+			let parResponse = try OAuthComponents.processPushedAuthorizationResponse(
+				response: parHTTPResponse
+			)
 
-		let scheme = try inputs.appCredentials.callbackURLScheme
+			let tokenURL = try Self.authorizationURL(
+				authEndpoint: authServerMetadata.authorizationEndpoint,
+				parRequestURI: parResponse.requestURI,
+				clientId: clientId
+			)
 
-		let callbackURL = try await userAuthenticator(tokenURL, scheme)
+			let scheme = try authorizeInputs.appCredentials.callbackURLScheme
 
-		return try await finishAuthorization(
-			authorizationUrl: tokenURL,
-			redirectURI: callbackURL,
-			authInputs: inputs,
-			authServerMetadata: authServerMetadata,
-		)
+			let callbackURL = try await userAuthenticator(tokenURL, scheme)
+
+			return try await finishAuthorization(
+				authorizationUrl: tokenURL,
+				redirectURI: callbackURL,
+				authInputs: authorizeInputs,
+				authServerMetadata: authServerMetadata,
+			)
+		} else {
+			throw OAuthError.notImplemented
+		}
 	}
 
 	func pushedAuthorizationRequest(
