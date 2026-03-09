@@ -209,11 +209,12 @@ public struct AuthServerRequestOptions: Sendable {
 			parameters["code_verifier"] = pkceVerifier
 		}
 
-		return try await tokenEndpointRequest(
+		return try await OAuthComponents.tokenEndpointRequest(
 			authServerMetadata: authServerMetadata,
 			grantType: .authorizationCode,
 			parameters: parameters,
 			headers: [:],
+			authFetcher: authFetcher
 		)
 	}
 
@@ -230,46 +231,6 @@ public struct AuthServerRequestOptions: Sendable {
 		// identity be resolved and its PDS match the issuing server
 		//
 		// check out draft-ietf-oauth-v2-1 section 7.3.1 for details
-	}
-
-	func tokenEndpointRequest(
-		authServerMetadata: AuthServerMetadata,
-		grantType: GrantType,
-		parameters: [String: String],
-		headers: [String: String],
-	) async throws -> HTTPDataResponse {
-		let url = try authServerMetadata.resolve(endpoint: .token)
-
-		var modifiedParams = parameters
-		modifiedParams["grant_type"] = grantType.rawValue
-
-		var headers = headers
-		headers["accept"] = "application/json"
-		headers["content-type"] = "application/x-www-form-urlencoded;charset=UTF-8"
-
-		var request = URLRequest(url: url)
-		for (key, value) in headers {
-			request.setValue(value, forHTTPHeaderField: key)
-		}
-
-		request.httpMethod = HTTPMethod.post.rawValue
-		let paramsString =
-			try modifiedParams
-			.map({ [$0, $1].joined(separator: "=") })
-			.joined(separator: "&")
-		request.httpBody = try modifiedParams.urlEncodedHTTPBody
-
-		//review: confirm oauth4web doesn't retry "function tokenEndpointRequest"
-		//for a nonce failure
-		if let dpopSigner {
-			return try await dpopSigner.authenticated(
-				request: request,
-				token: nil,
-				fetcher: authFetcher
-			)
-		} else {
-			return try await authFetcher.data(for: request)
-		}
 	}
 }
 
