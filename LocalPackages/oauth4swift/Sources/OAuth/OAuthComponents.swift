@@ -148,7 +148,6 @@ extension HTTPFetcher {
 	//should not redirect
 	public func resourceDiscoveryRequest(
 		url: URL,
-		//Review: what kind of
 	) async throws -> ProtectedResourceMetadata {
 		//TODO: should properly prepend, not append
 		let url = url.appending(
