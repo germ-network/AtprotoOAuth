@@ -17,7 +17,7 @@ public struct TokenEndpointResponse {
 	public let tokenType: TokenType
 
 	//capture additional fields
-	let additionalFields: [String: Any]?
+	public let additionalFields: [String: Any]?
 
 	//TODO: allow extension for unknown types
 	//example in oauth4web: RecognizedTokenTypes

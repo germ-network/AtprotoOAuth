@@ -256,28 +256,32 @@ extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
 		}
 	}
 
-	public var additionalParameters: [String: String] {
-		[
-			"client_id": appCredentials.clientId,
-			"redirect_url": appCredentials.callbackURL.absoluteString,
-		]
+	public var authServerRequestOptions: AuthServerRequestOptions {
+		.atproto(
+			appCredentials: appCredentials,
+			authFetcher: authFetcher,
+			dpopSigner: self
+		)
+	}
+}
+
+extension AtprotoOAuthSessionImpl: DPoPSigning {
+	public var dpopKey: OAuth.DPoPKey {
+		get throws {
+			try session.dPopKey.tryUnwrap
+		}
 	}
 
-	public func validate(
-		authMetadata: AuthServerMetadata,
-		tokenResponse: TokenEndpointResponse
-	) throws -> SessionState.Mutable {
-		//TODO: finish validation
+	public func getNonce(origin: String) -> OAuth.IndexedNonce? {
+		nonceCache.object(forKey: origin as NSString)
+	}
 
-		.init(
-			accessToken: .init(
-				value: tokenResponse.accessToken, expiresIn: tokenResponse.expiresIn
-			),
-			refreshToken: .init(refreshToken: tokenResponse.refreshToken),
-			scopes: tokenResponse.scope,
-			//REVIEW: where should this come from?
-			issuingServer: authMetadata.issuer
-		)
+	public func cacheNonce(response: GermConvenience.HTTPDataResponse, requestUrl: URL) throws {
+		let indexedNonce = try AuthDPopState.decode(
+			dataResponse: response, requestUrl: requestUrl)
+		if let indexedNonce {
+			nonceCache.setObject(indexedNonce, forKey: indexedNonce.origin as NSString)
+		}
 	}
 
 }

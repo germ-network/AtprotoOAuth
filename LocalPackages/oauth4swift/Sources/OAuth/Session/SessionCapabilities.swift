@@ -22,11 +22,7 @@ public protocol OAuthSessionCapabilities: Actor {
 	var resourceFetcher: HTTPFetcher { get }
 
 	//auth
-	var authFetcher: HTTPFetcher { get }
 	var retriableIssuer: URL { get async throws }
-	func validate(
-		authMetadata: AuthServerMetadata,
-		tokenResponse: TokenEndpointResponse
-	) throws -> SessionState.Mutable
-	var additionalParameters: [String: String] { get }
+
+	var authServerRequestOptions: AuthServerRequestOptions { get }
 }

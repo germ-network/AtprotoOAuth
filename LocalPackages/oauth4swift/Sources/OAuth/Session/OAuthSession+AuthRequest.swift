@@ -129,21 +129,18 @@ extension OAuthSessionCapabilities {
 		state: SessionState,
 		appCredentials: AppCredentials,
 	) async throws -> SessionState.Mutable {
-		let authServerMetadata = try await authFetcher.authServerDiscovery(
-			issuer: try await retriableIssuer
-		)
+		let authServerMetadata = try await authServerRequestOptions.authFetcher
+			.authServerDiscovery(issuer: try await retriableIssuer)
 		let httpResponse = try await OAuthComponents.refreshTokenGrantRequest(
 			authServerMetadata: authServerMetadata,
 			refreshToken: state.mutable.refreshToken.tryUnwrap.value,
-			additionalParameters: additionalParameters,
-			authFetcher: authFetcher
+			authServerRequestOptions: authServerRequestOptions
 		)
 		let response = try await OAuthComponents.processRefreshTokenResponse(
 			response: httpResponse)
 
-		return try validate(
-			authMetadata: authServerMetadata,
-			tokenResponse: response
+		return try authServerRequestOptions.validator(
+			authServerMetadata, response
 		)
 	}
 }

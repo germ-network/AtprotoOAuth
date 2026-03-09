@@ -14,9 +14,14 @@ public actor AuthDPopState: DPoPSigning {
 	nonisolated public let dpopKey: DPoPKey
 
 	let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
+	private let decoder: (HTTPDataResponse, URL) throws -> IndexedNonce?
 
-	public init(dpopKey: DPoPKey) {
+	public init(
+		dpopKey: DPoPKey,
+		decoder: @escaping (HTTPDataResponse, URL) throws -> IndexedNonce?
+	) {
 		self.dpopKey = dpopKey
+		self.decoder = decoder
 	}
 
 	public func getNonce(origin: String) -> OAuth.IndexedNonce? {
@@ -24,26 +29,10 @@ public actor AuthDPopState: DPoPSigning {
 	}
 
 	public func cacheNonce(response: HTTPDataResponse, requestUrl: URL) throws {
-		let indexedNonce = try Self.decode(dataResponse: response, requestUrl: requestUrl)
+		let indexedNonce = try decoder(response, requestUrl)
 		if let indexedNonce {
 			nonceCache.setObject(indexedNonce, forKey: indexedNonce.origin as NSString)
 		}
 	}
 
-	static func decode(
-		dataResponse: HTTPDataResponse,
-		requestUrl: URL,
-	) throws -> IndexedNonce? {
-		guard let nonce = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce")
-		else {
-			return nil
-		}
-
-		//henceforth should throw instead of return nil as nonce is expected
-		return try IndexedNonce(
-			responseUrl: dataResponse.response.url,
-			requestUrl: requestUrl,
-			nonce: nonce
-		)
-	}
 }

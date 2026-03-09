@@ -5,16 +5,18 @@
 //  Created by Mark @ Germ on 3/9/26.
 //
 
+import AtprotoTypes
 import Foundation
 import GermConvenience
 import OAuth
 
-extension AuthComponents {
+extension AuthServerRequestOptions {
 	static func atproto(
 		appCredentials: AppCredentials,
+		did: Atproto.DID,
 		authFetcher: HTTPFetcher,
 		dpopSigner: DPoPSigning
-	) -> AuthComponents {
+	) -> AuthServerRequestOptions {
 		.init(
 			additionalParameters: [
 				"client_id": appCredentials.clientId,
@@ -22,9 +24,13 @@ extension AuthComponents {
 			],
 			authFetcher: authFetcher,
 			validator: { authServerMetadata, tokenResponse in
-				//TODO: finish validation
+				let sub = try tokenResponse.additionalFields?["sub"].tryUnwrap
+				let subString = try (sub as? String).tryUnwrap
+				guard subString == did.fullId else {
+					throw OAuthClientError.subDidMismatch
+				}
 
-				.init(
+				return .init(
 					accessToken: .init(
 						value: tokenResponse.accessToken,
 						expiresIn: tokenResponse.expiresIn
@@ -32,11 +38,30 @@ extension AuthComponents {
 					refreshToken: .init(
 						refreshToken: tokenResponse.refreshToken),
 					scopes: tokenResponse.scope,
-					//REVIEW: where should this come from?
+					//REVIEW: do we need to compare the authmetadata issuer against some response from the auth server?
 					issuingServer: authServerMetadata.issuer
 				)
 			},
 			dpopSigner: dpopSigner
+		)
+	}
+}
+
+extension AuthDPopState {
+	static func decode(
+		dataResponse: HTTPDataResponse,
+		requestUrl: URL,
+	) throws -> IndexedNonce? {
+		guard let nonce = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce")
+		else {
+			return nil
+		}
+
+		//henceforth should throw instead of return nil as nonce is expected
+		return try IndexedNonce(
+			responseUrl: dataResponse.response.url,
+			requestUrl: requestUrl,
+			nonce: nonce
 		)
 	}
 }

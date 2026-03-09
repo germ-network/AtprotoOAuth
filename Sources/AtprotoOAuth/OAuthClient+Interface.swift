@@ -53,10 +53,13 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 
 		let authorizationServerUrl = try await getAuthorizationUrl(didDoc: didDoc)
 
-		return try await AuthComponents.atproto(
+		return try await AuthServerRequestOptions.atproto(
 			appCredentials: appCredentials,
 			authFetcher: authFetcher,
-			dpopSigner: AuthDPopState(dpopKey: .generateP256())
+			dpopSigner: AuthDPopState(
+				dpopKey: .generateP256(),
+				decoder: AuthDPopState.decode
+			)
 		).performUserAuthentication(
 			authorizeInputs: .init(
 				appCredentials: appCredentials,

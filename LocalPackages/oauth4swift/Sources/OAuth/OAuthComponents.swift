@@ -193,10 +193,9 @@ extension OAuthComponents {
 	static func refreshTokenGrantRequest(
 		authServerMetadata: AuthServerMetadata,
 		refreshToken: String,
-		additionalParameters: [String: String],
-		authFetcher: HTTPFetcher
+		authServerRequestOptions: AuthServerRequestOptions,
 	) async throws -> HTTPDataResponse {
-		var parameters = additionalParameters
+		var parameters = authServerRequestOptions.additionalParameters
 		parameters["refresh_token"] = refreshToken
 
 		return try await tokenEndpointRequest(
@@ -204,7 +203,7 @@ extension OAuthComponents {
 			grantType: .refreshToken,
 			parameters: parameters,
 			headers: [:],
-			authFetcher: authFetcher
+			authFetcher: authServerRequestOptions.authFetcher
 		)
 	}
 

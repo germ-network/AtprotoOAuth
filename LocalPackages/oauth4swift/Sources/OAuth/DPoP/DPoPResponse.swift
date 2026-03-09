@@ -10,7 +10,7 @@ import Foundation
 import GermConvenience
 
 public protocol DPoPSigning: Actor {
-	nonisolated var dpopKey: DPoPKey { get throws }
+	var dpopKey: DPoPKey { get throws }
 
 	func getNonce(origin: String) -> IndexedNonce?
 	func cacheNonce(response: HTTPDataResponse, requestUrl: URL) throws

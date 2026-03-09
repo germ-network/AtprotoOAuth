@@ -31,18 +31,20 @@ public struct AuthorizeInputs {
 	}
 }
 
-//for authorize and refresh
-public struct AuthComponents {
+///Client defined paramenters for requests to the Auth server, for refresh and user auth requests.
+///does not include the issuer so that it can be lazily fetched
+public struct AuthServerRequestOptions: Sendable {
 	let additionalParameters: [String: String]
 	let authFetcher: HTTPFetcher
-	let validator: (AuthServerMetadata, TokenEndpointResponse) throws -> SessionState.Mutable
+	let validator:
+		@Sendable (AuthServerMetadata, TokenEndpointResponse) throws -> SessionState.Mutable
 	let dpopSigner: DPoPSigning?
 
 	public init(
 		additionalParameters: [String: String],
 		authFetcher: HTTPFetcher,
 		validator:
-			@escaping (
+			@escaping @Sendable (
 				AuthServerMetadata,
 				TokenEndpointResponse
 			) throws -> SessionState.Mutable,
@@ -186,7 +188,7 @@ public struct AuthComponents {
 		)
 
 		return .init(
-			dPopKey: try dpopSigner?.dpopKey,
+			dPopKey: try await dpopSigner?.dpopKey,
 			additionalParams: nil,
 			mutable: result
 		)
