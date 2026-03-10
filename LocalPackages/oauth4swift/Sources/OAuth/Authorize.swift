@@ -182,7 +182,7 @@ public struct AuthServerRequestOptions: Sendable {
 			additionalParameters: additionalParameters,
 		)
 
-		let result = try processAuthorizationCodeOAuth2Response(
+		let tokenResponse = try processAuthorizationCodeOAuth2Response(
 			authServerMetadata: authServerMetadata,
 			response: httpResponse
 		)
@@ -190,7 +190,7 @@ public struct AuthServerRequestOptions: Sendable {
 		return .init(
 			dPopKey: try await dpopSigner?.dpopKey,
 			additionalParams: nil,
-			mutable: result
+			mutable: tokenResponse
 		)
 	}
 
