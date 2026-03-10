@@ -60,7 +60,6 @@ extension AuthServerRequestOptions {
 					refreshToken: .init(
 						refreshToken: tokenResponse.refreshToken),
 					scopes: returnedScopes ?? appCredentials.requestedScopes,
-					//REVIEW: do we need to compare the authmetadata issuer against some response from the auth server?
 					issuingServer: authServerMetadata.issuer
 				)
 			},
