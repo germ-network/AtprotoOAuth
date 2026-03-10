@@ -106,7 +106,7 @@ public enum OAuthComponents {
 	}
 
 	public struct ParsedRedirect {
-		public let authCode: String
+		public let authCode: String?
 		public let issuer: String
 
 		public let components: URLComponents
@@ -127,20 +127,6 @@ public enum OAuthComponents {
 			.decode()
 
 		return decoded
-	}
-
-	struct TokenResponse: Decodable {
-		let accessToken: String
-		let tokenType: String
-		let scope: String?
-		let idToken: String?
-
-		enum CodingKeys: String, CodingKey {
-			case accessToken = "access_token"
-			case tokenType = "token_type"
-			case scope
-			case idToken = "id_token"
-		}
 	}
 }
 

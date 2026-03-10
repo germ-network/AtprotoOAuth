@@ -26,10 +26,10 @@ extension AuthServerRequestOptions {
 			validator: { authServerMetadata, tokenResponse in
 				let sub = try tokenResponse.additionalFields?["sub"].tryUnwrap
 				let subString = try (sub as? String).tryUnwrap
-				
+
 				//for now, enforcing the did is the same as what we started with
 				//(and checked)
-				
+
 				//more full implementation is to check the new did if different
 				//and its issuer
 				guard subString == did.fullId else {
