@@ -216,8 +216,7 @@ extension OAuthComponents {
 		request.httpMethod = HTTPMethod.post.rawValue
 		let paramsString =
 			try modifiedParams
-			.map({ [$0, $1].joined(separator: "=") })
-			.joined(separator: "&")
+			.urlEncodedHTTPBody
 		request.httpBody = try modifiedParams.urlEncodedHTTPBody
 
 		if let dpopSigner = self as? DPoPSigning {

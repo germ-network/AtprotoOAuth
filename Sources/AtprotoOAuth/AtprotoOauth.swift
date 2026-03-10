@@ -15,7 +15,7 @@ extension AuthServerRequestOptions {
 		appCredentials: AppCredentials,
 		did: Atproto.DID,
 		authFetcher: HTTPFetcher,
-		dpopSigner: DPoPSigning
+		dpopSigner: DPoPSigning,
 	) -> AuthServerRequestOptions {
 		.init(
 			additionalParameters: [
@@ -36,6 +36,22 @@ extension AuthServerRequestOptions {
 					throw OAuthClientError.subDidMismatch
 				}
 
+				let returnedScopes: [String]? = try {
+					guard let scopes = tokenResponse.scope else {
+						return nil
+					}
+					let components = scopes.components(separatedBy: " ")
+
+					guard
+						Set(appCredentials.requestedScopes).contains(
+							components)
+					else {
+						throw OAuthSessionError.receivedScopeNotRequested
+					}
+
+					return components
+				}()
+
 				return .init(
 					accessToken: .init(
 						value: tokenResponse.accessToken,
@@ -43,7 +59,7 @@ extension AuthServerRequestOptions {
 					),
 					refreshToken: .init(
 						refreshToken: tokenResponse.refreshToken),
-					scopes: tokenResponse.scope,
+					scopes: returnedScopes ?? appCredentials.requestedScopes,
 					//REVIEW: do we need to compare the authmetadata issuer against some response from the auth server?
 					issuingServer: authServerMetadata.issuer
 				)

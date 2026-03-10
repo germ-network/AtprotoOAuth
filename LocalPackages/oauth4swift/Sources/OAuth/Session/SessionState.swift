@@ -83,13 +83,13 @@ public class SessionState {
 		public let refreshToken: Token?
 
 		// User authorized scopes
-		let scopes: String?
+		let scopes: [String]
 		let issuingServer: String?
 
 		public init(
 			accessToken: Token,
 			refreshToken: Token? = nil,
-			scopes: String? = nil,
+			scopes: [String] = [],
 			issuingServer: String? = nil
 		) {
 			self.accessToken = accessToken

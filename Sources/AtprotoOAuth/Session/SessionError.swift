@@ -12,6 +12,7 @@ enum OAuthSessionError: Error {
 	case sessionInactive
 	case incorrectResponseType
 	case expectedDpopToken(String)
+	case receivedScopeNotRequested
 	case unsupportedDpopSigningAlgorithm
 	case unsupported
 }
@@ -22,6 +23,7 @@ extension OAuthSessionError: LocalizedError {
 		case .cantFormURL: "can't form URL"
 		case .sessionInactive: "session is inactive"
 		case .incorrectResponseType: "incorrect response type"
+		case .receivedScopeNotRequested: "received scope not requested"
 		case .unsupportedDpopSigningAlgorithm: "Unsupported dpop signing algorithm"
 		case .unsupported: "unsupported"
 		case .expectedDpopToken(let tokenType):
