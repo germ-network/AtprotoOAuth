@@ -37,19 +37,19 @@ extension AuthServerRequestOptions {
 				}
 
 				let returnedScopes: [String]? = try {
-					guard let scopes = tokenResponse.scope else {
+					guard let scope = tokenResponse.scope else {
 						return nil
 					}
-					let components = scopes.components(separatedBy: " ")
+					let scopes = scope.components(separatedBy: " ")
 
 					guard
 						Set(appCredentials.requestedScopes).contains(
-							components)
+							scopes)
 					else {
 						throw OAuthSessionError.receivedScopeNotRequested
 					}
 
-					return components
+					return scopes
 				}()
 
 				return .init(
