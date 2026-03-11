@@ -113,7 +113,7 @@ public actor AtprotoOAuthSessionImpl {
 		parameters: X.Parameters
 	) async throws -> X.Result {
 		try await atprotoClient.authProcedure(
-			_: xrpc,
+			xrpc,
 			pdsUrl: try await getPDSUrl(),
 			parameters: parameters,
 			session: self

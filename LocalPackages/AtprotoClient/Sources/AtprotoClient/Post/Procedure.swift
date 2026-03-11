@@ -1,25 +1,27 @@
 //
-//  AuthRequest.swift
+//  Procedure.swift
 //  AtprotoClient
 //
-//  Created by Mark @ Germ on 2/26/26.
+//  Created by Anna Mistele on 3/5/26.
 //
 
 import AtprotoTypes
 import Foundation
 
 extension AtprotoClient {
-	public func authRequest<X: XRPCRequest>(
+	public func authProcedure<X: XRPCProcedure>(
 		_ xrpc: X.Type,
 		pdsUrl: URL,
 		parameters: X.Parameters,
 		session: AtprotoSession
 	) async throws -> X.Result {
-		var requestURL = pdsUrl.appending(path: "/xrpc/" + X.nsid)
-		requestURL = requestURL.appending(queryItems: parameters.asQueryItems())
+		let requestURL = pdsUrl.appending(path: "/xrpc/" + X.nsid)
+
 		let request = URLRequest.createRequest(
 			url: requestURL,
-			httpMethod: .get
+			httpMethod: .post,
+			httpBody: try parameters.httpBody(),
+			contentTypeValue: "application/json"
 		)
 
 		let result = try await session.authResponse(for: request)
