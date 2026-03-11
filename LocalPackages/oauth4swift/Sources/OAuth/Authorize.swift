@@ -37,14 +37,14 @@ public struct AuthorizeInputs {
 public struct AuthServerRequestOptions: Sendable {
 	let additionalParameters: [String: String]
 	let authFetcher: HTTPFetcher
-	let validator:
+	let tokenValidator:
 		@Sendable (AuthServerMetadata, TokenEndpointResponse) throws -> SessionState.Mutable
 	let dpopSigner: DPoPSigning?
 
 	public init(
 		additionalParameters: [String: String],
 		authFetcher: HTTPFetcher,
-		validator:
+		tokenValidator:
 			@escaping @Sendable (
 				AuthServerMetadata,
 				TokenEndpointResponse
@@ -53,7 +53,7 @@ public struct AuthServerRequestOptions: Sendable {
 	) {
 		self.additionalParameters = additionalParameters
 		self.authFetcher = authFetcher
-		self.validator = validator
+		self.tokenValidator = tokenValidator
 		self.dpopSigner = dpopSigner
 	}
 
@@ -231,7 +231,7 @@ public struct AuthServerRequestOptions: Sendable {
 			response: response)
 
 		//check the claims
-		let sessionState = try validator(authServerMetadata, tokenResponse)
+		let sessionState = try tokenValidator(authServerMetadata, tokenResponse)
 
 		let additionalParams = tokenResponse.additionalFields?
 			.compactMapValues {

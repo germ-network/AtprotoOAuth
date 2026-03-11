@@ -23,7 +23,12 @@ extension AuthServerRequestOptions {
 				"redirect_url": appCredentials.callbackURL.absoluteString,
 			],
 			authFetcher: authFetcher,
-			validator: { authServerMetadata, tokenResponse in
+			tokenValidator: { authServerMetadata, tokenResponse in
+				guard tokenResponse.tokenType == .dpop else {
+					throw OAuthSessionError.expectedDpopToken(
+						tokenResponse.tokenType.rawValue)
+				}
+
 				let sub = try tokenResponse.additionalFields?["sub"].tryUnwrap
 				let subString = try (sub as? String).tryUnwrap
 

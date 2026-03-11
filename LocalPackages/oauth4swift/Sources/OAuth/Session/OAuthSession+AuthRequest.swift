@@ -118,7 +118,7 @@ extension OAuthSessionCapabilities {
 		let response = try await OAuthComponents.processRefreshTokenResponse(
 			response: httpResponse)
 
-		return try authServerRequestOptions.validator(
+		return try authServerRequestOptions.tokenValidator(
 			authServerMetadata, response
 		)
 	}
