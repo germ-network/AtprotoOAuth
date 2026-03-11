@@ -1,6 +1,7 @@
 import Foundation
 import GermConvenience
 
+//this is growing to the point where it should get broken down into subdomains
 enum OAuthError: Error {
 	case missingScheme
 	case missingHTTPMethod
@@ -12,12 +13,11 @@ enum OAuthError: Error {
 	case missingAuthCode
 	case invalidRequest
 	case invalidResponse
-	case unrecognizedAuthError(OAuthErrorResponse)
 	case redirectError(String)
 	case stateTokenMismatch(String, String)
 	case issuingServerMismatch(String, String)
 	case httpResponse(response: HTTPURLResponse)
-	case oauthError(OAuthErrorResponse, HTTPURLResponse)
+	case oauthError(OAuthErrorResponse, Int)
 	case notImplemented
 }
 
@@ -34,8 +34,6 @@ extension OAuthError: LocalizedError {
 		case .missingAuthCode: "Missing authorization code"
 		case .invalidRequest: "Invalid request"
 		case .invalidResponse: "Invalid response"
-		case .unrecognizedAuthError(let oauthError):
-			"Unrecognized auth error: \(oauthError)"
 		case .stateTokenMismatch(
 			let expected,
 			let got
@@ -45,8 +43,8 @@ extension OAuthError: LocalizedError {
 		case .redirectError(let errorString): "Redirect error: \(errorString)"
 		case .httpResponse(let response):
 			"HTTP error with status code: \(response.statusCode), response: \(response)"
-		case .oauthError(let errorBody, let response):
-			"OAuth error with status code: \(response.statusCode), response: \(response), body: \(errorBody)"
+		case .oauthError(let errorBody, let statusCode):
+			"OAuth error with status code: \(statusCode),  body: \(errorBody)"
 		case .notImplemented: "Not implemented"
 		}
 	}

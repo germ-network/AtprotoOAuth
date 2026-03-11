@@ -28,8 +28,8 @@ public enum OAuthComponents {
 		switch parsed {
 		case .result(let result):
 			return result
-		case .error(let errorResponse, _):
-			throw OAuthError.oauthError(errorResponse, response.response)
+		case .error(let errorResponse, let errorCode):
+			throw OAuthError.oauthError(errorResponse, errorCode)
 		}
 	}
 
@@ -127,14 +127,14 @@ public enum OAuthComponents {
 		switch decodedResponse {
 		case .result(let r):
 			return r
-		case .error(let e, _):
+		case .error(let e, let statusCode):
 			switch e.error {
 			case "invalid_request":
 				throw OAuthError.invalidRequest
 			case "invalid_response":
 				throw OAuthError.invalidResponse
 			default:
-				throw OAuthError.unrecognizedAuthError(e)
+				throw OAuthError.oauthError(e, statusCode)
 			}
 		}
 	}
