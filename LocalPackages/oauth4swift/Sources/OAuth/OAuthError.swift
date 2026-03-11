@@ -9,6 +9,10 @@ enum OAuthError: Error {
 	case insecureScheme
 	case unrecognizedTokenType
 	case redirectMissingComponents
+	case missingAuthCode
+	case invalidRequest
+	case invalidResponse
+	case unrecognizedAuthError(OAuthErrorResponse)
 	case redirectError(String)
 	case stateTokenMismatch(String, String)
 	case issuingServerMismatch(String, String)
@@ -27,6 +31,11 @@ extension OAuthError: LocalizedError {
 		case .insecureScheme: "Insecure scheme"
 		case .unrecognizedTokenType: "Unrecognized Token Type"
 		case .redirectMissingComponents: "Redirect missing components"
+		case .missingAuthCode: "Missing authorization code"
+		case .invalidRequest: "Invalid request"
+		case .invalidResponse: "Invalid response"
+		case .unrecognizedAuthError(let oauthError):
+			"Unrecognized auth error: \(oauthError)"
 		case .stateTokenMismatch(
 			let expected,
 			let got

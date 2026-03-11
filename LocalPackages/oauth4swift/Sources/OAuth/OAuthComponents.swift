@@ -80,13 +80,9 @@ public enum OAuthComponents {
 			})?.value == nil)
 
 		//finally can check for presence of code
-		guard
-			let authCode = redirectComponents.queryItems?.first(where: {
-				$0.name == "code"
-			})?.value
-		else {
-			throw OAuthError.redirectMissingComponents
-		}
+		let authCode = redirectComponents.queryItems?.first(where: {
+			$0.name == "code"
+		})?.value
 
 		guard state == expectedState else {
 			throw OAuthError.stateTokenMismatch(state, expectedState)
@@ -121,12 +117,26 @@ public enum OAuthComponents {
 	static func processGenericAccessToken(
 		response: HTTPDataResponse
 	) throws -> TokenEndpointResponse {
-		let decoded: TokenEndpointResponse =
+		let decodedResponse =
 			try response
-			.expect(successCode: 200)
-			.decode()
+			.success(
+				decodeResult: TokenEndpointResponse.self,
+				orError: OAuthErrorResponse.self
+			)
 
-		return decoded
+		switch decodedResponse {
+		case .result(let r):
+			return r
+		case .error(let e, _):
+			switch e.error {
+			case "invalid_request":
+				throw OAuthError.invalidRequest
+			case "invalid_response":
+				throw OAuthError.invalidResponse
+			default:
+				throw OAuthError.unrecognizedAuthError(e)
+			}
+		}
 	}
 }
 

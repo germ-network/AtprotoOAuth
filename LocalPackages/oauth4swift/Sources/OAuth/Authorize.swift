@@ -204,7 +204,11 @@ public struct AuthServerRequestOptions: Sendable {
 	) async throws -> HTTPDataResponse {
 		var parameters = additionalParameters
 		parameters["redirect_uri"] = redirectUrl.absoluteString
-		parameters["code"] = parsedRedirect.authCode
+
+		//Review: how does e.g., the atproto implementation signal that this is required?
+		if let code = parsedRedirect.authCode {
+			parameters["code"] = parsedRedirect.authCode
+		}
 
 		if let pkceVerifier {
 			parameters["code_verifier"] = pkceVerifier
