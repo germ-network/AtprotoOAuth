@@ -110,10 +110,9 @@ extension OAuthSessionCapabilities {
 	) async throws -> SessionState.Mutable {
 		let authServerMetadata = try await authServerRequestOptions.authFetcher
 			.authServerDiscovery(issuer: try await retriableIssuer)
-		let httpResponse = try await OAuthComponents.refreshTokenGrantRequest(
+		let httpResponse = try await authServerRequestOptions.refreshTokenGrantRequest(
 			authServerMetadata: authServerMetadata,
 			refreshToken: state.mutable.refreshToken.tryUnwrap.value,
-			authServerRequestOptions: authServerRequestOptions
 		)
 		let response = try await OAuthComponents.processRefreshTokenResponse(
 			response: httpResponse)

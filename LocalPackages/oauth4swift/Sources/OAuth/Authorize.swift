@@ -64,7 +64,6 @@ public struct AuthServerRequestOptions: Sendable {
 		let clientId = authorizeInputs.appCredentials.clientId
 		let challenge = authorizeInputs.pkceVerifier.challenge
 		let scopes = authorizeInputs.appCredentials.requestedScopes.joined(separator: " ")
-		let callbackURI = authorizeInputs.appCredentials.callbackURL
 
 		let authServerMetadata = try await authFetcher.authServerDiscovery(
 			issuer: authorizeInputs.issuer
@@ -214,12 +213,11 @@ public struct AuthServerRequestOptions: Sendable {
 			parameters["code_verifier"] = pkceVerifier
 		}
 
-		return try await OAuthComponents.tokenEndpointRequest(
+		return try await tokenEndpointRequest(
 			authServerMetadata: authServerMetadata,
 			grantType: .authorizationCode,
 			parameters: parameters,
 			headers: [:],
-			authFetcher: authFetcher
 		)
 	}
 
@@ -245,6 +243,55 @@ public struct AuthServerRequestOptions: Sendable {
 			}
 
 		return (sessionState, additionalParams)
+	}
+
+	func refreshTokenGrantRequest(
+		authServerMetadata: AuthServerMetadata,
+		refreshToken: String,
+	) async throws -> HTTPDataResponse {
+		var parameters = additionalParameters
+		parameters["refresh_token"] = refreshToken
+
+		return try await tokenEndpointRequest(
+			authServerMetadata: authServerMetadata,
+			grantType: .refreshToken,
+			parameters: parameters,
+			headers: [:],
+		)
+	}
+
+	func tokenEndpointRequest(
+		authServerMetadata: AuthServerMetadata,
+		grantType: GrantType,
+		parameters: [String: String],
+		headers: [String: String],
+	) async throws -> HTTPDataResponse {
+		let url = try authServerMetadata.resolve(endpoint: .token)
+
+		var modifiedParams = parameters
+		modifiedParams["grant_type"] = grantType.rawValue
+
+		var headers = headers
+		headers["accept"] = "application/json"
+		headers["content-type"] = "application/x-www-form-urlencoded;charset=UTF-8"
+
+		var request = URLRequest(url: url)
+		for (key, value) in headers {
+			request.setValue(value, forHTTPHeaderField: key)
+		}
+
+		request.httpMethod = HTTPMethod.post.rawValue
+		request.httpBody = modifiedParams.urlEncodedHTTPBody
+
+		if let dpopSigner = self as? DPoPSigning {
+			return try await dpopSigner.authenticated(
+				request: request,
+				token: nil,
+				fetcher: authFetcher
+			)
+		} else {
+			return try await authFetcher.data(for: request)
+		}
 	}
 }
 
