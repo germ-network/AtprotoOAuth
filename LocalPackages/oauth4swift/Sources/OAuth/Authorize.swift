@@ -7,6 +7,7 @@
 
 import Foundation
 import GermConvenience
+import Logging
 
 //for authorize
 public struct AuthorizeInputs {
@@ -182,14 +183,14 @@ public struct AuthServerRequestOptions: Sendable {
 			additionalParameters: additionalParameters,
 		)
 
-		let tokenResponse = try processAuthorizationCodeOAuth2Response(
+		let (tokenResponse, additionalParams) = try processAuthorizationCodeOAuth2Response(
 			authServerMetadata: authServerMetadata,
 			response: httpResponse
 		)
 
 		return .init(
 			dPopKey: try await dpopSigner?.dpopKey,
-			additionalParams: nil,
+			additionalParams: additionalParams,
 			mutable: tokenResponse
 		)
 	}
@@ -221,16 +222,25 @@ public struct AuthServerRequestOptions: Sendable {
 	func processAuthorizationCodeOAuth2Response(
 		authServerMetadata: AuthServerMetadata,
 		response: HTTPDataResponse
-	) throws -> SessionState.Mutable {
-		let result = try OAuthComponents.processGenericAccessToken(response: response)
+	) throws -> (SessionState.Mutable, [String: String]?) {
+		let tokenResponse = try OAuthComponents.processGenericAccessToken(
+			response: response)
 
 		//check the claims
-		return try validator(authServerMetadata, result)
-		// TODO: GER-1388 - Implement validator
-		// after a token is issued, it is critical that the returned
-		// identity be resolved and its PDS match the issuing server
-		//
-		// check out draft-ietf-oauth-v2-1 section 7.3.1 for details
+		let sessionState = try validator(authServerMetadata, tokenResponse)
+
+		let additionalParams = tokenResponse.additionalFields?
+			.compactMapValues {
+				if let string = $0 as? String {
+					return string
+				} else {
+					Logger(label: "processAuthorizationCodeOAuth2Response")
+						.error("received param value \($0)")
+					return nil
+				}
+			}
+
+		return (sessionState, additionalParams)
 	}
 }
 

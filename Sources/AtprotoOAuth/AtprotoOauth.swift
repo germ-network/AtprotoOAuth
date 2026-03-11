@@ -30,6 +30,12 @@ extension AuthServerRequestOptions {
 				//for now, enforcing the did is the same as what we started with
 				//(and checked)
 
+				// TODO: GER-1388 - Implement validator
+				// after a token is issued, it is critical that the returned
+				// identity be resolved and its PDS match the issuing server
+				//
+				// check out draft-ietf-oauth-v2-1 section 7.3.1 for details
+
 				//more full implementation is to check the new did if different
 				//and its issuer
 				guard subString == did.fullId else {
