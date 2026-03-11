@@ -295,52 +295,6 @@ public struct AuthServerRequestOptions: Sendable {
 	}
 }
 
-extension DPoPSigning {
-	func nonceRetryAuthenticated(
-		request: URLRequest,
-		token: String?,
-		authFetcher: HTTPFetcher
-	) async throws -> HTTPDataResponse {
-		let firstResponse = try await authenticated(
-			request: request,
-			token: token,
-			fetcher: authFetcher
-		)
-
-		//retry if nonceError
-		if firstResponse.isDPoPNonceError {
-			return try await authenticated(
-				request: request,
-				token: token,
-				fetcher: authFetcher
-			)
-		} else {
-			return firstResponse
-		}
-	}
-
-	//tries just once
-	func authenticated(
-		request: URLRequest,
-		token: String?,
-		fetcher: HTTPFetcher
-	) async throws -> HTTPDataResponse {
-		let proofRequest = try addProof(
-			request: request,
-			token: nil,
-		)
-
-		let response = try await fetcher.data(for: proofRequest)
-
-		try cacheNonce(
-			response: response,
-			requestUrl: proofRequest.url.tryUnwrap
-		)
-
-		return response
-	}
-}
-
 extension [String: String] {
 	var urlEncodedHTTPBody: Data {
 		map({ [$0, $1].joined(separator: "=") })
