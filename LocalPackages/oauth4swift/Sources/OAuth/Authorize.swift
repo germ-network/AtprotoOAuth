@@ -206,7 +206,7 @@ public struct AuthServerRequestOptions: Sendable {
 
 		//Review: how does e.g., the atproto implementation signal that this is required?
 		if let code = parsedRedirect.authCode {
-			parameters["code"] = parsedRedirect.authCode
+			parameters["code"] = code
 		}
 
 		if let pkceVerifier {
@@ -283,7 +283,7 @@ public struct AuthServerRequestOptions: Sendable {
 		request.httpMethod = HTTPMethod.post.rawValue
 		request.httpBody = modifiedParams.urlEncodedHTTPBody
 
-		if let dpopSigner = self as? DPoPSigning {
+		if let dpopSigner {
 			return try await dpopSigner.authenticated(
 				request: request,
 				token: nil,
