@@ -7,6 +7,7 @@
 
 import AtprotoTypes
 import Foundation
+import GermConvenience
 
 extension AtprotoClient {
 	public func request<X: XRPCRequest>(
