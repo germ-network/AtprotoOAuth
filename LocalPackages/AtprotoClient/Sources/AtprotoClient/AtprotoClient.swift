@@ -2,36 +2,7 @@ import AtprotoTypes
 import Foundation
 import GermConvenience
 
-//abstract out the protocol so we can sub in a mock one for offline testing
-public protocol AtprotoClientInterface: Sendable {
-	func plcDirectoryQuery(_: Atproto.DID) async throws -> DIDDocument
-
-	func authProcedure<X: XRPCProcedure>(
-		_: X.Type,
-		pdsUrl: URL,
-		parameters: X.Parameters,
-		session: AtprotoSession
-	) async throws -> X.Result
-
-	func authRequest<X: XRPCRequest>(
-		_: X.Type,
-		pdsUrl: URL,
-		parameters: X.Parameters,
-		session: AtprotoSession
-	) async throws -> X.Result
-
-	func request<X: XRPCRequest>(
-		_: X.Type,
-		pdsUrl: URL,
-		parameters: X.Parameters,
-	) async throws -> X.Result
-}
-
-public protocol AtprotoSession {
-	func authResponse(for request: URLRequest) async throws -> HTTPDataResponse
-}
-
-public struct AtprotoClient {
+public struct AtprotoClient: Sendable {
 	let responseProvider: HTTPDataResponse.Requester
 
 	public init(responseProvider: @escaping HTTPDataResponse.Requester) {
@@ -39,10 +10,7 @@ public struct AtprotoClient {
 	}
 }
 
-extension AtprotoClient: AtprotoClientInterface {
-}
-
-extension AtprotoClientInterface {
+extension AtprotoClient {
 	func getRecord<R: AtprotoRecord>(
 		pdsUrl: URL,
 		parameters: Lexicon.Com.Atproto.Repo.GetRecord<R>.Parameters,

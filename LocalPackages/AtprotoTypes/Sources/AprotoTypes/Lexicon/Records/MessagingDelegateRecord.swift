@@ -122,6 +122,22 @@ extension Lexicon.Com.GermNetwork.Declaration: AtprotoRecord {
 			continuityProofs: nil
 		)
 	}
+
+	public static func mock(showButtonTo: Lexicon.Com.GermNetwork.ShowButtonTo)
+		-> Lexicon.Com.GermNetwork.Declaration
+	{
+		.init(
+			version: "1.1.0",
+			currentKey: Data("mock".utf8),
+			keyPackage: Data("mock".utf8),
+			messageMe: showButtonTo == .none
+				? nil
+				: .init(
+					showButtonTo: showButtonTo,
+					messageMeUrl: "https://landing.ger.mx/newUser"),
+			continuityProofs: nil
+		)
+	}
 }
 
 public struct LexiconBytes: Codable, Equatable, Hashable, Sendable {

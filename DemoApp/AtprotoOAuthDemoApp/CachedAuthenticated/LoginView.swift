@@ -27,7 +27,7 @@ struct LoginView: View {
 					Text("Logged in")
 				}
 				switch (
-					viewModel.session,
+					viewModel.sessionWrapper,
 					viewModel.processingTask,
 					viewModel.sessionStorage.sessionArchive,
 				) {
@@ -50,7 +50,7 @@ struct LoginView: View {
 				}
 			}
 
-			if viewModel.session != nil {
+			if viewModel.sessionWrapper != nil {
 				Section("Auth Session Query") {
 					HStack {
 						Text("@")

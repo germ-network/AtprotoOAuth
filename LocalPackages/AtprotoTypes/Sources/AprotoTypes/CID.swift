@@ -51,7 +51,7 @@ extension CID: Encodable {
 }
 
 extension CID {
-	static func mock() -> Self {
+	public static func mock() -> Self {
 		//TODO, mock the internal mechanics of CID
 		.init(bytes: Data("mock".utf8))
 	}

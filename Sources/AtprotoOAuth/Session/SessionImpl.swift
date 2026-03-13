@@ -15,7 +15,7 @@ public actor AtprotoOAuthSessionImpl {
 	public nonisolated let did: Atproto.DID
 	public let appCredentials: AppCredentials
 	public let httpRequester: HTTPDataResponse.Requester
-	let atprotoClient: AtprotoClientInterface
+	let atprotoClient: AtprotoClient
 	let oauthMetadataFetcher: OAuthMetadataFetcher
 
 	public let pkceVerifier = PKCEVerifier()
@@ -50,7 +50,7 @@ public actor AtprotoOAuthSessionImpl {
 		appCredentials: AppCredentials,
 		state: State,
 		httpRequester: @escaping HTTPDataResponse.Requester,
-		atprotoClient: AtprotoClientInterface,
+		atprotoClient: AtprotoClient,
 		oauthMetadataFetcher: OAuthMetadataFetcher
 	) {
 		self.did = did
@@ -166,7 +166,7 @@ extension AtprotoOAuthSessionImpl {
 		archive: Archive,
 		appCredentials: AppCredentials,
 		httpRequester: @escaping HTTPDataResponse.Requester,
-		atprotoClient: AtprotoClientInterface,
+		atprotoClient: AtprotoClient,
 		oauthMetadataFetcher: OAuthMetadataFetcher
 	) throws -> (AtprotoOAuthSession, AsyncStream<SessionState.Mutable?>) {
 		let session = try AtprotoOAuthSessionImpl(
@@ -183,7 +183,7 @@ extension AtprotoOAuthSessionImpl {
 		archive: Archive,
 		appCredentials: AppCredentials,
 		httpRequester: @escaping HTTPDataResponse.Requester,
-		atprotoClient: AtprotoClientInterface,
+		atprotoClient: AtprotoClient,
 		oauthMetadataFetcher: OAuthMetadataFetcher
 	) throws {
 		try self.init(

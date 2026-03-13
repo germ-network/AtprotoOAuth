@@ -39,7 +39,7 @@ import os
 	let sessionStorage: InMemorySessionStore
 
 	var processingTask: (Task<Void, Error>, String)? = nil
-	var session: SessionWrapper? = nil
+	var sessionWrapper: SessionWrapper? = nil
 
 	var blocked: Bool? = nil
 	var blocking: Bool? = nil
@@ -86,7 +86,7 @@ import os
 			)
 
 			if !Task.isCancelled {
-				self.session = .init(
+				self.sessionWrapper = .init(
 					session: session,
 					saveStream: saveStream,
 				) {
@@ -132,13 +132,13 @@ import os
 
 	//clear inMemory state
 	func sleep() {
-		guard let session else {
+		guard let sessionWrapper else {
 			Self.logger.error("missing session")
 			return
 		}
-		session.saveTask.cancel()
+		sessionWrapper.saveTask.cancel()
 
-		self.session = nil
+		self.sessionWrapper = nil
 	}
 
 	func restore() {
@@ -161,7 +161,7 @@ import os
 					httpRequester: URLSession.defaultProvider)
 			)
 			if !Task.isCancelled {
-				self.session = .init(
+				self.sessionWrapper = .init(
 					session: restored,
 					saveStream: saveStream,
 				) {
@@ -193,27 +193,24 @@ import os
 	func logout() {
 		processingTask?.0.cancel()
 		processingTask = nil
-		session?.saveTask.cancel()
-		session = nil
+		sessionWrapper?.saveTask.cancel()
+		sessionWrapper = nil
 		sessionStorage.sessionArchive = nil
 	}
 
 	func getMetadata(for otherHandle: String) async throws {
-		guard let session else {
+		guard let sessionWrapper else {
 			return
 		}
-
 		let otherDid = try await LoginDemoVM.fallbackResolve(handle: otherHandle)
-
-		if let metadata = try await session.session.authRequest(
-			Lexicon.App.Bsky.Actor.GetProfile.self,
-			parameters: .init(actor: .did(otherDid))
-		).viewer {
-			blocking = metadata.blocking != nil
-			blocked = metadata.blockedBy
-			following = metadata.following != nil
-			followedBy = metadata.followedBy != nil
-		}
+		let metadata = try await oauthClient.atprotoClient.getProfileViewerState(
+			did: otherDid,
+			session: sessionWrapper.session
+		)
+		blocking = metadata.blocking != nil
+		blocked = metadata.blockedBy
+		following = metadata.following != nil
+		followedBy = metadata.followedBy != nil
 	}
 
 	func getMessageDelegate() async throws {
@@ -225,7 +222,7 @@ import os
 	func postMessagingDelegate(for showButtonTo: Lexicon.Com.GermNetwork.ShowButtonTo)
 		async throws
 	{
-		guard let session = session?.session as? AtprotoSession else {
+		guard let sessionWrapper else {
 			return
 		}
 
@@ -246,18 +243,8 @@ import os
 					continuityProofs: nil
 				),
 				did: sessionStorage.did,
-				session: session
+				session: sessionWrapper.session
 			)
-			//			let _ = try await session.session.authProcedure(
-			//				Lexicon.Com.Atproto.Repo.PutRecord<Lexicon.Com.GermNetwork.Declaration>
-			//					.self,
-			//				parameters: .init(
-			//					repo: .did(sessionStorage.did),
-			//					rkey: "self",
-			//					record: record ?? .mock(),
-			//					validate: true,
-			//				)
-			//			)
 		} catch {
 			Self.logger.error("Error posting message delegate: \(error)")
 		}
