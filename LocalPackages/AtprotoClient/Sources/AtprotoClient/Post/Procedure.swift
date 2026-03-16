@@ -25,11 +25,10 @@ extension AtprotoClient {
 		)
 
 		let result = try await session.authResponse(for: request)
-			.successErrorDecode(
-				resultType: X.Result.self,
-				errorType: Lexicon.XRPCError.self
+			.success(
+				decodeResult: X.Result.self,
+				orError: Lexicon.XRPCError.self
 			)
-
 		switch result {
 		case .error(let errorStruct, let statusCode):
 			throw AtprotoClientError.requestFailed(
