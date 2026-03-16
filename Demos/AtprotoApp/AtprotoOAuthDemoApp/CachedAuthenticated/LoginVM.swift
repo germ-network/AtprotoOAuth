@@ -10,6 +10,7 @@ import AtprotoOAuth
 import AtprotoTypes
 import AuthenticationServices
 import Foundation
+import GermConvenience
 import OAuth
 import os
 
@@ -27,12 +28,11 @@ import os
 			callbackURL: URL(string: "com.germnetwork.static:/oauth")!
 		),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
-		responseProvider: URLSession.defaultProvider,
+		resourceFetcher: URLSession.shared,
+		authFetcher: URLSession.manualRedirect(),
 		atprotoClient: AtprotoClient(
-			responseProvider: URLSession.defaultProvider
+			resourceFetcher: URLSession.shared
 		),
-		oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
-			httpRequester: URLSession.defaultProvider)
 	)
 
 	let handle: String
@@ -77,12 +77,11 @@ import os
 					session: sessionArchive,
 				),
 				appCredentials: oauthClient.appCredentials,
-				httpRequester: URLSession.defaultProvider,
+				resourceFetcher: URLSession.shared,
+				authFetcher: URLSession.manualRedirect(),
 				atprotoClient: AtprotoClient(
-					responseProvider: URLSession.defaultProvider
+					resourceFetcher: URLSession.shared
 				),
-				oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
-					httpRequester: URLSession.defaultProvider)
 			)
 
 			if !Task.isCancelled {
@@ -153,12 +152,11 @@ import os
 					session: archive,
 				),
 				appCredentials: oauthClient.appCredentials,
-				httpRequester: URLSession.defaultProvider,
+				resourceFetcher: URLSession.shared,
+				authFetcher: URLSession.manualRedirect(),
 				atprotoClient: AtprotoClient(
-					responseProvider: URLSession.defaultProvider
+					resourceFetcher: URLSession.shared
 				),
-				oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
-					httpRequester: URLSession.defaultProvider)
 			)
 			if !Task.isCancelled {
 				self.sessionWrapper = .init(

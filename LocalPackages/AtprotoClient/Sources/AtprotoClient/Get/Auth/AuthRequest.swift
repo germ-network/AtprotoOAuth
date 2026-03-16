@@ -7,6 +7,7 @@
 
 import AtprotoTypes
 import Foundation
+import GermConvenience
 
 extension AtprotoClient {
 	public func authRequest<X: XRPCRequest>(
@@ -23,9 +24,9 @@ extension AtprotoClient {
 		)
 
 		let result = try await session.authResponse(for: request)
-			.successErrorDecode(
-				resultType: X.Result.self,
-				errorType: Lexicon.XRPCError.self
+			.success(
+				decodeResult: X.Result.self,
+				orError: Lexicon.XRPCError.self
 			)
 
 		switch result {

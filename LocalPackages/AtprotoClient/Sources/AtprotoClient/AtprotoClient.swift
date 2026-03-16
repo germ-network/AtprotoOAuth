@@ -2,11 +2,40 @@ import AtprotoTypes
 import Foundation
 import GermConvenience
 
-public struct AtprotoClient: Sendable {
-	let responseProvider: HTTPDataResponse.Requester
+//abstract out the protocol so we can sub in a mock one for offline testing
+public protocol AtprotoClientInterface: Sendable {
+	func plcDirectoryQuery(_: Atproto.DID) async throws -> DIDDocument
 
-	public init(responseProvider: @escaping HTTPDataResponse.Requester) {
-		self.responseProvider = responseProvider
+	func authProcedure<X: XRPCProcedure>(
+		_: X.Type,
+		pdsUrl: URL,
+		parameters: X.Parameters,
+		session: AtprotoSession
+	) async throws -> X.Result
+
+	func authRequest<X: XRPCRequest>(
+		_: X.Type,
+		pdsUrl: URL,
+		parameters: X.Parameters,
+		session: AtprotoSession
+	) async throws -> X.Result
+
+	func request<X: XRPCRequest>(
+		_: X.Type,
+		pdsUrl: URL,
+		parameters: X.Parameters,
+	) async throws -> X.Result
+}
+
+public protocol AtprotoSession {
+	func authResponse(for request: URLRequest) async throws -> HTTPDataResponse
+}
+
+public struct AtprotoClient {
+	let resourceFetcher: HTTPFetcher
+
+	public init(resourceFetcher: HTTPFetcher) {
+		self.resourceFetcher = resourceFetcher
 	}
 }
 

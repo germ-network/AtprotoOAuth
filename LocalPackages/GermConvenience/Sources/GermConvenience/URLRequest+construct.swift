@@ -9,7 +9,7 @@ import Foundation
 import GermConvenience
 
 extension URLRequest {
-	static func createRequest(
+	public static func createRequest(
 		url: URL,
 		httpMethod: HTTPMethod,
 		httpBody: Data? = nil,

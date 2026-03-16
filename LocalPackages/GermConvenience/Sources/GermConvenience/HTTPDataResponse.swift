@@ -7,21 +7,23 @@
 
 import Foundation
 
-//type the (data, responese) tuple so we can chain handlers
+//type the (data, response) tuple so we can chain handlers
 //these patterns are available in Vapor
 public struct HTTPDataResponse: Sendable {
 	public let data: Data
 	public let response: HTTPURLResponse
-
-	public typealias Requester = @Sendable (URLRequest) async throws -> HTTPDataResponse
 
 	public init(data: Data, response: HTTPURLResponse) {
 		self.data = data
 		self.response = response
 	}
 
-	public func successDecode<R: Decodable>() throws -> R {
-		guard response.statusCode >= 200 && response.statusCode < 300 else {
+	public func expect(successCode: Int) throws -> Data {
+		try expectSuccess(range: successCode...successCode)
+	}
+
+	public func expectSuccess(range: RangeExpression<Int> = 200..<300) throws -> Data {
+		guard range.contains(response.statusCode) else {
 			if let stringResponse = String(data: data, encoding: .utf8) {
 				throw
 					HTTPResponseError
@@ -30,7 +32,7 @@ public struct HTTPDataResponse: Sendable {
 				throw HTTPResponseError.unsuccessful(response.statusCode, data)
 			}
 		}
-		return try JSONDecoder().decode(R.self, from: data)
+		return data
 	}
 
 	public enum ErrorResult<R: Decodable, E: Decodable> {
@@ -38,32 +40,44 @@ public struct HTTPDataResponse: Sendable {
 		case error(E, Int)
 	}
 
-	public func successErrorDecode<R: Decodable, E: Decodable>(
-		resultType: R.Type,
-		errorType: E.Type
+	public func success<R: Decodable, E: Decodable>(
+		code: Int,
+		decodeResult resultType: R.Type,
+		orError error: E.Type,
 	) throws -> ErrorResult<R, E> {
-		guard response.statusCode >= 200 && response.statusCode < 300 else {
-			do {
-				let decoded = try JSONDecoder().decode(E.self, from: data)
-				return .error(decoded, response.statusCode)
-			} catch {
-				if let stringResponse = String(data: data, encoding: .utf8) {
-					throw
-						HTTPResponseError
-						.unsuccessfulString(
-							response.statusCode, stringResponse)
-				} else {
-					throw HTTPResponseError.unsuccessful(
-						response.statusCode, data)
-				}
-			}
+		try success(
+			range: code...code,
+			decodeResult: R.self,
+			orError: E.self
+		)
+	}
+
+	public func success<R: Decodable, E: Decodable>(
+		range: RangeExpression<Int> = 200..<300,
+		decodeResult resultType: R.Type,
+		orError error: E.Type,
+	) throws -> ErrorResult<R, E> {
+		do {
+			return .result(
+				try expectSuccess(range: range)
+					.decode()
+			)
+		} catch {
+			return .error(try data.decode(), response.statusCode)
 		}
-		if resultType == Data?.self || resultType == Data.self,
-			let rawData = data as? R
+
+	}
+}
+
+extension Data {
+	//If the return type is Data we don't try to decode it
+	public func decode<R: Decodable>() throws -> R {
+		if R.self == Data?.self || R.self == Data.self,
+			let rawData = self as? R
 		{
-			return .result(rawData)
+			rawData
 		} else {
-			return try .result(JSONDecoder().decode(R.self, from: data))
+			try JSONDecoder().decode(R.self, from: self)
 		}
 	}
 }

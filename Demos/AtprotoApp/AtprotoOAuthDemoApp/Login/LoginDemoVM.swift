@@ -10,6 +10,7 @@ import AtprotoOAuth
 import AtprotoTypes
 import AuthenticationServices
 import Foundation
+import GermConvenience
 import Microcosm
 import OAuth
 import SwiftUI
@@ -22,12 +23,11 @@ import SwiftUI
 			callbackURL: URL(string: "com.germnetwork.static:/oauth")!
 		),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
-		responseProvider: URLSession.defaultProvider,
+		resourceFetcher: URLSession.shared,
+		authFetcher: URLSession.manualRedirect(),
 		atprotoClient: AtprotoClient(
-			responseProvider: URLSession.defaultProvider
+			resourceFetcher: URLSession.shared
 		),
-		oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
-			httpRequester: URLSession.defaultProvider)
 	)
 
 	enum State {
@@ -51,7 +51,7 @@ import SwiftUI
 				logs.append(.init(body: "Resolved DID: \(resolvedDid.fullId)"))
 
 				let messageDelegate = try await AtprotoClient(
-					responseProvider: URLSession.defaultProvider
+					resourceFetcher: URLSession.shared
 				)
 				.getGermMessagingDelegate(did: resolvedDid)
 
@@ -73,13 +73,11 @@ import SwiftUI
 							session: sessionArchive,
 						),
 						appCredentials: oauthClient.appCredentials,
-						httpRequester: URLSession.defaultProvider,
+						resourceFetcher: URLSession.shared,
+						authFetcher: URLSession.manualRedirect(),
 						atprotoClient: AtprotoClient(
-							responseProvider: URLSession.defaultProvider
+							resourceFetcher: URLSession.shared
 						),
-						oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
-							httpRequester: URLSession.defaultProvider
-						)
 					)
 				state = .loggedIn(session)
 
