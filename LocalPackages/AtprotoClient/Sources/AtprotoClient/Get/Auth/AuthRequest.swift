@@ -21,9 +21,9 @@ extension AtprotoClient {
 		let request = URLRequest.createRequest(url: requestURL, httpMethod: .get)
 
 		let result = try await session.authResponse(for: request)
-			.successErrorDecode(
-				resultType: X.Result.self,
-				errorType: Lexicon.XRPCError.self
+			.success(
+				decodeResult: X.Result.self,
+				orError: Lexicon.XRPCError.self
 			)
 
 		switch result {
@@ -51,9 +51,9 @@ extension AtprotoClient {
 		)
 
 		let result = try await session.authResponse(for: request)
-			.successErrorDecode(
-				resultType: X.Result.self,
-				errorType: Lexicon.XRPCError.self
+			.success(
+				decodeResult: X.Result.self,
+				orError: Lexicon.XRPCError.self
 			)
 
 		switch result {

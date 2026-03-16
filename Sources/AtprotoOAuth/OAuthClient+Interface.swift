@@ -9,6 +9,7 @@ import AtprotoTypes
 import AuthenticationServices
 import Crypto
 import Foundation
+import GermConvenience
 import OAuth
 
 extension AtprotoOAuthClient: AtprotoOAuthInterface {
@@ -52,39 +53,31 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 
 		let authorizationServerUrl = try await getAuthorizationUrl(didDoc: didDoc)
 
-		let authorizationServerHost = try authorizationServerUrl.host()
-			.tryUnwrap(OAuthClientError.missingUrlHost)
-
-		let authServerMetadata = try await oauthMetadataFetcher.fetchMetadata(
-			authServerHost: authorizationServerHost
-		)
-
-		let parConfig = PARConfiguration(
-			url: try URL(
-				string: authServerMetadata.pushedAuthorizationRequestEndpoint
-			).tryUnwrap,
-			parameters: ["login_hint": identity.serverHint]
-		)
-
-		return try await AuthorizerImpl(
+		return try await AuthServerRequestOptions.atproto(
 			appCredentials: appCredentials,
-			httpRequester: httpRequester
-		)
-		.performUserAuthentication(
-			parConfig: parConfig,
-			authServerMetadata: authServerMetadata,
-			userAuthenticator: { try await userAuthenticator($0, $1) }
+			did: did,
+			authFetcher: authFetcher,
+			dpopSigner: AuthDPopState(
+				dpopKey: .generateP256(),
+				decoder: AuthDPopState.decode
+			)
+		).performUserAuthentication(
+			authorizeInputs: .init(
+				appCredentials: appCredentials,
+				parConfig: .init(
+					parameters: ["login_hint": identity.serverHint]
+				),
+				issuer: authorizationServerUrl
+			),
+			userAuthenticator: { try await userAuthenticator($0, $1) },
 		)
 	}
 
 	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {
-		let pdsHost = try didDoc.pdsUrl.host()
-			.tryUnwrap(OAuthClientError.missingUrlHost)
+		let pdsUrl = try didDoc.pdsUrl
 
 		let pdsMetadata =
-			try await oauthMetadataFetcher.fetchMetadata(
-				protectedResourceHost: pdsHost
-			)
+			try await authFetcher.resourceDiscoveryRequest(url: pdsUrl)
 
 		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 		//PDS doesn't actually fill this field, so we only check it if present

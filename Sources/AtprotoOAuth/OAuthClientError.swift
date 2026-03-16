@@ -17,6 +17,7 @@ enum OAuthClientError: Error, Equatable {
 	case pkceRequired
 	case codeChallengeAlreadyUsed
 	case tokenInvalid
+	case subDidMismatch
 	case stateTokenMismatch(String, String)
 	case issuingServerMismatch(String, String)
 	case remoteTokenError(Atproto.TokenError)
@@ -36,6 +37,7 @@ extension OAuthClientError: LocalizedError {
 		case .pkceRequired: "PKCE was required but not provided."
 		case .codeChallengeAlreadyUsed: "Code challenge has already been used."
 		case .tokenInvalid: "Token was invalid."
+		case .subDidMismatch: "Mismatched did in the subject field of token response"
 		case .stateTokenMismatch(
 			let expected,
 			let got

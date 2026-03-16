@@ -21,7 +21,7 @@ struct ECDSASigner {
 		keyType: String,
 		payload: some Encodable,
 	) throws -> JWT {
-		let headerEncoded = try JWT.JWTHeader(
+		let headerEncoded = try JWT.Header(
 			typ: keyType,
 			jwk: JWT.JWK(key: publicKey)
 		).jwtEncoded

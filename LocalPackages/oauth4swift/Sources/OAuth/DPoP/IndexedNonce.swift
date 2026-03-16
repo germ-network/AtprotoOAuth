@@ -16,7 +16,7 @@ public final class IndexedNonce {
 	public let nonce: String
 
 	public convenience init(
-		responseUrl: URL?,  //
+		responseUrl: URL?,
 		requestUrl: URL,
 		nonce: String
 	) throws {

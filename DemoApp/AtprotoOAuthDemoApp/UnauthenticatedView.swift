@@ -29,7 +29,7 @@ struct UnauthenticatedView: View {
 	@State private var processing: Task<Void, Never>? = nil
 
 	let client: AtprotoClientInterface = AtprotoClient.init(
-		responseProvider: URLSession.defaultProvider
+		resourceFetcher: URLSession.shared
 	)
 
 	var body: some View {

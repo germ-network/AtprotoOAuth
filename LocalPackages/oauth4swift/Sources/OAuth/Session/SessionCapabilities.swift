@@ -7,8 +7,9 @@
 
 import Crypto
 import Foundation
+import GermConvenience
 
-public protocol OAuthSessionCapabilities: Actor, TokenHandling, DPoPNonceHolding {
+public protocol OAuthSessionCapabilities: Actor {
 	var appCredentials: AppCredentials { get }
 
 	var lazyServerMetadata: LazyResource<AuthServerMetadata> { get }
@@ -16,11 +17,12 @@ public protocol OAuthSessionCapabilities: Actor, TokenHandling, DPoPNonceHolding
 	var session: SessionState { get throws }
 	func refreshed(sessionMutable: SessionState.Mutable) throws
 	var refreshTask: Task<SessionState.Mutable, Error>? { get set }
-}
 
-public protocol TokenHandling {
-	func refreshProvider(
-		sessionState: SessionState.Archive,
-		appCredentials: AppCredentials,
-	) async throws -> SessionState.Mutable
+	//should follow redirects
+	var resourceFetcher: HTTPFetcher { get }
+
+	//auth
+	var retriableIssuer: URL { get async throws }
+
+	var authServerRequestOptions: AuthServerRequestOptions { get }
 }
