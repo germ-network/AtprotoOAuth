@@ -10,6 +10,7 @@ import AtprotoOAuth
 import AtprotoTypes
 import AuthenticationServices
 import Foundation
+import GermConvenience
 import OAuth
 import os
 
@@ -27,12 +28,11 @@ import os
 			callbackURL: URL(string: "com.germnetwork.static:/oauth")!
 		),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
-		responseProvider: URLSession.defaultProvider,
+		resourceFetcher: URLSession.shared,
+		authFetcher: URLSession.manualRedirect(),
 		atprotoClient: AtprotoClient(
-			responseProvider: URLSession.defaultProvider
+			resourceFetcher: URLSession.shared
 		),
-		oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
-			httpRequester: URLSession.defaultProvider)
 	)
 
 	let handle: String
@@ -40,6 +40,13 @@ import os
 
 	var processingTask: (Task<Void, Error>, String)? = nil
 	var session: SessionWrapper? = nil
+
+	var blocked: Bool? = nil
+	var blocking: Bool? = nil
+	var following: Bool? = nil
+	var followedBy: Bool? = nil
+
+	var messageDelegate: Lexicon.Com.GermNetwork.Declaration? = nil
 
 	init(did: Atproto.DID, handle: String) {
 		self.handle = handle
@@ -70,12 +77,11 @@ import os
 					session: sessionArchive,
 				),
 				appCredentials: oauthClient.appCredentials,
-				httpRequester: URLSession.defaultProvider,
+				resourceFetcher: URLSession.shared,
+				authFetcher: URLSession.manualRedirect(),
 				atprotoClient: AtprotoClient(
-					responseProvider: URLSession.defaultProvider
+					resourceFetcher: URLSession.shared
 				),
-				oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
-					httpRequester: URLSession.defaultProvider)
 			)
 
 			if !Task.isCancelled {
@@ -146,12 +152,11 @@ import os
 					session: archive,
 				),
 				appCredentials: oauthClient.appCredentials,
-				httpRequester: URLSession.defaultProvider,
+				resourceFetcher: URLSession.shared,
+				authFetcher: URLSession.manualRedirect(),
 				atprotoClient: AtprotoClient(
-					responseProvider: URLSession.defaultProvider
+					resourceFetcher: URLSession.shared
 				),
-				oauthMetadataFetcher: HTTPOAuthMetadataFetcher(
-					httpRequester: URLSession.defaultProvider)
 			)
 			if !Task.isCancelled {
 				self.session = .init(
@@ -191,22 +196,69 @@ import os
 		sessionStorage.sessionArchive = nil
 	}
 
-	func postMessagingDelegate(did: Atproto.DID) async throws {
+	func getMetadata(for otherHandle: String) async throws {
 		guard let session else {
 			return
 		}
 
-		try await session.session.authProcedure(
-			Lexicon.Com.Atproto.Repo.PutRecord<Lexicon.Com.GermNetwork.Declaration>
-				.self,
-			parameters: .init(
-				repo: .did(did),
-				collection: Lexicon.Com.GermNetwork.Declaration.nsid,
-				rkey: "self",
-				record: .mock(),
-				validate: true,
-			)
+		let otherDid = try await LoginDemoVM.fallbackResolve(handle: otherHandle)
+
+		if let metadata = try await session.session.authRequest(
+			Lexicon.App.Bsky.Actor.GetProfile.self,
+			parameters: .init(actor: .did(otherDid))
+		).viewer {
+			blocking = metadata.blocking != nil
+			blocked = metadata.blockedBy
+			following = metadata.following != nil
+			followedBy = metadata.followedBy != nil
+		}
+	}
+
+	func getMessageDelegate() async throws {
+		messageDelegate = try await oauthClient.atprotoClient.getGermMessagingDelegate(
+			did: sessionStorage.did
 		)
+	}
+
+	func postMessagingDelegate(for showButtonTo: Lexicon.Com.GermNetwork.ShowButtonTo)
+		async throws
+	{
+		guard let session = session?.session as? AtprotoSession else {
+			return
+		}
+
+		do {
+			return try await oauthClient.atprotoClient.postGermMessagingDelegate(
+				.init(
+					version: "1.1.0",
+					currentKey: Data("mock".utf8).base64EncodedData(),
+					keyPackage: Data("mock".utf8).base64EncodedData(),
+					messageMe: showButtonTo == .none
+						? nil
+						: .init(
+							showButtonTo:
+								.usersIFollow,
+							messageMeUrl:
+								"germnetwork.com"
+						),
+					continuityProofs: nil
+				),
+				did: sessionStorage.did,
+				session: session
+			)
+			//			let _ = try await session.session.authProcedure(
+			//				Lexicon.Com.Atproto.Repo.PutRecord<Lexicon.Com.GermNetwork.Declaration>
+			//					.self,
+			//				parameters: .init(
+			//					repo: .did(sessionStorage.did),
+			//					rkey: "self",
+			//					record: record ?? .mock(),
+			//					validate: true,
+			//				)
+			//			)
+		} catch {
+			Self.logger.error("Error posting message delegate: \(error)")
+		}
 	}
 }
 

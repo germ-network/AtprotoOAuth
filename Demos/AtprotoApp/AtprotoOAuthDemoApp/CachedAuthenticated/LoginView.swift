@@ -19,10 +19,6 @@ struct LoginView: View {
 
 	// Relationally
 	@AppStorage("otherHandle") private var otherHandle: String = ""
-	@State private var blocked: Bool? = nil
-	@State private var blocking: Bool? = nil
-	@State private var following: Bool? = nil
-	@State private var followedBy: Bool? = nil
 
 	var body: some View {
 		Group {
@@ -54,7 +50,7 @@ struct LoginView: View {
 				}
 			}
 
-			if let session = viewModel.session {
+			if viewModel.session != nil {
 				Section("Auth Session Query") {
 					HStack {
 						Text("@")
@@ -64,24 +60,60 @@ struct LoginView: View {
 						Spacer()
 					}
 					Button("Make authed fetch") {
-						getMetadata(session: session.session)
+						Task {
+							try await viewModel.getMetadata(
+								for: otherHandle
+							)
+						}
 					}
-					//						Button("Post messaging delegate") {
-					//							Task {
-					//								try await postMessagingDelegate()
-					//							}
-					//						}
-					if let blocked {
-						Text("Blocked: \(blocked)")
+					if let blocked = viewModel.blocked {
+						Text(verbatim: "Blocked: \(blocked)")
 					}
-					if let blocking {
-						Text("Blocking: \(blocking)")
+					if let blocking = viewModel.blocking {
+						Text(verbatim: "Blocking: \(blocking)")
 					}
-					if let following {
-						Text("Following: \(following)")
+					if let following = viewModel.following {
+						Text(verbatim: "Following: \(following)")
 					}
-					if let followedBy {
-						Text("Followed by: \(followedBy)")
+					if let followedBy = viewModel.followedBy {
+						Text(verbatim: "Followed by: \(followedBy)")
+					}
+				}
+				Section("Message Delegate") {
+					Button("Post messaging delegate: users I follow") {
+						Task {
+							try await viewModel.postMessagingDelegate(
+								for: .usersIFollow)
+						}
+					}
+					Button("Post messaging delegate: closed inbox") {
+						Task {
+							try await viewModel.postMessagingDelegate(
+								for: .none)
+						}
+					}
+					Button("Fetch message delegate") {
+						Task {
+							try await viewModel.getMessageDelegate()
+						}
+					}
+					if let messageDelegate = viewModel.messageDelegate {
+						Text(
+							verbatim:
+								"Key: \(messageDelegate.currentKey.bytes.base64EncodedString())"
+						)
+						Text(
+							verbatim:
+								"Version: \(messageDelegate.version)"
+						)
+						Text(
+							verbatim:
+								"Message me URL: \(messageDelegate.messageMe?.messageMeUrl ?? "None")"
+						)
+						Text(
+							verbatim:
+								"Show button to: \(messageDelegate.messageMe?.showButtonTo.rawValue ?? "None")"
+						)
 					}
 				}
 			}
@@ -91,28 +123,6 @@ struct LoginView: View {
 	func login() {
 		viewModel.login()
 	}
-
-	func getMetadata(session: AtprotoOAuthSession) {
-		//	func getMetadata(loginViewModel: ATProtoLiteClientViewModel) async throws {
-		//		let theirDID = try await ATProtoPublicAPI.getTypedDID(handle: otherHandle)
-		//		if let myPDS = try await ATProtoPublicAPI.getPds(for: loginViewModel.did.fullId),
-		//			let pdsURL = URL(string: myPDS)
-		//		{
-		//			let authenticator = try await loginViewModel.getAuthenticator(
-		//				pdsURL: pdsURL)
-		//			let metadata = try await ATProtoAuthAPI.getAuthedMetadata(
-		//				for: theirDID.fullId,
-		//				pdsURL: pdsURL,
-		//				authenticator: authenticator.authenticator
-		//			)
-		//			blocking = metadata.blockingURI != nil
-		//			blocked = metadata.isBlocked
-		//			following = metadata.followingURI != nil
-		//			followedBy = metadata.followedByURI != nil
-		//		}
-		//	}
-	}
-
 }
 
 #Preview {

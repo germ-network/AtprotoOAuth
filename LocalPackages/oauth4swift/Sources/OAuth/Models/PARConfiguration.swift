@@ -8,15 +8,14 @@
 import Foundation
 
 public struct PARConfiguration: Hashable, Sendable {
-	public let url: URL
 	public let parameters: [String: String]
 
-	public init(url: URL, parameters: [String: String] = [:]) {
-		self.url = url
+	public init(parameters: [String: String] = [:]) {
 		self.parameters = parameters
 	}
 }
 
+///https://datatracker.ietf.org/doc/html/rfc9126#name-successful-response
 public struct PARResponse: Codable, Hashable, Sendable {
 	public let requestURI: String
 	public let expiresIn: Int
