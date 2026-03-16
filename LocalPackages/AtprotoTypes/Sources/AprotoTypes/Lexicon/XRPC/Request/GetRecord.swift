@@ -12,6 +12,8 @@ import Foundation
 //https://lexicon.garden/lexicon/did:plc:6msi3pj7krzih5qxqtryxlzw/com.atproto.repo.getRecord/docs
 /// [github]: https://github.com/bluesky-social/atproto/blob/main/lexicons/com/atproto/repo/getRecord.json
 extension Lexicon.Com.Atproto.Repo {
+	public static let getRecordNSID: Atproto.NSID = "com.atproto.repo.getRecord"
+
 	public enum GetRecord<Result: AtprotoRecord>: XRPCRequest {
 		public struct Result: Sendable, Codable {
 
@@ -30,7 +32,7 @@ extension Lexicon.Com.Atproto.Repo {
 				self.value = value
 			}
 		}
-		public static var nsid: Atproto.NSID { "com.atproto.repo.getRecord" }
+		public static var nsid: Atproto.NSID { getRecordNSID }
 
 		public struct Parameters: QueryParameters {
 			let repo: AtIdentifier

@@ -70,7 +70,7 @@ extension AtprotoClient {
 	public func putRecord<R: AtprotoRecord>(
 		did: Atproto.DID,
 		parameters: Lexicon.Com.Atproto.Repo.PutRecord<R>.Parameters,
-		session: AtprotoSession
+		session: AtprotoAgent
 	) async throws {
 		//rely on url caching for this value
 		let pdsUrl = try await plcDirectoryQuery(did)

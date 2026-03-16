@@ -205,7 +205,7 @@ extension AtprotoOAuthSessionImpl {
 	}
 }
 
-extension AtprotoOAuthSessionImpl: AtprotoSession {}
+extension AtprotoOAuthSessionImpl: AtprotoAgent {}
 
 extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
 	public var session: OAuth.SessionState {

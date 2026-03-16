@@ -9,7 +9,7 @@ import AtprotoTypes
 import Foundation
 import GermConvenience
 
-public actor AtprotoMockSession {
+public actor AtprotoMockAgent {
 	// Might want to check that the appropriate AtprotoRecord type is stored in a given NSID collection
 	private var pds: [Atproto.DID: [Atproto.NSID: [Atproto.RecordKey: AtprotoRecord]]] = [:]
 
@@ -28,7 +28,7 @@ public actor AtprotoMockSession {
 }
 
 // Get record
-extension AtprotoMockSession {
+extension AtprotoMockAgent {
 	func getRecord<R: AtprotoRecord>(
 		_ type: R.Type,
 		repo: String,
@@ -45,7 +45,7 @@ extension AtprotoMockSession {
 		guard let record = collectionContents[rkey] as? R else {
 			throw HTTPResponseError.unsuccessfulString(400, "RecordNotFound")
 		}
-		// We are not going to mock CID right now
+		// TODO: Mock CID
 		return Lexicon.Com.Atproto.Repo.GetRecord<R>.Result(
 			uri: UUID().uuidString,
 			cid: cid ?? CID.mock().string,
@@ -74,7 +74,7 @@ extension AtprotoMockSession {
 	}
 }
 
-extension AtprotoMockSession: AtprotoSession {
+extension AtprotoMockAgent: AtprotoAgent {
 	public func authResponse(for request: URLRequest) async throws
 		-> GermConvenience.HTTPDataResponse
 	{
@@ -88,7 +88,7 @@ extension AtprotoMockSession: AtprotoSession {
 		let httpBody = request.httpBody
 
 		switch url.lastPathComponent {
-		case "com.atproto.repo.getRecord":
+		case Lexicon.Com.Atproto.Repo.getRecordNSID:
 			let repo = try queryParameters["repo"].tryUnwrap
 			let collection = try queryParameters["collection"].tryUnwrap
 			let rkey = try queryParameters["rkey"].tryUnwrap

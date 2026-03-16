@@ -13,7 +13,7 @@ extension AtprotoClient {
 		_ xrpc: X.Type,
 		pdsUrl: URL,
 		parameters: X.Parameters,
-		session: AtprotoSession
+		session: AtprotoAgent
 	) async throws -> X.Result {
 		var requestURL = pdsUrl.appending(path: "/xrpc/" + X.nsid)
 		requestURL = requestURL.appending(queryItems: parameters.asQueryItems())

@@ -29,7 +29,7 @@ extension AtprotoClient {
 	public func postGermMessagingDelegate(
 		_ delegate: Lexicon.Com.GermNetwork.Declaration,
 		did: Atproto.DID,
-		session: AtprotoSession
+		session: AtprotoAgent
 	) async throws {
 		//rely on url caching for this value
 		let pdsUrl = try await plcDirectoryQuery(did)

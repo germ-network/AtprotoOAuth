@@ -2,10 +2,10 @@ import AtprotoTypes
 import Foundation
 import GermConvenience
 
-public actor AtprotoSessionImpl {
+public actor AtprotoAgentImpl {
 }
 
-extension AtprotoSessionImpl: AtprotoSession {
+extension AtprotoAgentImpl: AtprotoAgent {
 	public func authResponse(for request: URLRequest) async throws
 		-> GermConvenience.HTTPDataResponse
 	{

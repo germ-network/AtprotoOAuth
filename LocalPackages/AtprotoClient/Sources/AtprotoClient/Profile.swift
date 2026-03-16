@@ -28,7 +28,7 @@ extension AtprotoClient {
 
 	public func getProfileViewerState(
 		did: Atproto.DID,
-		session: any AtprotoSession
+		session: any AtprotoAgent
 	) async throws -> Lexicon.App.Bsky.Actor.Defs.ViewerState {
 		//rely on url caching for this value
 		let pdsUrl = try await plcDirectoryQuery(did)
