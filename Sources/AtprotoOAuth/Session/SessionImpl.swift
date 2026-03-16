@@ -14,12 +14,11 @@ import OAuth
 public actor AtprotoOAuthSessionImpl {
 	public nonisolated let did: Atproto.DID
 	public let appCredentials: AppCredentials
-	public let httpRequester: HTTPDataResponse.Requester
+	public let resourceFetcher: HTTPFetcher
+	public let authFetcher: HTTPFetcher
 	let atprotoClient: AtprotoClientInterface
-	let oauthMetadataFetcher: OAuthMetadataFetcher
 
-	public let pkceVerifier = PKCEVerifier()
-	private let nonceCache: NSCache<NSString, NonceValue> = NSCache()
+	private let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
 
 	enum State {
 		case active(SessionState)
@@ -35,6 +34,7 @@ public actor AtprotoOAuthSessionImpl {
 	}
 	var state: State
 	public var lazyServerMetadata: LazyResource<AuthServerMetadata>
+	public var lazyIssuer: LazyResource<URL>
 	public var refreshTask: Task<SessionState.Mutable, Error>?
 
 	private let saveStream: AsyncStream<SessionState.Mutable?>
@@ -49,16 +49,16 @@ public actor AtprotoOAuthSessionImpl {
 		did: Atproto.DID,
 		appCredentials: AppCredentials,
 		state: State,
-		httpRequester: @escaping HTTPDataResponse.Requester,
+		resourceFetcher: HTTPFetcher,
+		authFetcher: HTTPFetcher,
 		atprotoClient: AtprotoClientInterface,
-		oauthMetadataFetcher: OAuthMetadataFetcher
 	) {
 		self.did = did
 		self.appCredentials = appCredentials
 		self.state = state
-		self.httpRequester = httpRequester
+		self.resourceFetcher = resourceFetcher
+		self.authFetcher = authFetcher
 		self.atprotoClient = atprotoClient
-		self.oauthMetadataFetcher = oauthMetadataFetcher
 
 		self.lazyServerMetadata = .init(
 			fetchTaskGenerator: {
@@ -66,11 +66,43 @@ public actor AtprotoOAuthSessionImpl {
 					let pdsHost = try await atprotoClient.plcDirectoryQuery(did)
 						.pdsUrl
 					let pdsMetadata =
-						try await oauthMetadataFetcher
-						.fetchMetadata(
-							protectedResourceHost: pdsHost.host()
-								.tryUnwrap
-						)
+						try await authFetcher.resourceDiscoveryRequest(
+							url: pdsHost)
+
+					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
+					//PDS doesn't actually fill this field, so we only check it if present
+					if let supportedAlgs = pdsMetadata
+						.dpopSigningAlgValuesSupported
+					{
+						guard supportedAlgs.contains("ES256")
+						else {
+							throw OAuthSessionError
+								.unsupportedDpopSigningAlgorithm
+						}
+					}
+
+					guard
+						let authorizationServerUrlString = pdsMetadata
+							.authorizationServers?.first,
+						let authorizationServerUrl = URL(
+							string: authorizationServerUrlString)
+					else {
+						throw OAuthSessionError.cantFormURL
+					}
+
+					return try await authFetcher.authServerDiscovery(
+						issuer: authorizationServerUrl)
+				}
+			})
+
+		self.lazyIssuer = .init(
+			fetchTaskGenerator: {
+				Task {
+					let pdsHost = try await atprotoClient.plcDirectoryQuery(did)
+						.pdsUrl
+					let pdsMetadata =
+						try await authFetcher.resourceDiscoveryRequest(
+							url: pdsHost)
 
 					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 					//PDS doesn't actually fill this field, so we only check it if present
@@ -86,16 +118,13 @@ public actor AtprotoOAuthSessionImpl {
 					guard
 						let authorizationServerUrl = pdsMetadata
 							.authorizationServers?.first,
-						let authorizationServerHost = URL(
-							string: authorizationServerUrl)?.host()
+						let authorizationServer = URL(
+							string: authorizationServerUrl)
 					else {
 						throw OAuthSessionError.cantFormURL
 					}
 
-					return
-						try await oauthMetadataFetcher
-						.fetchMetadata(
-							authServerHost: authorizationServerHost)
+					return authorizationServer
 				}
 			})
 
@@ -135,7 +164,7 @@ public actor AtprotoOAuthSessionImpl {
 	//propagate new state to our in-memory opject properties
 	//then through the async streams
 
-	private func save(sessionMutable: OAuth.SessionState.Mutable) throws {
+	private func save(sessionMutable: SessionState.Mutable) throws {
 		try session.updated(mutable: sessionMutable)
 
 		saveContinuation.yield(sessionMutable)
@@ -165,16 +194,16 @@ extension AtprotoOAuthSessionImpl {
 	public static func restore(
 		archive: Archive,
 		appCredentials: AppCredentials,
-		httpRequester: @escaping HTTPDataResponse.Requester,
+		resourceFetcher: HTTPFetcher,
+		authFetcher: HTTPFetcher,
 		atprotoClient: AtprotoClientInterface,
-		oauthMetadataFetcher: OAuthMetadataFetcher
 	) throws -> (AtprotoOAuthSession, AsyncStream<SessionState.Mutable?>) {
 		let session = try AtprotoOAuthSessionImpl(
 			archive: archive,
 			appCredentials: appCredentials,
-			httpRequester: httpRequester,
+			resourceFetcher: resourceFetcher,
+			authFetcher: authFetcher,
 			atprotoClient: atprotoClient,
-			oauthMetadataFetcher: oauthMetadataFetcher
 		)
 		return (session, session.saveStream)
 	}
@@ -182,17 +211,17 @@ extension AtprotoOAuthSessionImpl {
 	private init(
 		archive: Archive,
 		appCredentials: AppCredentials,
-		httpRequester: @escaping HTTPDataResponse.Requester,
+		resourceFetcher: HTTPFetcher,
+		authFetcher: HTTPFetcher,
 		atprotoClient: AtprotoClientInterface,
-		oauthMetadataFetcher: OAuthMetadataFetcher
 	) throws {
 		try self.init(
 			did: .init(fullId: archive.did),
 			appCredentials: appCredentials,
 			state: .init(archive: archive.session),
-			httpRequester: httpRequester,
+			resourceFetcher: resourceFetcher,
+			authFetcher: authFetcher,
 			atprotoClient: atprotoClient,
-			oauthMetadataFetcher: oauthMetadataFetcher
 		)
 	}
 
@@ -208,7 +237,7 @@ extension AtprotoOAuthSessionImpl {
 extension AtprotoOAuthSessionImpl: AtprotoSession {}
 
 extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
-	public var session: OAuth.SessionState {
+	public var session: SessionState {
 		get throws {
 			guard case .active(let sessionState) = state else {
 				throw OAuthSessionError.sessionInactive
@@ -217,46 +246,45 @@ extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
 		}
 	}
 
-	public func refreshed(sessionMutable: OAuth.SessionState.Mutable) throws {
+	public func refreshed(sessionMutable: SessionState.Mutable) throws {
 		try save(sessionMutable: sessionMutable)
+	}
+
+	public var retriableIssuer: URL {
+		get async throws {
+			try await lazyIssuer.lazyValue(isolation: self)
+		}
+	}
+
+	public var authServerRequestOptions: AuthServerRequestOptions {
+		.atproto(
+			appCredentials: appCredentials,
+			did: did,
+			authFetcher: authFetcher,
+			dpopSigner: self
+		)
 	}
 }
 
-extension AtprotoOAuthSessionImpl: DPoPNonceHolding {
+extension AtprotoOAuthSessionImpl: DPoPSigning {
 	public var dpopKey: OAuth.DPoPKey {
 		get throws {
 			try session.dPopKey.tryUnwrap
 		}
 	}
 
-	public static func decode(
-		dataResponse: HTTPDataResponse
-	) throws -> OAuth.NonceValue? {
-		guard let value = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce")
-		else {
-			return nil
-		}
-
-		// I'm not sure why response.url is optional, but maybe we need the request
-		// passed into the decoder here, to fallback to request.url.origin
-		guard let responseOrigin = dataResponse.response.url?.origin else {
-			return nil
-		}
-
-		return NonceValue(origin: responseOrigin, nonce: value)
-	}
-
-	public func getNonce(origin: String) -> NonceValue? {
+	public func getNonce(origin: String) -> OAuth.IndexedNonce? {
 		nonceCache.object(forKey: origin as NSString)
 	}
 
-	public func store(nonce: String, for origin: String) {
-		nonceCache.setObject(
-			.init(origin: origin, nonce: nonce),
-			forKey: origin as NSString
-		)
-
+	public func cacheNonce(response: GermConvenience.HTTPDataResponse, requestUrl: URL) throws {
+		let indexedNonce = try AuthDPopState.decode(
+			dataResponse: response, requestUrl: requestUrl)
+		if let indexedNonce {
+			nonceCache.setObject(indexedNonce, forKey: indexedNonce.origin as NSString)
+		}
 	}
+
 }
 
 extension AtprotoOAuthSessionImpl {

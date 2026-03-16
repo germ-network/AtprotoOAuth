@@ -25,7 +25,6 @@ public struct AppCredentials: Codable, Hashable, Sendable {
 			guard let scheme = callbackURL.scheme else {
 				throw OAuthError.missingScheme
 			}
-
 			return scheme
 		}
 	}

@@ -15,14 +15,25 @@ public struct Token: Codable, Hashable, Sendable {
 	/// An optional expiry.
 	public let expiry: Date?
 
+	public init?(refreshToken: String?) {
+		guard let refreshToken else {
+			return nil
+		}
+		self.value = refreshToken
+		self.expiry = nil
+	}
 	public init(value: String, expiry: Date? = nil) {
 		self.value = value
 		self.expiry = expiry
 	}
 
-	public init(value: String, expiresIn seconds: Int) {
+	public init(value: String, expiresIn seconds: Int?) {
 		self.value = value
-		self.expiry = Date(timeIntervalSinceNow: TimeInterval(seconds))
+		if let seconds {
+			self.expiry = Date(timeIntervalSinceNow: TimeInterval(seconds))
+		} else {
+			self.expiry = nil
+		}
 	}
 
 	/// Determines if the token object is valid.
@@ -72,13 +83,13 @@ public class SessionState {
 		public let refreshToken: Token?
 
 		// User authorized scopes
-		let scopes: String?
+		let scopes: [String]
 		let issuingServer: String?
 
 		public init(
 			accessToken: Token,
 			refreshToken: Token? = nil,
-			scopes: String? = nil,
+			scopes: [String] = [],
 			issuingServer: String? = nil
 		) {
 			self.accessToken = accessToken

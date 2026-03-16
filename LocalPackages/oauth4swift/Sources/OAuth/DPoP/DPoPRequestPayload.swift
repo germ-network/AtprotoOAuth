@@ -19,7 +19,6 @@ struct DPoPRequestPayload: Codable, Hashable, Sendable {
 	/// UNIX type, seconds since epoch
 	let expiresAt: Int
 	let nonce: String?
-	let authorizationServerIssuer: String?
 	let accessTokenHash: String?
 
 	enum CodingKeys: String, CodingKey {
@@ -29,7 +28,6 @@ struct DPoPRequestPayload: Codable, Hashable, Sendable {
 		case createdAt = "iat"
 		case expiresAt = "exp"
 		case nonce
-		case authorizationServerIssuer = "iss"
 		case accessTokenHash = "ath"
 	}
 
@@ -37,7 +35,6 @@ struct DPoPRequestPayload: Codable, Hashable, Sendable {
 		endpointUrl: URL,
 		httpMethod: String,
 		nonce: String?,
-		issuingServer: String?,
 		accessTokenHash: String?
 	) throws {
 		self.uniqueCode = UUID().uuidString
@@ -46,7 +43,6 @@ struct DPoPRequestPayload: Codable, Hashable, Sendable {
 		self.createdAt = Int(Date.now.timeIntervalSince1970)
 		self.expiresAt = Int(Date.now.timeIntervalSince1970 + 3600)
 		self.nonce = nonce
-		self.authorizationServerIssuer = issuingServer
 		self.accessTokenHash = accessTokenHash
 	}
 }

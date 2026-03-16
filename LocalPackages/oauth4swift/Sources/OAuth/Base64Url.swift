@@ -84,7 +84,7 @@ extension Data {
 }
 
 extension DataProtocol {
-	public func copyBytes() -> [UInt8] {
+	func copyBytes() -> [UInt8] {
 		if let array = self.withContiguousStorageIfAvailable({ buffer in
 			[UInt8](buffer)
 		}) {
