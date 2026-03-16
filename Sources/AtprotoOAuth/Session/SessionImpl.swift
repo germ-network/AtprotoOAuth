@@ -18,8 +18,7 @@ public actor AtprotoOAuthSessionImpl {
 	let atprotoClient: AtprotoClientInterface
 	let oauthMetadataFetcher: OAuthMetadataFetcher
 
-	public let pkceVerifier = PKCEVerifier()
-	private let nonceCache: NSCache<NSString, NonceValue> = NSCache()
+	private let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
 
 	enum State {
 		case active(SessionState)
@@ -229,31 +228,32 @@ extension AtprotoOAuthSessionImpl: DPoPNonceHolding {
 		}
 	}
 
+	//throws if we are unable to construct the origin (missing host of
 	public static func decode(
-		dataResponse: HTTPDataResponse
-	) throws -> OAuth.NonceValue? {
-		guard let value = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce")
+		dataResponse: HTTPDataResponse,
+		requestUrl: URL,
+	) throws -> OAuth.IndexedNonce? {
+		guard let nonce = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce")
 		else {
 			return nil
 		}
 
-		// I'm not sure why response.url is optional, but maybe we need the request
-		// passed into the decoder here, to fallback to request.url.origin
-		guard let responseOrigin = dataResponse.response.url?.origin else {
-			return nil
-		}
-
-		return NonceValue(origin: responseOrigin, nonce: value)
+		//henceforth should throw instead of return nil as nonce is expected
+		return try IndexedNonce(
+			responseUrl: dataResponse.response.url,
+			requestUrl: requestUrl,
+			nonce: nonce
+		)
 	}
 
-	public func getNonce(origin: String) -> NonceValue? {
+	public func getNonce(origin: String) -> IndexedNonce? {
 		nonceCache.object(forKey: origin as NSString)
 	}
 
-	public func store(nonce: String, for origin: String) {
+	public func store(indexedNonce: IndexedNonce) {
 		nonceCache.setObject(
-			.init(origin: origin, nonce: nonce),
-			forKey: origin as NSString
+			indexedNonce,
+			forKey: indexedNonce.origin as NSString
 		)
 
 	}

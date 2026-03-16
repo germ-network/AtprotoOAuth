@@ -8,19 +8,14 @@
 import Foundation
 
 extension URL {
-	public var origin: String? {
-		guard
-			let host = self.host,
-			let scheme = self.scheme
-		else {
-			return nil
+	var origin: String {
+		get throws {
+			var originComponents = URLComponents()
+			originComponents.scheme = try scheme.tryUnwrap
+			originComponents.host = try host.tryUnwrap
+			originComponents.port = nonDefaultHTTPort()
+			return try originComponents.string.tryUnwrap
 		}
-
-		var originComponents = URLComponents()
-		originComponents.scheme = scheme
-		originComponents.host = host
-		originComponents.port = nonDefaultHTTPort()
-		return originComponents.string
 	}
 
 	private func nonDefaultHTTPort() -> Int? {

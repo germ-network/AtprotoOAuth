@@ -14,7 +14,7 @@ import OAuth
 //a container for a nonce cache for getting authorization
 //it should only make requests as necessary to authorize
 
-actor PreSession {
+actor AuthorizerImpl {
 	static let logger = Logger(label: "PreSession")
 
 	let appCredentials: AppCredentials
@@ -22,7 +22,7 @@ actor PreSession {
 
 	let stateToken = UUID().uuidString
 	let dpopKey = DPoPKey.generateP256()
-	private let nonceCache: NSCache<NSString, NonceValue> = NSCache()
+	private let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
 	let pkceVerifier = PKCEVerifier()
 
 	init(
@@ -34,27 +34,30 @@ actor PreSession {
 	}
 }
 
-extension PreSession: DPoPNonceHolding {
-
-	public func getNonce(origin: String) -> NonceValue? {
+extension AuthorizerImpl: DPoPNonceHolding {
+	public func getNonce(origin: String) -> IndexedNonce? {
 		nonceCache.object(forKey: origin as NSString)
 	}
 
-	public func store(nonce: String, for origin: String) {
+	public func store(indexedNonce: IndexedNonce) {
 		nonceCache.setObject(
-			.init(origin: origin, nonce: nonce),
-			forKey: origin as NSString
+			indexedNonce,
+			forKey: indexedNonce.origin as NSString
 		)
 	}
 
 	public static func decode(
-		dataResponse: HTTPDataResponse
-	) throws -> OAuth.NonceValue? {
-		try AtprotoOAuthSessionImpl.decode(dataResponse: dataResponse)
+		dataResponse: HTTPDataResponse,
+		requestUrl: URL
+	) throws -> OAuth.IndexedNonce? {
+		try AtprotoOAuthSessionImpl.decode(
+			dataResponse: dataResponse,
+			requestUrl: requestUrl
+		)
 	}
 }
 
-extension PreSession: PreSessionCapabilities {
+extension AuthorizerImpl: AuthorizerCapabilities {
 	public static func authorizationURL(
 		authEndpoint: String,
 		parRequestURI: String,
@@ -74,7 +77,7 @@ extension PreSession: PreSessionCapabilities {
 		return url
 	}
 
-	static func login(
+	static func validateAuthResponse(
 		authorizationUrl: URL,
 		stateToken: String,
 		redirectURI: URL,
@@ -85,7 +88,6 @@ extension PreSession: PreSessionCapabilities {
 		dpopRequester: (URLRequest) async throws -> HTTPDataResponse
 	) async throws -> SessionState.Archive {
 		// decode the params in the redirectURL
-
 		let redirectComponents = try URLComponents(
 			url: redirectURI,
 			resolvingAgainstBaseURL: false

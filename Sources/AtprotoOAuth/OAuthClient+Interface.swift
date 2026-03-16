@@ -66,7 +66,7 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 			parameters: ["login_hint": identity.serverHint]
 		)
 
-		return try await PreSession(
+		return try await AuthorizerImpl(
 			appCredentials: appCredentials,
 			httpRequester: httpRequester
 		)

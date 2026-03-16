@@ -1,6 +1,6 @@
 import Foundation
 
-public enum OAuthError: Error {
+enum OAuthError: Error {
 	case missingScheme
 	case missingHTTPMethod
 	case missingUrl
@@ -10,7 +10,7 @@ public enum OAuthError: Error {
 }
 
 extension OAuthError: LocalizedError {
-	public var errorDescription: String? {
+	var errorDescription: String? {
 		switch self {
 		case .missingScheme: "Missing scheme"
 		case .missingHTTPMethod: "Missing HTTP method"
