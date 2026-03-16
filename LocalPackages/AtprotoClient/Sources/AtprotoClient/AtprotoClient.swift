@@ -32,10 +32,10 @@ public protocol AtprotoSession {
 }
 
 public struct AtprotoClient {
-	let responseProvider: HTTPDataResponse.Requester
+	let resourceFetcher: HTTPFetcher
 
-	public init(responseProvider: @escaping HTTPDataResponse.Requester) {
-		self.responseProvider = responseProvider
+	public init(resourceFetcher: HTTPFetcher) {
+		self.resourceFetcher = resourceFetcher
 	}
 }
 
@@ -97,5 +97,22 @@ extension AtprotoClientInterface {
 					.requestFailed(responseCode: 400, error: error)
 			}
 		}
+	}
+
+	public func putRecord<R: AtprotoRecord>(
+		did: Atproto.DID,
+		parameters: Lexicon.Com.Atproto.Repo.PutRecord<R>.Parameters,
+		session: AtprotoSession
+	) async throws {
+		//rely on url caching for this value
+		let pdsUrl = try await plcDirectoryQuery(did)
+			.pdsUrl
+
+		let _ = try await authProcedure(
+			Lexicon.Com.Atproto.Repo.PutRecord<R>.self,
+			pdsUrl: pdsUrl,
+			parameters: parameters,
+			session: session
+		)
 	}
 }

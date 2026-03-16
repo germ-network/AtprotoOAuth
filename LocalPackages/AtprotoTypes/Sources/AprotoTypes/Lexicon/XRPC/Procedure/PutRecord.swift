@@ -25,7 +25,6 @@ extension Lexicon.Com.Atproto.Repo {
 
 			public init(
 				repo: AtIdentifier,
-				collection: Atproto.NSID,
 				rkey: Atproto.RecordKey,
 				record: Record,
 				validate: Bool? = nil,
@@ -33,7 +32,7 @@ extension Lexicon.Com.Atproto.Repo {
 				swapRecord: CID? = nil,
 			) {
 				self.repo = repo
-				self.collection = collection
+				self.collection = Record.nsid
 				self.rkey = rkey
 				self.record = record
 				self.validate = validate

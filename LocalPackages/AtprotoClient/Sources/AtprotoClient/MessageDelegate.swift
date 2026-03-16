@@ -25,4 +25,24 @@ extension AtprotoClientInterface {
 			)
 		)
 	}
+
+	public func postGermMessagingDelegate(
+		_ delegate: Lexicon.Com.GermNetwork.Declaration,
+		did: Atproto.DID,
+		session: AtprotoSession
+	) async throws {
+		//rely on url caching for this value
+		let pdsUrl = try await plcDirectoryQuery(did)
+			.pdsUrl
+
+		try await putRecord(
+			did: did,
+			parameters: .init(
+				repo: .did(did),
+				rkey: "self",
+				record: delegate
+			),
+			session: session
+		)
+	}
 }
