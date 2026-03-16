@@ -8,8 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		01268A9A2F49795700058D68 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 01268A992F49795700058D68 /* Microcosm */; };
-		015D043E2F50C34500996C25 /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 015D043D2F50C34500996C25 /* AtprotoOAuth */; };
 		016FA9882F4930760061B936 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 016FA9872F4930760061B936 /* Microcosm */; };
+		9092014E2F64DBCA00BABF6A /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 9092014D2F64DBCA00BABF6A /* AtprotoOAuth */; };
+		909201512F64DBD900BABF6A /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 909201502F64DBD900BABF6A /* Microcosm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,7 +60,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				01268A9A2F49795700058D68 /* Microcosm in Frameworks */,
-				015D043E2F50C34500996C25 /* AtprotoOAuth in Frameworks */,
+				909201512F64DBD900BABF6A /* Microcosm in Frameworks */,
+				9092014E2F64DBCA00BABF6A /* AtprotoOAuth in Frameworks */,
 				016FA9882F4930760061B936 /* Microcosm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -131,7 +133,8 @@
 			packageProductDependencies = (
 				016FA9872F4930760061B936 /* Microcosm */,
 				01268A992F49795700058D68 /* Microcosm */,
-				015D043D2F50C34500996C25 /* AtprotoOAuth */,
+				9092014D2F64DBCA00BABF6A /* AtprotoOAuth */,
+				909201502F64DBD900BABF6A /* Microcosm */,
 			);
 			productName = AtprotoOAuthDemoApp;
 			productReference = 01E50C442F483FF800C0D8E0 /* AtprotoOAuthDemoApp.app */;
@@ -216,8 +219,8 @@
 			mainGroup = 01E50C3B2F483FF800C0D8E0;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				01268A982F49795700058D68 /* XCLocalSwiftPackageReference "../LocalPackages/Microcosm" */,
-				017083DF2F50441300643C8A /* XCLocalSwiftPackageReference "../../AtprotoOAuth" */,
+				9092014C2F64DBCA00BABF6A /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */,
+				9092014F2F64DBD900BABF6A /* XCLocalSwiftPackageReference "../../LocalPackages/Microcosm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E50C452F483FF800C0D8E0 /* Products */;
@@ -661,13 +664,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		01268A982F49795700058D68 /* XCLocalSwiftPackageReference "../LocalPackages/Microcosm" */ = {
+		9092014C2F64DBCA00BABF6A /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../LocalPackages/Microcosm;
+			relativePath = ../../../AtprotoOAuth;
 		};
-		017083DF2F50441300643C8A /* XCLocalSwiftPackageReference "../../AtprotoOAuth" */ = {
+		9092014F2F64DBD900BABF6A /* XCLocalSwiftPackageReference "../../LocalPackages/Microcosm" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../AtprotoOAuth;
+			relativePath = ../../LocalPackages/Microcosm;
 		};
 /* End XCLocalSwiftPackageReference section */
 
@@ -676,12 +679,15 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = Microcosm;
 		};
-		015D043D2F50C34500996C25 /* AtprotoOAuth */ = {
+		016FA9872F4930760061B936 /* Microcosm */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 017083DF2F50441300643C8A /* XCLocalSwiftPackageReference "../../AtprotoOAuth" */;
+			productName = Microcosm;
+		};
+		9092014D2F64DBCA00BABF6A /* AtprotoOAuth */ = {
+			isa = XCSwiftPackageProductDependency;
 			productName = AtprotoOAuth;
 		};
-		016FA9872F4930760061B936 /* Microcosm */ = {
+		909201502F64DBD900BABF6A /* Microcosm */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Microcosm;
 		};
