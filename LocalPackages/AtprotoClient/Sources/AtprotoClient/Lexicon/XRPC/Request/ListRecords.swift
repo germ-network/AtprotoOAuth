@@ -5,6 +5,7 @@
 //  Created by Anna Mistele on 3/2/26.
 //
 
+import AtprotoTypes
 import Foundation
 
 /// https://docs.bsky.app/docs/api/com-atproto-repo-list-records

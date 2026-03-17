@@ -5,6 +5,8 @@
 //  Created by Mark @ Germ on 2/26/26.
 //
 
+import AtprotoTypes
+
 extension Lexicon {
 	public struct XRPCError: Sendable, Codable {
 		public let error: String

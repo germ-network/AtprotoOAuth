@@ -6,7 +6,10 @@
 //  Created by Christopher Jr Riley on 2024-05-20.
 //
 
+import AtprotoTypes
+import Crypto
 import Foundation
+import GermConvenience
 
 // https://docs.bsky.app/docs/api/com-atproto-sync-get-blob
 // https://lexicon.garden/lexicon/did:plc:6msi3pj7krzih5qxqtryxlzw/com.atproto.sync.getBlob/docs
@@ -43,6 +46,6 @@ extension Lexicon.Com.Atproto.Sync {
 
 extension Lexicon.Com.Atproto.Sync.GetBlob.Result: Mockable {
 	public static func mock() -> Self {
-		.mock()
+		SymmetricKey(size: .bits256).dataRepresentation
 	}
 }

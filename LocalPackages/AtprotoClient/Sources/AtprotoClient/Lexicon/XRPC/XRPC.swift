@@ -5,6 +5,7 @@
 //  Created by Mark @ Germ on 2/26/26.
 //
 
+import AtprotoTypes
 import Foundation
 
 ///https://atproto.com/specs/xrpc

@@ -7,14 +7,14 @@
 
 import Foundation
 
-enum AtprotoTypeError: Error {
+public enum AtprotoTypeError: Error {
 	case invalidRecordType
 	case invalidPrefix
 	case invalidBase32Data
 }
 
 extension AtprotoTypeError: LocalizedError {
-	var errorDescription: String? {
+	public var errorDescription: String? {
 		switch self {
 		case .invalidRecordType: "Invalid Record type"
 		case .invalidPrefix: "Invalid prefix"

@@ -5,6 +5,7 @@
 //  Created by Anna Mistele on 4/28/25.
 //
 
+import AtprotoTypes
 import Foundation
 
 extension Lexicon.App.Bsky.Graph {

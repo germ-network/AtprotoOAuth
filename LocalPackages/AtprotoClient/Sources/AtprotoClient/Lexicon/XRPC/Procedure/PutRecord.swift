@@ -5,6 +5,7 @@
 //  Created by Mark @ Germ on 2/27/26.
 //
 
+import AtprotoTypes
 import Foundation
 
 //https://docs.bsky.app/docs/api/com-atproto-repo-put-record

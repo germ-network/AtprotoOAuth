@@ -6,6 +6,7 @@
 //  Created by Christopher Jr Riley on 2024-05-20.
 //
 
+import AtprotoTypes
 import Foundation
 
 //https://docs.bsky.app/docs/api/com-atproto-repo-get-record

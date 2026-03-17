@@ -5,6 +5,7 @@
 //  Created by Anna Mistele on 5/14/25.
 //
 
+import AtprotoTypes
 import Foundation
 
 extension Lexicon.Com.GermNetwork {

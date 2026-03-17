@@ -6,6 +6,7 @@
 //  Created by Christopher Jr Riley on 5/20/24.
 //
 
+import AtprotoTypes
 import Foundation
 
 extension Lexicon.Com.Atproto.Repo {

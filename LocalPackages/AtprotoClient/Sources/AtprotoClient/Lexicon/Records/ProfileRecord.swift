@@ -5,6 +5,7 @@
 //  Created by Anna Mistele on 3/3/26.
 //
 
+import AtprotoTypes
 import Foundation
 
 extension Lexicon.App.Bsky.Actor {
