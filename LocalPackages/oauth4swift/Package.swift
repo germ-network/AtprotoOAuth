@@ -16,7 +16,7 @@ let package = Package(
 	dependencies: [
 		.package(
 			url: "https://github.com/germ-network/GermConvenience.git",
-			exact: "0.0.2"
+			from: "0.0.2"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",

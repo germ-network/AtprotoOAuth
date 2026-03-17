@@ -17,7 +17,7 @@ let package = Package(
 		.package(path: "./LocalPackages/AtprotoClient"),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			exact: "0.0.1"
+			from: "0.0.2"
 		),
 		.package(path: "./LocalPackages/oauth4swift"),
 		.package(
