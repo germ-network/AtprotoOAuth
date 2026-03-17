@@ -6,6 +6,7 @@
 //
 
 import AtprotoTypes
+import AtprotoClient
 import Foundation
 
 extension AtprotoClientInterface {
@@ -31,10 +32,6 @@ extension AtprotoClientInterface {
 		did: Atproto.DID,
 		session: AtprotoSession
 	) async throws {
-		//rely on url caching for this value
-		let pdsUrl = try await plcDirectoryQuery(did)
-			.pdsUrl
-
 		try await putRecord(
 			did: did,
 			parameters: .init(

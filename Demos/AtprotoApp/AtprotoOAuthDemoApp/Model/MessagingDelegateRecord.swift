@@ -5,11 +5,12 @@
 //  Created by Anna Mistele on 5/14/25.
 //
 
+import AtprotoClient
 import AtprotoTypes
 import Foundation
 
 extension Lexicon.Com.GermNetwork {
-	public struct Declaration: Sendable, Codable {
+	public nonisolated struct Declaration: Sendable, Codable {
 		/// The identifier of the lexicon.
 		///
 		/// - Warning: The value must not change.
@@ -113,7 +114,7 @@ extension Lexicon.Com.GermNetwork {
 	}
 }
 
-extension Lexicon.Com.GermNetwork.Declaration: AtprotoRecord {
+nonisolated extension Lexicon.Com.GermNetwork.Declaration: AtprotoRecord {
 	public static func mock() -> Lexicon.Com.GermNetwork.Declaration {
 		.init(
 			version: "1.1.0",
@@ -125,7 +126,7 @@ extension Lexicon.Com.GermNetwork.Declaration: AtprotoRecord {
 	}
 }
 
-public struct LexiconBytes: Codable, Equatable, Hashable, Sendable {
+public nonisolated struct LexiconBytes: Codable, Equatable, Hashable, Sendable {
 	public let bytes: Data
 
 	public init(bytes: Data) {
