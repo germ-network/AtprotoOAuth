@@ -15,7 +15,7 @@ extension Lexicon {
 			public enum Sync {}
 		}
 	}
-	
+
 	public enum App {
 		public enum Bsky {
 			public enum Actor {

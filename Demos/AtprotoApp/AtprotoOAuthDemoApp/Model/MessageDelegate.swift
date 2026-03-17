@@ -5,8 +5,8 @@
 //  Created by Mark @ Germ on 2/17/26.
 //
 
-import AtprotoTypes
 import AtprotoClient
+import AtprotoTypes
 import Foundation
 
 extension AtprotoClientInterface {

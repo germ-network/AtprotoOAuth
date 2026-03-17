@@ -16,6 +16,9 @@ let package = Package(
 	dependencies: [
 		.package(path: "../AtprotoTypes"),
 		.package(path: "../GermConvenience"),
+		.package(
+			url: "https://github.com/apple/swift-crypto.git",
+			.upToNextMajor(from: "4.2.0")),
 		.package(url: "https://github.com/apple/swift-log", from: "1.6.0"),
 	],
 	targets: [
@@ -25,6 +28,7 @@ let package = Package(
 			name: "AtprotoClient",
 			dependencies: [
 				"AtprotoTypes",
+				.product(name: "Crypto", package: "swift-crypto"),
 				"GermConvenience",
 				.product(name: "Logging", package: "swift-log"),
 			]

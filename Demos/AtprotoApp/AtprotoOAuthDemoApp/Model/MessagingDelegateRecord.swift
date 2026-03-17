@@ -125,15 +125,3 @@ nonisolated extension Lexicon.Com.GermNetwork.Declaration: AtprotoRecord {
 		)
 	}
 }
-
-public nonisolated struct LexiconBytes: Codable, Equatable, Hashable, Sendable {
-	public let bytes: Data
-
-	public init(bytes: Data) {
-		self.bytes = bytes
-	}
-
-	enum CodingKeys: String, CodingKey {
-		case bytes = "$bytes"
-	}
-}
