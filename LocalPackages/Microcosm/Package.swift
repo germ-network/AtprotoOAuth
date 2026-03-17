@@ -14,7 +14,10 @@ let package = Package(
 		)
 	],
 	dependencies: [
-		.package(path: "../AtprotoTypes")
+		.package(
+			url: "https://github.com/germ-network/AtprotoTypes.git",
+			exact: "0.0.1"
+		)
 	],
 	targets: [
 		// Targets are the basic building blocks of a package, defining a module or a test suite.

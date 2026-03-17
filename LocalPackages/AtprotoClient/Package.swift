@@ -14,8 +14,14 @@ let package = Package(
 		)
 	],
 	dependencies: [
-		.package(path: "../AtprotoTypes"),
-		.package(path: "../GermConvenience"),
+		.package(
+			url: "https://github.com/germ-network/AtprotoTypes.git",
+			exact: "0.0.1"
+		),
+		.package(
+			url: "https://github.com/germ-network/GermConvenience.git",
+			exact: "0.0.2"
+		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
 			.upToNextMajor(from: "4.2.0")),

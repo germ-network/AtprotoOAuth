@@ -126,7 +126,7 @@ struct LoginView: View {
 }
 
 #Preview {
-	let did = try! Atproto.DID(fullId: "did:plc:4yvwfwxfz5sney4twepuzdu7")
+	let did = try! Atproto.DID(string: "did:plc:4yvwfwxfz5sney4twepuzdu7")
 	LoginView(
 		viewModel: .init(did: did, handle: "germnetwork.com")
 	)
