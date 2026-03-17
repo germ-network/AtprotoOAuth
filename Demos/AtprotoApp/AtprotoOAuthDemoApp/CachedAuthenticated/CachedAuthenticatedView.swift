@@ -36,7 +36,7 @@ struct CachedAuthenticatedView: View {
 				case .login(let sessionVM):
 					Text("Handle: @\(sessionVM.handle)")
 					Text(
-						"Resolves to DID \(sessionVM.sessionStorage.did.fullId)"
+						"Resolves to DID \(sessionVM.sessionStorage.did.stringRepresentation)"
 					)
 					Button("Start Over", action: viewModel.reset)
 				}

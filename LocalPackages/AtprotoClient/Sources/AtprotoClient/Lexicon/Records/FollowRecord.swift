@@ -33,6 +33,6 @@ extension Lexicon.App.Bsky.Graph {
 
 extension Lexicon.App.Bsky.Graph.Follow: AtprotoRecord {
 	public static func mock() -> Lexicon.App.Bsky.Graph.Follow {
-		.init(subject: Atproto.DID.mock().fullId)
+		.init(subject: Atproto.DID.mock().stringRepresentation)
 	}
 }

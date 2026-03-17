@@ -26,7 +26,7 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 			case .handle(let string):
 				string
 			case .did(let did, let handle):
-				handle ?? did.fullId
+				handle ?? did.stringRepresentation
 			}
 		}
 	}

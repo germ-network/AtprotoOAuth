@@ -33,7 +33,7 @@ extension Lexicon.App.Bsky.Actor {
 extension Lexicon.App.Bsky.Actor.Defs.ProfileViewDetailed: Mockable {
 	public static func mock() -> Lexicon.App.Bsky.Actor.Defs.ProfileViewDetailed {
 		.init(
-			did: Atproto.DID.mock().fullId,
+			did: Atproto.DID.mock().stringRepresentation,
 			handle: "germnetwork.com",
 			displayName: "Germ Network",
 			pronouns: "it/them",

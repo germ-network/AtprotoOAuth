@@ -19,7 +19,7 @@ public enum AtIdentifier: Sendable {
 	public var wireFormat: String {
 		switch self {
 		case .handle(let handle): handle
-		case .did(let did): did.fullId
+		case .did(let did): did.stringRepresentation
 		}
 	}
 }

@@ -14,7 +14,7 @@ struct APITests {
 
 	//move this to the handle resolution library
 	@Test func testHandleResolution() async throws {
-		let parsedDid = try Atproto.DID(fullId: "did:plc:4yvwfwxfz5sney4twepuzdu7")
+		let parsedDid = try Atproto.DID(string: "did:plc:4yvwfwxfz5sney4twepuzdu7")
 		let resolvedDid = try await AtprotoOAuthClient.resolve(handle: "germnetwork.com")
 		#expect(parsedDid == resolvedDid)
 

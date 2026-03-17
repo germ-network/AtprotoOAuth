@@ -23,7 +23,7 @@ extension Atproto {
 		public let identifier: String
 		public let method: Methods
 
-		public var fullId: String {
+		public var stringRepresentation: String {
 			Constants.prefix + method.rawValue + ":" + identifier
 		}
 
@@ -54,11 +54,11 @@ extension Atproto {
 			self.identifier = identifier
 		}
 
-		public init(fullId: String) throws {
-			guard fullId.hasPrefix(Constants.prefix) else {
+		public init(string: String) throws {
+			guard string.hasPrefix(Constants.prefix) else {
 				throw AtprotoDIDError.invalidPrefix
 			}
-			let remainder = fullId.dropFirst(Constants.prefix.count)
+			let remainder = string.dropFirst(Constants.prefix.count)
 			(method, identifier) = try Methods.parse(remainder)
 		}
 	}
@@ -67,6 +67,19 @@ extension Atproto {
 extension Atproto.DID {
 	static public func mock(method: Methods = .plc) -> Self {
 		.init(method: method, identifier: UUID().uuidString)
+	}
+}
+
+//code it as the bare string so we can type fields
+extension Atproto.DID: Codable {
+	public init(from decoder: any Decoder) throws {
+		let container = try decoder.singleValueContainer()
+		self = try .init(string: container.decode(String.self))
+	}
+
+	public func encode(to encoder: any Encoder) throws {
+		var container = encoder.singleValueContainer()
+		try container.encode(stringRepresentation)
 	}
 }
 

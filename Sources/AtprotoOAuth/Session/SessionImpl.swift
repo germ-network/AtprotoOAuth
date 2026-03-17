@@ -216,7 +216,7 @@ extension AtprotoOAuthSessionImpl {
 		atprotoClient: AtprotoClientInterface,
 	) throws {
 		try self.init(
-			did: .init(fullId: archive.did),
+			did: .init(string: archive.did),
 			appCredentials: appCredentials,
 			state: .init(archive: archive.session),
 			resourceFetcher: resourceFetcher,

@@ -19,6 +19,6 @@ extension AtprotoOAuthClient {
 		else {
 			throw OAuthClientError.noDidForHandle
 		}
-		return try .init(fullId: did)
+		return try .init(string: did)
 	}
 }
