@@ -15,7 +15,10 @@ let package = Package(
 	],
 	dependencies: [
 		.package(path: "./LocalPackages/AtprotoClient"),
-		.package(path: "./LocalPackages/AtprotoTypes"),
+		.package(
+			url: "https://github.com/germ-network/AtprotoTypes.git",
+			from: "0.0.2"
+		),
 		.package(path: "./LocalPackages/oauth4swift"),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",

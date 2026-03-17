@@ -73,7 +73,7 @@ import os
 
 			let (session, saveStream) = try AtprotoOAuthSessionImpl.restore(
 				archive: .init(
-					did: sessionStorage.did.fullId,
+					did: sessionStorage.did.stringRepresentation,
 					session: sessionArchive,
 				),
 				appCredentials: oauthClient.appCredentials,
@@ -148,7 +148,7 @@ import os
 		let restoreTask = Task {
 			let (restored, saveStream) = try AtprotoOAuthSessionImpl.restore(
 				archive: .init(
-					did: sessionStorage.did.fullId,
+					did: sessionStorage.did.stringRepresentation,
 					session: archive,
 				),
 				appCredentials: oauthClient.appCredentials,

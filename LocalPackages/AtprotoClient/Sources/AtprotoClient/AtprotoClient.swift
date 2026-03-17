@@ -43,7 +43,7 @@ extension AtprotoClient: AtprotoClientInterface {
 }
 
 extension AtprotoClientInterface {
-	func getRecord<R: AtprotoRecord>(
+	public func getRecord<R: AtprotoRecord>(
 		pdsUrl: URL,
 		parameters: Lexicon.Com.Atproto.Repo.GetRecord<R>.Parameters,
 	) async throws -> R? {

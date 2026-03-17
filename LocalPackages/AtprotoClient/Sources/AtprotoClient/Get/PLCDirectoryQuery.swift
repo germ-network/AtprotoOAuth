@@ -26,7 +26,7 @@ extension AtprotoClient {
 		var components = URLComponents()
 		components.scheme = "https"
 		components.host = "plc.directory"
-		components.path = "/\(did.fullId)"
+		components.path = "/\(did.stringRepresentation)"
 
 		return try components.url
 			.tryUnwrap(AtprotoClientError.couldntConstructUrl)

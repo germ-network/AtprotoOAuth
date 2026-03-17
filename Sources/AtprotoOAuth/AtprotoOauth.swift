@@ -43,7 +43,7 @@ extension AuthServerRequestOptions {
 
 				//more full implementation is to check the new did if different
 				//and its issuer
-				guard subString == did.fullId else {
+				guard subString == did.stringRepresentation else {
 					throw OAuthClientError.subDidMismatch
 				}
 

@@ -48,7 +48,11 @@ import SwiftUI
 			do {
 				let resolvedDid = try await Self.fallbackResolve(handle: handle)
 
-				logs.append(.init(body: "Resolved DID: \(resolvedDid.fullId)"))
+				logs.append(
+					.init(
+						body:
+							"Resolved DID: \(resolvedDid.stringRepresentation)"
+					))
 
 				let messageDelegate = try await AtprotoClient(
 					resourceFetcher: URLSession.shared
@@ -69,7 +73,7 @@ import SwiftUI
 					try AtprotoOAuthSessionImpl
 					.restore(
 						archive: .init(
-							did: resolvedDid.fullId,
+							did: resolvedDid.stringRepresentation,
 							session: sessionArchive,
 						),
 						appCredentials: oauthClient.appCredentials,
