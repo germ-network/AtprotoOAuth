@@ -19,6 +19,8 @@ extension Microcosm {
 		) async throws -> X.Result
 
 		func resolveHandle(handle: String) async throws -> Atproto.DID
+		func resolveMiniDoc(identifier: String) async throws
+			-> Lexicon.Blue.Microcosm.Identity.ResolveMiniDoc.Result?
 		func resolveMiniDoc(identifier: String, serviceUrl: URL?) async throws
 			-> Lexicon.Blue.Microcosm.Identity.ResolveMiniDoc.Result?
 	}
@@ -27,7 +29,7 @@ extension Microcosm {
 extension Microcosm {
 	public struct Slingshot {
 		public static let defaultServiceURL = URL(
-			string: "https://slingshot.microcosm.blue/")!
+			string: "https://slingshot.microcosm.blue")!
 
 		let resourceFetcher: HTTPFetcher
 
@@ -53,6 +55,12 @@ extension Microcosm.SlingshotInterface {
 		throw Microcosm.Errors.notImplemented
 	}
 
+	public func resolveMiniDoc(identifier: String) async throws -> Lexicon.Blue.Microcosm
+		.Identity.ResolveMiniDoc.Result?
+	{
+		return try await resolveMiniDoc(identifier: identifier, serviceUrl: nil)
+	}
+
 	public func resolveMiniDoc(identifier: String, serviceUrl: URL?)
 		async throws
 		-> Lexicon.Blue.Microcosm.Identity.ResolveMiniDoc.Result?
@@ -66,7 +74,6 @@ extension Microcosm.SlingshotInterface {
 					.Parameters(identifier: id),
 				service: serviceUrl,
 			)
-			//this is per the api docs, not the lexicon
 		} catch Microcosm.Errors.requestFailed(400, let error) {
 			if error == "RecordNotFound" {
 				return nil
