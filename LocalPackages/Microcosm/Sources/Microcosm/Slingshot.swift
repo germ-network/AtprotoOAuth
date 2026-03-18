@@ -10,32 +10,36 @@ import AtprotoTypes
 import Foundation
 import GermConvenience
 
-// namespaces
-public protocol SlingshotInterface: Sendable {
-	func request<X: XRPCRequest>(
-		_: X.Type,
-		parameters: X.Parameters,
-		service: URL?,
-	) async throws -> X.Result
+extension Microcosm {
+	public protocol SlingshotInterface: Sendable {
+		func request<X: XRPCRequest>(
+			_: X.Type,
+			parameters: X.Parameters,
+			service: URL?,
+		) async throws -> X.Result
 
-	func resolveHandle(handle: String) async throws -> Atproto.DID
-	func resolveMiniDoc(identifier: String, serviceUrl: URL?) async throws
-		-> Lexicon.Blue.Microcosm.Identity.ResolveMiniDoc.Result?
-}
-
-public struct Slingshot {
-	public static let defaultServiceURL = URL(string: "https://slingshot.microcosm.blue/")!
-
-	let resourceFetcher: HTTPFetcher
-
-	public init(resourceFetcher: HTTPFetcher) {
-		self.resourceFetcher = resourceFetcher
+		func resolveHandle(handle: String) async throws -> Atproto.DID
+		func resolveMiniDoc(identifier: String, serviceUrl: URL?) async throws
+			-> Lexicon.Blue.Microcosm.Identity.ResolveMiniDoc.Result?
 	}
 }
 
-extension Slingshot: SlingshotInterface {}
+extension Microcosm {
+	public struct Slingshot {
+		public static let defaultServiceURL = URL(
+			string: "https://slingshot.microcosm.blue/")!
 
-extension SlingshotInterface {
+		let resourceFetcher: HTTPFetcher
+
+		public init(resourceFetcher: HTTPFetcher) {
+			self.resourceFetcher = resourceFetcher
+		}
+	}
+}
+
+extension Microcosm.Slingshot: Microcosm.SlingshotInterface {}
+
+extension Microcosm.SlingshotInterface {
 	// This feels like it should be in AtIdentifier as a static method?
 	private func fromIdentifier(_ identifier: String) throws -> AtIdentifier {
 		if identifier.starts(with: "did") {
@@ -46,7 +50,7 @@ extension SlingshotInterface {
 	}
 
 	public func resolveHandle(handle: String) async throws -> AtprotoTypes.Atproto.DID {
-		throw SlingshotError.notImplemented
+		throw Microcosm.Errors.notImplemented
 	}
 
 	public func resolveMiniDoc(identifier: String, serviceUrl: URL?)
@@ -63,11 +67,12 @@ extension SlingshotInterface {
 				service: serviceUrl,
 			)
 			//this is per the api docs, not the lexicon
-		} catch SlingshotError.requestFailed(400, let error) {
+		} catch Microcosm.Errors.requestFailed(400, let error) {
 			if error == "RecordNotFound" {
 				return nil
 			} else {
-				throw SlingshotError.requestFailed(responseCode: 400, error: error)
+				throw Microcosm.Errors.requestFailed(
+					responseCode: 400, error: error)
 			}
 		}
 	}

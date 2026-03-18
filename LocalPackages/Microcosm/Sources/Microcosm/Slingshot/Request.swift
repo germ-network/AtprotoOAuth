@@ -3,25 +3,27 @@ import AtprotoTypes
 import Foundation
 import GermConvenience
 
-extension Slingshot {
+extension Microcosm.Slingshot {
 	/// - Parameter service: URL?
 	/// - Returns: (serviceUrl: URL, proxy: String?)
 	private func getServiceUrl(service: URL?) throws -> (URL, String?) {
 		// Using service proxying:
 		if let service = service {
 			guard let url = URL(string: "/", relativeTo: service) else {
-				throw SlingshotError.improperServiceUrl
+				throw Microcosm.Errors.improperServiceUrl
 			}
 
-			guard let proxyHost = Slingshot.defaultServiceURL.host(percentEncoded: true)
+			guard
+				let proxyHost = Microcosm.Slingshot.defaultServiceURL.host(
+					percentEncoded: true)
 			else {
-				throw SlingshotError.improperServiceUrl
+				throw Microcosm.Errors.improperServiceUrl
 			}
 
 			return (url, "did:web:\(proxyHost)#slingshot")
 		} else {
 			// Using the default service:
-			return (Slingshot.defaultServiceURL, nil)
+			return (Microcosm.Slingshot.defaultServiceURL, nil)
 		}
 	}
 
@@ -53,7 +55,7 @@ extension Slingshot {
 
 		switch result {
 		case .error(let errorStruct, let statusCode):
-			throw SlingshotError.requestFailed(
+			throw Microcosm.Errors.requestFailed(
 				responseCode: statusCode,
 				error: errorStruct.error
 			)
