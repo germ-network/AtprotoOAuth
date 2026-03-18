@@ -4,20 +4,22 @@ import GermConvenience
 
 //abstract out the protocol so we can sub in a mock one for offline testing
 public protocol AtprotoClientInterface: Sendable {
+	var atprotoAgent: AtprotoAgent { get }
+
+	init(with atprotoAgent: AtprotoAgent)
+
 	func plcDirectoryQuery(_: Atproto.DID) async throws -> DIDDocument
 
 	func authProcedure<X: XRPCProcedure>(
 		_: X.Type,
 		pdsUrl: URL,
 		parameters: X.Parameters,
-		session: AtprotoSession
 	) async throws -> X.Result
 
 	func authRequest<X: XRPCRequest>(
 		_: X.Type,
 		pdsUrl: URL,
 		parameters: X.Parameters,
-		session: AtprotoSession
 	) async throws -> X.Result
 
 	func request<X: XRPCRequest>(

@@ -11,12 +11,19 @@ import Foundation
 /// https://lexicon.garden/lexicon/did:plc:6msi3pj7krzih5qxqtryxlzw/com.atproto.repo.listRecords/docs
 /// [github]: https://github.com/bluesky-social/atproto/blob/main/lexicons/com/atproto/repo/listRecords.json
 extension Lexicon.Com.Atproto.Repo {
+	public static let listRecordsNSID: Atproto.NSID = "com.atproto.repo.listRecords"
+
 	public enum ListRecords<Result: AtprotoRecord>: XRPCRequest {
 		public struct Result: Sendable, Codable {
 			public let cursor: String?
 			public let records: [Record]
+
+			public init(cursor: String?, records: [Record]) {
+				self.cursor = cursor
+				self.records = records
+			}
 		}
-		public static var nsid: Atproto.NSID { "com.atproto.repo.listRecords" }
+		public static var nsid: Atproto.NSID { listRecordsNSID }
 
 		public struct Parameters: QueryParameters {
 			let repo: AtIdentifier
@@ -67,6 +74,12 @@ extension Lexicon.Com.Atproto.Repo {
 
 			/// The value for the record. Codable for later conversion
 			public let value: Result
+
+			public init(uri: String, cid: String, value: Result) {
+				self.uri = uri
+				self.cid = cid
+				self.value = value
+			}
 		}
 	}
 }

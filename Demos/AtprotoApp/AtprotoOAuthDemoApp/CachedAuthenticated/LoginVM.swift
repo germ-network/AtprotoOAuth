@@ -71,7 +71,7 @@ import os
 			assert(sessionStorage.sessionArchive == nil)
 			sessionStorage.sessionArchive = sessionArchive
 
-			let (session, saveStream) = try AtprotoOAuthSessionImpl.restore(
+			let (session, saveStream) = try AtprotoOAuthAgentImpl.restore(
 				archive: .init(
 					did: sessionStorage.did.fullId,
 					session: sessionArchive,
@@ -146,7 +146,7 @@ import os
 			return
 		}
 		let restoreTask = Task {
-			let (restored, saveStream) = try AtprotoOAuthSessionImpl.restore(
+			let (restored, saveStream) = try AtprotoOAuthAgentImpl.restore(
 				archive: .init(
 					did: sessionStorage.did.fullId,
 					session: archive,

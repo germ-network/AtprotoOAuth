@@ -11,7 +11,7 @@ import Foundation
 import GermConvenience
 import OAuth
 
-public actor AtprotoOAuthSessionImpl {
+public actor AtprotoOAuthAgentImpl {
 	public nonisolated let did: Atproto.DID
 	public let appCredentials: AppCredentials
 	public let resourceFetcher: HTTPFetcher
@@ -144,8 +144,7 @@ public actor AtprotoOAuthSessionImpl {
 		try await atprotoClient.authProcedure(
 			xrpc,
 			pdsUrl: try await getPDSUrl(),
-			parameters: parameters,
-			session: self
+			parameters: parameters
 		)
 	}
 
@@ -156,8 +155,7 @@ public actor AtprotoOAuthSessionImpl {
 		try await atprotoClient.authRequest(
 			xrpc,
 			pdsUrl: try await getPDSUrl(),
-			parameters: parameters,
-			session: self
+			parameters: parameters
 		)
 	}
 
@@ -180,7 +178,7 @@ public actor AtprotoOAuthSessionImpl {
 	}
 }
 
-extension AtprotoOAuthSessionImpl {
+extension AtprotoOAuthAgentImpl {
 	public struct Archive: Sendable, Codable {
 		let did: String
 		let session: SessionState.Archive?
@@ -198,7 +196,7 @@ extension AtprotoOAuthSessionImpl {
 		authFetcher: HTTPFetcher,
 		atprotoClient: AtprotoClientInterface,
 	) throws -> (AtprotoOAuthSession, AsyncStream<SessionState.Mutable?>) {
-		let session = try AtprotoOAuthSessionImpl(
+		let session = try AtprotoOAuthAgentImpl(
 			archive: archive,
 			appCredentials: appCredentials,
 			resourceFetcher: resourceFetcher,
@@ -234,9 +232,9 @@ extension AtprotoOAuthSessionImpl {
 	}
 }
 
-extension AtprotoOAuthSessionImpl: AtprotoAgent {}
+extension AtprotoOAuthAgentImpl: AtprotoAgent {}
 
-extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
+extension AtprotoOAuthAgentImpl: OAuthSessionCapabilities {
 	public var session: SessionState {
 		get throws {
 			guard case .active(let sessionState) = state else {
@@ -266,7 +264,7 @@ extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
 	}
 }
 
-extension AtprotoOAuthSessionImpl: DPoPSigning {
+extension AtprotoOAuthAgentImpl: DPoPSigning {
 	public var dpopKey: OAuth.DPoPKey {
 		get throws {
 			try session.dPopKey.tryUnwrap
@@ -287,7 +285,7 @@ extension AtprotoOAuthSessionImpl: DPoPSigning {
 
 }
 
-extension AtprotoOAuthSessionImpl {
+extension AtprotoOAuthAgentImpl {
 	func getPDSUrl() async throws -> URL {
 		try await atprotoClient.plcDirectoryQuery(did)
 			.pdsUrl

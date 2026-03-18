@@ -66,7 +66,7 @@ import SwiftUI
 					.authorize(identity: .did(resolvedDid, handle: handle))
 
 				let (session, saveStream) =
-					try AtprotoOAuthSessionImpl
+					try AtprotoOAuthAgentImpl
 					.restore(
 						archive: .init(
 							did: resolvedDid.fullId,

@@ -24,4 +24,4 @@ public protocol AtprotoOAuthSession: AtprotoAgent {
 	) async throws -> X.Result
 }
 
-extension AtprotoOAuthSessionImpl: AtprotoOAuthSession {}
+extension AtprotoOAuthAgentImpl: AtprotoOAuthSession {}

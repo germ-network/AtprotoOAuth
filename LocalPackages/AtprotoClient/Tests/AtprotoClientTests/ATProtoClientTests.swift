@@ -15,7 +15,7 @@ struct APIOnlineTests {
 			).tryUnwrap
 		#expect(result.nsid == "com.germnetwork.declaration")
 	}
-	
+
 	@Test func testAtprotoMockSession() async throws {
 		let mockAgent = AtprotoMockAgent()
 
