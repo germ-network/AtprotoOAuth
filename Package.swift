@@ -20,6 +20,7 @@ let package = Package(
 			from: "0.0.2"
 		),
 		.package(path: "./LocalPackages/oauth4swift"),
+		.package(path: "./LocalPackages/Microcosm"),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
 			.upToNextMajor(from: "4.2.0")),
