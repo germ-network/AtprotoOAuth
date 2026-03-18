@@ -10,7 +10,8 @@ import Foundation
 
 extension AtprotoClient {
 	public func getProfile(
-		did: Atproto.DID
+		did: Atproto.DID,
+		agent: AtprotoAgent
 	) async throws -> Lexicon.App.Bsky.Actor.Profile? {
 		//rely on url caching for this value
 		let pdsUrl = try await plcDirectoryQuery(did)
@@ -22,13 +23,14 @@ extension AtprotoClient {
 				repo: .did(did),
 				rkey: "self",
 				cid: nil
-			)
+			),
+			agent: agent
 		)
 	}
 
 	public func getProfileViewerState(
 		did: Atproto.DID,
-		session: any AtprotoAgent
+		agent: any AtprotoAgent
 	) async throws -> Lexicon.App.Bsky.Actor.Defs.ViewerState {
 		//rely on url caching for this value
 		let pdsUrl = try await plcDirectoryQuery(did)
@@ -38,7 +40,7 @@ extension AtprotoClient {
 			Lexicon.App.Bsky.Actor.GetProfile.self,
 			pdsUrl: pdsUrl,
 			parameters: .init(actor: .did(did)),
-			session: session
+			agent: agent
 		).viewer.tryUnwrap
 	}
 }

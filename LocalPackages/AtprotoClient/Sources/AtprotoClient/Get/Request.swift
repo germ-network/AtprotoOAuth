@@ -14,6 +14,7 @@ extension AtprotoClient {
 		_ xrpc: X.Type,
 		pdsUrl: URL,
 		parameters: X.Parameters,
+		agent: AtprotoAgent
 	) async throws -> X.Result {
 		var requestURL = pdsUrl.appending(path: "/xrpc/" + X.nsid)
 		requestURL = requestURL.appending(queryItems: parameters.asQueryItems())
@@ -22,11 +23,18 @@ extension AtprotoClient {
 			httpMethod: .get
 		)
 
-		let result = try await resourceFetcher.data(for: request)
-			.success(
-				decodeResult: X.Result.self,
-				orError: Lexicon.XRPCError.self
+		let result = try await agent.response(
+			.init(
+				relativePath: "/xrpc/" + X.nsid,
+				queryItems: parameters.asQueryItems(),
+				httpMethod: .get,
+				acceptValue: X.acceptValue
 			)
+		)
+		.success(
+			decodeResult: X.Result.self,
+			orError: Lexicon.XRPCError.self
+		)
 
 		switch result {
 		case .error(let errorStruct, let statusCode):

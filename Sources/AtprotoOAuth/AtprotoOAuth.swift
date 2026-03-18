@@ -1,5 +1,5 @@
 //
-//  AtprotoOauth.swift
+//  AtprotoOAuth.swift
 //  AtprotoOAuth
 //
 //  Created by Mark @ Germ on 3/9/26.

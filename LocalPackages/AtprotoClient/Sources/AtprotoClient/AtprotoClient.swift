@@ -2,37 +2,6 @@ import AtprotoTypes
 import Foundation
 import GermConvenience
 
-//abstract out the protocol so we can sub in a mock one for offline testing
-public protocol AtprotoClientInterface: Sendable {
-	var atprotoAgent: AtprotoAgent { get }
-
-	init(with atprotoAgent: AtprotoAgent)
-
-	func plcDirectoryQuery(_: Atproto.DID) async throws -> DIDDocument
-
-	func authProcedure<X: XRPCProcedure>(
-		_: X.Type,
-		pdsUrl: URL,
-		parameters: X.Parameters,
-	) async throws -> X.Result
-
-	func authRequest<X: XRPCRequest>(
-		_: X.Type,
-		pdsUrl: URL,
-		parameters: X.Parameters,
-	) async throws -> X.Result
-
-	func request<X: XRPCRequest>(
-		_: X.Type,
-		pdsUrl: URL,
-		parameters: X.Parameters,
-	) async throws -> X.Result
-}
-
-public protocol AtprotoSession {
-	func authResponse(for request: URLRequest) async throws -> HTTPDataResponse
-}
-
 public struct AtprotoClient {
 	let resourceFetcher: HTTPFetcher
 
@@ -45,12 +14,14 @@ extension AtprotoClient {
 	func getRecord<R: AtprotoRecord>(
 		pdsUrl: URL,
 		parameters: Lexicon.Com.Atproto.Repo.GetRecord<R>.Parameters,
+		agent: AtprotoAgent
 	) async throws -> R? {
 		do {
 			return try await request(
 				Lexicon.Com.Atproto.Repo.GetRecord<R>.self,
 				pdsUrl: pdsUrl,
-				parameters: parameters
+				parameters: parameters,
+				agent: agent
 			).value
 			//this is per the api docs, not the lexicon
 		} catch AtprotoClientError.requestFailed(400, let error) {
@@ -67,11 +38,13 @@ extension AtprotoClient {
 	func listRecords<R: AtprotoRecord>(
 		pdsUrl: URL,
 		parameters: Lexicon.Com.Atproto.Repo.ListRecords<R>.Parameters,
+		agent: AtprotoAgent
 	) async throws -> ([R], String?) {
 		let result = try await request(
 			Lexicon.Com.Atproto.Repo.ListRecords<R>.self,
 			pdsUrl: pdsUrl,
-			parameters: parameters
+			parameters: parameters,
+			agent: agent
 		)
 		let records = result.records.map { $0.value }
 		return (records, result.cursor)
@@ -80,12 +53,14 @@ extension AtprotoClient {
 	public func getBlob(
 		pdsUrl: URL,
 		parameters: Lexicon.Com.Atproto.Sync.GetBlob.Parameters,
+		agent: AtprotoAgent
 	) async throws -> Data? {
 		do {
 			return try await request(
 				Lexicon.Com.Atproto.Sync.GetBlob.self,
 				pdsUrl: pdsUrl,
-				parameters: parameters
+				parameters: parameters,
+				agent: agent
 			)
 		} catch AtprotoClientError.requestFailed(400, let error) {
 			if error == "BlobNotFound" {
@@ -101,7 +76,7 @@ extension AtprotoClient {
 	public func putRecord<R: AtprotoRecord>(
 		did: Atproto.DID,
 		parameters: Lexicon.Com.Atproto.Repo.PutRecord<R>.Parameters,
-		session: AtprotoAgent
+		agent: AtprotoAgent
 	) async throws {
 		//rely on url caching for this value
 		let pdsUrl = try await plcDirectoryQuery(did)
@@ -111,7 +86,7 @@ extension AtprotoClient {
 			Lexicon.Com.Atproto.Repo.PutRecord<R>.self,
 			pdsUrl: pdsUrl,
 			parameters: parameters,
-			session: session
+			agent: agent
 		)
 	}
 }

@@ -10,15 +10,18 @@ import Foundation
 import GermConvenience
 
 public actor AtprotoMockAgentImpl {
-	public nonisolated let repo: Atproto.DID
+	public nonisolated let repo: String
+	public nonisolated let resolver: AtprotoResolver
 
 	// Might want to check that the appropriate AtprotoRecord type is stored in a given NSID collection
 	private var pds: [Atproto.DID: [Atproto.NSID: [Atproto.RecordKey: AtprotoRecord]]]
 	private var pdsURL = URL(string: "https://mock-pds.germnetwork.com")!
+	//private var resolver: AtprotoResolver
 
-	public init(for repo: Atproto.DID) {
+	public init(for did: Atproto.DID) {
 		self.pds = [:]
-		self.repo = repo
+		self.repo = did.fullId
+		self.resolver = AtprotoMockResolver()
 	}
 
 	public func putRecord<R: AtprotoRecord>(
@@ -38,25 +41,13 @@ public actor AtprotoMockAgentImpl {
 extension AtprotoMockAgentImpl: AtprotoAgent {
 	public nonisolated var allowsAuthedCalls: Bool { true }
 
-	public func response(_ request: AtprotoAgentRequest) async throws
+	public func authResponse(_ request: AtprotoAgentRequest) async throws
 		-> GermConvenience.HTTPDataResponse
 	{
-		let pathComponents = try request.relativePath.split(separator: "/")
-		// url[0] is "/"
-		guard pathComponents[1] == "xrpc" else {
-			throw HTTPResponseError.unsuccessfulString(400, "InvalidRequest")
-		}
-
-		switch pathComponents[pathComponents.endIndex] {
-		case Lexicon.Com.Atproto.Repo.PutRecord<R>.nsid:
-			throw HTTPResponseError.unsuccessfulString(400, "NotImplemented")
-		default:
-			throw HTTPResponseError.unsuccessfulString(400, "InvalidRequest")
-		}
-		throw HTTPResponseError.unsuccessfulString(400, "InvalidRequest")
+		throw AtprotoMockAgentError.notImplemented
 	}
 
-	public func authResponse(_ request: AtprotoAgentRequest) async throws
+	public func response(_ request: AtprotoAgentRequest) async throws
 		-> GermConvenience.HTTPDataResponse
 	{
 		let pathComponents = try request.relativePath.split(separator: "/")
@@ -64,7 +55,7 @@ extension AtprotoMockAgentImpl: AtprotoAgent {
 		guard pathComponents[1] == "xrpc" else {
 			throw HTTPResponseError.unsuccessfulString(400, "InvalidRequest")
 		}
-		
+
 		let queryParameters = getQueryDictionary(for: request.queryItems)
 
 		switch pathComponents[pathComponents.endIndex] {
@@ -114,7 +105,7 @@ extension AtprotoMockAgentImpl: AtprotoAgent {
 		}
 		throw AtprotoMockAgentError.unexpectedRecordType
 	}
-	
+
 	private func getQueryDictionary(for queryItems: [URLQueryItem]) -> [String: String] {
 		var queryDictionary: [String: String] = [:]
 		for param in queryItems {
@@ -125,8 +116,9 @@ extension AtprotoMockAgentImpl: AtprotoAgent {
 }
 
 enum AtprotoMockAgentError: Error {
-	case unexpectedRecordType
 	case badParameters
+	case notImplemented
+	case unexpectedRecordType
 }
 
 // Get record

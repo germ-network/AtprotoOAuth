@@ -15,6 +15,7 @@ extension Lexicon.Com.Atproto.Sync {
 	public enum GetBlob: XRPCRequest {
 		public typealias Result = Data?
 		public static var nsid: Atproto.NSID { "com.atproto.sync.getBlob" }
+		public static let acceptValue = "*/*"
 
 		public struct Parameters: QueryParameters {
 			/// The DID of the account.

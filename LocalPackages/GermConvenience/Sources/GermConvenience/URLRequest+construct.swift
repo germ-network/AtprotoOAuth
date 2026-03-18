@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import GermConvenience
 
 extension URLRequest {
 	public static func createRequest(

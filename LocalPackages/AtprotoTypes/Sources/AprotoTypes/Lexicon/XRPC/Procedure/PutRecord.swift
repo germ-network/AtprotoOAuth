@@ -10,8 +10,13 @@ import Foundation
 //https://docs.bsky.app/docs/api/com-atproto-repo-put-record
 //https://lexicon.garden/lexicon/did:plc:6msi3pj7krzih5qxqtryxlzw/com.atproto.repo.putRecord
 extension Lexicon.Com.Atproto.Repo {
+	public static let putRecordNSID: Atproto.NSID = "com.atproto.repo.putRecord"
+
 	public enum PutRecord<Record: AtprotoRecord>: XRPCProcedure {
-		public static var nsid: Atproto.NSID { "com.atproto.repo.putRecord" }
+		public static var nsid: Atproto.NSID { putRecordNSID }
+		public static var acceptValue: String { "application/json" }
+		public static var contentTypeValue: String { "application/json" }
+		
 		public typealias Result = PutRecordResult
 
 		public struct Parameters: Encodable, ProcedureParameters {

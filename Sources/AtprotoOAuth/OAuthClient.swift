@@ -25,7 +25,7 @@ public struct AtprotoOAuthClient: Sendable {
 	public let userAuthenticator: UserAuthenticator
 	public let resourceFetcher: HTTPFetcher
 	let authFetcher: HTTPFetcher
-	public let atprotoClient: AtprotoClientInterface
+//	public let atprotoClient: AtprotoClient
 
 	//didResolver
 	//handleResolver
@@ -35,12 +35,12 @@ public struct AtprotoOAuthClient: Sendable {
 		userAuthenticator: @escaping UserAuthenticator,
 		resourceFetcher: HTTPFetcher,
 		authFetcher: HTTPFetcher,
-		atprotoClient: AtprotoClientInterface,
+//		atprotoClient: AtprotoClient
 	) {
 		self.appCredentials = appCredentials
 		self.userAuthenticator = userAuthenticator
 		self.resourceFetcher = resourceFetcher
-		self.atprotoClient = atprotoClient
+//		self.atprotoClient = atprotoClient
 		self.authFetcher = authFetcher
 	}
 }

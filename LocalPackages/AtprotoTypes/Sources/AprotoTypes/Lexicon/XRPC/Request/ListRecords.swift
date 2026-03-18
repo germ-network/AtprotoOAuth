@@ -24,6 +24,7 @@ extension Lexicon.Com.Atproto.Repo {
 			}
 		}
 		public static var nsid: Atproto.NSID { listRecordsNSID }
+		public static var acceptValue: String { "application/json" }
 
 		public struct Parameters: QueryParameters {
 			let repo: AtIdentifier

@@ -10,6 +10,7 @@ import Foundation
 ///https://atproto.com/specs/xrpc
 public protocol XRPC: Sendable {
 	static var nsid: Atproto.NSID { get }
+	static var acceptValue: String { get }
 
 	associatedtype Result: Decodable, Mockable, Sendable
 }
@@ -25,6 +26,8 @@ public protocol QueryParameters: Sendable {
 
 //these are POST
 public protocol XRPCProcedure: XRPC {
+	static var contentTypeValue: String { get }
+
 	associatedtype Parameters: ProcedureParameters
 }
 

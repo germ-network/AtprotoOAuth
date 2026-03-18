@@ -14,20 +14,20 @@ extension AtprotoClient {
 		_ xrpc: X.Type,
 		pdsUrl: URL,
 		parameters: X.Parameters,
-		session: AtprotoAgent
+		agent: AtprotoAgent
 	) async throws -> X.Result {
-		var requestURL = pdsUrl.appending(path: "/xrpc/" + X.nsid)
-		requestURL = requestURL.appending(queryItems: parameters.asQueryItems())
-		let request = URLRequest.createRequest(
-			url: requestURL,
-			httpMethod: .get
-		)
-
-		let result = try await session.authResponse(for: request)
-			.success(
-				decodeResult: X.Result.self,
-				orError: Lexicon.XRPCError.self
+		let result = try await agent.authResponse(
+			.init(
+				relativePath: "/xrpc/" + X.nsid,
+				queryItems: parameters.asQueryItems(),
+				httpMethod: .get,
+				acceptValue: X.acceptValue
 			)
+		)
+		.success(
+			decodeResult: X.Result.self,
+			orError: Lexicon.XRPCError.self
+		)
 
 		switch result {
 		case .error(let errorStruct, let statusCode):
