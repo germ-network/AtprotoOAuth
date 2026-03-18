@@ -1,5 +1,5 @@
 {
-  "originHash" : "f131f67c9c8b7a3e70b3700b8ac88690743c437b06954784d1171bf8e5af1a9c",
+  "originHash" : "834a3b6510662bcd3f03216f4afbbbec42d281f2aa3da62bd356bc854d107ead",
   "pins" : [
     {
       "identity" : "atprotoclient",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
         "branch" : "main",
-        "revision" : "6c1b4ad5a805f1281062414a53920d71e0d219d0"
+        "revision" : "2f374471997270c41452865291e962062c7359d8"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "46d9cc0972f6ed9ad4efb9b5ec8191d5fddf875a",
-        "version" : "0.0.2"
+        "branch" : "main",
+        "revision" : "4fdc02a9b28ae0c2face07f33e62ac262787959a"
       }
     },
     {
@@ -47,6 +47,15 @@
       }
     },
     {
+      "identity" : "microcosm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/germ-network/Microcosm.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "45fc8d446ff8255c18f27afa8582a2b735cb2a99"
+      }
+    },
+    {
       "identity" : "oauth4swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
@@ -60,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-asn1.git",
       "state" : {
-        "revision" : "810496cf121e525d660cd0ea89a758740476b85f",
-        "version" : "1.5.1"
+        "revision" : "9f542610331815e29cc3821d3b6f488db8715517",
+        "version" : "1.6.0"
       }
     },
     {
@@ -78,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "6f70fa9eab24c1fd982af18c281c4525d05e3095",
-        "version" : "4.2.0"
+        "revision" : "fa308c07a6fa04a727212d793e761460e41049c3",
+        "version" : "4.3.0"
       }
     },
     {

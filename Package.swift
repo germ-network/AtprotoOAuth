@@ -27,6 +27,10 @@ let package = Package(
 			branch: "main"
 		),
 		.package(
+			url: "https://github.com/germ-network/Microcosm.git",
+			branch: "main"
+		),
+		.package(
 			url: "https://github.com/apple/swift-crypto.git",
 			.upToNextMajor(from: "4.2.0")),
 		.package(
@@ -45,6 +49,7 @@ let package = Package(
 				.product(name: "Crypto", package: "swift-crypto"),
 				//for temp shim only
 				"ATResolve",
+				"Microcosm",
 				.product(name: "OAuth", package: "oauth4swift"),
 			]
 		),

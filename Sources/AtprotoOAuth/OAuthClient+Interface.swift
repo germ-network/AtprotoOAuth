@@ -73,7 +73,7 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 		)
 	}
 
-	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {
+	private func getAuthorizationUrl(didDoc: Atproto.DIDDocument) async throws -> URL {
 		let pdsUrl = try didDoc.pdsUrl
 
 		let pdsMetadata =
