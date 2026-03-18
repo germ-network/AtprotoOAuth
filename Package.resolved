@@ -7,7 +7,7 @@
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
         "branch" : "main",
-        "revision" : "2f374471997270c41452865291e962062c7359d8"
+        "revision" : "e81caaa59cd492d53b4a84db598d6b8604fb1cf2"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
         "branch" : "main",
-        "revision" : "4fdc02a9b28ae0c2face07f33e62ac262787959a"
+        "revision" : "f9bb149f1d21edeece0bca46e5430f7ffcff9aaa"
       }
     },
     {
@@ -52,7 +52,7 @@
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
         "branch" : "main",
-        "revision" : "45fc8d446ff8255c18f27afa8582a2b735cb2a99"
+        "revision" : "dbb08dbb5c218e9a3adb76eed5bcdf81e12bba98"
       }
     },
     {

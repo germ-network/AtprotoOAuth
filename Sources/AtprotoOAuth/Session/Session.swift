@@ -5,8 +5,8 @@
 //  Created by Mark @ Germ on 2/17/26.
 //
 
-import AtprotoTypes
 import AtprotoClient
+import AtprotoTypes
 
 ///Usage pattern: A session starts out authenticated. May degrade to lose auth
 ///Parent should recognize it has an expired session and re-auth
