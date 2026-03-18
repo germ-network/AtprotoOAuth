@@ -11,7 +11,7 @@ import AtprotoClient
 ///Parent should recognize it has an expired session and re-auth
 
 ///Use this to constrain the API when the implementation must have public conformance to OAuthSession
-public protocol AtprotoOAuthSession {
+public protocol AtprotoOAuthSession: Sendable {
 	func authProcedure<X: XRPCProcedure>(
 		_ xrpc: X.Type,
 		parameters: X.Parameters
