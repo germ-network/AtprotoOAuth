@@ -29,7 +29,7 @@ extension Microcosm {
 extension Microcosm {
 	public struct Slingshot {
 		public static let defaultServiceURL = URL(
-			string: "https://slingshot.microcosm.blue")!
+			string: "https://slingshot.microcosm.blue")
 
 		let resourceFetcher: HTTPFetcher
 

@@ -7,24 +7,23 @@ extension Microcosm.Slingshot {
 	/// - Parameter service: URL?
 	/// - Returns: (serviceUrl: URL, proxy: String?)
 	private func getServiceUrl(service: URL?) throws -> (URL, String?) {
-		// Using service proxying:
-		if let service = service {
-			guard let url = URL(string: "/", relativeTo: service) else {
-				throw Microcosm.Errors.improperServiceUrl
-			}
+		let defaultService = try Microcosm.Slingshot.defaultServiceURL.tryUnwrap
 
-			guard
-				let proxyHost = Microcosm.Slingshot.defaultServiceURL.host(
-					percentEncoded: true)
-			else {
-				throw Microcosm.Errors.improperServiceUrl
-			}
-
-			return (url, "did:web:\(proxyHost)#slingshot")
-		} else {
+		guard let service else {
 			// Using the default service:
-			return (Microcosm.Slingshot.defaultServiceURL, nil)
+			return (defaultService, nil)
 		}
+
+		// Using service proxying:
+		guard let url = URL(string: "/", relativeTo: service) else {
+			throw Microcosm.Errors.improperServiceUrl
+		}
+
+		guard let proxyHost = defaultService.host(percentEncoded: true) else {
+			throw Microcosm.Errors.improperServiceUrl
+		}
+
+		return (url, "did:web:\(proxyHost)#slingshot")
 	}
 
 	public func request<X: XRPCRequest>(
@@ -41,7 +40,7 @@ extension Microcosm.Slingshot {
 			httpMethod: .get
 		)
 
-		if let proxy = proxy {
+		if let proxy {
 			request.setValue(
 				proxy, forHTTPHeaderField: "atproto-proxy"
 			)
