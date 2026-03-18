@@ -1,3 +1,4 @@
+import AtprotoClient
 import AtprotoTypes
 import Foundation
 
@@ -5,8 +6,7 @@ extension Lexicon.Blue.Microcosm.Identity {
 
 	public enum ResolveMiniDoc: XRPCRequest {
 		public struct Result: Sendable, Codable {
-			// public let did: Atproto.DID
-			public let did: String
+			public let did: Atproto.DID
 			public let handle: AtIdentifier.Handle
 			public let pds: URL
 			public let signingKey: String
@@ -19,7 +19,7 @@ extension Lexicon.Blue.Microcosm.Identity {
 			}
 
 			public init(
-				did: String,
+				did: Atproto.DID,
 				handle: AtIdentifier.Handle,
 				pds: URL,
 				signingKey: String
@@ -34,7 +34,7 @@ extension Lexicon.Blue.Microcosm.Identity {
 				let container = try decoder.container(keyedBy: CodingKeys.self)
 
 				self.did = try container.decode(
-					String.self,
+					Atproto.DID.self,
 					forKey: CodingKeys.did
 				)
 				self.handle = try container.decode(
@@ -73,7 +73,7 @@ extension Lexicon.Blue.Microcosm.Identity {
 extension Lexicon.Blue.Microcosm.Identity.ResolveMiniDoc.Result: Mockable {
 	public static func mock() -> Lexicon.Blue.Microcosm.Identity.ResolveMiniDoc.Result {
 		.init(
-			did: Atproto.DID.mock().fullId,
+			did: Atproto.DID.mock(),
 			handle: "germnetwork.com",
 			pds: URL(string: "https://blusher.us-east.host.bsky.network")!,
 			signingKey: "zQ3shPrWRUXva2mWziWZt1vrjuXUx3E28WfgsAwStMcAmDt93"

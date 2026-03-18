@@ -1,3 +1,4 @@
+import AtprotoClient
 import AtprotoTypes
 import Foundation
 import GermConvenience
@@ -44,10 +45,10 @@ extension Slingshot {
 			)
 		}
 
-		let result = try await responseProvider(request)
-			.successErrorDecode(
-				resultType: X.Result.self,
-				errorType: Lexicon.XRPCError.self
+		let result = try await resourceFetcher.data(for: request)
+			.success(
+				decodeResult: X.Result.self,
+				orError: Lexicon.XRPCError.self
 			)
 
 		switch result {

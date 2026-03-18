@@ -5,6 +5,7 @@
 //  Created by Mark @ Germ on 2/20/26.
 //
 
+import AtprotoClient
 import AtprotoTypes
 import Foundation
 import GermConvenience
@@ -25,10 +26,10 @@ public protocol SlingshotInterface: Sendable {
 public struct Slingshot {
 	public static let defaultServiceURL = URL(string: "https://slingshot.microcosm.blue/")!
 
-	let responseProvider: HTTPDataResponse.Requester
+	let resourceFetcher: HTTPFetcher
 
-	public init(responseProvider: @escaping HTTPDataResponse.Requester) {
-		self.responseProvider = responseProvider
+	public init(resourceFetcher: HTTPFetcher) {
+		self.resourceFetcher = resourceFetcher
 	}
 }
 
@@ -38,7 +39,7 @@ extension SlingshotInterface {
 	// This feels like it should be in AtIdentifier as a static method?
 	private func fromIdentifier(_ identifier: String) throws -> AtIdentifier {
 		if identifier.starts(with: "did") {
-			return try AtIdentifier.did(.init(fullId: identifier))
+			return try AtIdentifier.did(.init(string: identifier))
 		} else {
 			return AtIdentifier.handle(identifier)
 		}
@@ -57,7 +58,8 @@ extension SlingshotInterface {
 		do {
 			return try await request(
 				Lexicon.Blue.Microcosm.Identity.ResolveMiniDoc.self,
-				parameters: .init(identifier: id),
+				parameters: Lexicon.Blue.Microcosm.Identity.ResolveMiniDoc
+					.Parameters(identifier: id),
 				service: serviceUrl,
 			)
 			//this is per the api docs, not the lexicon
