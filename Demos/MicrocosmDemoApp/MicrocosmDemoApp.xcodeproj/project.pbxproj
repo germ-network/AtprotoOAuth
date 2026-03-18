@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9033028D2F6B3BE9007BD0C6 /* AtprotoClient in Frameworks */ = {isa = PBXBuildFile; productRef = 9033028C2F6B3BE9007BD0C6 /* AtprotoClient */; };
 		90F878052F64E2E1001CB417 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 90F878042F64E2E1001CB417 /* Microcosm */; };
-		90F878182F64E54D001CB417 /* GermConvenience in Frameworks */ = {isa = PBXBuildFile; productRef = 90F878172F64E54D001CB417 /* GermConvenience */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,7 +58,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				90F878052F64E2E1001CB417 /* Microcosm in Frameworks */,
-				90F878182F64E54D001CB417 /* GermConvenience in Frameworks */,
+				9033028D2F6B3BE9007BD0C6 /* AtprotoClient in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,7 +120,7 @@
 			name = MicrocosmDemoApp;
 			packageProductDependencies = (
 				90F878042F64E2E1001CB417 /* Microcosm */,
-				90F878172F64E54D001CB417 /* GermConvenience */,
+				9033028C2F6B3BE9007BD0C6 /* AtprotoClient */,
 			);
 			productName = MicrocosmDemoApp;
 			productReference = 90D24E252F64C9BA0086AA90 /* MicrocosmDemoApp.app */;
@@ -206,7 +206,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				90F878032F64E2E1001CB417 /* XCLocalSwiftPackageReference "../../LocalPackages/Microcosm" */,
-				90F878162F64E54D001CB417 /* XCLocalSwiftPackageReference "../../LocalPackages/GermConvenience" */,
+				9033028B2F6B3BE9007BD0C6 /* XCLocalSwiftPackageReference "../../LocalPackages/AtprotoClient" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 90D24E262F64C9BA0086AA90 /* Products */;
@@ -620,24 +620,24 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		9033028B2F6B3BE9007BD0C6 /* XCLocalSwiftPackageReference "../../LocalPackages/AtprotoClient" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../LocalPackages/AtprotoClient;
+		};
 		90F878032F64E2E1001CB417 /* XCLocalSwiftPackageReference "../../LocalPackages/Microcosm" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../LocalPackages/Microcosm;
 		};
-		90F878162F64E54D001CB417 /* XCLocalSwiftPackageReference "../../LocalPackages/GermConvenience" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../LocalPackages/GermConvenience;
-		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		9033028C2F6B3BE9007BD0C6 /* AtprotoClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AtprotoClient;
+		};
 		90F878042F64E2E1001CB417 /* Microcosm */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Microcosm;
-		};
-		90F878172F64E54D001CB417 /* GermConvenience */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = GermConvenience;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

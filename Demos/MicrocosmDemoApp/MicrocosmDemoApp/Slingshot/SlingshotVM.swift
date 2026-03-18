@@ -5,7 +5,8 @@ import SwiftUI
 
 @Observable final class SlingshotVM {
 	let slingshot = Slingshot(
-		responseProvider: URLSession(configuration: .default).responseProvider)
+		resourceFetcher: URLSession.shared
+	)
 
 	enum State {
 		case collectHandle

@@ -11,7 +11,7 @@ struct SlingshotView: View {
 			case .validating(let handle):
 				Text("Validating \(handle)")
 				Button("reset", action: viewModel.reset)
-			case .resolved(_):
+			case .resolved:
 				Text("Successfully Logged In")
 				Button("reset", action: viewModel.reset)
 			}
