@@ -5,6 +5,8 @@ import Foundation
 extension Lexicon.Blue.Microcosm.Identity {
 
 	public enum ResolveMiniDoc: XRPCRequest {
+		public static var nsid: Atproto.NSID { "blue.microcosm.identity.resolveMiniDoc" }
+
 		public struct Result: Sendable, Codable {
 			public let did: Atproto.DID
 			public let handle: AtIdentifier.Handle
@@ -17,42 +19,7 @@ extension Lexicon.Blue.Microcosm.Identity {
 				case handle
 				case pds
 			}
-
-			public init(
-				did: Atproto.DID,
-				handle: AtIdentifier.Handle,
-				pds: URL,
-				signingKey: String
-			) {
-				self.did = did
-				self.handle = handle
-				self.pds = pds
-				self.signingKey = signingKey
-			}
-
-			public init(from decoder: any Decoder) throws {
-				let container = try decoder.container(keyedBy: CodingKeys.self)
-
-				self.did = try container.decode(
-					Atproto.DID.self,
-					forKey: CodingKeys.did
-				)
-				self.handle = try container.decode(
-					AtIdentifier.Handle.self,
-					forKey: CodingKeys.handle
-				)
-				self.pds = try container.decode(
-					URL.self,
-					forKey: CodingKeys.pds
-				)
-				self.signingKey = try container.decode(
-					String.self,
-					forKey: CodingKeys.signingKey
-				)
-			}
 		}
-
-		public static var nsid: Atproto.NSID { "blue.microcosm.identity.resolveMiniDoc" }
 
 		public struct Parameters: QueryParameters {
 			public let identifier: AtIdentifier
@@ -71,7 +38,7 @@ extension Lexicon.Blue.Microcosm.Identity {
 }
 
 extension Lexicon.Blue.Microcosm.Identity.ResolveMiniDoc.Result: Mockable {
-	public static func mock() -> Lexicon.Blue.Microcosm.Identity.ResolveMiniDoc.Result {
+	public static func mock() -> Self {
 		.init(
 			did: Atproto.DID.mock(),
 			handle: "germnetwork.com",
