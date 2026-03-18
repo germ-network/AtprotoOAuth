@@ -19,7 +19,7 @@ import SwiftUI
 	let oauthClient = AtprotoOAuthClient(
 		appCredentials: .init(
 			clientId: "https://static.germnetwork.com/client-metadata.json",
-			scopes: ["atproto transition:generic"],
+			scopes: ["atproto", "transition:generic"],
 			callbackURL: URL(string: "com.germnetwork.static:/oauth")!
 		),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
