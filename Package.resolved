@@ -1,13 +1,22 @@
 {
-  "originHash" : "23895da0283a506fb0a3c0a79657f22c487abda322b8606e0301c738eb590cae",
+  "originHash" : "f131f67c9c8b7a3e70b3700b8ac88690743c437b06954784d1171bf8e5af1a9c",
   "pins" : [
+    {
+      "identity" : "atprotoclient",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/germ-network/AtprotoClient.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "6c1b4ad5a805f1281062414a53920d71e0d219d0"
+      }
+    },
     {
       "identity" : "atprototypes",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "72dfa9d88392ce470c6e546c4f2df8142e62032a",
-        "version" : "0.0.1"
+        "revision" : "46d9cc0972f6ed9ad4efb9b5ec8191d5fddf875a",
+        "version" : "0.0.2"
       }
     },
     {
@@ -35,6 +44,15 @@
       "state" : {
         "revision" : "4c2b5d229f074a9b31c2f8cec8ab2fcea4a2e082",
         "version" : "0.0.2"
+      }
+    },
+    {
+      "identity" : "oauth4swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/germ-network/oauth4swift.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "2e6f2dda5f353871adddac372774bc8bb495c2b1"
       }
     },
     {
