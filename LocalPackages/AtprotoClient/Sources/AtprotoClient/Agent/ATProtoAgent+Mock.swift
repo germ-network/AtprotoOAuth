@@ -49,7 +49,7 @@ extension AtprotoMockAgentImpl: AtprotoAgent {
 	public func response(_ request: AtprotoAgentRequest) async throws
 		-> GermConvenience.HTTPDataResponse
 	{
-		let pathComponents = try request.relativePath.split(separator: "/")
+		let pathComponents = request.relativePath.components(separatedBy: "/")
 		// pathComponents[0] is "/"
 		guard pathComponents[1] == "xrpc" else {
 			throw HTTPResponseError.unsuccessfulString(400, "InvalidRequest")
@@ -57,7 +57,7 @@ extension AtprotoMockAgentImpl: AtprotoAgent {
 
 		let queryParameters = getQueryDictionary(for: request.queryItems)
 
-		switch pathComponents[pathComponents.endIndex] {
+		switch pathComponents[pathComponents.endIndex - 1] {
 		case Lexicon.Com.Atproto.Repo.getRecordNSID:
 			let repo = try queryParameters["repo"].tryUnwrap
 			let collection = try queryParameters["collection"].tryUnwrap
@@ -72,7 +72,7 @@ extension AtprotoMockAgentImpl: AtprotoAgent {
 		case Lexicon.Com.Atproto.Repo.listRecordsNSID:
 			let repo = try queryParameters["repo"].tryUnwrap
 			let collection = try queryParameters["collection"].tryUnwrap
-			let limit = try queryParameters["limit"]
+			let limit = queryParameters["limit"]
 			let cursor = queryParameters["cursor"]
 			let reverse = queryParameters["reverse"]
 			return try listRecordsResponse(
@@ -87,7 +87,6 @@ extension AtprotoMockAgentImpl: AtprotoAgent {
 		default:
 			throw HTTPResponseError.unsuccessfulString(400, "InvalidRequest")
 		}
-		throw HTTPResponseError.unsuccessfulString(400, "InvalidRequest")
 	}
 
 	private func getLexicon(for collection: String) throws -> AtprotoRecord.Type {

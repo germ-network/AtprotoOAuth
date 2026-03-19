@@ -8,6 +8,8 @@
 import AtprotoTypes
 
 public struct AtprotoMockResolver: AtprotoResolver {
+	public init() {}
+
 	public func resolve(handle: AtIdentifier.Handle) async throws -> Atproto.DID {
 		.mock()
 	}

@@ -38,8 +38,6 @@ let package = Package(
 				"AtprotoClient",
 				"AtprotoTypes",
 				.product(name: "Crypto", package: "swift-crypto"),
-				//for temp shim only
-				"ATResolve",
 				.product(name: "OAuth", package: "oauth4swift"),
 			]
 		),
