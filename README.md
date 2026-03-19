@@ -18,18 +18,18 @@ AtprotoOAuth package is the composition of several packages which can be used
 independently. It is primarily the intersection of an AtprotoClient and an OAuth
 2.1 package.
 
-## AtprotoClient
+## [AtprotoClient](https://github.com/germ-network/AtprotoClient)
 Defines interfaces for commuincating with atproto services, which accepts injected `AtprotoSession` that can make authenticated requests to OAuth protected resources
 
-### AtprotoTypes
+### [AtprotoTypes](https://github.com/germ-network/AtprotoTypes)
 Defines atproto types, primarily but not exclusively from lexicon.
 We intend to codegen the lexicon types
 
-## oauth4Swift
+## [oauth4swift](https://github.com/germ-network/oauth4swift)
 Paralleling oauth4web, contains low-level components from which a full OAuth
 client can be built
 
-## GermConvenience
+## [GermConvenience](https://github.com/germ-network/GermConvenience)
 Both branches depend on some shared helpers which we park in a GermConvenience
 repository
 
