@@ -14,7 +14,7 @@ struct APITests {
 
 	//move this to the handle resolution library
 	@Test func testHandleResolution() async throws {
-		let parsedDid = try Atproto.DID(fullId: "did:plc:4yvwfwxfz5sney4twepuzdu7")
+		let parsedDid = try Atproto.DID(string: "did:plc:4yvwfwxfz5sney4twepuzdu7")
 		let resolvedDid = try await AtprotoOAuthClient.resolve(handle: "germnetwork.com")
 		#expect(parsedDid == resolvedDid)
 
@@ -69,14 +69,14 @@ struct ClientAPITests {
 		let resolvedDid = try await AtprotoOAuthClient.resolve(
 			handle: inputHandle
 		)
-		#expect(resolvedDid.fullId == "did:plc:lbu36k4mysk5g6gcrpw4dbwm")
+		#expect(
+			resolvedDid.stringRepresentation == "did:plc:lbu36k4mysk5g6gcrpw4dbwm"
+		)
 
 		//make some unauthed requests. e.g. is this did already using germ?
-		let messageDelegate = try await AtprotoClient(
+		let _ = try await AtprotoClient(
 			resourceFetcher: URLSession.shared
 		)
-		.getGermMessagingDelegate(did: resolvedDid)
-
-		#expect(messageDelegate != nil)
+		.getProfile(did: resolvedDid)
 	}
 }

@@ -64,7 +64,7 @@ struct UnauthenticatedView: View {
 			if let did {
 				List {
 					Section("Atproto") {
-						Text("**DID:** \(did.fullId)")
+						Text("**DID:** \(did.stringRepresentation)")
 						Text("**PDS:** \(pdsURL?.absoluteString ?? "N/A")")
 						Text("**Handle:** \(handle ?? "N/A")")
 					}
@@ -131,7 +131,7 @@ struct UnauthenticatedView: View {
 					}
 					Section("\(follows.count) Follows") {
 						ForEach(follows, id: \.self) {
-							Text($0.fullId)
+							Text($0.stringRepresentation)
 						}
 					}
 				}

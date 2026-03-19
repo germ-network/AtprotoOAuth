@@ -6,7 +6,7 @@ import Testing
 
 struct APIOnlineTests {
 	@Test func testMessagingDelegateRecord() async throws {
-		let did = try Atproto.DID(fullId: "did:plc:lbu36k4mysk5g6gcrpw4dbwm")
+		let did = try Atproto.DID(string: "did:plc:lbu36k4mysk5g6gcrpw4dbwm")
 
 		let result =
 			try await AtprotoClient(responseProvider: URLSession.defaultProvider)

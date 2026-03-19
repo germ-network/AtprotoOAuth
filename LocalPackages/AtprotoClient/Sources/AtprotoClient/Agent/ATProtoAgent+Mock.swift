@@ -16,7 +16,6 @@ public actor AtprotoMockAgentImpl {
 	// Might want to check that the appropriate AtprotoRecord type is stored in a given NSID collection
 	private var pds: [Atproto.DID: [Atproto.NSID: [Atproto.RecordKey: AtprotoRecord]]]
 	private var pdsURL = URL(string: "https://mock-pds.germnetwork.com")!
-	//private var resolver: AtprotoResolver
 
 	public init(for did: Atproto.DID) {
 		self.pds = [:]
@@ -29,7 +28,7 @@ public actor AtprotoMockAgentImpl {
 		repo: String,
 		rkey: String,
 	) throws {
-		let did = try Atproto.DID(fullId: repo)
+		let did = try Atproto.DID(string: repo)
 		pds[did, default: [:]][R.nsid, default: [:]][rkey] = record
 	}
 
@@ -94,8 +93,6 @@ extension AtprotoMockAgentImpl: AtprotoAgent {
 	private func getLexicon(for collection: String) throws -> AtprotoRecord.Type {
 		print(collection)
 		switch collection {
-		case Lexicon.Com.GermNetwork.Declaration.nsid:
-			return Lexicon.Com.GermNetwork.Declaration.self
 		case Lexicon.App.Bsky.Graph.Follow.nsid:
 			return Lexicon.App.Bsky.Graph.Follow.self
 		case Lexicon.App.Bsky.Actor.Profile.nsid:
@@ -129,7 +126,7 @@ extension AtprotoMockAgentImpl {
 		rkey: String,
 		cid: String?
 	) throws -> Lexicon.Com.Atproto.Repo.GetRecord<R>.Result {
-		let did = try Atproto.DID(fullId: repo)
+		let did = try Atproto.DID(string: repo)
 		guard let repoContents = pds[did] else {
 			throw HTTPResponseError.unsuccessfulString(400, "RecordNotFound")
 		}
@@ -182,7 +179,7 @@ extension AtprotoMockAgentImpl {
 			}
 		}
 
-		let did = try Atproto.DID(fullId: repo)
+		let did = try Atproto.DID(string: repo)
 		guard let repoContents = pds[did] else {
 			throw HTTPResponseError.unsuccessfulString(400, "RecordNotFound")
 		}

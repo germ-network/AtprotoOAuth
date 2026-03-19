@@ -74,7 +74,7 @@ import os
 			)
 
 			let (oauthAgent, saveStream) = try AtprotoOAuthAgent.restore(
-				archive: .init(did: did.fullId, session: sessionState),
+				archive: .init(did: did.stringRepresentation, session: sessionState),
 				appCredentials: .init(
 					clientId:
 						"https://static.germnetwork.com/client-metadata.json",
@@ -151,7 +151,7 @@ import os
 		let restoreTask = Task {
 			let (restored, saveStream) = try AtprotoOAuthAgent.restore(
 				archive: .init(
-					did: sessionStorage.did.fullId,
+					did: sessionStorage.did.stringRepresentation,
 					session: archive,
 				),
 				appCredentials: .init(

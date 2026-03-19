@@ -11,7 +11,7 @@ public struct AtprotoClient: Sendable {
 }
 
 extension AtprotoClient {
-	func getRecord<R: AtprotoRecord>(
+	public func getRecord<R: AtprotoRecord>(
 		parameters: Lexicon.Com.Atproto.Repo.GetRecord<R>.Parameters,
 	) async throws -> R? {
 		do {

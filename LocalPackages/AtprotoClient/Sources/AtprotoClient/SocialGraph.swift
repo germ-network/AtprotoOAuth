@@ -36,7 +36,7 @@ extension AtprotoClient {
 							)
 					let followingDids = result.records.compactMap {
 						// TODO: Log if any of these fail?
-						try? Atproto.DID(fullId: $0.subject)
+						try? Atproto.DID(string: $0.subject)
 					}
 					continuation.yield(followingDids)
 					cursor = result.cursor

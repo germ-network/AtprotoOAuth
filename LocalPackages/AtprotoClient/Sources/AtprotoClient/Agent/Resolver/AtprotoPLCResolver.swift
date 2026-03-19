@@ -26,7 +26,7 @@ public struct AtprotoLegacyResolver: AtprotoResolver {
 		else {
 			throw AtprotoResolverError.noDidForHandle
 		}
-		return try .init(fullId: did)
+		return try .init(string: did)
 	}
 
 	public func resolve(did: AtprotoTypes.Atproto.DID) async throws -> AtprotoTypes.DIDDocument
@@ -44,7 +44,7 @@ public struct AtprotoLegacyResolver: AtprotoResolver {
 		var components = URLComponents()
 		components.scheme = "https"
 		components.host = "plc.directory"
-		components.path = "/\(did.fullId)"
+		components.path = "/\(did.stringRepresentation)"
 
 		return try components.url
 			.tryUnwrap(AtprotoClientError.couldntConstructUrl)

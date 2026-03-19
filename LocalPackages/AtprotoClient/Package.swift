@@ -14,8 +14,17 @@ let package = Package(
 		)
 	],
 	dependencies: [
-		.package(path: "../AtprotoTypes"),
-		.package(path: "../GermConvenience"),
+		.package(
+			url: "https://github.com/germ-network/AtprotoTypes.git",
+			from: "0.0.2"
+		),
+		.package(
+			url: "https://github.com/germ-network/GermConvenience.git",
+			from: "0.0.2"
+		),
+		.package(
+			url: "https://github.com/apple/swift-crypto.git",
+			.upToNextMajor(from: "4.2.0")),
 		.package(url: "https://github.com/apple/swift-log", from: "1.6.0"),
 		.package(
 			url: "https://github.com/germ-network/ATResolve",
@@ -29,6 +38,7 @@ let package = Package(
 			name: "AtprotoClient",
 			dependencies: [
 				"AtprotoTypes",
+				.product(name: "Crypto", package: "swift-crypto"),
 				"GermConvenience",
 				.product(name: "Logging", package: "swift-log"),
 				//for temp shim only

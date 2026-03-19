@@ -192,7 +192,7 @@ extension AtprotoOAuthAgent {
 		atprotoResolver: AtprotoResolver
 	) throws {
 		try self.init(
-			did: .init(fullId: archive.did),
+			did: .init(string: archive.did),
 			appCredentials: appCredentials,
 			userAuthenticator: userAuthenticator,
 			state: .init(archive: archive.session),
