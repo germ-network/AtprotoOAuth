@@ -52,14 +52,14 @@ extension AuthServerRequestOptions {
 						return nil
 					}
 					let scopes = scope.components(separatedBy: " ")
-
-					guard
-						Set(appCredentials.requestedScopes).contains(
-							scopes)
-					else {
-						throw OAuthSessionError.receivedScopeNotRequested
+					let requestedScopes = Set(appCredentials.requestedScopes)
+					
+					for returnedScope in scopes {
+						guard requestedScopes.contains(returnedScope)
+						else {
+							throw OAuthSessionError.receivedScopeNotRequested
+						}
 					}
-
 					return scopes
 				}()
 
