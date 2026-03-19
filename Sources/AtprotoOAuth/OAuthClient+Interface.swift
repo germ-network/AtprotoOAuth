@@ -12,7 +12,15 @@ import Foundation
 import GermConvenience
 import OAuth
 
-extension AtprotoOAuthClient: AtprotoOAuthInterface {
+public protocol AtprotoOAuthInterface {
+	//MARK: Authentication
+	//want to end up with a valid archive, not a live object
+	func authorize(
+		identity: AtprotoOAuthAgent.AuthIdentity
+	) async throws -> SessionState.Archive
+}
+
+extension AtprotoOAuthAgent: AtprotoOAuthInterface {
 
 	//Germ will always do pre-processing so we will know did,
 	//but you can start from handle
@@ -40,11 +48,11 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 			did = _did
 		case .handle(let handle):
 			//resolve handle to pds, uncached
-			did = try await Self.resolve(handle: handle)
+			did = try await resolver.resolve(handle: handle)
 		}
 
 		//resolve pds and pds metadata
-		let didDoc = try await atprotoClient.plcDirectoryQuery(did)
+		let didDoc = try await resolver.resolve(did: did)
 		if case .handle(let handle) = identity {
 			if handle != didDoc.handle {
 				throw OAuthClientError.handleMismatch
@@ -53,7 +61,7 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 
 		let authorizationServerUrl = try await getAuthorizationUrl(didDoc: didDoc)
 
-		return try await AuthServerRequestOptions.atproto(
+		let sessionState = try await AuthServerRequestOptions.atproto(
 			appCredentials: appCredentials,
 			did: did,
 			authFetcher: authFetcher,
@@ -71,6 +79,9 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 			),
 			userAuthenticator: { try await userAuthenticator($0, $1) },
 		)
+		// TODO: Check that this is the right thing to do
+		try self.refreshed(sessionMutable: sessionState.mutable)
+		return sessionState
 	}
 
 	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {

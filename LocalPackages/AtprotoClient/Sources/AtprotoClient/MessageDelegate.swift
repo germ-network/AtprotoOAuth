@@ -9,42 +9,25 @@ import AtprotoTypes
 import Foundation
 
 extension AtprotoClient {
-	public func getGermMessagingDelegate(
-		did: Atproto.DID,
-		agent: AtprotoAgent
-	) async throws -> Lexicon.Com.GermNetwork.Declaration? {
-		//rely on url caching for this value
-		let pdsUrl = try await plcDirectoryQuery(did)
-			.pdsUrl
-
+	public func getGermMessagingDelegate() async throws -> Lexicon.Com.GermNetwork.Declaration? {
 		return try await getRecord(
-			pdsUrl: pdsUrl,
 			parameters: .init(
-				repo: .did(did),
+				repo: .did(agent.repo),
 				rkey: "self",
 				cid: nil
-			),
-			agent: agent
+			)
 		)
 	}
 
 	public func postGermMessagingDelegate(
-		_ delegate: Lexicon.Com.GermNetwork.Declaration,
-		did: Atproto.DID,
-		agent: AtprotoAgent
+		_ delegate: Lexicon.Com.GermNetwork.Declaration
 	) async throws {
-		//rely on url caching for this value
-		let pdsUrl = try await plcDirectoryQuery(did)
-			.pdsUrl
-
 		try await putRecord(
-			did: did,
 			parameters: .init(
-				repo: .did(did),
+				repo: .did(agent.repo),
 				rkey: "self",
 				record: delegate
-			),
-			agent: agent
+			)
 		)
 	}
 }

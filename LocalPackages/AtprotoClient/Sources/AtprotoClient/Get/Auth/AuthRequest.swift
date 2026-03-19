@@ -12,9 +12,7 @@ import GermConvenience
 extension AtprotoClient {
 	public func authRequest<X: XRPCRequest>(
 		_ xrpc: X.Type,
-		pdsUrl: URL,
-		parameters: X.Parameters,
-		agent: AtprotoAgent
+		parameters: X.Parameters
 	) async throws -> X.Result {
 		let result = try await agent.authResponse(
 			.init(

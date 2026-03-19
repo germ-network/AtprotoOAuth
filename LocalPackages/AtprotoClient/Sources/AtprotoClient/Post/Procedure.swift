@@ -11,9 +11,7 @@ import Foundation
 extension AtprotoClient {
 	public func authProcedure<X: XRPCProcedure>(
 		_ xrpc: X.Type,
-		pdsUrl: URL,
 		parameters: X.Parameters,
-		agent: AtprotoAgent
 	) async throws -> X.Result {
 		let result = try await agent.authResponse(
 			.init(

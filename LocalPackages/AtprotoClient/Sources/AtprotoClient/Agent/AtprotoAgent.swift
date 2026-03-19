@@ -1,3 +1,4 @@
+import AtprotoTypes
 import Foundation
 import GermConvenience
 
@@ -13,11 +14,13 @@ import GermConvenience
 /// Have a method on it that declares whether or not it can do auth
 ///
 public protocol AtprotoAgent {
-	var repo: String { get }
+	var repo: Atproto.DID { get }
 	var allowsAuthedCalls: Bool { get }
 	var resolver: AtprotoResolver { get }
-	func response(_ request: AtprotoAgentRequest) async throws -> GermConvenience.HTTPDataResponse
-	func authResponse(_ request: AtprotoAgentRequest) async throws -> GermConvenience.HTTPDataResponse
+	func response(_ request: AtprotoAgentRequest) async throws
+		-> GermConvenience.HTTPDataResponse
+	func authResponse(_ request: AtprotoAgentRequest) async throws
+		-> GermConvenience.HTTPDataResponse
 }
 
 public struct AtprotoAgentRequest: Sendable {

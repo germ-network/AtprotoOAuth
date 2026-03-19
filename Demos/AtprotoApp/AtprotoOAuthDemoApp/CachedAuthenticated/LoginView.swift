@@ -6,6 +6,7 @@
 //
 
 import AtprotoOAuth
+import AtprotoClient
 import AtprotoTypes
 import SwiftUI
 import os
@@ -128,6 +129,6 @@ struct LoginView: View {
 #Preview {
 	let did = try! Atproto.DID(fullId: "did:plc:4yvwfwxfz5sney4twepuzdu7")
 	LoginView(
-		viewModel: .init(did: did, handle: "germnetwork.com")
+		viewModel: .init(did: did, handle: "germnetwork.com", resolver: AtprotoLegacyResolver(resourceFetcher: URLSession.shared))
 	)
 }

@@ -15,6 +15,8 @@ import os
 
 @MainActor
 @Observable class CachedAuthenticatedViewModel {
+	let resolver = AtprotoLegacyResolver(resourceFetcher: URLSession.shared)
+
 	static let logger = Logger(
 		subsystem: "com.germnetwork.ATProtoLiteClient",
 		category: "CachedAuthenticatedViewModel")
@@ -39,7 +41,7 @@ import os
 		}
 
 		let task = Task {
-			try await LoginDemoVM.fallbackResolve(handle: handle)
+			try await resolver.resolve(handle: handle)
 		}
 		state = .handleToDid(task)
 
@@ -47,7 +49,11 @@ import os
 			do {
 				let resolvedDid = try await task.value
 				state = .login(
-					.init(did: resolvedDid, handle: handle)
+					.init(
+						did: resolvedDid,
+						handle: handle,
+						resolver: resolver
+					)
 				)
 			} catch {
 				Self.logger.error(

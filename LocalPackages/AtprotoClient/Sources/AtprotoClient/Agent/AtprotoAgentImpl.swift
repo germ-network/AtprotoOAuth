@@ -3,7 +3,7 @@ import Foundation
 import GermConvenience
 
 public actor AtprotoAgentImpl {
-	public nonisolated let repo: String
+	public nonisolated let repo: Atproto.DID
 	public nonisolated let resolver: AtprotoResolver
 	private var baseURL: URL?
 	private let resourceFetcher: HTTPFetcher
@@ -14,7 +14,7 @@ public actor AtprotoAgentImpl {
 		resolver: AtprotoResolver,
 		serviceURL: URL? = URL(string: "https://public.api.bsky.app")!
 	) {
-		self.repo = did.fullId
+		self.repo = did
 		self.resourceFetcher = resourceFetcher
 		self.resolver = resolver
 		self.baseURL = serviceURL

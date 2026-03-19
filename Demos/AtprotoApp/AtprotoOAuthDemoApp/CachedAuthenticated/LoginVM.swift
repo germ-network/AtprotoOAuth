@@ -18,29 +18,19 @@ import os
 
 @Observable final class SessionVM {
 	static let logger = Logger(
-		subsystem: "com.germnetwork.ATProtoLiteClient",
+		subsystem: "com.germnetwork.AtprotoOAuthDemoApp",
 		category: "SessionVM")
 
-	let oauthClient = AtprotoOAuthClient(
-		appCredentials: .init(
-			clientId: "https://static.germnetwork.com/client-metadata.json",
-			scopes: ["atproto transition:generic"],
-			callbackURL: URL(string: "com.germnetwork.static:/oauth")!
-		),
-		userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
-		resourceFetcher: URLSession.shared,
-		authFetcher: URLSession.manualRedirect(),
-		atprotoClient: AtprotoClient(
-			resourceFetcher: URLSession.shared
-		),
-	)
-
 	let handle: String
-	let sessionStorage: InMemorySessionStore
+	let did: Atproto.DID
 
 	var processingTask: (Task<Void, Error>, String)? = nil
-	var sessionWrapper: SessionWrapper? = nil
+	var client: AtprotoClient? = nil
+	let resolver: AtprotoResolver
 
+	var sessionWrapper: SessionWrapper? = nil
+	var sessionStorage: InMemorySessionStore
+	
 	var blocked: Bool? = nil
 	var blocking: Bool? = nil
 	var following: Bool? = nil
@@ -48,45 +38,49 @@ import os
 
 	var messageDelegate: Lexicon.Com.GermNetwork.Declaration? = nil
 
-	init(did: Atproto.DID, handle: String) {
+	init(did: Atproto.DID, handle: String, resolver: AtprotoResolver) {
 		self.handle = handle
+		self.did = did
+		self.resolver = resolver
 		self.sessionStorage = .init(did: did)
 	}
 
 	func login() {
-		guard sessionStorage.sessionArchive == nil else {
-			Self.logger.error("already have a valid token")
-			return
-		}
 		guard processingTask == nil else {
 			Self.logger.error("Can't login with pending task")
 			return
 		}
 
 		let authenticatingTask = Task {
-			let sessionArchive =
-				try await oauthClient
-				.authorize(identity: .did(sessionStorage.did, handle: handle))
+			if let client,
+				let oauthAgent = client.agent as? AtprotoOAuthAgent
+			{
+				guard !(await oauthAgent.hasValidSession) else {
+					Self.logger.error("already have a valid token")
+					return
+				}
+			}
 
-			assert(sessionStorage.sessionArchive == nil)
-			sessionStorage.sessionArchive = sessionArchive
-
-			let (session, saveStream) = try AtprotoOAuthAgentImpl.restore(
-				archive: .init(
-					did: sessionStorage.did.fullId,
-					session: sessionArchive,
+			let (oauthAgent, saveStream) = try AtprotoOAuthAgent.restore(
+				archive: .init(did: did.fullId, session: nil),
+				appCredentials: .init(
+					clientId:
+						"https://static.germnetwork.com/client-metadata.json",
+					scopes: ["atproto", "transition:generic"],
+					callbackURL: URL(string: "com.germnetwork.static:/oauth")!
 				),
-				appCredentials: oauthClient.appCredentials,
+				userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
 				resourceFetcher: URLSession.shared,
 				authFetcher: URLSession.manualRedirect(),
-				atprotoClient: AtprotoClient(
-					resourceFetcher: URLSession.shared
-				),
+				atprotoResolver: resolver,
 			)
+
+			// TODO: Do we do anything here with the SessionState.Archive?
+			let _ = try await oauthAgent.authorize(identity: .did(did, handle: handle))
 
 			if !Task.isCancelled {
 				self.sessionWrapper = .init(
-					session: session,
+					agent: oauthAgent,
 					saveStream: saveStream,
 				) {
 					for await value in saveStream {
@@ -146,21 +140,25 @@ import os
 			return
 		}
 		let restoreTask = Task {
-			let (restored, saveStream) = try AtprotoOAuthAgentImpl.restore(
+			let (restored, saveStream) = try AtprotoOAuthAgent.restore(
 				archive: .init(
 					did: sessionStorage.did.fullId,
 					session: archive,
 				),
-				appCredentials: oauthClient.appCredentials,
+				appCredentials: .init(
+					clientId:
+						"https://static.germnetwork.com/client-metadata.json",
+					scopes: ["atproto", "transition:generic"],
+					callbackURL: URL(string: "com.germnetwork.static:/oauth")!
+				),
+				userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
 				resourceFetcher: URLSession.shared,
 				authFetcher: URLSession.manualRedirect(),
-				atprotoClient: AtprotoClient(
-					resourceFetcher: URLSession.shared
-				),
+				atprotoResolver: resolver,
 			)
 			if !Task.isCancelled {
 				self.sessionWrapper = .init(
-					session: restored,
+					agent: restored,
 					saveStream: saveStream,
 				) {
 					for await value in saveStream {
@@ -193,18 +191,15 @@ import os
 		processingTask = nil
 		sessionWrapper?.saveTask.cancel()
 		sessionWrapper = nil
-		sessionStorage.sessionArchive = nil
+		client = nil
 	}
 
 	func getMetadata(for otherHandle: String) async throws {
-		guard let sessionWrapper else {
+		guard let client else {
 			return
 		}
-		let otherDid = try await LoginDemoVM.fallbackResolve(handle: otherHandle)
-		let metadata = try await oauthClient.atprotoClient.getProfileViewerState(
-			did: otherDid,
-			session: sessionWrapper.session
-		)
+		let otherDid = try await resolver.resolve(handle: otherHandle)
+		let metadata = try await client.getProfileViewerState(for: otherDid)
 		blocking = metadata.blocking != nil
 		blocked = metadata.blockedBy
 		following = metadata.following != nil
@@ -212,20 +207,21 @@ import os
 	}
 
 	func getMessageDelegate() async throws {
-		messageDelegate = try await oauthClient.atprotoClient.getGermMessagingDelegate(
-			did: sessionStorage.did
-		)
+		guard let client else {
+			return
+		}
+		messageDelegate = try await client.getGermMessagingDelegate()
 	}
 
 	func postMessagingDelegate(for showButtonTo: Lexicon.Com.GermNetwork.ShowButtonTo)
 		async throws
 	{
-		guard let sessionWrapper else {
+		guard let client else {
 			return
 		}
 
 		do {
-			return try await oauthClient.atprotoClient.postGermMessagingDelegate(
+			return try await client.postGermMessagingDelegate(
 				.init(
 					version: "1.1.0",
 					currentKey: Data("mock".utf8).base64EncodedData(),
@@ -239,9 +235,7 @@ import os
 								"germnetwork.com"
 						),
 					continuityProofs: nil
-				),
-				did: sessionStorage.did,
-				session: sessionWrapper.session
+				)
 			)
 		} catch {
 			Self.logger.error("Error posting message delegate: \(error)")
@@ -250,17 +244,18 @@ import os
 }
 
 struct SessionWrapper {
-	let session: AtprotoOAuthSession
+	// TODO: I don't know that the agent is the right thing to store here
+	let agent: AtprotoOAuthAgent
 	private let saveStream: AsyncStream<SessionState.Mutable?>
 	//hold onto the save continuation
 	let saveTask: Task<Void, Never>
 
 	init(
-		session: AtprotoOAuthSession,
+		agent: AtprotoOAuthAgent,
 		saveStream: AsyncStream<SessionState.Mutable?>,
 		saveClosure: @escaping () async -> Void
 	) {
-		self.session = session
+		self.agent = agent
 		self.saveStream = saveStream
 		self.saveTask = Task { await saveClosure() }
 	}

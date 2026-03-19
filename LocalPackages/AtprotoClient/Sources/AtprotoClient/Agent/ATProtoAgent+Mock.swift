@@ -10,7 +10,7 @@ import Foundation
 import GermConvenience
 
 public actor AtprotoMockAgentImpl {
-	public nonisolated let repo: String
+	public nonisolated let repo: Atproto.DID
 	public nonisolated let resolver: AtprotoResolver
 
 	// Might want to check that the appropriate AtprotoRecord type is stored in a given NSID collection
@@ -20,7 +20,7 @@ public actor AtprotoMockAgentImpl {
 
 	public init(for did: Atproto.DID) {
 		self.pds = [:]
-		self.repo = did.fullId
+		self.repo = did
 		self.resolver = AtprotoMockResolver()
 	}
 

@@ -11,11 +11,11 @@ import Foundation
 import GermConvenience
 import OAuth
 
-public actor AtprotoOAuthAgentImpl {
-	public nonisolated let did: Atproto.DID
+public actor AtprotoOAuthAgent {
+	public nonisolated let repo: Atproto.DID
 	public nonisolated let resolver: AtprotoResolver
-	public nonisolated var repo: String { did.fullId }
 	public let appCredentials: AppCredentials
+	public let userAuthenticator: UserAuthenticator
 	public let resourceFetcher: HTTPFetcher
 	public let authFetcher: HTTPFetcher
 
@@ -49,13 +49,15 @@ public actor AtprotoOAuthAgentImpl {
 	private init(
 		did: Atproto.DID,
 		appCredentials: AppCredentials,
+		userAuthenticator: @escaping UserAuthenticator,
 		state: State,
 		resourceFetcher: HTTPFetcher,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: AtprotoResolver
 	) {
-		self.did = did
+		self.repo = did
 		self.appCredentials = appCredentials
+		self.userAuthenticator = userAuthenticator
 		self.state = state
 		self.resourceFetcher = resourceFetcher
 		self.authFetcher = authFetcher
@@ -64,7 +66,8 @@ public actor AtprotoOAuthAgentImpl {
 		self.lazyServerMetadata = .init(
 			fetchTaskGenerator: {
 				Task {
-					let pdsHost = try await atprotoResolver.resolve(did: did).pdsUrl
+					let pdsHost = try await atprotoResolver.resolve(did: did)
+						.pdsUrl
 					let pdsMetadata =
 						try await authFetcher.resourceDiscoveryRequest(
 							url: pdsHost)
@@ -98,7 +101,8 @@ public actor AtprotoOAuthAgentImpl {
 		self.lazyIssuer = .init(
 			fetchTaskGenerator: {
 				Task {
-					let pdsHost = try await atprotoResolver.resolve(did: did).pdsUrl
+					let pdsHost = try await atprotoResolver.resolve(did: did)
+						.pdsUrl
 					let pdsMetadata =
 						try await authFetcher.resourceDiscoveryRequest(
 							url: pdsHost)
@@ -155,7 +159,7 @@ public actor AtprotoOAuthAgentImpl {
 	}
 }
 
-extension AtprotoOAuthAgentImpl {
+extension AtprotoOAuthAgent {
 	public struct Archive: Sendable, Codable {
 		let did: String
 		let session: SessionState.Archive?
@@ -169,13 +173,15 @@ extension AtprotoOAuthAgentImpl {
 	public static func restore(
 		archive: Archive,
 		appCredentials: AppCredentials,
+		userAuthenticator: @escaping UserAuthenticator,
 		resourceFetcher: HTTPFetcher,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: AtprotoResolver
-	) throws -> (AtprotoOAuthAgentImpl, AsyncStream<SessionState.Mutable?>) {
-		let session = try AtprotoOAuthAgentImpl(
+	) throws -> (AtprotoOAuthAgent, AsyncStream<SessionState.Mutable?>) {
+		let session = try AtprotoOAuthAgent(
 			archive: archive,
 			appCredentials: appCredentials,
+			userAuthenticator: userAuthenticator,
 			resourceFetcher: resourceFetcher,
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
@@ -186,6 +192,7 @@ extension AtprotoOAuthAgentImpl {
 	private init(
 		archive: Archive,
 		appCredentials: AppCredentials,
+		userAuthenticator: @escaping UserAuthenticator,
 		resourceFetcher: HTTPFetcher,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: AtprotoResolver
@@ -193,6 +200,7 @@ extension AtprotoOAuthAgentImpl {
 		try self.init(
 			did: .init(fullId: archive.did),
 			appCredentials: appCredentials,
+			userAuthenticator: userAuthenticator,
 			state: .init(archive: archive.session),
 			resourceFetcher: resourceFetcher,
 			authFetcher: authFetcher,
@@ -209,14 +217,18 @@ extension AtprotoOAuthAgentImpl {
 	}
 }
 
-extension AtprotoOAuthAgentImpl: AtprotoAgent {
+extension AtprotoOAuthAgent: AtprotoAgent {
 	public nonisolated var allowsAuthedCalls: Bool { true }
-	
-	public func response(_ request: AtprotoAgentRequest) async throws -> GermConvenience.HTTPDataResponse {
+
+	public func response(_ request: AtprotoAgentRequest) async throws
+		-> GermConvenience.HTTPDataResponse
+	{
 		try await authResponse(request)
 	}
-	
-	public func authResponse(_ request: AtprotoAgentRequest) async throws -> GermConvenience.HTTPDataResponse {
+
+	public func authResponse(_ request: AtprotoAgentRequest) async throws
+		-> GermConvenience.HTTPDataResponse
+	{
 		var url = try await getPDSUrl().appending(path: request.relativePath)
 		url = try await url.appending(queryItems: request.queryItems)
 		let urlRequest = URLRequest.createRequest(
@@ -230,13 +242,22 @@ extension AtprotoOAuthAgentImpl: AtprotoAgent {
 	}
 }
 
-extension AtprotoOAuthAgentImpl: OAuthSessionCapabilities {
+extension AtprotoOAuthAgent: OAuthSessionCapabilities {
 	public var session: SessionState {
 		get throws {
 			guard case .active(let sessionState) = state else {
 				throw OAuthSessionError.sessionInactive
 			}
 			return sessionState
+		}
+	}
+	
+	public var hasValidSession: Bool {
+		get {
+			guard case .active(let sessionState) = state else {
+				return false
+			}
+			return true
 		}
 	}
 
@@ -253,14 +274,14 @@ extension AtprotoOAuthAgentImpl: OAuthSessionCapabilities {
 	public var authServerRequestOptions: AuthServerRequestOptions {
 		.atproto(
 			appCredentials: appCredentials,
-			did: did,
+			did: repo,
 			authFetcher: authFetcher,
 			dpopSigner: self
 		)
 	}
 }
 
-extension AtprotoOAuthAgentImpl: DPoPSigning {
+extension AtprotoOAuthAgent: DPoPSigning {
 	public var dpopKey: OAuth.DPoPKey {
 		get throws {
 			try session.dPopKey.tryUnwrap
@@ -281,8 +302,8 @@ extension AtprotoOAuthAgentImpl: DPoPSigning {
 
 }
 
-extension AtprotoOAuthAgentImpl {
+extension AtprotoOAuthAgent {
 	func getPDSUrl() async throws -> URL {
-		try await self.resolver.resolve(did: did).pdsUrl
+		try await self.resolver.resolve(did: repo).pdsUrl
 	}
 }

@@ -9,38 +9,22 @@ import AtprotoTypes
 import Foundation
 
 extension AtprotoClient {
-	public func getProfile(
-		did: Atproto.DID,
-		agent: AtprotoAgent
-	) async throws -> Lexicon.App.Bsky.Actor.Profile? {
-		//rely on url caching for this value
-		let pdsUrl = try await plcDirectoryQuery(did)
-			.pdsUrl
-
+	public func getProfile() async throws -> Lexicon.App.Bsky.Actor.Profile? {
 		return try await getRecord(
-			pdsUrl: pdsUrl,
 			parameters: .init(
-				repo: .did(did),
+				repo: .did(agent.repo),
 				rkey: "self",
 				cid: nil
-			),
-			agent: agent
+			)
 		)
 	}
 
-	public func getProfileViewerState(
-		did: Atproto.DID,
-		agent: any AtprotoAgent
-	) async throws -> Lexicon.App.Bsky.Actor.Defs.ViewerState {
-		//rely on url caching for this value
-		let pdsUrl = try await plcDirectoryQuery(did)
-			.pdsUrl
-
+	public func getProfileViewerState(for did: Atproto.DID) async throws
+		-> Lexicon.App.Bsky.Actor.Defs.ViewerState
+	{
 		return try await authRequest(
 			Lexicon.App.Bsky.Actor.GetProfile.self,
-			pdsUrl: pdsUrl,
-			parameters: .init(actor: .did(did)),
-			agent: agent
+			parameters: .init(actor: .did(did))
 		).viewer.tryUnwrap
 	}
 }

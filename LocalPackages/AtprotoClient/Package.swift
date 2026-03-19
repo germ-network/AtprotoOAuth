@@ -17,6 +17,10 @@ let package = Package(
 		.package(path: "../AtprotoTypes"),
 		.package(path: "../GermConvenience"),
 		.package(url: "https://github.com/apple/swift-log", from: "1.6.0"),
+		.package(
+			url: "https://github.com/germ-network/ATResolve",
+			exact: "1.0.0-germ.2"
+		),
 	],
 	targets: [
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -27,6 +31,8 @@ let package = Package(
 				"AtprotoTypes",
 				"GermConvenience",
 				.product(name: "Logging", package: "swift-log"),
+				//for temp shim only
+				"ATResolve",
 			]
 		),
 		.testTarget(

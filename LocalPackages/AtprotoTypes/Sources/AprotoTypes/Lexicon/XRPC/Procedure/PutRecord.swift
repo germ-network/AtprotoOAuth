@@ -16,7 +16,7 @@ extension Lexicon.Com.Atproto.Repo {
 		public static var nsid: Atproto.NSID { putRecordNSID }
 		public static var acceptValue: String { "application/json" }
 		public static var contentTypeValue: String { "application/json" }
-		
+
 		public typealias Result = PutRecordResult
 
 		public struct Parameters: Encodable, ProcedureParameters {

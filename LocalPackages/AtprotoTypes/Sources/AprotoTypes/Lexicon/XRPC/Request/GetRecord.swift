@@ -16,16 +16,16 @@ extension Lexicon.Com.Atproto.Repo {
 
 	public enum GetRecord<Result: AtprotoRecord>: XRPCRequest {
 		public struct Result: Sendable, Codable {
-			
+
 			/// The URI of the record.
 			public let uri: String
-			
+
 			/// The CID hash for the record.
 			public let cid: String
-			
+
 			/// The value for the record. Codable for later conversion
 			public let value: Result
-			
+
 			public init(uri: String, cid: String, value: Result) {
 				self.uri = uri
 				self.cid = cid

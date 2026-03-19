@@ -12,17 +12,8 @@ import GermConvenience
 extension AtprotoClient {
 	public func request<X: XRPCRequest>(
 		_ xrpc: X.Type,
-		pdsUrl: URL,
 		parameters: X.Parameters,
-		agent: AtprotoAgent
 	) async throws -> X.Result {
-		var requestURL = pdsUrl.appending(path: "/xrpc/" + X.nsid)
-		requestURL = requestURL.appending(queryItems: parameters.asQueryItems())
-		let request = URLRequest.createRequest(
-			url: requestURL,
-			httpMethod: .get
-		)
-
 		let result = try await agent.response(
 			.init(
 				relativePath: "/xrpc/" + X.nsid,

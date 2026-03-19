@@ -16,24 +16,11 @@ import OAuth
 import SwiftUI
 
 @Observable final class LoginDemoVM {
-	let oauthClient = AtprotoOAuthClient(
-		appCredentials: .init(
-			clientId: "https://static.germnetwork.com/client-metadata.json",
-			scopes: ["atproto transition:generic"],
-			callbackURL: URL(string: "com.germnetwork.static:/oauth")!
-		),
-		userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
-		resourceFetcher: URLSession.shared,
-		authFetcher: URLSession.manualRedirect(),
-		atprotoClient: AtprotoClient(
-			resourceFetcher: URLSession.shared
-		),
-	)
-
 	enum State {
 		case collectHandle
 		case validating(String)
-		case loggedIn(AtprotoOAuthSession)
+		case agentCreated(AtprotoOAuthAgent)
+		case loggedIn(AtprotoOAuthAgent)
 	}
 	var state: State = .collectHandle
 	struct LogEntry: Identifiable {
@@ -46,14 +33,33 @@ import SwiftUI
 		state = .validating(handle)
 		Task {
 			do {
-				let resolvedDid = try await Self.fallbackResolve(handle: handle)
-
+				let resolver = AtprotoLegacyResolver(
+					resourceFetcher: URLSession.shared)
+				let resolvedDid = try await resolver.resolve(handle: handle)
 				logs.append(.init(body: "Resolved DID: \(resolvedDid.fullId)"))
 
-				let messageDelegate = try await AtprotoClient(
-					resourceFetcher: URLSession.shared
+				let (oauthAgent, saveStream) = try AtprotoOAuthAgent.restore(
+					archive: .init(did: resolvedDid.fullId, session: nil),
+					appCredentials: .init(
+						clientId:
+							"https://static.germnetwork.com/client-metadata.json",
+						scopes: ["atproto", "transition:generic"],
+						callbackURL: URL(
+							string: "com.germnetwork.static:/oauth")!
+					),
+					userAuthenticator:
+						ASWebAuthenticationSession.userAuthenticator(),
+					resourceFetcher: URLSession.shared,
+					authFetcher: URLSession.manualRedirect(),
+					atprotoResolver: resolver,
 				)
-				.getGermMessagingDelegate(did: resolvedDid)
+				logs.append(.init(body: "Created OAuth agent"))
+				state = .agentCreated(oauthAgent)
+
+				let client = AtprotoClient(agent: oauthAgent)
+				logs.append(.init(body: "Created client with OAuth agent"))
+
+				let messageDelegate = try await client.getGermMessagingDelegate()
 
 				if messageDelegate != nil {
 					logs.append(.init(body: "Found a message delegate"))
@@ -62,27 +68,14 @@ import SwiftUI
 				}
 
 				let sessionArchive =
-					try await oauthClient
+					try await oauthAgent
 					.authorize(identity: .did(resolvedDid, handle: handle))
+				logs.append(.init(body: "Authorized OAuth agent"))
 
-				let (session, saveStream) =
-					try AtprotoOAuthAgentImpl
-					.restore(
-						archive: .init(
-							did: resolvedDid.fullId,
-							session: sessionArchive,
-						),
-						appCredentials: oauthClient.appCredentials,
-						resourceFetcher: URLSession.shared,
-						authFetcher: URLSession.manualRedirect(),
-						atprotoClient: AtprotoClient(
-							resourceFetcher: URLSession.shared
-						),
-					)
-				state = .loggedIn(session)
+				state = .loggedIn(oauthAgent)
 
 				//make an auth request
-				let profileMetadata = try await session.authRequest(
+				let profileMetadata = try await client.authRequest(
 					Lexicon.App.Bsky.Actor.GetProfile.self,
 					parameters: .init(actor: .did(resolvedDid))
 				)
@@ -95,15 +88,5 @@ import SwiftUI
 	func reset() {
 		state = .collectHandle
 		logs = []
-	}
-
-	static func fallbackResolve(handle: String) async throws -> Atproto.DID {
-		do {
-			return try await Slingshot.resolve(handle: handle)
-		} catch {
-			return try await AtprotoOAuthClient.resolve(
-				handle: handle
-			)
-		}
 	}
 }
