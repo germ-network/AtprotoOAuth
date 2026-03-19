@@ -13,7 +13,7 @@ import GermConvenience
 ///
 /// Have a method on it that declares whether or not it can do auth
 ///
-public protocol AtprotoAgent {
+public protocol AtprotoAgent: Sendable {
 	var repo: Atproto.DID { get }
 	var allowsAuthedCalls: Bool { get }
 	var resolver: AtprotoResolver { get }

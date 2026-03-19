@@ -5,8 +5,8 @@
 //  Created by Mark @ Germ on 2/27/26.
 //
 
-import AtprotoOAuth
 import AtprotoClient
+import AtprotoOAuth
 import AtprotoTypes
 import SwiftUI
 import os
@@ -129,6 +129,8 @@ struct LoginView: View {
 #Preview {
 	let did = try! Atproto.DID(fullId: "did:plc:4yvwfwxfz5sney4twepuzdu7")
 	LoginView(
-		viewModel: .init(did: did, handle: "germnetwork.com", resolver: AtprotoLegacyResolver(resourceFetcher: URLSession.shared))
+		viewModel: .init(
+			did: did, handle: "germnetwork.com",
+			resolver: AtprotoLegacyResolver(resourceFetcher: URLSession.shared))
 	)
 }

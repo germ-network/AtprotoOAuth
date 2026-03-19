@@ -5,6 +5,7 @@
 //  Created by Mark @ Germ on 2/17/26.
 //
 
+import AtprotoClient
 import AtprotoTypes
 import AuthenticationServices
 import Crypto
@@ -15,32 +16,39 @@ import OAuth
 public protocol AtprotoOAuthInterface {
 	//MARK: Authentication
 	//want to end up with a valid archive, not a live object
-	func authorize(
-		identity: AtprotoOAuthAgent.AuthIdentity
+	static func authorize(
+		identity: AuthIdentity,
+		resolver: AtprotoResolver,
+		authFetcher: HTTPFetcher,
+		appCredentials: AppCredentials,
+		userAuthenticator: UserAuthenticator
 	) async throws -> SessionState.Archive
 }
 
-extension AtprotoOAuthAgent: AtprotoOAuthInterface {
+//Germ will always do pre-processing so we will know did,
+//but you can start from handle
+public enum AuthIdentity: Sendable {
+	case handle(String)
+	//optionally pass in handle to fill into the UI of the web auth sheet
+	case did(Atproto.DID, handle: String?)
 
-	//Germ will always do pre-processing so we will know did,
-	//but you can start from handle
-	public enum AuthIdentity: Sendable {
-		case handle(String)
-		//optionally pass in handle to fill into the UI of the web auth sheet
-		case did(Atproto.DID, handle: String?)
-
-		var serverHint: String {
-			switch self {
-			case .handle(let string):
-				string
-			case .did(let did, let handle):
-				handle ?? did.fullId
-			}
+	var serverHint: String {
+		switch self {
+		case .handle(let string):
+			string
+		case .did(let did, let handle):
+			handle ?? did.fullId
 		}
 	}
+}
 
-	public func authorize(
-		identity: AuthIdentity
+extension AtprotoOAuthAgent: AtprotoOAuthInterface {
+	public static func authorize(
+		identity: AuthIdentity,
+		resolver: AtprotoResolver,
+		authFetcher: HTTPFetcher,
+		appCredentials: AppCredentials,
+		userAuthenticator: UserAuthenticator
 	) async throws -> SessionState.Archive {
 		let did: Atproto.DID
 		switch identity {
@@ -59,9 +67,10 @@ extension AtprotoOAuthAgent: AtprotoOAuthInterface {
 			}
 		}
 
-		let authorizationServerUrl = try await getAuthorizationUrl(didDoc: didDoc)
+		let authorizationServerUrl = try await getAuthorizationUrl(
+			didDoc: didDoc, authFetcher: authFetcher)
 
-		let sessionState = try await AuthServerRequestOptions.atproto(
+		return try await AuthServerRequestOptions.atproto(
 			appCredentials: appCredentials,
 			did: did,
 			authFetcher: authFetcher,
@@ -79,12 +88,12 @@ extension AtprotoOAuthAgent: AtprotoOAuthInterface {
 			),
 			userAuthenticator: { try await userAuthenticator($0, $1) },
 		)
-		// TODO: Check that this is the right thing to do
-		try self.refreshed(sessionMutable: sessionState.mutable)
-		return sessionState
 	}
 
-	private func getAuthorizationUrl(didDoc: DIDDocument) async throws -> URL {
+	private static func getAuthorizationUrl(
+		didDoc: DIDDocument,
+		authFetcher: HTTPFetcher
+	) async throws -> URL {
 		let pdsUrl = try didDoc.pdsUrl
 
 		let pdsMetadata =

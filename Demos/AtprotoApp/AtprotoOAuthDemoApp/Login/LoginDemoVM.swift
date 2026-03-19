@@ -38,8 +38,29 @@ import SwiftUI
 				let resolvedDid = try await resolver.resolve(handle: handle)
 				logs.append(.init(body: "Resolved DID: \(resolvedDid.fullId)"))
 
+				let sessionArchive =
+					try await AtprotoOAuthAgent
+					.authorize(
+						identity: .did(resolvedDid, handle: handle),
+						resolver: resolver,
+						authFetcher: URLSession.manualRedirect(),
+						appCredentials: .init(
+							clientId:
+								"https://static.germnetwork.com/client-metadata.json",
+							scopes: ["atproto", "transition:generic"],
+							callbackURL: URL(
+								string:
+									"com.germnetwork.static:/oauth"
+							)!
+						),
+						userAuthenticator:
+							ASWebAuthenticationSession.userAuthenticator()
+					)
+				logs.append(.init(body: "Authorized OAuth agent"))
+
 				let (oauthAgent, saveStream) = try AtprotoOAuthAgent.restore(
-					archive: .init(did: resolvedDid.fullId, session: nil),
+					archive: .init(
+						did: resolvedDid.fullId, session: sessionArchive),
 					appCredentials: .init(
 						clientId:
 							"https://static.germnetwork.com/client-metadata.json",
@@ -49,32 +70,14 @@ import SwiftUI
 					),
 					userAuthenticator:
 						ASWebAuthenticationSession.userAuthenticator(),
-					resourceFetcher: URLSession.shared,
 					authFetcher: URLSession.manualRedirect(),
 					atprotoResolver: resolver,
 				)
-				logs.append(.init(body: "Created OAuth agent"))
-				state = .agentCreated(oauthAgent)
-
-				let client = AtprotoClient(agent: oauthAgent)
-				logs.append(.init(body: "Created client with OAuth agent"))
-
-				let messageDelegate = try await client.getGermMessagingDelegate()
-
-				if messageDelegate != nil {
-					logs.append(.init(body: "Found a message delegate"))
-				} else {
-					logs.append(.init(body: "Didn't find a message delegate"))
-				}
-
-				let sessionArchive =
-					try await oauthAgent
-					.authorize(identity: .did(resolvedDid, handle: handle))
-				logs.append(.init(body: "Authorized OAuth agent"))
-
+				logs.append(.init(body: "Restored OAuth agent"))
 				state = .loggedIn(oauthAgent)
 
 				//make an auth request
+				let client = AtprotoClient(agent: oauthAgent)
 				let profileMetadata = try await client.authRequest(
 					Lexicon.App.Bsky.Actor.GetProfile.self,
 					parameters: .init(actor: .did(resolvedDid))

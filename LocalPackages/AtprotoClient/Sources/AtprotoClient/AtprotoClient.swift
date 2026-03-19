@@ -2,7 +2,7 @@ import AtprotoTypes
 import Foundation
 import GermConvenience
 
-public struct AtprotoClient {
+public struct AtprotoClient: Sendable {
 	public let agent: AtprotoAgent
 
 	public init(agent: AtprotoAgent) {

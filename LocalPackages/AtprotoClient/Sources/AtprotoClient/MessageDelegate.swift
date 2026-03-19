@@ -9,7 +9,8 @@ import AtprotoTypes
 import Foundation
 
 extension AtprotoClient {
-	public func getGermMessagingDelegate() async throws -> Lexicon.Com.GermNetwork.Declaration? {
+	public func getGermMessagingDelegate() async throws -> Lexicon.Com.GermNetwork.Declaration?
+	{
 		return try await getRecord(
 			parameters: .init(
 				repo: .did(agent.repo),

@@ -17,39 +17,36 @@ extension AtprotoClient {
 			.makeStream(bufferingPolicy: .unbounded)
 
 		Task {
-			continuation.finish()
+			var cursor: String? = nil
+			var fetchCount = 0
+			do {
+				repeat {
+					let result:
+						(
+							records: [Lexicon.App.Bsky.Graph.Follow],
+							cursor: String?
+						) =
+							try await listRecords(
+								parameters: .init(
+									repo: .did(did),
+									limit: 100,  // max
+									cursor: cursor,
+									reverse: nil
+								)
+							)
+					let followingDids = result.records.compactMap {
+						// TODO: Log if any of these fail?
+						try? Atproto.DID(fullId: $0.subject)
+					}
+					continuation.yield(followingDids)
+					cursor = result.cursor
+					fetchCount += 1
+				} while cursor != nil && fetchCount < ATProtoConstants.maxFetches
+				continuation.finish()
+			} catch {
+				continuation.finish(throwing: error)
+			}
 		}
-//		Task {
-//			var cursor: String? = nil
-//			var fetchCount = 0
-//			do {
-//				repeat {
-//					let result:
-//						(
-//							records: [Lexicon.App.Bsky.Graph.Follow],
-//							cursor: String?
-//						) =
-//							try await listRecords(
-//								parameters: .init(
-//									repo: .did(did),
-//									limit: 100,  // max
-//									cursor: cursor,
-//									reverse: nil
-//								)
-//							)
-//					let followingDids = result.records.compactMap {
-//						// TODO: Log if any of these fail?
-//						try? Atproto.DID(fullId: $0.subject)
-//					}
-//					continuation.yield(followingDids)
-//					cursor = result.cursor
-//					fetchCount += 1
-//				} while cursor != nil && fetchCount < ATProtoConstants.maxFetches
-//				continuation.finish()
-//			} catch {
-//				continuation.finish(throwing: error)
-//			}
-//		}
 		return stream
 	}
 }

@@ -25,12 +25,13 @@ import os
 	let did: Atproto.DID
 
 	var processingTask: (Task<Void, Error>, String)? = nil
-	var client: AtprotoClient? = nil
+	var authedClient: AtprotoClient? = nil
+	let unauthedClient: AtprotoClient
 	let resolver: AtprotoResolver
 
 	var sessionWrapper: SessionWrapper? = nil
 	var sessionStorage: InMemorySessionStore
-	
+
 	var blocked: Bool? = nil
 	var blocking: Bool? = nil
 	var following: Bool? = nil
@@ -43,6 +44,8 @@ import os
 		self.did = did
 		self.resolver = resolver
 		self.sessionStorage = .init(did: did)
+		self.unauthedClient = AtprotoClient(
+			agent: AtprotoAgentImpl(for: did, resolver: resolver))
 	}
 
 	func login() {
@@ -52,17 +55,26 @@ import os
 		}
 
 		let authenticatingTask = Task {
-			if let client,
-				let oauthAgent = client.agent as? AtprotoOAuthAgent
-			{
-				guard !(await oauthAgent.hasValidSession) else {
-					Self.logger.error("already have a valid token")
-					return
-				}
+			if authedClient != nil {
+				Self.logger.error("already have an authed client")
+				return
 			}
 
+			let sessionState = try await AtprotoOAuthAgent.authorize(
+				identity: .did(did, handle: handle),
+				resolver: resolver,
+				authFetcher: URLSession.manualRedirect(),
+				appCredentials: .init(
+					clientId:
+						"https://static.germnetwork.com/client-metadata.json",
+					scopes: ["atproto", "transition:generic"],
+					callbackURL: URL(string: "com.germnetwork.static:/oauth")!
+				),
+				userAuthenticator: ASWebAuthenticationSession.userAuthenticator()
+			)
+
 			let (oauthAgent, saveStream) = try AtprotoOAuthAgent.restore(
-				archive: .init(did: did.fullId, session: nil),
+				archive: .init(did: did.fullId, session: sessionState),
 				appCredentials: .init(
 					clientId:
 						"https://static.germnetwork.com/client-metadata.json",
@@ -70,15 +82,12 @@ import os
 					callbackURL: URL(string: "com.germnetwork.static:/oauth")!
 				),
 				userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
-				resourceFetcher: URLSession.shared,
 				authFetcher: URLSession.manualRedirect(),
 				atprotoResolver: resolver,
 			)
 
-			// TODO: Do we do anything here with the SessionState.Archive?
-			let _ = try await oauthAgent.authorize(identity: .did(did, handle: handle))
-
 			if !Task.isCancelled {
+				self.authedClient = AtprotoClient(agent: oauthAgent)
 				self.sessionWrapper = .init(
 					agent: oauthAgent,
 					saveStream: saveStream,
@@ -152,11 +161,11 @@ import os
 					callbackURL: URL(string: "com.germnetwork.static:/oauth")!
 				),
 				userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
-				resourceFetcher: URLSession.shared,
 				authFetcher: URLSession.manualRedirect(),
 				atprotoResolver: resolver,
 			)
 			if !Task.isCancelled {
+				self.authedClient = AtprotoClient(agent: restored)
 				self.sessionWrapper = .init(
 					agent: restored,
 					saveStream: saveStream,
@@ -191,15 +200,15 @@ import os
 		processingTask = nil
 		sessionWrapper?.saveTask.cancel()
 		sessionWrapper = nil
-		client = nil
+		authedClient = nil
 	}
 
 	func getMetadata(for otherHandle: String) async throws {
-		guard let client else {
+		guard let authedClient else {
 			return
 		}
 		let otherDid = try await resolver.resolve(handle: otherHandle)
-		let metadata = try await client.getProfileViewerState(for: otherDid)
+		let metadata = try await authedClient.getProfileViewerState(for: otherDid)
 		blocking = metadata.blocking != nil
 		blocked = metadata.blockedBy
 		following = metadata.following != nil
@@ -207,21 +216,18 @@ import os
 	}
 
 	func getMessageDelegate() async throws {
-		guard let client else {
-			return
-		}
-		messageDelegate = try await client.getGermMessagingDelegate()
+		messageDelegate = try await unauthedClient.getGermMessagingDelegate()
 	}
 
 	func postMessagingDelegate(for showButtonTo: Lexicon.Com.GermNetwork.ShowButtonTo)
 		async throws
 	{
-		guard let client else {
+		guard let authedClient else {
 			return
 		}
 
 		do {
-			return try await client.postGermMessagingDelegate(
+			return try await authedClient.postGermMessagingDelegate(
 				.init(
 					version: "1.1.0",
 					currentKey: Data("mock".utf8).base64EncodedData(),

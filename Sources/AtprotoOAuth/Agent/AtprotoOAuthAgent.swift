@@ -16,7 +16,6 @@ public actor AtprotoOAuthAgent {
 	public nonisolated let resolver: AtprotoResolver
 	public let appCredentials: AppCredentials
 	public let userAuthenticator: UserAuthenticator
-	public let resourceFetcher: HTTPFetcher
 	public let authFetcher: HTTPFetcher
 
 	private let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
@@ -51,7 +50,6 @@ public actor AtprotoOAuthAgent {
 		appCredentials: AppCredentials,
 		userAuthenticator: @escaping UserAuthenticator,
 		state: State,
-		resourceFetcher: HTTPFetcher,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: AtprotoResolver
 	) {
@@ -59,7 +57,6 @@ public actor AtprotoOAuthAgent {
 		self.appCredentials = appCredentials
 		self.userAuthenticator = userAuthenticator
 		self.state = state
-		self.resourceFetcher = resourceFetcher
 		self.authFetcher = authFetcher
 		self.resolver = atprotoResolver
 
@@ -174,7 +171,6 @@ extension AtprotoOAuthAgent {
 		archive: Archive,
 		appCredentials: AppCredentials,
 		userAuthenticator: @escaping UserAuthenticator,
-		resourceFetcher: HTTPFetcher,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: AtprotoResolver
 	) throws -> (AtprotoOAuthAgent, AsyncStream<SessionState.Mutable?>) {
@@ -182,7 +178,6 @@ extension AtprotoOAuthAgent {
 			archive: archive,
 			appCredentials: appCredentials,
 			userAuthenticator: userAuthenticator,
-			resourceFetcher: resourceFetcher,
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
 		)
@@ -193,7 +188,6 @@ extension AtprotoOAuthAgent {
 		archive: Archive,
 		appCredentials: AppCredentials,
 		userAuthenticator: @escaping UserAuthenticator,
-		resourceFetcher: HTTPFetcher,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: AtprotoResolver
 	) throws {
@@ -202,7 +196,6 @@ extension AtprotoOAuthAgent {
 			appCredentials: appCredentials,
 			userAuthenticator: userAuthenticator,
 			state: .init(archive: archive.session),
-			resourceFetcher: resourceFetcher,
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
 		)
@@ -249,15 +242,6 @@ extension AtprotoOAuthAgent: OAuthSessionCapabilities {
 				throw OAuthSessionError.sessionInactive
 			}
 			return sessionState
-		}
-	}
-	
-	public var hasValidSession: Bool {
-		get {
-			guard case .active(let sessionState) = state else {
-				return false
-			}
-			return true
 		}
 	}
 

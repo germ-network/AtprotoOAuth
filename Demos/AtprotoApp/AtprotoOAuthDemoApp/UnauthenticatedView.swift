@@ -12,7 +12,7 @@ import SwiftUI
 
 struct UnauthenticatedView: View {
 	@AppStorage("unauthHandle") var handleEntry: String = "anna.germnetwork.com"
-	
+
 	let resolver = AtprotoLegacyResolver(resourceFetcher: URLSession.shared)
 
 	@State private var followsGerm: Bool?
@@ -160,7 +160,7 @@ struct UnauthenticatedView: View {
 				pdsURL = nil
 				return
 			}
-			
+
 			let client: AtprotoClient = AtprotoClient.init(
 				agent: AtprotoAgentImpl(for: did, resolver: resolver)
 			)
