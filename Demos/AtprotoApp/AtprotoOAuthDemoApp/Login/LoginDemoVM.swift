@@ -103,7 +103,7 @@ import SwiftUI
 
 	static func fallbackResolve(handle: String) async throws -> Atproto.DID {
 		do {
-			return try await Slingshot.resolve(handle: handle)
+			return try await Microcosm.Slingshot(resourceFetcher: URLSession.shared).resolveHandle(handle: handle)
 		} catch {
 			return try await AtprotoOAuthClient.resolve(
 				handle: handle
