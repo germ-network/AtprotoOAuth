@@ -56,7 +56,7 @@ let package = Package(
 			dependencies: [
 				"AtprotoOAuth",
 				//for temp shim only
-				"ATResolve"
+				"ATResolve",
 			]
 		),
 	]

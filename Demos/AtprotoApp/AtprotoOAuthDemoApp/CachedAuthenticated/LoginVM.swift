@@ -74,7 +74,8 @@ import os
 			)
 
 			let (oauthAgent, saveStream) = try AtprotoOAuthAgent.restore(
-				archive: .init(did: did.stringRepresentation, session: sessionState),
+				archive: .init(
+					did: did.stringRepresentation, session: sessionState),
 				appCredentials: .init(
 					clientId:
 						"https://static.germnetwork.com/client-metadata.json",

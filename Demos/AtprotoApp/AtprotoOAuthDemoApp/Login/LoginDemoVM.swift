@@ -36,8 +36,11 @@ import SwiftUI
 				let resolver = AtprotoLegacyResolver(
 					resourceFetcher: URLSession.shared)
 				let resolvedDid = try await resolver.resolve(handle: handle)
-				logs.append(.init(body: "Resolved DID: \(resolvedDid.stringRepresentation)"))
-
+				logs.append(
+					.init(
+						body:
+							"Resolved DID: \(resolvedDid.stringRepresentation)"
+					))
 
 				let sessionArchive =
 					try await AtprotoOAuthAgent
@@ -61,7 +64,8 @@ import SwiftUI
 
 				let (oauthAgent, _) = try AtprotoOAuthAgent.restore(
 					archive: .init(
-						did: resolvedDid.stringRepresentation, session: sessionArchive),
+						did: resolvedDid.stringRepresentation,
+						session: sessionArchive),
 					appCredentials: .init(
 						clientId:
 							"https://static.germnetwork.com/client-metadata.json",
