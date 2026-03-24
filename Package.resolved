@@ -1,13 +1,13 @@
 {
-  "originHash" : "834a3b6510662bcd3f03216f4afbbbec42d281f2aa3da62bd356bc854d107ead",
+  "originHash" : "dbf7ef46768a5dcc67375f20462fac05816ee07af3ad8537c4735e72dae9d2d2",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "e81caaa59cd492d53b4a84db598d6b8604fb1cf2"
+        "revision" : "de4a9c2585c584c38bb53bc4b01db67cee78b9be",
+        "version" : "0.0.3"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "f9bb149f1d21edeece0bca46e5430f7ffcff9aaa"
+        "revision" : "fe1e36b7f0dd781cfbfd86b583cadf9bb4163f32",
+        "version" : "0.0.3"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "dbb08dbb5c218e9a3adb76eed5bcdf81e12bba98"
+        "branch" : "0.0.3",
+        "revision" : "65e7992034bed314951260e84065877f9946046d"
       }
     },
     {
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "2e6f2dda5f353871adddac372774bc8bb495c2b1"
+        "revision" : "8dbb7aa915e2998688081b52435b8a5720caedb5",
+        "version" : "0.0.2"
       }
     },
     {
