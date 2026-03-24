@@ -9,18 +9,12 @@ import AtprotoClient
 import AtprotoTypes
 import Foundation
 
-extension AtprotoClientInterface {
-	public func getGermMessagingDelegate(
-		did: Atproto.DID,
-	) async throws -> Lexicon.Com.GermNetwork.Declaration? {
-		//rely on url caching for this value
-		let pdsUrl = try await plcDirectoryQuery(did)
-			.pdsUrl
-
+extension AtprotoClient {
+	public func getGermMessagingDelegate() async throws -> Lexicon.Com.GermNetwork.Declaration?
+	{
 		return try await getRecord(
-			pdsUrl: pdsUrl,
 			parameters: .init(
-				repo: .did(did),
+				repo: .did(agent.repo),
 				rkey: "self",
 				cid: nil
 			)
@@ -28,18 +22,14 @@ extension AtprotoClientInterface {
 	}
 
 	public func postGermMessagingDelegate(
-		_ delegate: Lexicon.Com.GermNetwork.Declaration,
-		did: Atproto.DID,
-		session: AtprotoSession
+		_ delegate: Lexicon.Com.GermNetwork.Declaration
 	) async throws {
 		try await putRecord(
-			did: did,
 			parameters: .init(
-				repo: .did(did),
+				repo: .did(agent.repo),
 				rkey: "self",
 				record: delegate
-			),
-			session: session
+			)
 		)
 	}
 }

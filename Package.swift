@@ -16,11 +16,11 @@ let package = Package(
 	dependencies: [
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.0.3"
+			from: "0.0.4"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			from: "0.0.3"
+			from: "0.0.4"
 		),
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
@@ -28,7 +28,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/Microcosm.git",
-			branch: "0.0.3"
+			branch: "0.0.4"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
@@ -47,15 +47,17 @@ let package = Package(
 				"AtprotoClient",
 				"AtprotoTypes",
 				.product(name: "Crypto", package: "swift-crypto"),
-				//for temp shim only
-				"ATResolve",
 				"Microcosm",
 				.product(name: "OAuth", package: "oauth4swift"),
 			]
 		),
 		.testTarget(
 			name: "AtprotoOAuthTests",
-			dependencies: ["AtprotoOAuth"]
+			dependencies: [
+				"AtprotoOAuth",
+				//for temp shim only
+				"ATResolve"
+			]
 		),
 	]
 )

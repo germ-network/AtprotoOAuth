@@ -5,6 +5,7 @@
 //  Created by Mark @ Germ on 2/27/26.
 //
 
+import AtprotoClient
 import AtprotoOAuth
 import AtprotoTypes
 import SwiftUI
@@ -27,7 +28,7 @@ struct LoginView: View {
 					Text("Logged in")
 				}
 				switch (
-					viewModel.session,
+					viewModel.sessionWrapper,
 					viewModel.processingTask,
 					viewModel.sessionStorage.sessionArchive,
 				) {
@@ -50,7 +51,7 @@ struct LoginView: View {
 				}
 			}
 
-			if viewModel.session != nil {
+			if viewModel.sessionWrapper != nil {
 				Section("Auth Session Query") {
 					HStack {
 						Text("@")
@@ -128,6 +129,8 @@ struct LoginView: View {
 #Preview {
 	let did = try! Atproto.DID(string: "did:plc:4yvwfwxfz5sney4twepuzdu7")
 	LoginView(
-		viewModel: .init(did: did, handle: "germnetwork.com")
+		viewModel: .init(
+			did: did, handle: "germnetwork.com",
+			resolver: AtprotoLegacyResolver(resourceFetcher: URLSession.shared))
 	)
 }

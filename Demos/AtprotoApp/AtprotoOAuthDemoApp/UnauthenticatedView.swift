@@ -13,6 +13,8 @@ import SwiftUI
 struct UnauthenticatedView: View {
 	@AppStorage("unauthHandle") var handleEntry: String = "anna.germnetwork.com"
 
+	let resolver = AtprotoLegacyResolver(resourceFetcher: URLSession.shared)
+
 	@State private var followsGerm: Bool?
 	@State private var isFollowedByGerm: Bool?
 
@@ -27,10 +29,6 @@ struct UnauthenticatedView: View {
 	@State private var messagingDelegate: Lexicon.Com.GermNetwork.Declaration?
 
 	@State private var processing: Task<Void, Never>? = nil
-
-	let client: AtprotoClientInterface = AtprotoClient.init(
-		resourceFetcher: URLSession.shared
-	)
 
 	var body: some View {
 		VStack {
@@ -149,7 +147,7 @@ struct UnauthenticatedView: View {
 		let newTask = Task {
 			print("Loading DID...")
 			do {
-				did = try await LoginDemoVM.fallbackResolve(handle: handleEntry)
+				did = try await resolver.resolve(handle: handleEntry)
 			} catch {
 				print("Error loading DID: \(error)")
 			}
@@ -163,31 +161,24 @@ struct UnauthenticatedView: View {
 				return
 			}
 
+			let client: AtprotoClient = AtprotoClient.init(
+				agent: AtprotoAgentImpl(for: did, resolver: resolver)
+			)
+
 			// PDS and handle
 			print("Loading DID document...")
 			do {
-				let didDoc = try await client.plcDirectoryQuery(did)
+				let didDoc = try await resolver.resolve(did: did)
 				pdsURL = try didDoc.pdsUrl
 				handle = didDoc.handle
 			} catch {
 				print("Error loading DID doc and/or PDS URL: \(error)")
 			}
 
-			guard let pdsURL else {
-				follows = []
-				messagingDelegate = nil
-				avatarBlob = nil
-				bannerBlob = nil
-				return
-			}
-
 			// Messaging delegate
 			print("Loading messaging delegate...")
 			do {
-				messagingDelegate =
-					try await client.getGermMessagingDelegate(
-						did: did
-					)
+				messagingDelegate = try await client.getGermMessagingDelegate()
 			} catch {
 				print("Error loading messaging delegate: \(error)")
 			}
@@ -195,8 +186,7 @@ struct UnauthenticatedView: View {
 			// Profile
 			print("Loading profile...")
 			do {
-				profileRecord =
-					try await client.getProfile(did: did)
+				profileRecord = try await client.getProfile()
 			} catch {
 				print("Error loading profile: \(error)")
 			}
@@ -206,7 +196,6 @@ struct UnauthenticatedView: View {
 			if let avatarCid = profileRecord?.avatar?.ref.link {
 				do {
 					avatarBlob = try await client.getBlob(
-						pdsUrl: pdsURL,
 						parameters: .init(
 							did: .did(did),
 							cid: .init(string: avatarCid))
@@ -221,7 +210,6 @@ struct UnauthenticatedView: View {
 			if let bannerCid = profileRecord?.banner?.ref.link {
 				do {
 					bannerBlob = try await client.getBlob(
-						pdsUrl: pdsURL,
 						parameters: .init(
 							did: .did(did),
 							cid: .init(string: bannerCid))

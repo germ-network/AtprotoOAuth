@@ -5,6 +5,7 @@
 //  Created by Mark @ Germ on 2/17/26.
 //
 
+import AtprotoClient
 import AtprotoTypes
 import AuthenticationServices
 import Crypto
@@ -12,27 +13,42 @@ import Foundation
 import GermConvenience
 import OAuth
 
-extension AtprotoOAuthClient: AtprotoOAuthInterface {
+public protocol AtprotoOAuthInterface {
+	//MARK: Authentication
+	//want to end up with a valid archive, not a live object
+	static func authorize(
+		identity: AuthIdentity,
+		resolver: AtprotoResolver,
+		authFetcher: HTTPFetcher,
+		appCredentials: AppCredentials,
+		userAuthenticator: UserAuthenticator
+	) async throws -> SessionState.Archive
+}
 
-	//Germ will always do pre-processing so we will know did,
-	//but you can start from handle
-	public enum AuthIdentity: Sendable {
-		case handle(String)
-		//optionally pass in handle to fill into the UI of the web auth sheet
-		case did(Atproto.DID, handle: String?)
+//Germ will always do pre-processing so we will know did,
+//but you can start from handle
+public enum AuthIdentity: Sendable {
+	case handle(String)
+	//optionally pass in handle to fill into the UI of the web auth sheet
+	case did(Atproto.DID, handle: String?)
 
-		var serverHint: String {
-			switch self {
-			case .handle(let string):
-				string
-			case .did(let did, let handle):
-				handle ?? did.stringRepresentation
-			}
+	var serverHint: String {
+		switch self {
+		case .handle(let string):
+			string
+		case .did(let did, let handle):
+			handle ?? did.stringRepresentation
 		}
 	}
+}
 
-	public func authorize(
-		identity: AuthIdentity
+extension AtprotoOAuthAgent: AtprotoOAuthInterface {
+	public static func authorize(
+		identity: AuthIdentity,
+		resolver: AtprotoResolver,
+		authFetcher: HTTPFetcher,
+		appCredentials: AppCredentials,
+		userAuthenticator: UserAuthenticator
 	) async throws -> SessionState.Archive {
 		let did: Atproto.DID
 		switch identity {
@@ -40,18 +56,19 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 			did = _did
 		case .handle(let handle):
 			//resolve handle to pds, uncached
-			did = try await Self.resolve(handle: handle)
+			did = try await resolver.resolve(handle: handle)
 		}
 
 		//resolve pds and pds metadata
-		let didDoc = try await atprotoClient.plcDirectoryQuery(did)
+		let didDoc = try await resolver.resolve(did: did)
 		if case .handle(let handle) = identity {
 			if handle != didDoc.handle {
 				throw OAuthClientError.handleMismatch
 			}
 		}
 
-		let authorizationServerUrl = try await getAuthorizationUrl(didDoc: didDoc)
+		let authorizationServerUrl = try await getAuthorizationUrl(
+			didDoc: didDoc, authFetcher: authFetcher)
 
 		return try await AuthServerRequestOptions.atproto(
 			appCredentials: appCredentials,
@@ -73,7 +90,10 @@ extension AtprotoOAuthClient: AtprotoOAuthInterface {
 		)
 	}
 
-	private func getAuthorizationUrl(didDoc: Atproto.DIDDocument) async throws -> URL {
+	private static func getAuthorizationUrl(
+		didDoc: Atproto.DIDDocument,
+		authFetcher: HTTPFetcher
+	) async throws -> URL {
 		let pdsUrl = try didDoc.pdsUrl
 
 		let pdsMetadata =

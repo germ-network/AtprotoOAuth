@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		01268A9A2F49795700058D68 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 01268A992F49795700058D68 /* Microcosm */; };
 		016FA9882F4930760061B936 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 016FA9872F4930760061B936 /* Microcosm */; };
+		2C83CAF22F72FD9E00168B01 /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2C83CAF12F72FD9E00168B01 /* AtprotoOAuth */; };
+		2C83CDD32F72FECB00168B01 /* ATResolve in Frameworks */ = {isa = PBXBuildFile; productRef = 2C83CDD22F72FECB00168B01 /* ATResolve */; };
 		9092014E2F64DBCA00BABF6A /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 9092014D2F64DBCA00BABF6A /* AtprotoOAuth */; };
 		909201512F64DBD900BABF6A /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 909201502F64DBD900BABF6A /* Microcosm */; };
 /* End PBXBuildFile section */
@@ -59,8 +61,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C83CDD32F72FECB00168B01 /* ATResolve in Frameworks */,
 				01268A9A2F49795700058D68 /* Microcosm in Frameworks */,
 				909201512F64DBD900BABF6A /* Microcosm in Frameworks */,
+				2C83CAF22F72FD9E00168B01 /* AtprotoOAuth in Frameworks */,
 				9092014E2F64DBCA00BABF6A /* AtprotoOAuth in Frameworks */,
 				016FA9882F4930760061B936 /* Microcosm in Frameworks */,
 			);
@@ -135,6 +139,8 @@
 				01268A992F49795700058D68 /* Microcosm */,
 				9092014D2F64DBCA00BABF6A /* AtprotoOAuth */,
 				909201502F64DBD900BABF6A /* Microcosm */,
+				2C83CAF12F72FD9E00168B01 /* AtprotoOAuth */,
+				2C83CDD22F72FECB00168B01 /* ATResolve */,
 			);
 			productName = AtprotoOAuthDemoApp;
 			productReference = 01E50C442F483FF800C0D8E0 /* AtprotoOAuthDemoApp.app */;
@@ -219,8 +225,8 @@
 			mainGroup = 01E50C3B2F483FF800C0D8E0;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				9092014C2F64DBCA00BABF6A /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */,
-				9092014F2F64DBD900BABF6A /* XCLocalSwiftPackageReference "../../LocalPackages/Microcosm" */,
+				2C83CAF02F72FD9E00168B01 /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */,
+				2C83CDD12F72FECB00168B01 /* XCRemoteSwiftPackageReference "ATResolve" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E50C452F483FF800C0D8E0 /* Products */;
@@ -664,15 +670,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		9092014C2F64DBCA00BABF6A /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */ = {
+		2C83CAF02F72FD9E00168B01 /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../../AtprotoOAuth;
 		};
-		9092014F2F64DBD900BABF6A /* XCLocalSwiftPackageReference "../../LocalPackages/Microcosm" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../LocalPackages/Microcosm;
-		};
 /* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2C83CDD12F72FECB00168B01 /* XCRemoteSwiftPackageReference "ATResolve" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/germ-network/ATResolve";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		01268A992F49795700058D68 /* Microcosm */ = {
@@ -682,6 +695,15 @@
 		016FA9872F4930760061B936 /* Microcosm */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Microcosm;
+		};
+		2C83CAF12F72FD9E00168B01 /* AtprotoOAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AtprotoOAuth;
+		};
+		2C83CDD22F72FECB00168B01 /* ATResolve */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2C83CDD12F72FECB00168B01 /* XCRemoteSwiftPackageReference "ATResolve" */;
+			productName = ATResolve;
 		};
 		9092014D2F64DBCA00BABF6A /* AtprotoOAuth */ = {
 			isa = XCSwiftPackageProductDependency;

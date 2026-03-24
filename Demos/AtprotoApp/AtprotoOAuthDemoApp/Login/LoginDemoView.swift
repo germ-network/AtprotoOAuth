@@ -20,6 +20,8 @@ struct LoginDemoView: View {
 			case .validating(let handle):
 				Text("Validating \(handle)")
 				Button("reset", action: viewModel.reset)
+			case .agentCreated(_):
+				Text("Agent created. Loading...")
 			case .loggedIn(_):
 				Text("Successfully Logged In")
 				Button("reset", action: viewModel.reset)
