@@ -53,7 +53,6 @@ extension AuthServerRequestOptions {
 					}
 					let scopes = scope.components(separatedBy: " ")
 					let requestedScopes = Set(appCredentials.requestedScopes)
-
 					for returnedScope in scopes {
 						guard requestedScopes.contains(returnedScope)
 						else {
