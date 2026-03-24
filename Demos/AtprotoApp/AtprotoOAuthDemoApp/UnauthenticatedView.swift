@@ -161,10 +161,6 @@ struct UnauthenticatedView: View {
 				return
 			}
 
-			let client: AtprotoClient = AtprotoClient.init(
-				agent: AtprotoAgentImpl(for: did, resolver: resolver)
-			)
-
 			// PDS and handle
 			print("Loading DID document...")
 			do {
@@ -174,6 +170,14 @@ struct UnauthenticatedView: View {
 			} catch {
 				print("Error loading DID doc and/or PDS URL: \(error)")
 			}
+			
+			let client: AtprotoClient = AtprotoClient.init(
+				agent: AtprotoAgentImpl(
+					for: did,
+					resolver: resolver,
+					serviceURL: pdsURL
+				)
+			)
 
 			// Messaging delegate
 			print("Loading messaging delegate...")
