@@ -1,5 +1,5 @@
 //
-//  AtprotoOauth.swift
+//  AtprotoOAuth.swift
 //  AtprotoOAuth
 //
 //  Created by Mark @ Germ on 3/9/26.
@@ -52,14 +52,15 @@ extension AuthServerRequestOptions {
 						return nil
 					}
 					let scopes = scope.components(separatedBy: " ")
+					let requestedScopes = Set(appCredentials.requestedScopes)
 
-					guard
-						Set(appCredentials.requestedScopes).contains(
-							scopes)
-					else {
-						throw OAuthSessionError.receivedScopeNotRequested
+					for returnedScope in scopes {
+						guard requestedScopes.contains(returnedScope)
+						else {
+							throw OAuthSessionError
+								.receivedScopeNotRequested
+						}
 					}
-
 					return scopes
 				}()
 

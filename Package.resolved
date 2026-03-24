@@ -1,13 +1,22 @@
 {
-  "originHash" : "e46ff956bdf510fe23932d85fd839edee505ed6b6bf06b4fc9214fff614a7751",
+  "originHash" : "9cb5aff6c4eb6b900c255eb364388f5f2a15f5560eb654e59b7f1fa218236960",
   "pins" : [
+    {
+      "identity" : "atprotoclient",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/germ-network/AtprotoClient.git",
+      "state" : {
+        "revision" : "0bcc8e4eff2454e2042dbecdd3b18ac959b01346",
+        "version" : "0.0.4"
+      }
+    },
     {
       "identity" : "atprototypes",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "46d9cc0972f6ed9ad4efb9b5ec8191d5fddf875a",
-        "version" : "0.0.2"
+        "revision" : "dd6254f52468658d6d37ac8730be4ea6fbf870ca",
+        "version" : "0.0.4"
       }
     },
     {
@@ -38,12 +47,30 @@
       }
     },
     {
+      "identity" : "microcosm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/germ-network/Microcosm.git",
+      "state" : {
+        "branch" : "0.0.4",
+        "revision" : "4c141bc4c853de4a19b108d6fcf74c9ea464363d"
+      }
+    },
+    {
+      "identity" : "oauth4swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/germ-network/oauth4swift.git",
+      "state" : {
+        "revision" : "8dbb7aa915e2998688081b52435b8a5720caedb5",
+        "version" : "0.0.2"
+      }
+    },
+    {
       "identity" : "swift-asn1",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-asn1.git",
       "state" : {
-        "revision" : "810496cf121e525d660cd0ea89a758740476b85f",
-        "version" : "1.5.1"
+        "revision" : "9f542610331815e29cc3821d3b6f488db8715517",
+        "version" : "1.6.0"
       }
     },
     {
@@ -60,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "6f70fa9eab24c1fd982af18c281c4525d05e3095",
-        "version" : "4.2.0"
+        "revision" : "fa308c07a6fa04a727212d793e761460e41049c3",
+        "version" : "4.3.0"
       }
     },
     {

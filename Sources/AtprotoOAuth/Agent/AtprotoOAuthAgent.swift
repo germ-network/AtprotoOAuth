@@ -1,5 +1,5 @@
 //
-//  AtprotoOAuthSessionImpl.swift
+//  AtprotoOAuthAgent.swift
 //  AtprotoOAuth
 //
 //  Created by Mark @ Germ on 2/28/26.
@@ -11,12 +11,12 @@ import Foundation
 import GermConvenience
 import OAuth
 
-public actor AtprotoOAuthSessionImpl {
-	public nonisolated let did: Atproto.DID
+public actor AtprotoOAuthAgent {
+	public nonisolated let repo: Atproto.DID
+	public nonisolated let resolver: AtprotoResolver
 	public let appCredentials: AppCredentials
-	public let resourceFetcher: HTTPFetcher
+	public let userAuthenticator: UserAuthenticator
 	public let authFetcher: HTTPFetcher
-	let atprotoClient: AtprotoClientInterface
 
 	private let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
 
@@ -48,22 +48,22 @@ public actor AtprotoOAuthSessionImpl {
 	private init(
 		did: Atproto.DID,
 		appCredentials: AppCredentials,
+		userAuthenticator: @escaping UserAuthenticator,
 		state: State,
-		resourceFetcher: HTTPFetcher,
 		authFetcher: HTTPFetcher,
-		atprotoClient: AtprotoClientInterface,
+		atprotoResolver: AtprotoResolver
 	) {
-		self.did = did
+		self.repo = did
 		self.appCredentials = appCredentials
+		self.userAuthenticator = userAuthenticator
 		self.state = state
-		self.resourceFetcher = resourceFetcher
 		self.authFetcher = authFetcher
-		self.atprotoClient = atprotoClient
+		self.resolver = atprotoResolver
 
 		self.lazyServerMetadata = .init(
 			fetchTaskGenerator: {
 				Task {
-					let pdsHost = try await atprotoClient.plcDirectoryQuery(did)
+					let pdsHost = try await atprotoResolver.resolve(did: did)
 						.pdsUrl
 					let pdsMetadata =
 						try await authFetcher.resourceDiscoveryRequest(
@@ -98,7 +98,7 @@ public actor AtprotoOAuthSessionImpl {
 		self.lazyIssuer = .init(
 			fetchTaskGenerator: {
 				Task {
-					let pdsHost = try await atprotoClient.plcDirectoryQuery(did)
+					let pdsHost = try await atprotoResolver.resolve(did: did)
 						.pdsUrl
 					let pdsMetadata =
 						try await authFetcher.resourceDiscoveryRequest(
@@ -137,30 +137,6 @@ public actor AtprotoOAuthSessionImpl {
 			.makeStream(bufferingPolicy: .bufferingNewest(1))
 	}
 
-	public func authProcedure<X: XRPCProcedure>(
-		_ xrpc: X.Type,
-		parameters: X.Parameters
-	) async throws -> X.Result {
-		try await atprotoClient.authProcedure(
-			xrpc,
-			pdsUrl: try await getPDSUrl(),
-			parameters: parameters,
-			session: self
-		)
-	}
-
-	public func authRequest<X: XRPCRequest>(
-		_ xrpc: X.Type,
-		parameters: X.Parameters
-	) async throws -> X.Result {
-		try await atprotoClient.authRequest(
-			xrpc,
-			pdsUrl: try await getPDSUrl(),
-			parameters: parameters,
-			session: self
-		)
-	}
-
 	//propagate new state to our in-memory opject properties
 	//then through the async streams
 
@@ -180,7 +156,7 @@ public actor AtprotoOAuthSessionImpl {
 	}
 }
 
-extension AtprotoOAuthSessionImpl {
+extension AtprotoOAuthAgent {
 	public struct Archive: Sendable, Codable {
 		let did: String
 		let session: SessionState.Archive?
@@ -194,16 +170,16 @@ extension AtprotoOAuthSessionImpl {
 	public static func restore(
 		archive: Archive,
 		appCredentials: AppCredentials,
-		resourceFetcher: HTTPFetcher,
+		userAuthenticator: @escaping UserAuthenticator,
 		authFetcher: HTTPFetcher,
-		atprotoClient: AtprotoClientInterface,
-	) throws -> (AtprotoOAuthSession, AsyncStream<SessionState.Mutable?>) {
-		let session = try AtprotoOAuthSessionImpl(
+		atprotoResolver: AtprotoResolver
+	) throws -> (AtprotoOAuthAgent, AsyncStream<SessionState.Mutable?>) {
+		let session = try AtprotoOAuthAgent(
 			archive: archive,
 			appCredentials: appCredentials,
-			resourceFetcher: resourceFetcher,
+			userAuthenticator: userAuthenticator,
 			authFetcher: authFetcher,
-			atprotoClient: atprotoClient,
+			atprotoResolver: atprotoResolver
 		)
 		return (session, session.saveStream)
 	}
@@ -211,17 +187,17 @@ extension AtprotoOAuthSessionImpl {
 	private init(
 		archive: Archive,
 		appCredentials: AppCredentials,
-		resourceFetcher: HTTPFetcher,
+		userAuthenticator: @escaping UserAuthenticator,
 		authFetcher: HTTPFetcher,
-		atprotoClient: AtprotoClientInterface,
+		atprotoResolver: AtprotoResolver
 	) throws {
 		try self.init(
 			did: .init(string: archive.did),
 			appCredentials: appCredentials,
+			userAuthenticator: userAuthenticator,
 			state: .init(archive: archive.session),
-			resourceFetcher: resourceFetcher,
 			authFetcher: authFetcher,
-			atprotoClient: atprotoClient,
+			atprotoResolver: atprotoResolver
 		)
 	}
 
@@ -234,9 +210,32 @@ extension AtprotoOAuthSessionImpl {
 	}
 }
 
-extension AtprotoOAuthSessionImpl: AtprotoSession {}
+extension AtprotoOAuthAgent: AtprotoAgent {
+	public nonisolated var allowsAuthedCalls: Bool { true }
 
-extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
+	public func response(_ request: AtprotoAgentRequest) async throws
+		-> GermConvenience.HTTPDataResponse
+	{
+		try await authResponse(request)
+	}
+
+	public func authResponse(_ request: AtprotoAgentRequest) async throws
+		-> GermConvenience.HTTPDataResponse
+	{
+		var url = try await getPDSUrl().appending(path: request.relativePath)
+		url = url.appending(queryItems: request.queryItems)
+		let urlRequest = URLRequest.createRequest(
+			url: url,
+			httpMethod: request.httpMethod,
+			httpBody: request.httpBody,
+			acceptValue: request.acceptValue,
+			contentTypeValue: request.contentTypeValue
+		)
+		return try await authResponse(for: urlRequest)
+	}
+}
+
+extension AtprotoOAuthAgent: OAuthSessionCapabilities {
 	public var session: SessionState {
 		get throws {
 			guard case .active(let sessionState) = state else {
@@ -259,14 +258,14 @@ extension AtprotoOAuthSessionImpl: OAuthSessionCapabilities {
 	public var authServerRequestOptions: AuthServerRequestOptions {
 		.atproto(
 			appCredentials: appCredentials,
-			did: did,
+			did: repo,
 			authFetcher: authFetcher,
 			dpopSigner: self
 		)
 	}
 }
 
-extension AtprotoOAuthSessionImpl: DPoPSigning {
+extension AtprotoOAuthAgent: DPoPSigning {
 	public var dpopKey: OAuth.DPoPKey {
 		get throws {
 			try session.dPopKey.tryUnwrap
@@ -287,9 +286,8 @@ extension AtprotoOAuthSessionImpl: DPoPSigning {
 
 }
 
-extension AtprotoOAuthSessionImpl {
+extension AtprotoOAuthAgent {
 	func getPDSUrl() async throws -> URL {
-		try await atprotoClient.plcDirectoryQuery(did)
-			.pdsUrl
+		try await self.resolver.resolve(did: repo).pdsUrl
 	}
 }
