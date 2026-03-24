@@ -6,6 +6,7 @@
 //
 
 import ATResolve
+import AtprotoClient
 import AtprotoTypes
 import Foundation
 import GermConvenience
@@ -44,8 +45,6 @@ public struct AtprotoLegacyResolver: AtprotoResolver {
 		components.scheme = URLScheme.https.rawValue
 		components.host = "plc.directory"
 		components.path = "/\(did.stringRepresentation)"
-
-		return try components.url
-			.tryUnwrap(AtprotoClientError.couldntConstructUrl)
+		return try components.url.tryUnwrap
 	}
 }
