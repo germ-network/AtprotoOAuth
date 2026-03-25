@@ -14,7 +14,7 @@ import OAuth
 public actor AtprotoOAuthAgent {
 	public nonisolated let repo: Atproto.DID
 	public nonisolated let resolver: AtprotoResolver
-	public let appCredentials: AppCredentials
+	public let clientMetadata: OAuthClient
 	public let userAuthenticator: UserAuthenticator
 	public let authFetcher: HTTPFetcher
 
@@ -47,14 +47,14 @@ public actor AtprotoOAuthAgent {
 
 	private init(
 		did: Atproto.DID,
-		appCredentials: AppCredentials,
+		clientMetadata: OAuthClient,
 		userAuthenticator: @escaping UserAuthenticator,
 		state: State,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: AtprotoResolver
 	) {
 		self.repo = did
-		self.appCredentials = appCredentials
+		self.clientMetadata = clientMetadata
 		self.userAuthenticator = userAuthenticator
 		self.state = state
 		self.authFetcher = authFetcher
@@ -169,14 +169,14 @@ extension AtprotoOAuthAgent {
 
 	public static func restore(
 		archive: Archive,
-		appCredentials: AppCredentials,
+		clientMetadata: OAuthClient,
 		userAuthenticator: @escaping UserAuthenticator,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: AtprotoResolver
 	) throws -> (AtprotoOAuthAgent, AsyncStream<SessionState.Mutable?>) {
 		let session = try AtprotoOAuthAgent(
 			archive: archive,
-			appCredentials: appCredentials,
+			clientMetadata: clientMetadata,
 			userAuthenticator: userAuthenticator,
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
@@ -186,14 +186,14 @@ extension AtprotoOAuthAgent {
 
 	private init(
 		archive: Archive,
-		appCredentials: AppCredentials,
+		clientMetadata: OAuthClient,
 		userAuthenticator: @escaping UserAuthenticator,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: AtprotoResolver
 	) throws {
 		try self.init(
 			did: .init(string: archive.did),
-			appCredentials: appCredentials,
+			clientMetadata: clientMetadata,
 			userAuthenticator: userAuthenticator,
 			state: .init(archive: archive.session),
 			authFetcher: authFetcher,
@@ -257,7 +257,7 @@ extension AtprotoOAuthAgent: OAuthSessionCapabilities {
 
 	public var authServerRequestOptions: AuthServerRequestOptions {
 		.atproto(
-			appCredentials: appCredentials,
+			clientMetadata: clientMetadata,
 			did: repo,
 			authFetcher: authFetcher,
 			dpopSigner: self

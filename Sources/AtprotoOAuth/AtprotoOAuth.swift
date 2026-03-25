@@ -12,15 +12,15 @@ import OAuth
 
 extension AuthServerRequestOptions {
 	static func atproto(
-		appCredentials: AppCredentials,
+		clientMetadata: OAuthClient,
 		did: Atproto.DID,
 		authFetcher: HTTPFetcher,
 		dpopSigner: DPoPSigning,
 	) -> AuthServerRequestOptions {
 		.init(
+			// FIXME: Remove once client authentication is implemented.
 			additionalParameters: [
-				"client_id": appCredentials.clientId,
-				"redirect_url": appCredentials.callbackURL.absoluteString,
+				"client_id": clientMetadata.clientId
 			],
 			authFetcher: authFetcher,
 			tokenValidator: { authServerMetadata, tokenResponse in
@@ -52,7 +52,8 @@ extension AuthServerRequestOptions {
 						return nil
 					}
 					let scopes = scope.components(separatedBy: " ")
-					let requestedScopes = Set(appCredentials.requestedScopes)
+					// FIXME: https://github.com/germ-network/oauth4swift/pull/3
+					let requestedScopes = Set(clientMetadata.scopes)
 
 					for returnedScope in scopes {
 						guard requestedScopes.contains(returnedScope)
@@ -71,7 +72,8 @@ extension AuthServerRequestOptions {
 					),
 					refreshToken: .init(
 						refreshToken: tokenResponse.refreshToken),
-					scopes: returnedScopes ?? appCredentials.requestedScopes,
+					// FIXME: https://github.com/germ-network/oauth4swift/pull/3
+					scopes: returnedScopes ?? clientMetadata.scopes,
 					issuingServer: authServerMetadata.issuer
 				)
 			},
