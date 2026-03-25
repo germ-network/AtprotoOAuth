@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum OAuthSessionError: Error {
+enum OAuthSessionError: Error, Equatable {
 	case cantFormURL
 	case sessionInactive
 	case incorrectResponseType

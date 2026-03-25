@@ -85,4 +85,10 @@ struct ClientAPITests {
 		)
 		.getProfile()
 	}
+
+	@Test func clientUsage() async throws {
+		await #expect(throws: OAuthSessionError.sessionInactive) {
+			try await oauthClient.getProfile()
+		}
+	}
 }
