@@ -1,7 +1,4 @@
-Dev plan for this:
-
-./LocalPackages will be spun out into their own repos
-
+Disclaimer: This code is provided for evaluation and is not ready for broader adoption yet!
 
 # Package Composition
 
@@ -15,13 +12,13 @@ graph TD;
 ```
 
 AtprotoOAuth package is the composition of several packages which can be used
-independently. It is primarily the intersection of an AtprotoClient and an OAuth
+independently. It is primarily the intersection of an atproto Client and an OAuth
 2.1 package.
 
 ## [AtprotoClient](https://github.com/germ-network/AtprotoClient)
 Defines interfaces for commuincating with atproto services, which accepts injected `AtprotoSession` that can make authenticated requests to OAuth protected resources
 
-### [AtprotoTypes](https://github.com/germ-network/AtprotoTypes)
+## [AtprotoTypes](https://github.com/germ-network/AtprotoTypes)
 Defines atproto types, primarily but not exclusively from lexicon.
 We intend to codegen the lexicon types
 
@@ -34,8 +31,9 @@ Both branches depend on some shared helpers which we park in a GermConvenience
 repository
 
 # AtprotoOAuth
-AtprotoOAuthClient is a non-stateful object (struct) that can spawn stateful
-AtprotoOAuthSessions (actors) after initiating a user authentication.
+AtprotoOAuthClient is an immutable object (struct) that can spawn stateful
+AtprotoOAuthSessions (actors) after initiating a user authentication or restoring
+from a serialized archive.
 
 Sessions have a one-way lifetime. They internally refresh tokens (serializing
 the refresh request) but once permaenently expired, the app should request a new
@@ -59,7 +57,7 @@ The session does have an API for a similiar stream for the app's mutable state
 
 
 # Demo App
-The repository contains a demo app under ./DemoApp.
+The repository contains a demo app under ./Demos.
 
 # Linting and Practices
 The repo has a .editorconfig and .swift-format setup. We use both swift
