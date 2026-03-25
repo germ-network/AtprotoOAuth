@@ -170,12 +170,12 @@ struct UnauthenticatedView: View {
 			} catch {
 				print("Error loading DID doc and/or PDS URL: \(error)")
 			}
-			
+
 			let client: AtprotoClient = AtprotoClient.init(
-				agent: AtprotoAgentImpl(
+				agent: AtprotoUnauthenticatedAgent(
 					for: did,
 					resolver: resolver,
-					serviceURL: pdsURL
+					serviceURL: .pds
 				)
 			)
 

@@ -45,7 +45,12 @@ import os
 		self.resolver = resolver
 		self.sessionStorage = .init(did: did)
 		self.unauthedClient = AtprotoClient(
-			agent: AtprotoAgentImpl(for: did, resolver: resolver))
+			agent: AtprotoUnauthenticatedAgent(
+				for: did,
+				resolver: resolver,
+				serviceURL: .pds
+			)
+		)
 	}
 
 	func login() {
