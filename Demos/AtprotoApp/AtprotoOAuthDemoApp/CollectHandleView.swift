@@ -12,12 +12,32 @@ struct CollectHandleView: View {
 	let viewModel: LoginDemoVM
 
 	var body: some View {
-		VStack {
-			TextField("atprotoHandle", text: $handle)
+		VStack(alignment: .center) {
+			HStack(alignment: .center) {
+				Spacer()
+				HStack {
+					Text("@").foregroundStyle(.blue)
+					TextField("username.bsky.social", text: $handle)
+						.onSubmit {
+							viewModel.login(
+								handle: handle)
+						}
+						.textInputAutocapitalization(.never)
+						.autocorrectionDisabled()
+				}
+				.padding()
+				.overlay(
+					RoundedRectangle(
+						cornerRadius: 16
+					).stroke(.blue, lineWidth: 2)
+				)
+				Spacer()
+			}
 
 			Button("Authenticate") {
 				viewModel.login(handle: handle)
 			}
+			.buttonStyle(.glassProminent)
 		}
 	}
 }

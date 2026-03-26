@@ -64,11 +64,11 @@ import os
 				identity: .did(did, handle: handle),
 				resolver: resolver,
 				authFetcher: URLSession.manualRedirect(),
-				appCredentials: .init(
+				clientMetadata: .init(
 					clientId:
 						"https://static.germnetwork.com/client-metadata.json",
 					scopes: ["atproto", "transition:generic"],
-					callbackURL: URL(string: "com.germnetwork.static:/oauth")!
+					redirectURI: URL(string: "com.germnetwork.static:/oauth")!
 				),
 				userAuthenticator: ASWebAuthenticationSession.userAuthenticator()
 			)
@@ -76,11 +76,11 @@ import os
 			let (oauthAgent, saveStream) = try AtprotoOAuthAgent.restore(
 				archive: .init(
 					did: did.stringRepresentation, session: sessionState),
-				appCredentials: .init(
+				clientMetadata: .init(
 					clientId:
 						"https://static.germnetwork.com/client-metadata.json",
 					scopes: ["atproto", "transition:generic"],
-					callbackURL: URL(string: "com.germnetwork.static:/oauth")!
+					redirectURI: URL(string: "com.germnetwork.static:/oauth")!
 				),
 				userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
 				authFetcher: URLSession.manualRedirect(),
@@ -155,11 +155,11 @@ import os
 					did: sessionStorage.did.stringRepresentation,
 					session: archive,
 				),
-				appCredentials: .init(
+				clientMetadata: .init(
 					clientId:
 						"https://static.germnetwork.com/client-metadata.json",
 					scopes: ["atproto", "transition:generic"],
-					callbackURL: URL(string: "com.germnetwork.static:/oauth")!
+					redirectURI: URL(string: "com.germnetwork.static:/oauth")!
 				),
 				userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
 				authFetcher: URLSession.manualRedirect(),
