@@ -54,10 +54,17 @@ struct LoginView: View {
 			if viewModel.sessionWrapper != nil {
 				Section("Auth Session Query") {
 					HStack {
-						Text("@")
+						Text("@").foregroundStyle(.blue)
 						TextField(
-							"handle.bsky.social",
-							text: $otherHandle)
+							"username.bsky.social",
+							text: $otherHandle
+						)
+						.keyboardType(.URL)
+						.autocorrectionDisabled()
+						#if os(iOS)
+							.textInputAutocapitalization(.never)
+						#else
+						#endif
 						Spacer()
 					}
 					Button("Make authed fetch") {

@@ -34,9 +34,10 @@ struct UnauthenticatedView: View {
 		VStack {
 			HStack {
 				HStack {
-					Text("@")
-
-					TextField("Handle", text: $handleEntry)
+					Text("@").foregroundStyle(.blue)
+					TextField("username.bsky.social", text: $handleEntry)
+						.keyboardType(.URL)
+						.autocorrectionDisabled()
 						#if os(iOS)
 							.textInputAutocapitalization(.never)
 						#else

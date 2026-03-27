@@ -22,8 +22,12 @@ struct CollectHandleView: View {
 							viewModel.login(
 								handle: handle)
 						}
-						.textInputAutocapitalization(.never)
+						.keyboardType(.URL)
 						.autocorrectionDisabled()
+						#if os(iOS)
+							.textInputAutocapitalization(.never)
+						#else
+						#endif
 				}
 				.padding()
 				.overlay(
