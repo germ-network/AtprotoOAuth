@@ -13,25 +13,38 @@ struct LoginDemoView: View {
 	@State private var viewModel = LoginDemoVM()
 
 	var body: some View {
-		VStack {
+		VStack(alignment: .center, spacing: 20) {
+			switch viewModel.state {
+			case .validating(_):
+				Button("reset", action: viewModel.reset).buttonStyle(.glassProminent)
+			case .loggedIn(_):
+				Button("reset", action: viewModel.reset).buttonStyle(.glassProminent)
+			default:
+				EmptyView()
+			}
+
 			switch viewModel.state {
 			case .collectHandle:
+				Spacer()
 				CollectHandleView(viewModel: viewModel)
 			case .validating(let handle):
 				Text("Validating \(handle)")
-				Button("reset", action: viewModel.reset)
 			case .agentCreated(_):
 				Text("Agent created. Loading...")
 			case .loggedIn(_):
 				Text("Successfully Logged In")
-				Button("reset", action: viewModel.reset)
 			}
 
-			VStack {
-				ForEach(viewModel.logs) { log in
-					Text(log.body)
+			Spacer()
+
+			Section(viewModel.logs.count > 0 ? "Logs" : "") {
+				VStack(alignment: .leading, spacing: 10) {
+					ForEach(viewModel.logs) { log in
+						Text(log.body)
+					}
 				}
 			}
+			Spacer()
 		}
 	}
 }

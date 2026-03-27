@@ -29,6 +29,10 @@ import SwiftUI
 	}
 	var logs: [LogEntry] = []
 
+	private func appendLog(_ body: String) {
+		logs.append(.init(body: body))
+	}
+
 	func login(handle: String) {
 		state = .validating(handle)
 		Task {
@@ -36,11 +40,7 @@ import SwiftUI
 				let resolver = AtprotoLegacyResolver(
 					resourceFetcher: URLSession.shared)
 				let resolvedDid = try await resolver.resolve(handle: handle)
-				logs.append(
-					.init(
-						body:
-							"Resolved DID: \(resolvedDid.stringRepresentation)"
-					))
+				appendLog("Resolved DID: \(resolvedDid.stringRepresentation)")
 
 				let sessionArchive =
 					try await AtprotoOAuthAgent
@@ -48,11 +48,11 @@ import SwiftUI
 						identity: .did(resolvedDid, handle: handle),
 						resolver: resolver,
 						authFetcher: URLSession.manualRedirect(),
-						appCredentials: .init(
+						clientMetadata: .init(
 							clientId:
 								"https://static.germnetwork.com/client-metadata.json",
 							scopes: ["atproto", "transition:generic"],
-							callbackURL: URL(
+							redirectURI: URL(
 								string:
 									"com.germnetwork.static:/oauth"
 							)!
@@ -60,26 +60,30 @@ import SwiftUI
 						userAuthenticator:
 							ASWebAuthenticationSession.userAuthenticator()
 					)
-				logs.append(.init(body: "Authorized OAuth agent"))
+
+				appendLog("Authorized OAuth agent")
 
 				let (oauthAgent, _) = try AtprotoOAuthAgent.restore(
 					archive: .init(
 						did: resolvedDid.stringRepresentation,
 						session: sessionArchive),
-					appCredentials: .init(
+					clientMetadata: .init(
 						clientId:
 							"https://static.germnetwork.com/client-metadata.json",
 						scopes: ["atproto", "transition:generic"],
-						callbackURL: URL(
-							string: "com.germnetwork.static:/oauth")!
+						redirectURI: URL(
+							string:
+								"com.germnetwork.static:/oauth"
+						)!
 					),
 					userAuthenticator:
 						ASWebAuthenticationSession.userAuthenticator(),
 					authFetcher: URLSession.manualRedirect(),
 					atprotoResolver: resolver,
 				)
-				logs.append(.init(body: "Restored OAuth agent"))
+
 				state = .loggedIn(oauthAgent)
+				appendLog("Restored OAuth agent")
 
 				//make an auth request
 				let client = AtprotoClient(agent: oauthAgent)
@@ -87,8 +91,11 @@ import SwiftUI
 					Lexicon.App.Bsky.Actor.GetProfile.self,
 					parameters: .init(actor: .did(resolvedDid))
 				)
+
+				debugPrint(profileMetadata)
+				appendLog("Fetched profile metadata: \(profileMetadata)")
 			} catch {
-				logs.append(.init(body: "Error: \(error)"))
+				appendLog("Error: \(error)")
 			}
 		}
 	}

@@ -28,10 +28,10 @@ struct APITests {
 	@Test func testAgentCreation() async throws {
 		let _ = try AtprotoOAuthAgent.restore(
 			archive: .init(did: "did:plc:4yvwfwxfz5sney4twepuzdu7", session: nil),
-			appCredentials: .init(
+			clientMetadata: .init(
 				clientId: APITests.clientId,
 				scopes: Self.genericScopes,
-				callbackURL: APITests.redirectUri
+				redirectURI: APITests.redirectUri
 			),
 			userAuthenticator: AtprotoClient.failingUserAuthenticator(_:_:),
 			authFetcher: URLSession.manualRedirect(),
@@ -55,10 +55,10 @@ struct ClientAPITests {
 	init() async throws {
 		let (oauthAgent, _) = try AtprotoOAuthAgent.restore(
 			archive: .init(did: "did:plc:4yvwfwxfz5sney4twepuzdu7", session: nil),
-			appCredentials: .init(
+			clientMetadata: .init(
 				clientId: APITests.clientId,
 				scopes: Self.genericScopes,
-				callbackURL: APITests.redirectUri
+				redirectURI: APITests.redirectUri
 			),
 			userAuthenticator: AtprotoClient.failingUserAuthenticator(_:_:),
 			authFetcher: URLSession.manualRedirect(),
@@ -84,5 +84,11 @@ struct ClientAPITests {
 			)
 		)
 		.getProfile()
+	}
+
+	@Test func clientUsage() async throws {
+		await #expect(throws: OAuthSessionError.sessionInactive) {
+			try await oauthClient.getProfile()
+		}
 	}
 }

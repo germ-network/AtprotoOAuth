@@ -20,7 +20,7 @@ public protocol AtprotoOAuthInterface {
 		identity: AuthIdentity,
 		resolver: AtprotoResolver,
 		authFetcher: HTTPFetcher,
-		appCredentials: AppCredentials,
+		clientMetadata: OAuthClient,
 		userAuthenticator: UserAuthenticator
 	) async throws -> SessionState.Archive
 }
@@ -47,7 +47,7 @@ extension AtprotoOAuthAgent: AtprotoOAuthInterface {
 		identity: AuthIdentity,
 		resolver: AtprotoResolver,
 		authFetcher: HTTPFetcher,
-		appCredentials: AppCredentials,
+		clientMetadata: OAuthClient,
 		userAuthenticator: UserAuthenticator
 	) async throws -> SessionState.Archive {
 		let did: Atproto.DID
@@ -71,7 +71,7 @@ extension AtprotoOAuthAgent: AtprotoOAuthInterface {
 			didDoc: didDoc, authFetcher: authFetcher)
 
 		return try await AuthServerRequestOptions.atproto(
-			appCredentials: appCredentials,
+			clientMetadata: clientMetadata,
 			did: did,
 			authFetcher: authFetcher,
 			dpopSigner: AuthDPopState(
@@ -80,7 +80,7 @@ extension AtprotoOAuthAgent: AtprotoOAuthInterface {
 			)
 		).performUserAuthentication(
 			authorizeInputs: .init(
-				appCredentials: appCredentials,
+				clientMetadata: clientMetadata,
 				parConfig: .init(
 					parameters: ["login_hint": identity.serverHint]
 				),
