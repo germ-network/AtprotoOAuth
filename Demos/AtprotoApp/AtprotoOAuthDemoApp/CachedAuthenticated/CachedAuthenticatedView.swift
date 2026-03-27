@@ -20,7 +20,16 @@ struct CachedAuthenticatedView: View {
 				switch viewModel.state {
 				case .entry(let error):
 					HStack {
-						TextField("@", text: $storedHandle)
+						Text("@").foregroundStyle(.blue)
+						TextField(
+							"username.bsky.social", text: $storedHandle
+						)
+						.keyboardType(.URL)
+						.autocorrectionDisabled()
+						#if os(iOS)
+							.textInputAutocapitalization(.never)
+						#else
+						#endif
 						Button("Check Handle", action: check)
 					}
 					if let error {
