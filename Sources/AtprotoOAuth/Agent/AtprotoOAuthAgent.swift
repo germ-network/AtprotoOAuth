@@ -222,16 +222,19 @@ extension AtprotoOAuthAgent: AtprotoAgent {
 	public func authResponse(_ request: AtprotoAgentRequest) async throws
 		-> GermConvenience.HTTPDataResponse
 	{
-		var url = try await getPDSUrl().appending(path: request.relativePath)
-		url = url.appending(queryItems: request.queryItems)
-		let urlRequest = URLRequest.createRequest(
+		let url = try await getPDSUrl()
+			.appending(path: request.relativePath)
+			.appending(queryItems: request.queryItems)
+
+		let request = HTTPRequestBody(
 			url: url,
-			httpMethod: request.httpMethod,
+			method: request.httpMethod,
 			httpBody: request.httpBody,
-			acceptValue: request.acceptValue,
-			contentTypeValue: request.contentTypeValue
+			accept: request.acceptValue,
+			contentType: request.contentTypeValue
 		)
-		return try await authResponse(for: urlRequest)
+
+		return try await authResponse(for: request)
 	}
 }
 

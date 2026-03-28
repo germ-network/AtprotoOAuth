@@ -1,13 +1,13 @@
 {
-  "originHash" : "f26cd85ce48cc3901bbd77ce5938698aa8f5d632c5820635d96cc1be23b7456d",
+  "originHash" : "8da172f3faca09fc90dc399f1e6c9c143a8958c0446f26ce8f6565961bbe0afb",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "0bcc8e4eff2454e2042dbecdd3b18ac959b01346",
-        "version" : "0.0.4"
+        "branch" : "mark/http-types",
+        "revision" : "5d385d48ea45584171fcdab1d3d00c7b6338e408"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "dd6254f52468658d6d37ac8730be4ea6fbf870ca",
-        "version" : "0.0.4"
+        "branch" : "mark/http-types",
+        "revision" : "a219bf9e6244a46cfa5957654ca2d415b7cda1a0"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "revision" : "4c2b5d229f074a9b31c2f8cec8ab2fcea4a2e082",
-        "version" : "0.0.2"
+        "branch" : "mark/http-types",
+        "revision" : "e481c34f894accd6a619bfc92890aa949b14ab35"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
-        "branch" : "0.0.4",
-        "revision" : "4c141bc4c853de4a19b108d6fcf74c9ea464363d"
+        "branch" : "mark/http-types",
+        "revision" : "43ee5da803ec4ebedb7174a089c86bd73d4a1671"
       }
     },
     {
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "revision" : "054a3961881c7fefa7ee845581ed897b4d6c1f12",
-        "version" : "0.1.0"
+        "branch" : "mark/http-types",
+        "revision" : "3936a0f5949b76959a297920335446d565fc3a4e"
       }
     },
     {
@@ -89,6 +89,15 @@
       "state" : {
         "revision" : "fa308c07a6fa04a727212d793e761460e41049c3",
         "version" : "4.3.0"
+      }
+    },
+    {
+      "identity" : "swift-http-types",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-http-types.git",
+      "state" : {
+        "revision" : "45eb0224913ea070ec4fba17291b9e7ecf4749ca",
+        "version" : "1.5.1"
       }
     },
     {

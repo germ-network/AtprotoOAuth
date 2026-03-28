@@ -26,7 +26,7 @@ import os
 
 	var processingTask: (Task<Void, Error>, String)? = nil
 	var authedClient: AtprotoClient? = nil
-	let unauthedClient: AtprotoClient
+	//	let unauthedClient: AtprotoClient
 	let resolver: AtprotoResolver
 
 	var sessionWrapper: SessionWrapper? = nil
@@ -44,8 +44,8 @@ import os
 		self.did = did
 		self.resolver = resolver
 		self.sessionStorage = .init(did: did)
-		self.unauthedClient = AtprotoClient(
-			agent: AtprotoAgentImpl(for: did, resolver: resolver))
+		//		self.unauthedClient = AtprotoClient(
+		//			agent: AtprotoUnauthenticatedAgent(for: did, resolver: resolver))
 	}
 
 	func login() {
@@ -217,7 +217,8 @@ import os
 	}
 
 	func getMessageDelegate() async throws {
-		messageDelegate = try await unauthedClient.getGermMessagingDelegate()
+		fatalError()
+		//		messageDelegate = try await unauthedClient.getGermMessagingDelegate()
 	}
 
 	func postMessagingDelegate(for showButtonTo: Lexicon.Com.GermNetwork.ShowButtonTo)

@@ -10,6 +10,7 @@ import AtprotoClient
 import AtprotoTypes
 import Foundation
 import GermConvenience
+import HTTPTypes
 
 public struct AtprotoLegacyResolver: AtprotoResolver {
 	let resourceFetcher: HTTPFetcher
@@ -32,8 +33,8 @@ public struct AtprotoLegacyResolver: AtprotoResolver {
 
 	public func resolve(did: AtprotoTypes.Atproto.DID) async throws -> Atproto.DIDDocument {
 		let url = try constructPlcQueryUrl(did: did)
-		var request = URLRequest(url: url)
-		request.addValue("application/json", forHTTPHeaderField: "Accept")
+
+		let request = HTTPRequestBody(url: url, method: .get)
 
 		return try await resourceFetcher.data(for: request)
 			.expectSuccess()

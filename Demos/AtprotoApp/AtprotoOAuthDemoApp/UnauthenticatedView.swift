@@ -162,9 +162,9 @@ struct UnauthenticatedView: View {
 				return
 			}
 
-			let client: AtprotoClient = AtprotoClient.init(
-				agent: AtprotoAgentImpl(for: did, resolver: resolver)
-			)
+			//			let client: AtprotoClient = AtprotoClient.init(
+			//				agent: AtprotoAgentImpl(for: did, resolver: resolver)
+			//			)
 
 			// PDS and handle
 			print("Loading DID document...")
@@ -178,59 +178,59 @@ struct UnauthenticatedView: View {
 
 			// Messaging delegate
 			print("Loading messaging delegate...")
-			do {
-				messagingDelegate = try await client.getGermMessagingDelegate()
-			} catch {
-				print("Error loading messaging delegate: \(error)")
-			}
-
-			// Profile
-			print("Loading profile...")
-			do {
-				profileRecord = try await client.getProfile()
-			} catch {
-				print("Error loading profile: \(error)")
-			}
+			//			do {
+			//				messagingDelegate = try await client.getGermMessagingDelegate()
+			//			} catch {
+			//				print("Error loading messaging delegate: \(error)")
+			//			}
+			//
+			//			// Profile
+			//			print("Loading profile...")
+			//			do {
+			//				profileRecord = try await client.getProfile()
+			//			} catch {
+			//				print("Error loading profile: \(error)")
+			//			}
 
 			// Avatar
 			print("Loading avatar image...")
-			if let avatarCid = profileRecord?.avatar?.ref.link {
-				do {
-					avatarBlob = try await client.getBlob(
-						parameters: .init(
-							did: .did(did),
-							cid: .init(string: avatarCid))
-					)
-				} catch {
-					print("Error loading avatar: \(error)")
-				}
-			}
+			//			if let avatarCid = profileRecord?.avatar?.ref.link {
+			//				do {
+			//					avatarBlob = try await client.getBlob(
+			//						parameters: .init(
+			//							did: .did(did),
+			//							cid: .init(string: avatarCid))
+			//					)
+			//				} catch {
+			//					print("Error loading avatar: \(error)")
+			//				}
+			//			}
 
 			// Banner
 			print("Loading banner image...")
-			if let bannerCid = profileRecord?.banner?.ref.link {
-				do {
-					bannerBlob = try await client.getBlob(
-						parameters: .init(
-							did: .did(did),
-							cid: .init(string: bannerCid))
-					)
-				} catch {
-					print("Error loading banner: \(error)")
-				}
-			}
+			//			if let bannerCid = profileRecord?.banner?.ref.link {
+			//				do {
+			//					bannerBlob = try await client.getBlob(
+			//						parameters: .init(
+			//							did: .did(did),
+			//							cid: .init(string: bannerCid))
+			//					)
+			//				} catch {
+			//					print("Error loading banner: \(error)")
+			//				}
+			//			}
 
 			// Follows
 			print("Loading follows...")
-			do {
-				let stream = try await client.getFollowsStream(did: did)
-				follows = []
-				for try await batch in stream {
-					follows += batch
-				}
-			} catch {
-				print("Error loading follows: \(error)")
-			}
+			//			do {
+			//				let stream = try await client.getFollowsStream(did: did)
+			//				follows = []
+			//				for try await batch in stream {
+			//					follows += batch
+			//				}
+			//			} catch {
+			//				print("Error loading follows: \(error)")
+			//			}
 		}
 
 		processing = newTask

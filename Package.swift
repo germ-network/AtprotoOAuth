@@ -16,19 +16,23 @@ let package = Package(
 	dependencies: [
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.0.4"
+			//			from: "0.0.4"
+			branch: "mark/http-types"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			from: "0.0.4"
+			//			from: "0.0.4"
+			branch: "mark/http-types"
 		),
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			from: "0.1.0"
+			//			from: "0.1.0"
+			branch: "mark/http-types"
 		),
 		.package(
 			url: "https://github.com/germ-network/Microcosm.git",
-			branch: "0.0.4"
+			//			branch: "0.0.4"
+			branch: "mark/http-types"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",

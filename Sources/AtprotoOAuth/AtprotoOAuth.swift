@@ -23,7 +23,7 @@ extension AuthServerRequestOptions {
 				"client_id": clientMetadata.clientId
 			],
 			authFetcher: authFetcher,
-			tokenValidator: { authServerMetadata, tokenResponse in
+			tokenValidator: { tokenResponse, authServerMetadata, previousSession in
 				guard tokenResponse.tokenType == .dpop else {
 					throw OAuthSessionError.expectedDpopToken(
 						tokenResponse.tokenType.rawValue)
@@ -65,17 +65,7 @@ extension AuthServerRequestOptions {
 					return scopes
 				}()
 
-				return .init(
-					accessToken: .init(
-						value: tokenResponse.accessToken,
-						expiresIn: tokenResponse.expiresIn
-					),
-					refreshToken: .init(
-						refreshToken: tokenResponse.refreshToken),
-					// FIXME: https://github.com/germ-network/oauth4swift/pull/3
-					scopes: returnedScopes ?? clientMetadata.scopes,
-					issuingServer: authServerMetadata.issuer
-				)
+				return true
 			},
 			dpopSigner: dpopSigner
 		)
@@ -87,14 +77,13 @@ extension AuthDPopState {
 		dataResponse: HTTPDataResponse,
 		requestUrl: URL,
 	) throws -> IndexedNonce? {
-		guard let nonce = dataResponse.response.value(forHTTPHeaderField: "DPoP-Nonce")
-		else {
+		let nonce = dataResponse.response.headerFields[try .dpopNonce.tryUnwrap]
+		guard let nonce else {
 			return nil
 		}
 
 		//henceforth should throw instead of return nil as nonce is expected
 		return try IndexedNonce(
-			responseUrl: dataResponse.response.url,
 			requestUrl: requestUrl,
 			nonce: nonce
 		)
