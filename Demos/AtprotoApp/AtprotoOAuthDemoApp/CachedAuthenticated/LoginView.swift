@@ -59,12 +59,11 @@ struct LoginView: View {
 							"username.bsky.social",
 							text: $otherHandle
 						)
-						.keyboardType(.URL)
-						.autocorrectionDisabled()
 						#if os(iOS)
+							.keyboardType(.URL)
 							.textInputAutocapitalization(.never)
-						#else
 						#endif
+						.autocorrectionDisabled()
 						Spacer()
 					}
 					Button("Make authed fetch") {
