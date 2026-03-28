@@ -7,7 +7,7 @@
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
         "branch" : "mark/http-types",
-        "revision" : "5d385d48ea45584171fcdab1d3d00c7b6338e408"
+        "revision" : "04fe0390eee8a89a3f6e6ffc2b8ea026dd08995f"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "branch" : "mark/http-types",
-        "revision" : "a219bf9e6244a46cfa5957654ca2d415b7cda1a0"
+        "revision" : "dd6254f52468658d6d37ac8730be4ea6fbf870ca",
+        "version" : "0.0.4"
       }
     },
     {
@@ -43,7 +43,7 @@
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
         "branch" : "mark/http-types",
-        "revision" : "e481c34f894accd6a619bfc92890aa949b14ab35"
+        "revision" : "b246ae80744dc8b7f4203583f25ded37ab02dcf0"
       }
     },
     {
@@ -52,7 +52,7 @@
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
         "branch" : "mark/http-types",
-        "revision" : "43ee5da803ec4ebedb7174a089c86bd73d4a1671"
+        "revision" : "be091ad2db276efcb7141b4d9cd9087a60291414"
       }
     },
     {
@@ -61,7 +61,7 @@
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
         "branch" : "mark/http-types",
-        "revision" : "3936a0f5949b76959a297920335446d565fc3a4e"
+        "revision" : "8adbdeb67d47c2515d6d4aab441b73fa48e9d781"
       }
     },
     {

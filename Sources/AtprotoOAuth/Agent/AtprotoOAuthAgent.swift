@@ -9,6 +9,7 @@ import AtprotoClient
 import AtprotoTypes
 import Foundation
 import GermConvenience
+import HTTPTypes
 import OAuth
 
 public actor AtprotoOAuthAgent {
@@ -226,12 +227,22 @@ extension AtprotoOAuthAgent: AtprotoAgent {
 			.appending(path: request.relativePath)
 			.appending(queryItems: request.queryItems)
 
-		let request = HTTPRequestBody(
-			url: url,
-			method: request.httpMethod,
-			httpBody: request.httpBody,
-			accept: request.acceptValue,
-			contentType: request.contentTypeValue
+		var headerFields = HTTPFields()
+		if let acceptValue = request.acceptValue {
+			headerFields[.accept] = acceptValue
+		}
+		if let contentTypeValue = request.contentTypeValue {
+			headerFields[.contentType] = contentTypeValue
+		}
+
+		let request = try BundledHTTPRequest(
+			request: .init(
+				method: request.httpMethod,
+				url: url,
+				headerFields: headerFields
+			),
+			body: request.httpBody
+
 		)
 
 		return try await authResponse(for: request)

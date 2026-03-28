@@ -21,8 +21,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			//			from: "0.0.4"
-			branch: "mark/http-types"
+			from: "0.0.4"
 		),
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
@@ -41,6 +40,7 @@ let package = Package(
 			url: "https://github.com/germ-network/ATResolve",
 			exact: "1.0.0-germ.2"
 		),
+		.package(url: "https://github.com/apple/swift-http-types.git", from: "1.5.1"),
 	],
 	targets: [
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -51,6 +51,7 @@ let package = Package(
 				"AtprotoClient",
 				"AtprotoTypes",
 				.product(name: "Crypto", package: "swift-crypto"),
+				.product(name: "HTTPTypes", package: "swift-http-types"),
 				"Microcosm",
 				.product(name: "OAuth", package: "oauth4swift"),
 			]
