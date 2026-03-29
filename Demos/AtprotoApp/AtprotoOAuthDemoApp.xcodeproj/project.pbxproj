@@ -7,12 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		01268A9A2F49795700058D68 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 01268A992F49795700058D68 /* Microcosm */; };
-		016FA9882F4930760061B936 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 016FA9872F4930760061B936 /* Microcosm */; };
 		2C83CAF22F72FD9E00168B01 /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2C83CAF12F72FD9E00168B01 /* AtprotoOAuth */; };
 		2C83CDD32F72FECB00168B01 /* ATResolve in Frameworks */ = {isa = PBXBuildFile; productRef = 2C83CDD22F72FECB00168B01 /* ATResolve */; };
 		9092014E2F64DBCA00BABF6A /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 9092014D2F64DBCA00BABF6A /* AtprotoOAuth */; };
-		909201512F64DBD900BABF6A /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 909201502F64DBD900BABF6A /* Microcosm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,11 +59,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				2C83CDD32F72FECB00168B01 /* ATResolve in Frameworks */,
-				01268A9A2F49795700058D68 /* Microcosm in Frameworks */,
-				909201512F64DBD900BABF6A /* Microcosm in Frameworks */,
 				2C83CAF22F72FD9E00168B01 /* AtprotoOAuth in Frameworks */,
 				9092014E2F64DBCA00BABF6A /* AtprotoOAuth in Frameworks */,
-				016FA9882F4930760061B936 /* Microcosm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,10 +129,7 @@
 			);
 			name = AtprotoOAuthDemoApp;
 			packageProductDependencies = (
-				016FA9872F4930760061B936 /* Microcosm */,
-				01268A992F49795700058D68 /* Microcosm */,
 				9092014D2F64DBCA00BABF6A /* AtprotoOAuth */,
-				909201502F64DBD900BABF6A /* Microcosm */,
 				2C83CAF12F72FD9E00168B01 /* AtprotoOAuth */,
 				2C83CDD22F72FECB00168B01 /* ATResolve */,
 			);
@@ -688,14 +679,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		01268A992F49795700058D68 /* Microcosm */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Microcosm;
-		};
-		016FA9872F4930760061B936 /* Microcosm */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Microcosm;
-		};
 		2C83CAF12F72FD9E00168B01 /* AtprotoOAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AtprotoOAuth;
@@ -708,10 +691,6 @@
 		9092014D2F64DBCA00BABF6A /* AtprotoOAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AtprotoOAuth;
-		};
-		909201502F64DBD900BABF6A /* Microcosm */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Microcosm;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

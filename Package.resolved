@@ -1,5 +1,5 @@
 {
-  "originHash" : "9ace360580e7aff680c44102eae8dc91610f8ce22fd82461dfbc6f2b703aa1bd",
+  "originHash" : "c083e0c8b93d15b43eb635d4bb15bd79cde038e3b444d7d5906237efcd80ed19",
   "pins" : [
     {
       "identity" : "atprotoclient",
@@ -44,15 +44,6 @@
       "state" : {
         "revision" : "4c2b5d229f074a9b31c2f8cec8ab2fcea4a2e082",
         "version" : "0.0.2"
-      }
-    },
-    {
-      "identity" : "microcosm",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/germ-network/Microcosm.git",
-      "state" : {
-        "branch" : "0.0.4",
-        "revision" : "4c141bc4c853de4a19b108d6fcf74c9ea464363d"
       }
     },
     {
