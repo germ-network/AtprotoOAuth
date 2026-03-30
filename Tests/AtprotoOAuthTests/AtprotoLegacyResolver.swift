@@ -33,7 +33,7 @@ public struct AtprotoLegacyResolver: AtprotoResolver {
 
 	public func resolve(did: AtprotoTypes.Atproto.DID) async throws -> Atproto.DIDDocument {
 		let url = try constructPlcQueryUrl(did: did)
-		
+
 		let request = BundledHTTPRequest(
 			request: .init(
 				url: url,
@@ -42,7 +42,7 @@ public struct AtprotoLegacyResolver: AtprotoResolver {
 				)
 			)
 		)
-		
+
 		return try await resourceFetcher.data(for: request)
 			.expectSuccess()
 			.decode()

@@ -76,14 +76,14 @@ struct ClientAPITests {
 			resolvedDid.stringRepresentation == "did:plc:lbu36k4mysk5g6gcrpw4dbwm"
 		)
 
-//		//make some unauthed requests. e.g. is this did already using germ?
-//		let _ = try await AtprotoClient(
-//			agent: AtprotoAgentImpl(
-//				for: resolvedDid,
-//				resolver: resolver
-//			)
-//		)
-//		.getProfile()
+		//		//make some unauthed requests. e.g. is this did already using germ?
+		//		let _ = try await AtprotoClient(
+		//			agent: AtprotoAgentImpl(
+		//				for: resolvedDid,
+		//				resolver: resolver
+		//			)
+		//		)
+		//		.getProfile()
 	}
 
 	@Test func clientUsage() async throws {

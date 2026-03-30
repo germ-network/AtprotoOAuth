@@ -1,13 +1,13 @@
 {
-  "originHash" : "8da172f3faca09fc90dc399f1e6c9c143a8958c0446f26ce8f6565961bbe0afb",
+  "originHash" : "0cba7458a08618996cb7bdf5e875da6559d1e9087a8c7f6afa51a46266417450",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "branch" : "mark/http-types",
-        "revision" : "04fe0390eee8a89a3f6e6ffc2b8ea026dd08995f"
+        "branch" : "fix/unauth-client-parse",
+        "revision" : "0a18d9d173fedc729b51c9907c2c7d878c19b859"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "dd6254f52468658d6d37ac8730be4ea6fbf870ca",
-        "version" : "0.0.4"
+        "branch" : "mark/typed-error-response",
+        "revision" : "c6eba3b96e81c5ed6d228123cd65a86871169c99"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "branch" : "mark/http-types",
-        "revision" : "b246ae80744dc8b7f4203583f25ded37ab02dcf0"
+        "branch" : "mark/add-any-content-type",
+        "revision" : "7b55ac1370d69eda2d312cfb1aed0ca674242f35"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
-        "branch" : "mark/http-types",
-        "revision" : "be091ad2db276efcb7141b4d9cd9087a60291414"
+        "branch" : "mark/adopt-client-changes",
+        "revision" : "e0a44277ae3ca5e63eaba3e125e90c6fca2ce66b"
       }
     },
     {
@@ -61,7 +61,7 @@
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
         "branch" : "mark/http-types",
-        "revision" : "8adbdeb67d47c2515d6d4aab441b73fa48e9d781"
+        "revision" : "daf14a56914b5b98e8c67b3406545af77e0241f7"
       }
     },
     {

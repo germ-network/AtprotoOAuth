@@ -14,7 +14,7 @@ import OAuth
 
 public actor AtprotoOAuthAgent {
 	public nonisolated let repo: Atproto.DID
-	public nonisolated let resolver: AtprotoResolver
+	public nonisolated let resolver: Atproto.Resolver
 	public let clientMetadata: OAuthClient
 	public let userAuthenticator: UserAuthenticator
 	public let authFetcher: HTTPFetcher
@@ -52,7 +52,7 @@ public actor AtprotoOAuthAgent {
 		userAuthenticator: @escaping UserAuthenticator,
 		state: State,
 		authFetcher: HTTPFetcher,
-		atprotoResolver: AtprotoResolver
+		atprotoResolver: Atproto.Resolver
 	) {
 		self.repo = did
 		self.clientMetadata = clientMetadata
@@ -173,7 +173,7 @@ extension AtprotoOAuthAgent {
 		clientMetadata: OAuthClient,
 		userAuthenticator: @escaping UserAuthenticator,
 		authFetcher: HTTPFetcher,
-		atprotoResolver: AtprotoResolver
+		atprotoResolver: Atproto.Resolver
 	) throws -> (AtprotoOAuthAgent, AsyncStream<SessionState.Mutable?>) {
 		let session = try AtprotoOAuthAgent(
 			archive: archive,
@@ -190,7 +190,7 @@ extension AtprotoOAuthAgent {
 		clientMetadata: OAuthClient,
 		userAuthenticator: @escaping UserAuthenticator,
 		authFetcher: HTTPFetcher,
-		atprotoResolver: AtprotoResolver
+		atprotoResolver: Atproto.Resolver
 	) throws {
 		try self.init(
 			did: .init(string: archive.did),
@@ -212,42 +212,18 @@ extension AtprotoOAuthAgent {
 }
 
 extension AtprotoOAuthAgent: AtprotoAgent {
-	public nonisolated var allowsAuthedCalls: Bool { true }
+	public func response(
+		_ requestComponents: XRPCRequestComponents
+	) async throws -> HTTPDataResponse {
+		let pdsUrl = try await getPDSUrl()
 
-	public func response(_ request: AtprotoAgentRequest) async throws
-		-> GermConvenience.HTTPDataResponse
-	{
-		try await authResponse(request)
-	}
-
-	public func authResponse(_ request: AtprotoAgentRequest) async throws
-		-> GermConvenience.HTTPDataResponse
-	{
-		let url = try await getPDSUrl()
-			.appending(path: request.relativePath)
-			.appending(queryItems: request.queryItems)
-
-		var headerFields = HTTPFields()
-		if let acceptValue = request.acceptValue {
-			headerFields[.accept] = acceptValue
-		}
-		if let contentTypeValue = request.contentTypeValue {
-			headerFields[.contentType] = contentTypeValue
-		}
-
-		let request = try BundledHTTPRequest(
-			request: .init(
-				method: request.httpMethod,
-				url: url,
-				headerFields: headerFields
-			),
-			body: request.httpBody
-
-		)
+		let request = try requestComponents.constructUrl(serviceUrl: pdsUrl)
 
 		return try await authResponse(for: request)
 	}
 }
+
+extension AtprotoOAuthAgent: AtprotoProxyAgent {}
 
 extension AtprotoOAuthAgent: OAuthSessionCapabilities {
 	public var session: SessionState {

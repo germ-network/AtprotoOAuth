@@ -25,9 +25,9 @@ import os
 	let did: Atproto.DID
 
 	var processingTask: (Task<Void, Error>, String)? = nil
-	var authedClient: AtprotoClient? = nil
+	var authedClient: AtprotoOAuthAgent? = nil
 	//	let unauthedClient: AtprotoClient
-	let resolver: AtprotoResolver
+	let resolver: Atproto.Resolver
 
 	var sessionWrapper: SessionWrapper? = nil
 	var sessionStorage: InMemorySessionStore
@@ -39,7 +39,7 @@ import os
 
 	var messageDelegate: Lexicon.Com.GermNetwork.Declaration? = nil
 
-	init(did: Atproto.DID, handle: String, resolver: AtprotoResolver) {
+	init(did: Atproto.DID, handle: String, resolver: Atproto.Resolver) {
 		self.handle = handle
 		self.did = did
 		self.resolver = resolver
@@ -88,7 +88,7 @@ import os
 			)
 
 			if !Task.isCancelled {
-				self.authedClient = AtprotoClient(agent: oauthAgent)
+				self.authedClient = oauthAgent
 				self.sessionWrapper = .init(
 					agent: oauthAgent,
 					saveStream: saveStream,
@@ -166,7 +166,7 @@ import os
 				atprotoResolver: resolver,
 			)
 			if !Task.isCancelled {
-				self.authedClient = AtprotoClient(agent: restored)
+				self.authedClient = restored
 				self.sessionWrapper = .init(
 					agent: restored,
 					saveStream: saveStream,
@@ -209,7 +209,7 @@ import os
 			return
 		}
 		let otherDid = try await resolver.resolve(handle: otherHandle)
-		let metadata = try await authedClient.getProfileViewerState(for: otherDid)
+		let metadata = try await authedClient.authBskyProfileViewerState(for: otherDid)
 		blocking = metadata.blocking != nil
 		blocked = metadata.blockedBy
 		following = metadata.following != nil

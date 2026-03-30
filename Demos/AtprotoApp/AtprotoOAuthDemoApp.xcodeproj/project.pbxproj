@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		01268A9A2F49795700058D68 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 01268A992F49795700058D68 /* Microcosm */; };
 		016FA9882F4930760061B936 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 016FA9872F4930760061B936 /* Microcosm */; };
+		01E7F7142F7A58E3007AF235 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 01E7F7132F7A58E3007AF235 /* Microcosm */; };
 		2C83CAF22F72FD9E00168B01 /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2C83CAF12F72FD9E00168B01 /* AtprotoOAuth */; };
 		2C83CDD32F72FECB00168B01 /* ATResolve in Frameworks */ = {isa = PBXBuildFile; productRef = 2C83CDD22F72FECB00168B01 /* ATResolve */; };
 		9092014E2F64DBCA00BABF6A /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 9092014D2F64DBCA00BABF6A /* AtprotoOAuth */; };
@@ -61,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01E7F7142F7A58E3007AF235 /* Microcosm in Frameworks */,
 				2C83CDD32F72FECB00168B01 /* ATResolve in Frameworks */,
 				01268A9A2F49795700058D68 /* Microcosm in Frameworks */,
 				909201512F64DBD900BABF6A /* Microcosm in Frameworks */,
@@ -141,6 +143,7 @@
 				909201502F64DBD900BABF6A /* Microcosm */,
 				2C83CAF12F72FD9E00168B01 /* AtprotoOAuth */,
 				2C83CDD22F72FECB00168B01 /* ATResolve */,
+				01E7F7132F7A58E3007AF235 /* Microcosm */,
 			);
 			productName = AtprotoOAuthDemoApp;
 			productReference = 01E50C442F483FF800C0D8E0 /* AtprotoOAuthDemoApp.app */;
@@ -227,6 +230,7 @@
 			packageReferences = (
 				2C83CAF02F72FD9E00168B01 /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */,
 				2C83CDD12F72FECB00168B01 /* XCRemoteSwiftPackageReference "ATResolve" */,
+				01E7F7122F7A58E3007AF235 /* XCRemoteSwiftPackageReference "Microcosm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E50C452F483FF800C0D8E0 /* Products */;
@@ -677,6 +681,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		01E7F7122F7A58E3007AF235 /* XCRemoteSwiftPackageReference "Microcosm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/germ-network/Microcosm.git";
+			requirement = {
+				branch = "mark/adopt-client-changes";
+				kind = branch;
+			};
+		};
 		2C83CDD12F72FECB00168B01 /* XCRemoteSwiftPackageReference "ATResolve" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/germ-network/ATResolve";
@@ -694,6 +706,11 @@
 		};
 		016FA9872F4930760061B936 /* Microcosm */ = {
 			isa = XCSwiftPackageProductDependency;
+			productName = Microcosm;
+		};
+		01E7F7132F7A58E3007AF235 /* Microcosm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 01E7F7122F7A58E3007AF235 /* XCRemoteSwiftPackageReference "Microcosm" */;
 			productName = Microcosm;
 		};
 		2C83CAF12F72FD9E00168B01 /* AtprotoOAuth */ = {

@@ -1,13 +1,13 @@
 {
-  "originHash" : "8dcfef6564edf83e21c81bf517201b1232579bda084f0da4cebe52a3be3b4216",
+  "originHash" : "80839951d18925c4859525d046d53021d0b667b0e3e1cc046186b79ef06c4687",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "branch" : "mark/http-types",
-        "revision" : "04fe0390eee8a89a3f6e6ffc2b8ea026dd08995f"
+        "branch" : "fix/unauth-client-parse",
+        "revision" : "a14b71d99aaaf3902048c83e9e49a3e758a54ea4"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "dd6254f52468658d6d37ac8730be4ea6fbf870ca",
-        "version" : "0.0.4"
+        "branch" : "mark/typed-error-response",
+        "revision" : "659269d492c7e27fcb006081146a5cc276a06486"
       }
     },
     {
@@ -42,17 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "branch" : "mark/http-types",
-        "revision" : "b246ae80744dc8b7f4203583f25ded37ab02dcf0"
-      }
-    },
-    {
-      "identity" : "microcosm",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/germ-network/Microcosm.git",
-      "state" : {
-        "branch" : "mark/http-types",
-        "revision" : "be091ad2db276efcb7141b4d9cd9087a60291414"
+        "branch" : "mark/add-any-content-type",
+        "revision" : "7b55ac1370d69eda2d312cfb1aed0ca674242f35"
       }
     },
     {
@@ -61,7 +52,7 @@
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
         "branch" : "mark/http-types",
-        "revision" : "8adbdeb67d47c2515d6d4aab441b73fa48e9d781"
+        "revision" : "daf14a56914b5b98e8c67b3406545af77e0241f7"
       }
     },
     {

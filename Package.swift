@@ -17,7 +17,7 @@ let package = Package(
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
 			//			from: "0.0.4"
-			branch: "mark/http-types"
+			branch: "fix/unauth-client-parse"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
@@ -28,11 +28,11 @@ let package = Package(
 			//			from: "0.1.0"
 			branch: "mark/http-types"
 		),
-		.package(
-			url: "https://github.com/germ-network/Microcosm.git",
-			//			branch: "0.0.4"
-			branch: "mark/http-types"
-		),
+		//		.package(
+		//			url: "https://github.com/germ-network/Microcosm.git",
+		//			//			branch: "0.0.4"
+		//			branch: "mark/http-types"
+		//		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
 			.upToNextMajor(from: "4.2.0")),
@@ -52,7 +52,7 @@ let package = Package(
 				"AtprotoTypes",
 				.product(name: "Crypto", package: "swift-crypto"),
 				.product(name: "HTTPTypes", package: "swift-http-types"),
-				"Microcosm",
+				//				"Microcosm",
 				.product(name: "OAuth", package: "oauth4swift"),
 			]
 		),
