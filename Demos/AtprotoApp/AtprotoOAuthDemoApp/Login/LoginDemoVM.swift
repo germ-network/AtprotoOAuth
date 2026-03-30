@@ -91,8 +91,7 @@ import SwiftUI
 					parameters: .init(actor: .did(resolvedDid)),
 					proxy: .init(
 						did: .init(string: "did:web:api.bsky.app"),
-						endpoint: "/xrpc/"
-							+ Lexicon.App.Bsky.Actor.GetProfile.nsid
+						endpoint: "bsky_appview"
 					)
 				)
 
