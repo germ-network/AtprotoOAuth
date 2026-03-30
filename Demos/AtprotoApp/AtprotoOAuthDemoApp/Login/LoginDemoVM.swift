@@ -86,13 +86,8 @@ import SwiftUI
 				appendLog("Restored OAuth agent")
 
 				//make an auth request
-				let profileMetadata = try await oauthAgent.call(
-					Lexicon.App.Bsky.Actor.GetProfile.self,
-					parameters: .init(actor: .did(resolvedDid)),
-					proxy: .init(
-						did: .init(string: "did:web:api.bsky.app"),
-						endpoint: "bsky_appview"
-					)
+				let profileMetadata = try await oauthAgent.authBskyProfileViewerState(
+					for: resolvedDid
 				)
 
 				debugPrint(profileMetadata)
