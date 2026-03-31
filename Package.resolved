@@ -7,7 +7,7 @@
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
         "branch" : "fix/unauth-client-parse",
-        "revision" : "a14b71d99aaaf3902048c83e9e49a3e758a54ea4"
+        "revision" : "43329852b35b3cdea446aa2dab5e7437c4a0fb2b"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
         "branch" : "mark/typed-error-response",
-        "revision" : "659269d492c7e27fcb006081146a5cc276a06486"
+        "revision" : "1326dc1004b61ed3f39a887e986a6d58408774f1"
       }
     },
     {
@@ -96,8 +96,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log",
       "state" : {
-        "revision" : "bbd81b6725ae874c69e9b8c8804d462356b55523",
-        "version" : "1.10.1"
+        "revision" : "8c0f217f01000dd30f60d6e536569ad4e74291f9",
+        "version" : "1.11.0"
       }
     }
   ],
