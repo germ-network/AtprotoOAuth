@@ -215,19 +215,20 @@ import os
 	}
 
 	func getMessageDelegate() async throws {
-		messageDelegate = try await lazyPDSAgent
+		messageDelegate =
+			try await lazyPDSAgent
 			.getGermMessagingDelegate()
 	}
-	
+
 	private var lazyPDSAgent: PublicPDSAgent {
 		get async throws {
 			let pdsUrl = try await Microcosm.Slingshot(
 				resourceFetcher: URLSession.shared
 			)
-				.resolveMiniDoc(identifier: did.stringRepresentation)
-				.tryUnwrap
-				.pds
-			
+			.resolveMiniDoc(identifier: did.stringRepresentation)
+			.tryUnwrap
+			.pds
+
 			return PublicPDSAgent(did: did, serviceUrl: pdsUrl)
 		}
 	}

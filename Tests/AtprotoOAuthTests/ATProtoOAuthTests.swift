@@ -11,7 +11,7 @@ struct APITests {
 	static let clientId = "https://static.germnetwork.com/client-metadata.json"
 	static let redirectUri = URL(string: "com.germnetwork.static:/oauth")!
 	static let genericScopes = ["atproto", "transition:generic"]
-//	let mockResolver = AtprotoMockResolver()
+	//	let mockResolver = AtprotoMockResolver()
 	let resolver = AtprotoLegacyResolver(resourceFetcher: URLSession.shared)
 
 	//move this to the handle resolution library
@@ -86,9 +86,9 @@ struct ClientAPITests {
 		//		.getProfile()
 	}
 
-//	@Test func clientUsage() async throws {
-//		await #expect(throws: OAuthSessionError.sessionInactive) {
-//			try await oauthClient.getProfile()
-//		}
-//	}
+	//	@Test func clientUsage() async throws {
+	//		await #expect(throws: OAuthSessionError.sessionInactive) {
+	//			try await oauthClient.getProfile()
+	//		}
+	//	}
 }

@@ -86,9 +86,10 @@ import SwiftUI
 				appendLog("Restored OAuth agent")
 
 				//make an auth request
-				let profileMetadata = try await oauthAgent.authBskyProfileViewerState(
-					for: resolvedDid
-				)
+				let profileMetadata =
+					try await oauthAgent.authBskyProfileViewerState(
+						for: resolvedDid
+					)
 
 				debugPrint(profileMetadata)
 				appendLog("Fetched profile metadata: \(profileMetadata)")
