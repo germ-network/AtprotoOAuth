@@ -7,7 +7,7 @@
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
         "branch" : "fix/unauth-client-parse",
-        "revision" : "0a18d9d173fedc729b51c9907c2c7d878c19b859"
+        "revision" : "43329852b35b3cdea446aa2dab5e7437c4a0fb2b"
       }
     },
     {

@@ -11,6 +11,7 @@ import AtprotoTypes
 import AuthenticationServices
 import Foundation
 import GermConvenience
+import Microcosm
 import OAuth
 import os
 
@@ -26,7 +27,6 @@ import os
 
 	var processingTask: (Task<Void, Error>, String)? = nil
 	var authedClient: AtprotoOAuthAgent? = nil
-	//	let unauthedClient: AtprotoClient
 	let resolver: Atproto.Resolver
 
 	var sessionWrapper: SessionWrapper? = nil
@@ -44,8 +44,6 @@ import os
 		self.did = did
 		self.resolver = resolver
 		self.sessionStorage = .init(did: did)
-		//		self.unauthedClient = AtprotoClient(
-		//			agent: AtprotoUnauthenticatedAgent(for: did, resolver: resolver))
 	}
 
 	func login() {
@@ -217,8 +215,21 @@ import os
 	}
 
 	func getMessageDelegate() async throws {
-		fatalError()
-		//		messageDelegate = try await unauthedClient.getGermMessagingDelegate()
+		messageDelegate = try await lazyPDSAgent
+			.getGermMessagingDelegate()
+	}
+	
+	private var lazyPDSAgent: PublicPDSAgent {
+		get async throws {
+			let pdsUrl = try await Microcosm.Slingshot(
+				resourceFetcher: URLSession.shared
+			)
+				.resolveMiniDoc(identifier: did.stringRepresentation)
+				.tryUnwrap
+				.pds
+			
+			return PublicPDSAgent(did: did, serviceUrl: pdsUrl)
+		}
 	}
 
 	func postMessagingDelegate(for showButtonTo: Lexicon.Com.GermNetwork.ShowButtonTo)
