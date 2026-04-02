@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "de7f307ac346fbf2b92bf17f3eb31a260cc3a81b",
-        "version" : "0.1.1"
+        "revision" : "4a58da34828610e9172fa3fec58c1976951bb53f",
+        "version" : "0.1.2"
       }
     },
     {

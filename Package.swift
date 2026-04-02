@@ -20,7 +20,11 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			from: "0.1.1"
+			from: "0.1.2"
+		),
+		.package(
+			url: "https://github.com/germ-network/Microcosm.git",
+			from: "0.1.0"
 		),
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
@@ -48,6 +52,7 @@ let package = Package(
 			name: "AtprotoOAuthTests",
 			dependencies: [
 				"AtprotoOAuth",
+				"Microcosm"
 			]
 		),
 	]

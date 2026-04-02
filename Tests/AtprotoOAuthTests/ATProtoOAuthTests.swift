@@ -1,6 +1,7 @@
 import AtprotoClient
 import Foundation
 import GermConvenience
+import Microcosm
 import OAuth
 import Testing
 
@@ -12,12 +13,14 @@ struct APITests {
 	static let redirectUri = URL(string: "com.germnetwork.static:/oauth")!
 	static let genericScopes = ["atproto", "transition:generic"]
 	//	let mockResolver = AtprotoMockResolver()
-	let resolver = AtprotoLegacyResolver(resourceFetcher: URLSession.shared)
+	let resolver = Microcosm.Slingshot(resourceFetcher: URLSession.shared)
 
 	//move this to the handle resolution library
 	@Test func testHandleResolution() async throws {
 		let parsedDid = try Atproto.DID(string: "did:plc:4yvwfwxfz5sney4twepuzdu7")
-		let resolvedDid = try await resolver.resolve(handle: "germnetwork.com")
+		let resolvedDid = try await resolver.resolveMiniDoc(
+			identifier: "germnetwork.com"
+		)?.did
 		#expect(parsedDid == resolvedDid)
 
 		await #expect(throws: (any Error).self) {
@@ -49,7 +52,7 @@ enum AuthHarness {
 struct ClientAPITests {
 	let oauthClient: AtprotoProxyAgent
 	static let genericScopes = ["atproto", "transition:generic"]
-	let resolver = AtprotoLegacyResolver(resourceFetcher: URLSession.shared)
+	let resolver = Microcosm.Slingshot(resourceFetcher: URLSession.shared)
 
 	init() async throws {
 		let (oauthAgent, _) = try AtprotoOAuthAgent.restore(
