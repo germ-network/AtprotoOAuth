@@ -9,6 +9,7 @@ import AtprotoClient
 import AtprotoTypes
 import Foundation
 
+///https://github.com/germ-network/lexicon/blob/main/lexicons/com/germnetwork/declaration.json
 extension Lexicon.Com.GermNetwork {
 	public nonisolated struct Declaration: Sendable, Codable {
 		/// The identifier of the lexicon.
