@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "branch" : "fix/unauth-client-parse",
-        "revision" : "43329852b35b3cdea446aa2dab5e7437c4a0fb2b"
+        "revision" : "c3dddbe228f8d13c19104b8f4c9c499c2da7e6cb",
+        "version" : "0.1.0"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "branch" : "mark/typed-error-response",
-        "revision" : "c6eba3b96e81c5ed6d228123cd65a86871169c99"
+        "revision" : "de7f307ac346fbf2b92bf17f3eb31a260cc3a81b",
+        "version" : "0.1.1"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "branch" : "mark/add-any-content-type",
-        "revision" : "7b55ac1370d69eda2d312cfb1aed0ca674242f35"
+        "revision" : "46b9a0778dbcdfb3a89b64bba007daf92e32b643",
+        "version" : "0.1.1"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
-        "branch" : "mark/adopt-client-changes",
-        "revision" : "e0a44277ae3ca5e63eaba3e125e90c6fca2ce66b"
+        "revision" : "00794f9c685058f466804633007266cc829b95f2",
+        "version" : "0.1.0"
       }
     },
     {
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "branch" : "mark/http-types",
-        "revision" : "daf14a56914b5b98e8c67b3406545af77e0241f7"
+        "revision" : "aeaca2e18ee8e3fe94f1f2b9f35870bac5e9a5ef",
+        "version" : "0.2.0"
       }
     },
     {
