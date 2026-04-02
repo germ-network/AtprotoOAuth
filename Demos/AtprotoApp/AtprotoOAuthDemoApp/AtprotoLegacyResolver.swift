@@ -7,28 +7,26 @@
 
 import ATResolve
 import AtprotoClient
+import AtprotoOAuth
 import AtprotoTypes
 import Foundation
 import GermConvenience
 import HTTPTypes
 
-public struct AtprotoLegacyResolver: AtprotoResolver {
+public struct AtprotoLegacyResolver: Atproto.Resolver {
 	let resourceFetcher: HTTPFetcher
 
 	public init(resourceFetcher: HTTPFetcher) {
 		self.resourceFetcher = resourceFetcher
 	}
 
-	public func resolve(handle: AtprotoTypes.AtIdentifier.Handle) async throws
-		-> AtprotoTypes.Atproto.DID
-	{
-		guard
-			let did = try? await ATResolver(provider: URLSession.shared).didForHandle(
-				handle.lowercased())
-		else {
-			throw AtprotoResolverError.noDidForHandle
-		}
-		return try .init(string: did)
+	public func resolve(
+		handle: AtIdentifier.Handle
+	) async throws -> AtprotoTypes.Atproto.DID {
+		let did = try await ATResolver(provider: URLSession.shared)
+			.didForHandle(handle.lowercased())
+
+		return try .init(string: did.tryUnwrap)
 	}
 
 	public func resolve(did: AtprotoTypes.Atproto.DID) async throws -> Atproto.DIDDocument {

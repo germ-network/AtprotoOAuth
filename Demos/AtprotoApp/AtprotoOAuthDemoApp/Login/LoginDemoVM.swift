@@ -76,8 +76,6 @@ import SwiftUI
 								"com.germnetwork.static:/oauth"
 						)!
 					),
-					userAuthenticator:
-						ASWebAuthenticationSession.userAuthenticator(),
 					authFetcher: URLSession.manualRedirect(),
 					atprotoResolver: resolver,
 				)
@@ -86,11 +84,10 @@ import SwiftUI
 				appendLog("Restored OAuth agent")
 
 				//make an auth request
-				let client = AtprotoClient(agent: oauthAgent)
-				let profileMetadata = try await client.authRequest(
-					Lexicon.App.Bsky.Actor.GetProfile.self,
-					parameters: .init(actor: .did(resolvedDid))
-				)
+				let profileMetadata =
+					try await oauthAgent.authBskyProfileViewerState(
+						for: resolvedDid
+					)
 
 				debugPrint(profileMetadata)
 				appendLog("Fetched profile metadata: \(profileMetadata)")

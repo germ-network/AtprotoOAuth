@@ -1,13 +1,13 @@
 {
-  "originHash" : "8da172f3faca09fc90dc399f1e6c9c143a8958c0446f26ce8f6565961bbe0afb",
+  "originHash" : "0cba7458a08618996cb7bdf5e875da6559d1e9087a8c7f6afa51a46266417450",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "branch" : "mark/http-types",
-        "revision" : "04fe0390eee8a89a3f6e6ffc2b8ea026dd08995f"
+        "revision" : "c3dddbe228f8d13c19104b8f4c9c499c2da7e6cb",
+        "version" : "0.1.0"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "dd6254f52468658d6d37ac8730be4ea6fbf870ca",
-        "version" : "0.0.4"
+        "revision" : "4a58da34828610e9172fa3fec58c1976951bb53f",
+        "version" : "0.1.2"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "branch" : "mark/http-types",
-        "revision" : "b246ae80744dc8b7f4203583f25ded37ab02dcf0"
+        "revision" : "46b9a0778dbcdfb3a89b64bba007daf92e32b643",
+        "version" : "0.1.1"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
-        "branch" : "mark/http-types",
-        "revision" : "be091ad2db276efcb7141b4d9cd9087a60291414"
+        "revision" : "00794f9c685058f466804633007266cc829b95f2",
+        "version" : "0.1.0"
       }
     },
     {
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "branch" : "mark/http-types",
-        "revision" : "8adbdeb67d47c2515d6d4aab441b73fa48e9d781"
+        "revision" : "aeaca2e18ee8e3fe94f1f2b9f35870bac5e9a5ef",
+        "version" : "0.2.0"
       }
     },
     {
