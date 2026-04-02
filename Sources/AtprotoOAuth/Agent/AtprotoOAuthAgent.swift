@@ -9,13 +9,13 @@ import AtprotoClient
 import AtprotoTypes
 import Foundation
 import GermConvenience
+import HTTPTypes
 import OAuth
 
 public actor AtprotoOAuthAgent {
 	public nonisolated let repo: Atproto.DID
-	public nonisolated let resolver: AtprotoResolver
+	public nonisolated let resolver: Atproto.Resolver
 	public let clientMetadata: OAuthClient
-	public let userAuthenticator: UserAuthenticator
 	public let authFetcher: HTTPFetcher
 
 	private let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
@@ -48,14 +48,12 @@ public actor AtprotoOAuthAgent {
 	private init(
 		did: Atproto.DID,
 		clientMetadata: OAuthClient,
-		userAuthenticator: @escaping UserAuthenticator,
 		state: State,
 		authFetcher: HTTPFetcher,
-		atprotoResolver: AtprotoResolver
+		atprotoResolver: Atproto.Resolver
 	) {
 		self.repo = did
 		self.clientMetadata = clientMetadata
-		self.userAuthenticator = userAuthenticator
 		self.state = state
 		self.authFetcher = authFetcher
 		self.resolver = atprotoResolver
@@ -170,14 +168,12 @@ extension AtprotoOAuthAgent {
 	public static func restore(
 		archive: Archive,
 		clientMetadata: OAuthClient,
-		userAuthenticator: @escaping UserAuthenticator,
 		authFetcher: HTTPFetcher,
-		atprotoResolver: AtprotoResolver
+		atprotoResolver: Atproto.Resolver
 	) throws -> (AtprotoOAuthAgent, AsyncStream<SessionState.Mutable?>) {
 		let session = try AtprotoOAuthAgent(
 			archive: archive,
 			clientMetadata: clientMetadata,
-			userAuthenticator: userAuthenticator,
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
 		)
@@ -187,14 +183,12 @@ extension AtprotoOAuthAgent {
 	private init(
 		archive: Archive,
 		clientMetadata: OAuthClient,
-		userAuthenticator: @escaping UserAuthenticator,
 		authFetcher: HTTPFetcher,
-		atprotoResolver: AtprotoResolver
+		atprotoResolver: Atproto.Resolver
 	) throws {
 		try self.init(
 			did: .init(string: archive.did),
 			clientMetadata: clientMetadata,
-			userAuthenticator: userAuthenticator,
 			state: .init(archive: archive.session),
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
@@ -211,29 +205,18 @@ extension AtprotoOAuthAgent {
 }
 
 extension AtprotoOAuthAgent: AtprotoAgent {
-	public nonisolated var allowsAuthedCalls: Bool { true }
+	public func response(
+		_ requestComponents: XRPCRequestComponents
+	) async throws -> HTTPDataResponse {
+		let pdsUrl = try await getPDSUrl()
 
-	public func response(_ request: AtprotoAgentRequest) async throws
-		-> GermConvenience.HTTPDataResponse
-	{
-		try await authResponse(request)
-	}
+		let request = try requestComponents.constructUrl(serviceUrl: pdsUrl)
 
-	public func authResponse(_ request: AtprotoAgentRequest) async throws
-		-> GermConvenience.HTTPDataResponse
-	{
-		var url = try await getPDSUrl().appending(path: request.relativePath)
-		url = url.appending(queryItems: request.queryItems)
-		let urlRequest = URLRequest.createRequest(
-			url: url,
-			httpMethod: request.httpMethod,
-			httpBody: request.httpBody,
-			acceptValue: request.acceptValue,
-			contentTypeValue: request.contentTypeValue
-		)
-		return try await authResponse(for: urlRequest)
+		return try await authResponse(for: request)
 	}
 }
+
+extension AtprotoOAuthAgent: AtprotoProxyAgent {}
 
 extension AtprotoOAuthAgent: OAuthSessionCapabilities {
 	public var session: SessionState {
