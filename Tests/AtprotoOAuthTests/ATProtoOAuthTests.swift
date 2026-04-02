@@ -70,11 +70,11 @@ struct ClientAPITests {
 
 	@Test func exampleUsage() async throws {
 		let inputHandle = "markmx.bsky.social"
-		let resolvedDid = try await resolver.resolve(
-			handle: inputHandle
-		)
+		let resolvedDid = try await resolver.resolveMiniDoc(
+			identifier: inputHandle
+		)?.did
 		#expect(
-			resolvedDid.stringRepresentation == "did:plc:lbu36k4mysk5g6gcrpw4dbwm"
+			resolvedDid?.stringRepresentation == "did:plc:lbu36k4mysk5g6gcrpw4dbwm"
 		)
 
 		//		//make some unauthed requests. e.g. is this did already using germ?
