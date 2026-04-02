@@ -16,7 +16,6 @@ public actor AtprotoOAuthAgent {
 	public nonisolated let repo: Atproto.DID
 	public nonisolated let resolver: Atproto.Resolver
 	public let clientMetadata: OAuthClient
-	public let userAuthenticator: UserAuthenticator
 	public let authFetcher: HTTPFetcher
 
 	private let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
@@ -49,14 +48,12 @@ public actor AtprotoOAuthAgent {
 	private init(
 		did: Atproto.DID,
 		clientMetadata: OAuthClient,
-		userAuthenticator: @escaping UserAuthenticator,
 		state: State,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: Atproto.Resolver
 	) {
 		self.repo = did
 		self.clientMetadata = clientMetadata
-		self.userAuthenticator = userAuthenticator
 		self.state = state
 		self.authFetcher = authFetcher
 		self.resolver = atprotoResolver
@@ -171,14 +168,12 @@ extension AtprotoOAuthAgent {
 	public static func restore(
 		archive: Archive,
 		clientMetadata: OAuthClient,
-		userAuthenticator: @escaping UserAuthenticator,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: Atproto.Resolver
 	) throws -> (AtprotoOAuthAgent, AsyncStream<SessionState.Mutable?>) {
 		let session = try AtprotoOAuthAgent(
 			archive: archive,
 			clientMetadata: clientMetadata,
-			userAuthenticator: userAuthenticator,
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
 		)
@@ -188,14 +183,12 @@ extension AtprotoOAuthAgent {
 	private init(
 		archive: Archive,
 		clientMetadata: OAuthClient,
-		userAuthenticator: @escaping UserAuthenticator,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: Atproto.Resolver
 	) throws {
 		try self.init(
 			did: .init(string: archive.did),
 			clientMetadata: clientMetadata,
-			userAuthenticator: userAuthenticator,
 			state: .init(archive: archive.session),
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver

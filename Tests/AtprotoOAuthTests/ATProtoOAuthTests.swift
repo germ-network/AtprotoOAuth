@@ -33,7 +33,6 @@ struct APITests {
 				scopes: Self.genericScopes,
 				redirectURI: APITests.redirectUri
 			),
-			userAuthenticator: AuthHarness.failingUserAuthenticator(_:_:),
 			authFetcher: URLSession.manualRedirect(),
 			atprotoResolver: resolver,
 		)
@@ -60,7 +59,6 @@ struct ClientAPITests {
 				scopes: Self.genericScopes,
 				redirectURI: APITests.redirectUri
 			),
-			userAuthenticator: AuthHarness.failingUserAuthenticator(_:_:),
 			authFetcher: URLSession.manualRedirect(),
 			atprotoResolver: resolver,
 		)

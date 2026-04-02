@@ -76,8 +76,6 @@ import SwiftUI
 								"com.germnetwork.static:/oauth"
 						)!
 					),
-					userAuthenticator:
-						ASWebAuthenticationSession.userAuthenticator(),
 					authFetcher: URLSession.manualRedirect(),
 					atprotoResolver: resolver,
 				)

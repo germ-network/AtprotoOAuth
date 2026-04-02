@@ -80,7 +80,6 @@ import os
 					scopes: ["atproto", "transition:generic"],
 					redirectURI: URL(string: "com.germnetwork.static:/oauth")!
 				),
-				userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
 				authFetcher: URLSession.manualRedirect(),
 				atprotoResolver: resolver,
 			)
@@ -159,7 +158,6 @@ import os
 					scopes: ["atproto", "transition:generic"],
 					redirectURI: URL(string: "com.germnetwork.static:/oauth")!
 				),
-				userAuthenticator: ASWebAuthenticationSession.userAuthenticator(),
 				authFetcher: URLSession.manualRedirect(),
 				atprotoResolver: resolver,
 			)
