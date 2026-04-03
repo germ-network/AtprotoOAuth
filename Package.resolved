@@ -1,13 +1,13 @@
 {
-  "originHash" : "9ace360580e7aff680c44102eae8dc91610f8ce22fd82461dfbc6f2b703aa1bd",
+  "originHash" : "0c675ce364ce629a17e4928cf8a32f857da7aa07146e042f9986a3e77acf5ca4",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "0bcc8e4eff2454e2042dbecdd3b18ac959b01346",
-        "version" : "0.0.4"
+        "revision" : "c3dddbe228f8d13c19104b8f4c9c499c2da7e6cb",
+        "version" : "0.1.0"
       }
     },
     {
@@ -15,17 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "dd6254f52468658d6d37ac8730be4ea6fbf870ca",
-        "version" : "0.0.4"
-      }
-    },
-    {
-      "identity" : "atresolve",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/germ-network/ATResolve",
-      "state" : {
-        "revision" : "26459d9d6e7deb27066b9d7d2931279acc107138",
-        "version" : "1.0.0-germ.2"
+        "revision" : "4a58da34828610e9172fa3fec58c1976951bb53f",
+        "version" : "0.1.2"
       }
     },
     {
@@ -42,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "revision" : "4c2b5d229f074a9b31c2f8cec8ab2fcea4a2e082",
-        "version" : "0.0.2"
+        "revision" : "46b9a0778dbcdfb3a89b64bba007daf92e32b643",
+        "version" : "0.1.1"
       }
     },
     {
@@ -51,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
-        "branch" : "0.0.4",
-        "revision" : "4c141bc4c853de4a19b108d6fcf74c9ea464363d"
+        "revision" : "00794f9c685058f466804633007266cc829b95f2",
+        "version" : "0.1.0"
       }
     },
     {
@@ -60,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "revision" : "054a3961881c7fefa7ee845581ed897b4d6c1f12",
-        "version" : "0.1.0"
+        "revision" : "aeaca2e18ee8e3fe94f1f2b9f35870bac5e9a5ef",
+        "version" : "0.2.0"
       }
     },
     {
@@ -74,15 +65,6 @@
       }
     },
     {
-      "identity" : "swift-async-dns-resolver",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-async-dns-resolver.git",
-      "state" : {
-        "revision" : "2836c57c4c7c784569331cc35a4fe18941f6c796",
-        "version" : "0.5.0"
-      }
-    },
-    {
       "identity" : "swift-crypto",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
@@ -92,12 +74,21 @@
       }
     },
     {
+      "identity" : "swift-http-types",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-http-types.git",
+      "state" : {
+        "revision" : "45eb0224913ea070ec4fba17291b9e7ecf4749ca",
+        "version" : "1.5.1"
+      }
+    },
+    {
       "identity" : "swift-log",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log",
       "state" : {
-        "revision" : "bbd81b6725ae874c69e9b8c8804d462356b55523",
-        "version" : "1.10.1"
+        "revision" : "8c0f217f01000dd30f60d6e536569ad4e74291f9",
+        "version" : "1.11.0"
       }
     }
   ],

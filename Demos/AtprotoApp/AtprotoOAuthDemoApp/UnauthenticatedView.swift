@@ -8,6 +8,8 @@
 import AtprotoClient
 import AtprotoOAuth
 import AtprotoTypes
+import GermConvenience
+import Microcosm
 import SwiftUI
 
 struct UnauthenticatedView: View {
@@ -28,7 +30,7 @@ struct UnauthenticatedView: View {
 	//	@State private var keyPackage: GermLexicon.ArchivedKeyPackageRecord?
 	@State private var messagingDelegate: Lexicon.Com.GermNetwork.Declaration?
 
-	@State private var processing: Task<Void, Never>? = nil
+	@State private var processing: Task<Void, Error>? = nil
 
 	var body: some View {
 		VStack {
@@ -161,9 +163,7 @@ struct UnauthenticatedView: View {
 				return
 			}
 
-			let client: AtprotoClient = AtprotoClient.init(
-				agent: AtprotoAgentImpl(for: did, resolver: resolver)
-			)
+			let agent = try await lazyPDSAgent(did: did)
 
 			// PDS and handle
 			print("Loading DID document...")
@@ -178,7 +178,7 @@ struct UnauthenticatedView: View {
 			// Messaging delegate
 			print("Loading messaging delegate...")
 			do {
-				messagingDelegate = try await client.getGermMessagingDelegate()
+				messagingDelegate = try await agent.getGermMessagingDelegate()
 			} catch {
 				print("Error loading messaging delegate: \(error)")
 			}
@@ -186,7 +186,7 @@ struct UnauthenticatedView: View {
 			// Profile
 			print("Loading profile...")
 			do {
-				profileRecord = try await client.getProfile()
+				profileRecord = try await agent.getProfile()
 			} catch {
 				print("Error loading profile: \(error)")
 			}
@@ -195,7 +195,7 @@ struct UnauthenticatedView: View {
 			print("Loading avatar image...")
 			if let avatarCid = profileRecord?.avatar?.ref.link {
 				do {
-					avatarBlob = try await client.getBlob(
+					avatarBlob = try await agent.getBlob(
 						parameters: .init(
 							did: .did(did),
 							cid: .init(string: avatarCid))
@@ -209,7 +209,7 @@ struct UnauthenticatedView: View {
 			print("Loading banner image...")
 			if let bannerCid = profileRecord?.banner?.ref.link {
 				do {
-					bannerBlob = try await client.getBlob(
+					bannerBlob = try await agent.getBlob(
 						parameters: .init(
 							did: .did(did),
 							cid: .init(string: bannerCid))
@@ -222,7 +222,7 @@ struct UnauthenticatedView: View {
 			// Follows
 			print("Loading follows...")
 			do {
-				let stream = try await client.getFollowsStream(did: did)
+				let stream = try await agent.getFollowsStream(did: did)
 				follows = []
 				for try await batch in stream {
 					follows += batch
@@ -234,9 +234,22 @@ struct UnauthenticatedView: View {
 
 		processing = newTask
 		Task {
-			await newTask.value
-			processing = nil
+			defer {
+				processing = nil
+			}
+			try await newTask.value
 		}
+	}
+
+	private func lazyPDSAgent(did: Atproto.DID) async throws -> PublicPDSAgent {
+		let pdsUrl = try await Microcosm.Slingshot(
+			resourceFetcher: URLSession.shared
+		)
+		.resolveMiniDoc(identifier: did.stringRepresentation)
+		.tryUnwrap
+		.pds
+
+		return PublicPDSAgent(did: did, serviceUrl: pdsUrl)
 	}
 }
 

@@ -9,6 +9,7 @@ import AtprotoClient
 import AtprotoTypes
 import Foundation
 
+///https://github.com/germ-network/lexicon/blob/main/lexicons/com/germnetwork/declaration.json
 extension Lexicon.Com.GermNetwork {
 	public nonisolated struct Declaration: Sendable, Codable {
 		/// The identifier of the lexicon.
@@ -84,7 +85,7 @@ extension Lexicon.Com.GermNetwork {
 		}
 	}
 
-	public struct MessageMeInstructions: Sendable, Codable, Equatable, Hashable {
+	public nonisolated struct MessageMeInstructions: Sendable, Codable, Equatable, Hashable {
 		/// Required
 		/// The policy of who can message the user is contained in the keyPackage and is covered by a
 		/// signature by the currentKey.

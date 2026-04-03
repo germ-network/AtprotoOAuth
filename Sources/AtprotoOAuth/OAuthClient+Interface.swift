@@ -18,7 +18,7 @@ public protocol AtprotoOAuthInterface {
 	//want to end up with a valid archive, not a live object
 	static func authorize(
 		identity: AuthIdentity,
-		resolver: AtprotoResolver,
+		resolver: Atproto.Resolver,
 		authFetcher: HTTPFetcher,
 		clientMetadata: OAuthClient,
 		userAuthenticator: UserAuthenticator
@@ -45,7 +45,7 @@ public enum AuthIdentity: Sendable {
 extension AtprotoOAuthAgent: AtprotoOAuthInterface {
 	public static func authorize(
 		identity: AuthIdentity,
-		resolver: AtprotoResolver,
+		resolver: Atproto.Resolver,
 		authFetcher: HTTPFetcher,
 		clientMetadata: OAuthClient,
 		userAuthenticator: UserAuthenticator

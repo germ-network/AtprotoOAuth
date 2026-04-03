@@ -6,29 +6,32 @@
 //
 
 import AtprotoClient
+import AtprotoOAuth
 import AtprotoTypes
 import Foundation
 
-extension AtprotoClient {
+extension PublicPDSAgent {
 	public func getGermMessagingDelegate() async throws -> Lexicon.Com.GermNetwork.Declaration?
 	{
-		return try await getRecord(
-			parameters: .init(
-				repo: .did(agent.repo),
-				rkey: "self",
-				cid: nil
-			)
+		try await getRecord(
+			rkey: "self",
+			cid: nil
 		)
 	}
+}
 
+extension AtprotoOAuthAgent {
 	public func postGermMessagingDelegate(
 		_ delegate: Lexicon.Com.GermNetwork.Declaration
 	) async throws {
-		try await putRecord(
-			parameters: .init(
-				repo: .did(agent.repo),
-				rkey: "self",
-				record: delegate
+		try await put(
+			Lexicon.Com.GermNetwork.Declaration.self,
+			input: .init(
+				schema: .init(
+					repo: .did(repo),
+					rkey: "self",
+					record: delegate
+				)
 			)
 		)
 	}
