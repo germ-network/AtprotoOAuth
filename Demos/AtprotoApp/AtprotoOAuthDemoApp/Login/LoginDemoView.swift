@@ -16,11 +16,24 @@ struct LoginDemoView: View {
 		VStack(alignment: .center, spacing: 20) {
 			switch viewModel.state {
 			case .validating(_):
-				Button("reset", action: viewModel.reset).buttonStyle(
-					.glassProminent)
+				Button("reset", action: viewModel.reset)
+					.apply { view in
+						if #available(iOS 17.0, macOS 26.0, *) {
+							view.buttonStyle(.glassProminent)
+						} else {
+							view
+						}
+					}
+
 			case .loggedIn(_):
-				Button("reset", action: viewModel.reset).buttonStyle(
-					.glassProminent)
+				Button("reset", action: viewModel.reset)
+					.apply { view in
+						if #available(iOS 17.0, macOS 26.0, *) {
+							view.buttonStyle(.glassProminent)
+						} else {
+							view
+						}
+					}
 			default:
 				EmptyView()
 			}

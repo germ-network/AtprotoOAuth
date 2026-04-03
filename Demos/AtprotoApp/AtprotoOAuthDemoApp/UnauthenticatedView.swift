@@ -38,12 +38,11 @@ struct UnauthenticatedView: View {
 				HStack {
 					Text("@").foregroundStyle(.blue)
 					TextField("username.bsky.social", text: $handleEntry)
-						.keyboardType(.URL)
-						.autocorrectionDisabled()
 						#if os(iOS)
+							.keyboardType(.URL)
 							.textInputAutocapitalization(.never)
-						#else
 						#endif
+						.autocorrectionDisabled()
 				}
 				.padding()
 				.background(RoundedRectangle(cornerRadius: 10).stroke(.gray))
@@ -199,7 +198,7 @@ struct UnauthenticatedView: View {
 					avatarBlob = try await agent.getBlob(
 						parameters: .init(
 							did: .did(did),
-							cid: .init(string: avatarCid))
+							cid: .init(string: avatarCid.string))
 					)
 				} catch {
 					print("Error loading avatar: \(error)")
@@ -213,7 +212,7 @@ struct UnauthenticatedView: View {
 					bannerBlob = try await agent.getBlob(
 						parameters: .init(
 							did: .did(did),
-							cid: .init(string: bannerCid))
+							cid: .init(string: bannerCid.string))
 					)
 				} catch {
 					print("Error loading banner: \(error)")

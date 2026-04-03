@@ -22,12 +22,11 @@ struct CollectHandleView: View {
 							viewModel.login(
 								handle: handle)
 						}
-						.keyboardType(.URL)
-						.autocorrectionDisabled()
 						#if os(iOS)
+							.keyboardType(.URL)
 							.textInputAutocapitalization(.never)
-						#else
 						#endif
+						.autocorrectionDisabled()
 				}
 				.padding()
 				.overlay(
@@ -41,7 +40,13 @@ struct CollectHandleView: View {
 			Button("Authenticate") {
 				viewModel.login(handle: handle)
 			}
-			.buttonStyle(.glassProminent)
+			.apply { view in
+				if #available(iOS 17.0, macOS 26.0, *) {
+					view.buttonStyle(.glassProminent)
+				} else {
+					view
+				}
+			}
 		}
 	}
 }

@@ -24,12 +24,11 @@ struct CachedAuthenticatedView: View {
 						TextField(
 							"username.bsky.social", text: $storedHandle
 						)
-						.keyboardType(.URL)
-						.autocorrectionDisabled()
 						#if os(iOS)
+							.keyboardType(.URL)
 							.textInputAutocapitalization(.never)
-						#else
 						#endif
+						.autocorrectionDisabled()
 						Button("Check Handle", action: check)
 					}
 					if let error {
