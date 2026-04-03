@@ -198,7 +198,7 @@ struct UnauthenticatedView: View {
 					avatarBlob = try await agent.getBlob(
 						parameters: .init(
 							did: .did(did),
-							cid: .init(string: avatarCid))
+							cid: .init(string: avatarCid.string))
 					)
 				} catch {
 					print("Error loading avatar: \(error)")
@@ -212,7 +212,7 @@ struct UnauthenticatedView: View {
 					bannerBlob = try await agent.getBlob(
 						parameters: .init(
 							did: .did(did),
-							cid: .init(string: bannerCid))
+							cid: .init(string: bannerCid.string))
 					)
 				} catch {
 					print("Error loading banner: \(error)")
