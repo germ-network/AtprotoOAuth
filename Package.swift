@@ -16,11 +16,11 @@ let package = Package(
 	dependencies: [
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.1.0"
+			branch: "anna/next"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			from: "0.1.2"
+			branch: "anna/minor-updates"
 		),
 		.package(
 			url: "https://github.com/germ-network/Microcosm.git",

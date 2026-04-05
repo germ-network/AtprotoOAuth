@@ -50,7 +50,7 @@ enum AuthHarness {
 }
 
 struct ClientAPITests {
-	let oauthClient: AtprotoProxyAgent
+	let oauthClient: XRPCProxyCallable
 	static let genericScopes = ["atproto", "transition:generic"]
 	let resolver = Microcosm.Slingshot(resourceFetcher: URLSession.shared)
 
