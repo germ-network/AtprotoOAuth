@@ -17,6 +17,7 @@ extension Lexicon.Com.GermNetwork {
 		/// - Warning: The value must not change.
 		//is "id" in the lexicon but avoid conflict with Swift id
 		public static let nsid: Atproto.NSID = "com.germnetwork.declaration"
+		public typealias Key = Lexicon.LiteralSelfRecordKey
 		//for encoding
 		private(set) var nsid: Atproto.NSID = Self.nsid
 

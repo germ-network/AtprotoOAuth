@@ -48,23 +48,23 @@ extension AuthServerRequestOptions {
 				}
 
 				// FIXME: Move to `authorizationValidator` (coming soon)
-//				let returnedScopes: [String]? = try {
-//					guard let scope = tokenResponse.scope else {
-//						return nil
-//					}
-//					let scopes = scope.components(separatedBy: " ")
-//					// FIXME: https://github.com/germ-network/oauth4swift/pull/3
-//					let requestedScopes = Set(clientMetadata.scopes)
-//
-//					for returnedScope in scopes {
-//						guard requestedScopes.contains(returnedScope)
-//						else {
-//							throw OAuthSessionError
-//								.receivedScopeNotRequested
-//						}
-//					}
-//					return scopes
-//				}()
+				//				let returnedScopes: [String]? = try {
+				//					guard let scope = tokenResponse.scope else {
+				//						return nil
+				//					}
+				//					let scopes = scope.components(separatedBy: " ")
+				//					// FIXME: https://github.com/germ-network/oauth4swift/pull/3
+				//					let requestedScopes = Set(clientMetadata.scopes)
+				//
+				//					for returnedScope in scopes {
+				//						guard requestedScopes.contains(returnedScope)
+				//						else {
+				//							throw OAuthSessionError
+				//								.receivedScopeNotRequested
+				//						}
+				//					}
+				//					return scopes
+				//				}()
 
 				return true
 			},
