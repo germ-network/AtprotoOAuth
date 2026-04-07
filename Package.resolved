@@ -1,13 +1,13 @@
 {
-  "originHash" : "b6b7ffc057bc33db3b0bcc7cc69122198a770e1b7e72242332e5a1910eb5d059",
+  "originHash" : "7e4c68d4b345853c2e7f7cb2676d6f83f65fe5d106255774f35fd59e79ea2141",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "branch" : "mark/mockPDS",
-        "revision" : "f5e26a51ebddfcec37e3c2932857671d4c541ef9"
+        "revision" : "0ff539f9a392713a58d61b388864194f9c78efa4",
+        "version" : "0.3.0"
       }
     },
     {
