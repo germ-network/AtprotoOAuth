@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.1.1
+
+### Patch Changes
+
+- [#31](https://github.com/germ-network/AtprotoOAuth/pull/31) [`bf6555e`](https://github.com/germ-network/AtprotoOAuth/commit/bf6555e47b815cfc6ccd4361621101e8a14cf956) Thanks [@anna-germ](https://github.com/anna-germ)! - Use new protocols from AtprotoClient
+
 ## 0.1.0
 
 ### Minor Changes
