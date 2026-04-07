@@ -159,7 +159,7 @@ public actor AtprotoOAuthAgent {
 extension AtprotoOAuthAgent {
 	public struct Archive: Sendable, Codable {
 		let did: String
-		let session: SessionState.Archive?
+		public let session: SessionState.Archive?
 
 		public init(did: String, session: SessionState.Archive?) {
 			self.did = did
