@@ -14,6 +14,7 @@ import OAuth
 
 public actor AtprotoOAuthAgent {
 	public nonisolated let repo: Atproto.DID
+	public nonisolated let authenticatedDID: Atproto.DID
 	public nonisolated let resolver: Atproto.Resolver
 	public let clientMetadata: OAuthClient
 	public let authFetcher: HTTPFetcher
@@ -53,6 +54,7 @@ public actor AtprotoOAuthAgent {
 		atprotoResolver: Atproto.Resolver
 	) {
 		self.repo = did
+		self.authenticatedDID = did
 		self.clientMetadata = clientMetadata
 		self.state = state
 		self.authFetcher = authFetcher
@@ -157,7 +159,7 @@ public actor AtprotoOAuthAgent {
 extension AtprotoOAuthAgent {
 	public struct Archive: Sendable, Codable {
 		let did: String
-		let session: SessionState.Archive?
+		public let session: SessionState.Archive?
 
 		public init(did: String, session: SessionState.Archive?) {
 			self.did = did
@@ -204,7 +206,11 @@ extension AtprotoOAuthAgent {
 	}
 }
 
-extension AtprotoOAuthAgent: AtprotoAgent {
+extension AtprotoOAuthAgent: AuthPDSAgent {
+	public nonisolated var did: AtprotoTypes.Atproto.DID {
+		repo
+	}
+
 	public func response(
 		_ requestComponents: XRPCRequestComponents
 	) async throws -> HTTPDataResponse {
@@ -215,8 +221,6 @@ extension AtprotoOAuthAgent: AtprotoAgent {
 		return try await authResponse(for: request)
 	}
 }
-
-extension AtprotoOAuthAgent: AtprotoProxyAgent {}
 
 extension AtprotoOAuthAgent: OAuthSessionCapabilities {
 	public var session: SessionState {

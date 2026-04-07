@@ -5,8 +5,8 @@
 //  Created by Mark @ Germ on 4/2/26.
 //
 
-import AtprotoTypes
 import AtprotoOAuth
+import AtprotoTypes
 import Foundation
 import Microcosm
 
@@ -27,11 +27,13 @@ extension Lexicon.Blue.Microcosm.Identity.ResolveMiniDoc.Output {
 			id: did.stringRepresentation,
 			alsoKnownAs: [handle],
 			verificationMethod: [],
-			service: [.init(
-				id: "#atproto_pds",
-				type: "AtprotoPersonalDataServer",
-				serviceEndpoint: pds
-			)]
+			service: [
+				.init(
+					id: "#atproto_pds",
+					type: "AtprotoPersonalDataServer",
+					serviceEndpoint: pds
+				)
+			]
 		)
 	}
 }
