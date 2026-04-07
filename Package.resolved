@@ -7,7 +7,7 @@
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
         "branch" : "mark/mockPDS",
-        "revision" : "b214d36420be584a53812fa79cf5a91d502fcc68"
+        "revision" : "f5e26a51ebddfcec37e3c2932857671d4c541ef9"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "branch" : "mark/put-record-public-properties",
-        "revision" : "2676c831876836d61c504b40c0c6e4079ed7b195"
+        "revision" : "9974f5d5a4813e0d7e57e650de57e10213cc5f38",
+        "version" : "0.2.2"
       }
     },
     {

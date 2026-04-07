@@ -207,6 +207,10 @@ extension AtprotoOAuthAgent {
 }
 
 extension AtprotoOAuthAgent: AuthPDSAgent {
+	public nonisolated var did: AtprotoTypes.Atproto.DID {
+		repo
+	}
+
 	public func response(
 		_ requestComponents: XRPCRequestComponents
 	) async throws -> HTTPDataResponse {
