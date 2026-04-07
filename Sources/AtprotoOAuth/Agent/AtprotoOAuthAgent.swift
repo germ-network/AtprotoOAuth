@@ -159,7 +159,7 @@ public actor AtprotoOAuthAgent {
 extension AtprotoOAuthAgent {
 	public struct Archive: Sendable, Codable {
 		let did: String
-		let session: SessionState.Archive?
+		public let session: SessionState.Archive?
 
 		public init(did: String, session: SessionState.Archive?) {
 			self.did = did
@@ -207,6 +207,10 @@ extension AtprotoOAuthAgent {
 }
 
 extension AtprotoOAuthAgent: AuthPDSAgent {
+	public nonisolated var did: AtprotoTypes.Atproto.DID {
+		repo
+	}
+
 	public func response(
 		_ requestComponents: XRPCRequestComponents
 	) async throws -> HTTPDataResponse {
