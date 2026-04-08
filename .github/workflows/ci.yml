@@ -57,5 +57,5 @@ jobs:
       steps:
         - uses: actions/checkout@v5
         - name: Test platform ${{ matrix.destination }}
-          run: set -o pipefail && xcodebuild -skipMacroValidation -scheme AtprotoOAuthDemoApp -destination "${{ matrix.destination }}" build | xcbeautify
+          run: set -o pipefail && xcodebuild -skipMacroValidation -scheme AtprotoOAuthDemoApp -destination "${{ matrix.destination }}" build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""| xcbeautify
           working-directory: Demos/AtprotoApp/
