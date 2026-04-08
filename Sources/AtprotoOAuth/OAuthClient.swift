@@ -11,7 +11,7 @@ import GermConvenience
 import OAuth
 
 //encapsulate the objects needed to authorize and restore a session
-public struct AtprotoOAuthClient {
+public struct AtprotoOAuthClient: Sendable {
 	public let clientMetadata: OAuthClient
 	public let resolver: Atproto.Resolver
 	public let authFetcher: HTTPFetcher
