@@ -18,8 +18,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Test MacOS
+  testPackage:
+    name: Test MacOS Package
     runs-on: macOS-26
     timeout-minutes: 30
     env:
@@ -38,3 +38,24 @@ jobs:
       - uses: actions/checkout@v5
       - name: Test platform ${{ matrix.destination }}
         run: set -o pipefail && xcodebuild -skipMacroValidation -scheme AtprotoOAuth -destination "${{ matrix.destination }}" test | xcbeautify
+  testDemoApp:
+      name: Test MacOS Demo App
+      runs-on: macOS-26
+      timeout-minutes: 30
+      env:
+        DEVELOPER_DIR: /Applications/Xcode_26.2.app
+      strategy:
+        matrix:
+          destination:
+            - "platform=macOS"
+            # - "platform=macOS,variant=Mac Catalyst"
+            - "platform=iOS Simulator,name=iPhone 17e"
+            - "platform=iOS Simulator,name=iPhone Air"
+            # - "platform=tvOS Simulator,name=Apple TV"
+            # - "platform=watchOS Simulator,name=Apple Watch Series 10 (42mm)"
+            # - "platform=visionOS Simulator,name=Apple Vision Pro"
+      steps:
+        - uses: actions/checkout@v5
+        - name: Test platform ${{ matrix.destination }}
+          run: set -o pipefail && xcodebuild -skipMacroValidation -scheme AtprotoOAuthDemoApp -destination "${{ matrix.destination }}" build | xcbeautify
+          working-directory: Demos/AtprotoApp/
