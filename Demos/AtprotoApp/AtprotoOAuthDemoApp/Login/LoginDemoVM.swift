@@ -28,7 +28,7 @@ import SwiftUI
 		let body: String
 	}
 	var logs: [LogEntry] = []
-	
+
 	let client: AtprotoOAuthClient = AtprotoOAuthClient(
 		clientMetadata: .demo,
 		resolver: AtprotoLegacyResolver(
@@ -50,11 +50,12 @@ import SwiftUI
 				let resolvedDid = try await resolver.resolve(handle: handle)
 				appendLog("Resolved DID: \(resolvedDid.stringRepresentation)")
 
-				let sessionArchive = try await client
+				let sessionArchive =
+					try await client
 					.authorize(identity: .did(resolvedDid, handle: handle))
 
 				appendLog("Authorized OAuth agent")
-				
+
 				let (oauthAgent, _) = try client.restore(
 					archive: .init(
 						did: resolvedDid.stringRepresentation,

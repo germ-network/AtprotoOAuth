@@ -16,7 +16,7 @@ public struct AtprotoOAuthClient: Sendable {
 	public let resolver: Atproto.Resolver
 	public let authFetcher: HTTPFetcher
 	public let userAuthenticator: UserAuthenticator
-	
+
 	public init(
 		clientMetadata: OAuthClient,
 		resolver: Atproto.Resolver,
@@ -51,10 +51,9 @@ extension AtprotoOAuthClient {
 			}
 		}
 
-		let authorizationServerUrl = try await Self.getAuthorizationUrl(
-			didDoc: didDoc,
-			authFetcher: authFetcher
-		)
+		let authorizationServerUrl =
+			try await didDoc
+			.getAuthorizationUrl(authFetcher: authFetcher)
 
 		return try await AuthServerRequestOptions.atproto(
 			clientMetadata: clientMetadata,
@@ -75,13 +74,26 @@ extension AtprotoOAuthClient {
 			userAuthenticator: userAuthenticator,
 		)
 	}
+}
 
-	private static func getAuthorizationUrl(
-		didDoc: Atproto.DIDDocument,
+extension AtprotoOAuthClient {
+	public func restore(
+		archive: AtprotoOAuthAgent.Archive,
+	) throws -> (AtprotoOAuthAgent, AsyncStream<SessionState.Mutable?>) {
+		try AtprotoOAuthAgent
+			.restore(
+				archive: archive,
+				clientMetadata: clientMetadata,
+				authFetcher: authFetcher,
+				atprotoResolver: resolver
+			)
+	}
+}
+
+extension Atproto.DIDDocument {
+	func getAuthorizationUrl(
 		authFetcher: HTTPFetcher
 	) async throws -> URL {
-		let pdsUrl = try didDoc.pdsUrl
-
 		let pdsMetadata =
 			try await authFetcher.resourceDiscoveryRequest(url: pdsUrl)
 
@@ -101,19 +113,5 @@ extension AtprotoOAuthClient {
 			throw OAuthClientError.missingUrlHost
 		}
 		return authorizationServerUrl
-	}
-}
-
-extension AtprotoOAuthClient {
-	public func restore(
-		archive: AtprotoOAuthAgent.Archive,
-	) throws -> (AtprotoOAuthAgent, AsyncStream<SessionState.Mutable?>) {
-		try AtprotoOAuthAgent
-			.restore(
-				archive: archive,
-				clientMetadata: clientMetadata,
-				authFetcher: authFetcher,
-				atprotoResolver: resolver
-			)
 	}
 }

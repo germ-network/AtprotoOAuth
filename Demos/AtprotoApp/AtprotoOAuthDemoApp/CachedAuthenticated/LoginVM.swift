@@ -45,7 +45,7 @@ import os
 		self.did = did
 		self.resolver = resolver
 		self.sessionStorage = .init(did: did)
-		
+
 		self.client = AtprotoOAuthClient(
 			clientMetadata: .demo,
 			resolver: resolver,
@@ -65,14 +65,15 @@ import os
 				Self.logger.error("already have an authed client")
 				return
 			}
-			
+
 			let sessionState = try await client.authorize(
 				identity: .did(did, handle: handle)
 			)
 
-			
-			let (oauthAgent, saveStream) = try client
-				.restore(archive:
+			let (oauthAgent, saveStream) =
+				try client
+				.restore(
+					archive:
 						.init(
 							did: did.stringRepresentation,
 							session: sessionState
