@@ -12,10 +12,10 @@ import OAuth
 
 //encapsulate the objects needed to authorize and restore a session
 public struct AtprotoOAuthClient {
-	let clientMetadata: OAuthClient
-	let resolver: Atproto.Resolver
-	let authFetcher: HTTPFetcher
-	let userAuthenticator: UserAuthenticator
+	public let clientMetadata: OAuthClient
+	public let resolver: Atproto.Resolver
+	public let authFetcher: HTTPFetcher
+	public let userAuthenticator: UserAuthenticator
 	
 	public init(
 		clientMetadata: OAuthClient,
