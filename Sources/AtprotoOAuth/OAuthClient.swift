@@ -16,6 +16,18 @@ public struct AtprotoOAuthClient {
 	let resolver: Atproto.Resolver
 	let authFetcher: HTTPFetcher
 	let userAuthenticator: UserAuthenticator
+	
+	public init(
+		clientMetadata: OAuthClient,
+		resolver: Atproto.Resolver,
+		authFetcher: HTTPFetcher,
+		userAuthenticator: @escaping UserAuthenticator
+	) {
+		self.clientMetadata = clientMetadata
+		self.resolver = resolver
+		self.authFetcher = authFetcher
+		self.userAuthenticator = userAuthenticator
+	}
 }
 
 extension AtprotoOAuthClient {
@@ -93,18 +105,15 @@ extension AtprotoOAuthClient {
 }
 
 extension AtprotoOAuthClient {
-	public static func restore(
+	public func restore(
 		archive: AtprotoOAuthAgent.Archive,
-		clientMetadata: OAuthClient,
-		authFetcher: HTTPFetcher,
-		atprotoResolver: Atproto.Resolver
 	) throws -> (AtprotoOAuthAgent, AsyncStream<SessionState.Mutable?>) {
 		try AtprotoOAuthAgent
 			.restore(
 				archive: archive,
 				clientMetadata: clientMetadata,
 				authFetcher: authFetcher,
-				atprotoResolver: atprotoResolver
+				atprotoResolver: resolver
 			)
 	}
 }

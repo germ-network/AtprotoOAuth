@@ -26,6 +26,7 @@ import os
 	let did: Atproto.DID
 
 	var processingTask: (Task<Void, Error>, String)? = nil
+	let client: AtprotoOAuthClient
 	var authedClient: AtprotoOAuthAgent? = nil
 	let resolver: Atproto.Resolver
 
@@ -44,6 +45,13 @@ import os
 		self.did = did
 		self.resolver = resolver
 		self.sessionStorage = .init(did: did)
+		
+		self.client = AtprotoOAuthClient(
+			clientMetadata: .demo,
+			resolver: resolver,
+			authFetcher: URLSession.manualRedirect(),
+			userAuthenticator: ASWebAuthenticationSession.userAuthenticator()
+		)
 	}
 
 	func login() {
@@ -57,32 +65,19 @@ import os
 				Self.logger.error("already have an authed client")
 				return
 			}
-
-			let sessionState = try await AtprotoOAuthAgent.authorize(
-				identity: .did(did, handle: handle),
-				resolver: resolver,
-				authFetcher: URLSession.manualRedirect(),
-				clientMetadata: .init(
-					clientId:
-						"https://static.germnetwork.com/client-metadata.json",
-					scopes: ["atproto", "transition:generic"],
-					redirectURI: URL(string: "com.germnetwork.static:/oauth")!
-				),
-				userAuthenticator: ASWebAuthenticationSession.userAuthenticator()
+			
+			let sessionState = try await client.authorize(
+				identity: .did(did, handle: handle)
 			)
 
-			let (oauthAgent, saveStream) = try AtprotoOAuthAgent.restore(
-				archive: .init(
-					did: did.stringRepresentation, session: sessionState),
-				clientMetadata: .init(
-					clientId:
-						"https://static.germnetwork.com/client-metadata.json",
-					scopes: ["atproto", "transition:generic"],
-					redirectURI: URL(string: "com.germnetwork.static:/oauth")!
-				),
-				authFetcher: URLSession.manualRedirect(),
-				atprotoResolver: resolver,
-			)
+			
+			let (oauthAgent, saveStream) = try client
+				.restore(archive:
+						.init(
+							did: did.stringRepresentation,
+							session: sessionState
+						)
+				)
 
 			if !Task.isCancelled {
 				self.authedClient = oauthAgent
@@ -147,19 +142,11 @@ import os
 			return
 		}
 		let restoreTask = Task {
-			let (restored, saveStream) = try AtprotoOAuthAgent.restore(
+			let (restored, saveStream) = try client.restore(
 				archive: .init(
 					did: sessionStorage.did.stringRepresentation,
 					session: archive,
 				),
-				clientMetadata: .init(
-					clientId:
-						"https://static.germnetwork.com/client-metadata.json",
-					scopes: ["atproto", "transition:generic"],
-					redirectURI: URL(string: "com.germnetwork.static:/oauth")!
-				),
-				authFetcher: URLSession.manualRedirect(),
-				atprotoResolver: resolver,
 			)
 			if !Task.isCancelled {
 				self.authedClient = restored
@@ -227,7 +214,7 @@ import os
 			.tryUnwrap
 			.pds
 
-			return PublicPDSAgent(repo: did, serviceUrl: pdsUrl)
+			return PublicPDSAgent(did: did, serviceUrl: pdsUrl)
 		}
 	}
 

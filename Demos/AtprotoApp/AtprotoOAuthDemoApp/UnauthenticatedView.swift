@@ -222,7 +222,7 @@ struct UnauthenticatedView: View {
 			// Follows
 			print("Loading follows...")
 			do {
-				let stream = try await agent.getFollowsStream(did: did)
+				let stream = try await agent.getFollowsStream()
 				follows = []
 				for try await batch in stream {
 					follows += batch
@@ -249,7 +249,7 @@ struct UnauthenticatedView: View {
 		.tryUnwrap
 		.pds
 
-		return PublicPDSAgent(repo: did, serviceUrl: pdsUrl)
+		return PublicPDSAgent(did: did, serviceUrl: pdsUrl)
 	}
 }
 
