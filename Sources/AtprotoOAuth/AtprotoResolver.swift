@@ -14,14 +14,3 @@ extension Atproto {
 		func resolve(did: Atproto.DID) async throws -> Atproto.DIDDocument
 	}
 }
-
-public enum AtprotoResolverError: Error, LocalizedError {
-	case missingDidDocument
-
-	public var errorDescription: String? {
-		switch self {
-		case .missingDidDocument:
-			"Missing DID document"
-		}
-	}
-}
