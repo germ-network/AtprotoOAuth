@@ -1,13 +1,13 @@
 {
-  "originHash" : "d1403cb6f244b192220091d6fb6cd4bd66cc82d0f4338d1720b09c2d1c0b2991",
+  "originHash" : "0f7ad0a68306b96af6f326db663b62cfde2f3e71806665c04804c56729a81dee",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "0ff539f9a392713a58d61b388864194f9c78efa4",
-        "version" : "0.3.0"
+        "revision" : "c5dc0ee9867b507394ebdfc5d51d4680256a14ae",
+        "version" : "0.4.0"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "9974f5d5a4813e0d7e57e650de57e10213cc5f38",
-        "version" : "0.2.2"
+        "revision" : "03fdb153b99d74507769add99f1090e8b2158d90",
+        "version" : "0.2.3"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "branch" : "anna/public-auth-endpoint",
-        "revision" : "f347a94543b474838ce6a3ff78eb2e310dec6e5f"
+        "branch" : "mark/combine-lazy-fetchers",
+        "revision" : "41634de0a5d55bdb9ea94df40119dca453c085b5"
       }
     },
     {

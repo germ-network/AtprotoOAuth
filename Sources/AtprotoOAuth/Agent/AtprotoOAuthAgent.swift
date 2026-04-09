@@ -35,7 +35,6 @@ public actor AtprotoOAuthAgent {
 	}
 	var state: State
 	public var lazyServerMetadata: LazyResource<AuthServerMetadata>
-	public var lazyIssuer: LazyResource<URL>
 	public var refreshTask: Task<SessionState.Mutable, Error>?
 
 	private let saveStream: AsyncStream<SessionState.Mutable?>
@@ -63,35 +62,14 @@ public actor AtprotoOAuthAgent {
 		self.lazyServerMetadata = .init(
 			fetchTaskGenerator: {
 				Task {
-					let pdsURL =
-						try await atprotoResolver
-						.resolve(did: did)
-						.pdsUrl
 					let authorizationServerURL =
-						try await AtprotoOAuthUtils
-						.getAuthorizationServerURL(
-							pdsServiceEndpoint: pdsURL,
+						try await atprotoResolver.resolveAuthorizationServer(
+							identity: .did(did),
 							authFetcher: authFetcher
 						)
 					return try await authFetcher.authServerDiscovery(
 						issuer: authorizationServerURL
 					)
-				}
-			})
-
-		self.lazyIssuer = .init(
-			fetchTaskGenerator: {
-				Task {
-					let pdsURL =
-						try await atprotoResolver
-						.resolve(did: did)
-						.pdsUrl
-					return
-						try await AtprotoOAuthUtils
-						.getAuthorizationServerURL(
-							pdsServiceEndpoint: pdsURL,
-							authFetcher: authFetcher
-						)
 				}
 			})
 
@@ -201,12 +179,6 @@ extension AtprotoOAuthAgent: OAuthSessionCapabilities {
 
 	public func refreshed(sessionMutable: SessionState.Mutable) throws {
 		try save(sessionMutable: sessionMutable)
-	}
-
-	public var retriableIssuer: URL {
-		get async throws {
-			try await lazyIssuer.lazyValue(isolation: self)
-		}
 	}
 
 	public var authServerRequestOptions: AuthServerRequestOptions {
