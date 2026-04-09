@@ -40,11 +40,11 @@ extension AtprotoOAuthClient {
 			did = _did
 		case .handle(let handle):
 			//resolve handle to pds, uncached
-			did = try await resolver.resolve(handle: handle)
+			did = try await resolver.resolve(handle: handle).tryUnwrap
 		}
 
 		//resolve pds and pds metadata
-		let didDoc = try await resolver.resolve(did: did)
+		let didDoc = try await resolver.resolve(did: did).tryUnwrap
 		if case .handle(let handle) = identity {
 			if handle != didDoc.handle {
 				throw OAuthClientError.handleMismatch

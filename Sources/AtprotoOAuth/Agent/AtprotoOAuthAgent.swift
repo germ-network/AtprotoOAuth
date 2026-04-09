@@ -64,6 +64,7 @@ public actor AtprotoOAuthAgent {
 			fetchTaskGenerator: {
 				Task {
 					let pdsHost = try await atprotoResolver.resolve(did: did)
+						.tryUnwrap
 						.pdsUrl
 					let pdsMetadata =
 						try await authFetcher.resourceDiscoveryRequest(
@@ -99,6 +100,7 @@ public actor AtprotoOAuthAgent {
 			fetchTaskGenerator: {
 				Task {
 					let pdsHost = try await atprotoResolver.resolve(did: did)
+						.tryUnwrap
 						.pdsUrl
 					let pdsMetadata =
 						try await authFetcher.resourceDiscoveryRequest(
@@ -275,6 +277,6 @@ extension AtprotoOAuthAgent: DPoPSigning {
 
 extension AtprotoOAuthAgent {
 	func getPDSUrl() async throws -> URL {
-		try await self.resolver.resolve(did: repo).pdsUrl
+		try await self.resolver.resolve(did: repo).tryUnwrap.pdsUrl
 	}
 }
