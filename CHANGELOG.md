@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.2.0
+
+### Minor Changes
+
+- [#34](https://github.com/germ-network/AtprotoOAuth/pull/34) [`d46bfb8`](https://github.com/germ-network/AtprotoOAuth/commit/d46bfb83eacae1acb8c48905a1ad05977c3afe04) Thanks [@germ-mark](https://github.com/germ-mark)! - Contain the .authorize and .restore parameters in a Client struct
+
 ## 0.1.1
 
 ### Patch Changes
