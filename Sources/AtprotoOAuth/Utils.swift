@@ -14,26 +14,28 @@ public struct AtprotoOAuthUtils {
 		pdsServiceEndpoint: URL,
 		authFetcher: HTTPFetcher
 	) async throws -> URL {
-		do {
-			// If the pdsServiceEndpoint represents resource server metadata for the PDS
-			return try await urlAsResourceServer(
-				pdsServiceEndpoint: pdsServiceEndpoint,
-				authFetcher: authFetcher
-			)
-		} catch {
-			// If the pdsServiceEndpoint represents authorization server metadata for the PDS
-			return try await urlAsAuthServer(
-				pdsServiceEndpoint: pdsServiceEndpoint,
-				authFetcher: authFetcher
-			)
+		// If the pdsServiceEndpoint represents resource server metadata for the PDS
+		if let authURL = try await urlAsResourceServer(
+			pdsServiceEndpoint: pdsServiceEndpoint,
+			authFetcher: authFetcher
+		) {
+			return authURL
 		}
+
+		// If the pdsServiceEndpoint represents authorization server metadata for the PDS
+		return try await urlAsAuthServer(
+			pdsServiceEndpoint: pdsServiceEndpoint,
+			authFetcher: authFetcher
+		).tryUnwrap
 	}
 
 	// Treat the PDS service endpoint as a resource server
 	private static func urlAsResourceServer(
 		pdsServiceEndpoint: URL,
 		authFetcher: HTTPFetcher
-	) async throws -> URL {
+	) async throws -> URL? {
+		// TODO: Update resourceDiscoveryRequest to return optional, and return nil
+		// if we get a nil result from resourceDiscoveryRequest instead of throwing
 		let pdsMetadata = try await authFetcher.resourceDiscoveryRequest(
 			url: pdsServiceEndpoint)
 
@@ -45,12 +47,20 @@ public struct AtprotoOAuthUtils {
 			}
 		}
 
+		// Return nil if there is not a single auth server
 		guard
-			let authorizationServerString = pdsMetadata.authorizationServers?.first,
-			let authorizationServerUrl = URL(string: authorizationServerString)
+			let authServers = pdsMetadata.authorizationServers,
+			authServers.count == 1,
+			let authorizationServerString = authServers.first
 		else {
+			return nil
+		}
+
+		// Throw an error if there is an auth server but it doesn't parse to a URL
+		guard let authorizationServerUrl = URL(string: authorizationServerString) else {
 			throw OAuthClientError.missingUrlHost
 		}
+
 		return authorizationServerUrl
 	}
 
@@ -58,7 +68,9 @@ public struct AtprotoOAuthUtils {
 	private static func urlAsAuthServer(
 		pdsServiceEndpoint: URL,
 		authFetcher: HTTPFetcher
-	) async throws -> URL {
+	) async throws -> URL? {
+		// TODO: Update authServerDiscovery to return optional, and return nil
+		// if we get a nil result from authServerDiscovery instead of throwing
 		let pdsMetadata = try await authFetcher.authServerDiscovery(
 			issuer: pdsServiceEndpoint)
 
@@ -66,7 +78,7 @@ public struct AtprotoOAuthUtils {
 		//PDS doesn't actually fill this field, so we only check it if present
 		if let supportedAlgs = pdsMetadata.dpopSigningAlgValuesSupported {
 			guard supportedAlgs.contains("ES256") else {
-				throw OAuthClientError.notImplemented
+				throw OAuthSessionError.unsupportedDpopSigningAlgorithm
 			}
 		}
 
