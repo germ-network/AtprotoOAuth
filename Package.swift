@@ -20,7 +20,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			from: "0.2.1"
+			from: "0.2.2"
 		),
 		.package(
 			url: "https://github.com/germ-network/Microcosm.git",
