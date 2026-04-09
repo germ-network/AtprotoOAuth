@@ -67,8 +67,10 @@ extension AtprotoOAuthAgent: AtprotoOAuthInterface {
 			}
 		}
 
-		let authorizationServerUrl = try await getAuthorizationUrl(
-			didDoc: didDoc, authFetcher: authFetcher)
+		let authorizationServerUrl = try await AtprotoOAuthUtils.getAuthorizationServerURL(
+			pdsServiceEndpoint: didDoc.pdsUrl,
+			authFetcher: authFetcher
+		)
 
 		return try await AuthServerRequestOptions.atproto(
 			clientMetadata: clientMetadata,
@@ -88,33 +90,6 @@ extension AtprotoOAuthAgent: AtprotoOAuthInterface {
 			),
 			userAuthenticator: { try await userAuthenticator($0, $1) },
 		)
-	}
-
-	private static func getAuthorizationUrl(
-		didDoc: Atproto.DIDDocument,
-		authFetcher: HTTPFetcher
-	) async throws -> URL {
-		let pdsUrl = try didDoc.pdsUrl
-
-		let pdsMetadata =
-			try await authFetcher.resourceDiscoveryRequest(url: pdsUrl)
-
-		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
-		//PDS doesn't actually fill this field, so we only check it if present
-		if let supportedAlgs = pdsMetadata.dpopSigningAlgValuesSupported {
-			guard supportedAlgs.contains("ES256")
-			else {
-				throw OAuthClientError.notImplemented
-			}
-		}
-
-		guard
-			let authorizationServerString = pdsMetadata.authorizationServers?.first,
-			let authorizationServerUrl = URL(string: authorizationServerString)
-		else {
-			throw OAuthClientError.missingUrlHost
-		}
-		return authorizationServerUrl
 	}
 }
 

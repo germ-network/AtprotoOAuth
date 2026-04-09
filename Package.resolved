@@ -1,5 +1,5 @@
 {
-  "originHash" : "7e4c68d4b345853c2e7f7cb2676d6f83f65fe5d106255774f35fd59e79ea2141",
+  "originHash" : "d1403cb6f244b192220091d6fb6cd4bd66cc82d0f4338d1720b09c2d1c0b2991",
   "pins" : [
     {
       "identity" : "atprotoclient",
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "revision" : "aeaca2e18ee8e3fe94f1f2b9f35870bac5e9a5ef",
-        "version" : "0.2.0"
+        "branch" : "anna/public-auth-endpoint",
+        "revision" : "f347a94543b474838ce6a3ff78eb2e310dec6e5f"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "fa308c07a6fa04a727212d793e761460e41049c3",
-        "version" : "4.3.0"
+        "revision" : "bb4ba815dab96d4edc1e0b86d7b9acf9ff973a84",
+        "version" : "4.3.1"
       }
     },
     {

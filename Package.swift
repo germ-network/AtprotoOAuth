@@ -28,7 +28,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			from: "0.2.0"
+			branch: "anna/public-auth-endpoint"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",

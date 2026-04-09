@@ -63,68 +63,35 @@ public actor AtprotoOAuthAgent {
 		self.lazyServerMetadata = .init(
 			fetchTaskGenerator: {
 				Task {
-					let pdsHost = try await atprotoResolver.resolve(did: did)
+					let pdsURL =
+						try await atprotoResolver
+						.resolve(did: did)
 						.pdsUrl
-					let pdsMetadata =
-						try await authFetcher.resourceDiscoveryRequest(
-							url: pdsHost)
-
-					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
-					//PDS doesn't actually fill this field, so we only check it if present
-					if let supportedAlgs = pdsMetadata
-						.dpopSigningAlgValuesSupported
-					{
-						guard supportedAlgs.contains("ES256")
-						else {
-							throw OAuthSessionError
-								.unsupportedDpopSigningAlgorithm
-						}
-					}
-
-					guard
-						let authorizationServerUrlString = pdsMetadata
-							.authorizationServers?.first,
-						let authorizationServerUrl = URL(
-							string: authorizationServerUrlString)
-					else {
-						throw OAuthSessionError.cantFormURL
-					}
-
+					let authorizationServerURL =
+						try await AtprotoOAuthUtils
+						.getAuthorizationServerURL(
+							pdsServiceEndpoint: pdsURL,
+							authFetcher: authFetcher
+						)
 					return try await authFetcher.authServerDiscovery(
-						issuer: authorizationServerUrl)
+						issuer: authorizationServerURL
+					)
 				}
 			})
 
 		self.lazyIssuer = .init(
 			fetchTaskGenerator: {
 				Task {
-					let pdsHost = try await atprotoResolver.resolve(did: did)
+					let pdsURL =
+						try await atprotoResolver
+						.resolve(did: did)
 						.pdsUrl
-					let pdsMetadata =
-						try await authFetcher.resourceDiscoveryRequest(
-							url: pdsHost)
-
-					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
-					//PDS doesn't actually fill this field, so we only check it if present
-					if let supportedAlgs = pdsMetadata
-						.dpopSigningAlgValuesSupported
-					{
-						guard supportedAlgs.contains("ES256")
-						else {
-							throw OAuthSessionError.unsupported
-						}
-					}
-
-					guard
-						let authorizationServerUrl = pdsMetadata
-							.authorizationServers?.first,
-						let authorizationServer = URL(
-							string: authorizationServerUrl)
-					else {
-						throw OAuthSessionError.cantFormURL
-					}
-
-					return authorizationServer
+					return
+						try await AtprotoOAuthUtils
+						.getAuthorizationServerURL(
+							pdsServiceEndpoint: pdsURL,
+							authFetcher: authFetcher
+						)
 				}
 			})
 
