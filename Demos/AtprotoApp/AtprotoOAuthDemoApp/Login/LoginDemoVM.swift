@@ -29,6 +29,14 @@ import SwiftUI
 	}
 	var logs: [LogEntry] = []
 
+	let client: AtprotoOAuthClient = AtprotoOAuthClient(
+		clientMetadata: .demo,
+		resolver: AtprotoLegacyResolver(
+			resourceFetcher: URLSession.shared),
+		authFetcher: URLSession.manualRedirect(),
+		userAuthenticator: ASWebAuthenticationSession.userAuthenticator()
+	)
+
 	private func appendLog(_ body: String) {
 		logs.append(.init(body: body))
 	}
@@ -43,41 +51,16 @@ import SwiftUI
 				appendLog("Resolved DID: \(resolvedDid.stringRepresentation)")
 
 				let sessionArchive =
-					try await AtprotoOAuthAgent
-					.authorize(
-						identity: .did(resolvedDid, handle: handle),
-						resolver: resolver,
-						authFetcher: URLSession.manualRedirect(),
-						clientMetadata: .init(
-							clientId:
-								"https://static.germnetwork.com/client-metadata.json",
-							scopes: ["atproto", "transition:generic"],
-							redirectURI: URL(
-								string:
-									"com.germnetwork.static:/oauth"
-							)!
-						),
-						userAuthenticator:
-							ASWebAuthenticationSession.userAuthenticator()
-					)
+					try await client
+					.authorize(identity: .did(resolvedDid, handle: handle))
 
 				appendLog("Authorized OAuth agent")
 
-				let (oauthAgent, _) = try AtprotoOAuthAgent.restore(
+				let (oauthAgent, _) = try client.restore(
 					archive: .init(
 						did: resolvedDid.stringRepresentation,
-						session: sessionArchive),
-					clientMetadata: .init(
-						clientId:
-							"https://static.germnetwork.com/client-metadata.json",
-						scopes: ["atproto", "transition:generic"],
-						redirectURI: URL(
-							string:
-								"com.germnetwork.static:/oauth"
-						)!
+						session: sessionArchive,
 					),
-					authFetcher: URLSession.manualRedirect(),
-					atprotoResolver: resolver,
 				)
 
 				state = .loggedIn(oauthAgent)

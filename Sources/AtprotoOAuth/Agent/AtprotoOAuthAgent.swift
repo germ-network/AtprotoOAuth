@@ -167,7 +167,7 @@ extension AtprotoOAuthAgent {
 		}
 	}
 
-	public static func restore(
+	static func restore(
 		archive: Archive,
 		clientMetadata: OAuthClient,
 		authFetcher: HTTPFetcher,
