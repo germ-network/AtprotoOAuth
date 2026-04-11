@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.2.1
+
+### Patch Changes
+
+- [#39](https://github.com/germ-network/AtprotoOAuth/pull/39) [`fda8080`](https://github.com/germ-network/AtprotoOAuth/commit/fda8080ba4cae5a61fe4af45e1189acb65b82c04) Thanks [@germ-mark](https://github.com/germ-mark)! - adopt atprotoTypes 0.3.0
+
 ## 0.2.0
 
 ### Minor Changes
