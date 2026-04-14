@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0124A2702F8EDA2B00A11879 /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 0124A26F2F8EDA2B00A11879 /* AtprotoOAuth */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		0124A2462F8ED9C300A11879 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0124A2702F8EDA2B00A11879 /* AtprotoOAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = ImportChecker;
 			packageProductDependencies = (
+				0124A26F2F8EDA2B00A11879 /* AtprotoOAuth */,
 			);
 			productName = ImportChecker;
 			productReference = 0124A2382F8ED9C200A11879 /* ImportChecker.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = 0124A22F2F8ED9C200A11879;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				0124A26E2F8EDA2B00A11879 /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0124A2392F8ED9C200A11879 /* Products */;
 			projectDirPath = "";
@@ -615,6 +624,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		0124A26E2F8EDA2B00A11879 /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../../AtprotoOAuth;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0124A26F2F8EDA2B00A11879 /* AtprotoOAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AtprotoOAuth;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0124A2302F8ED9C200A11879 /* Project object */;
 }
