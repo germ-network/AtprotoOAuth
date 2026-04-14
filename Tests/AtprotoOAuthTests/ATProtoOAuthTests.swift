@@ -23,9 +23,7 @@ struct APITests {
 		)?.did
 		#expect(parsedDid == resolvedDid)
 
-		await #expect(throws: (any Error).self) {
-			let _ = try await resolver.resolve(handle: "example.com")
-		}
+		#expect(try await resolver.verifiedResolve(handle: "example.com") == nil)
 	}
 
 	@Test func testAgentCreation() async throws {
