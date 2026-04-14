@@ -34,22 +34,20 @@ extension AtprotoOAuthClient {
 	public func authorize(
 		identity: AuthIdentity,
 	) async throws -> SessionState.Archive {
-		let did: Atproto.DID
-		switch identity {
-		case .did(let _did, _):
-			did = _did
-		case .handle(let handle):
-			//resolve handle to pds, uncached
-			did = try await resolver.resolve(handle: handle)
-		}
-
-		//resolve pds and pds metadata
-		let didDoc = try await resolver.resolve(did: did)
-		if case .handle(let handle) = identity {
-			if handle != didDoc.handle {
-				throw OAuthClientError.handleMismatch
+		let didDoc: Atproto.DIDDocument = try await {
+			switch identity {
+			case .handle(let handle):
+				return try await resolver
+					.verifiedResolve(handle: handle)
+					.tryUnwrap
+			//handle is provided for the login UI, we accept the
+			//alsoKnown at from the did doc. Client's job to compare
+			//if that matters if they differ
+			case .did(let did,  _):
+				return try await resolver.resolve(did: did)
+					.tryUnwrap
 			}
-		}
+		}()
 
 		let authorizationServerUrl =
 			try await didDoc
@@ -57,7 +55,7 @@ extension AtprotoOAuthClient {
 
 		return try await AuthServerRequestOptions.atproto(
 			clientMetadata: clientMetadata,
-			did: did,
+			did: didDoc.did,
 			authFetcher: authFetcher,
 			dpopSigner: AuthDPopState(
 				dpopKey: .generateP256(),
@@ -113,5 +111,11 @@ extension Atproto.DIDDocument {
 			throw OAuthClientError.missingUrlHost
 		}
 		return authorizationServerUrl
+	}
+	
+	var did: Atproto.DID {
+		get throws {
+			try .init(string: id)
+		}
 	}
 }
