@@ -11,7 +11,7 @@ extension Atproto {
 	public protocol Resolver: Sendable {
 		func resolve(handle: Atproto.Handle) async throws -> Atproto.DID?
 		func resolve(did: Atproto.DID) async throws -> Atproto.DIDDocument?
-		
+
 		//we supply a default implementation of this
 		func verifiedResolve(handle: Atproto.Handle) async throws -> Atproto
 			.DIDDocument?
@@ -28,7 +28,7 @@ extension Atproto.Resolver {
 		}
 		return try await resolve(did: did)
 	}
-	
+
 	public func resolve(
 		atIdentifier: AtIdentifier
 	) async throws -> Atproto.DIDDocument? {

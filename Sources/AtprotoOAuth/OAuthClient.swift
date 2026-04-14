@@ -37,13 +37,14 @@ extension AtprotoOAuthClient {
 		let didDoc: Atproto.DIDDocument = try await {
 			switch identity {
 			case .handle(let handle):
-				return try await resolver
+				return
+					try await resolver
 					.verifiedResolve(handle: handle)
 					.tryUnwrap
 			//handle is provided for the login UI, we accept the
 			//alsoKnown at from the did doc. Client's job to compare
 			//if that matters if they differ
-			case .did(let did,  _):
+			case .did(let did, _):
 				return try await resolver.resolve(did: did)
 					.tryUnwrap
 			}
@@ -112,7 +113,7 @@ extension Atproto.DIDDocument {
 		}
 		return authorizationServerUrl
 	}
-	
+
 	var did: Atproto.DID {
 		get throws {
 			try .init(string: id)
