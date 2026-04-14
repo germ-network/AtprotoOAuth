@@ -693,8 +693,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/germ-network/ATResolve";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.1.1;
+				kind = exactVersion;
+				version = "1.0.0-germ.4";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

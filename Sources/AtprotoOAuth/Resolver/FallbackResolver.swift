@@ -7,7 +7,6 @@
 
 import AtprotoTypes
 import GermConvenience
-import Microcosm
 
 public struct FallbackResolver: Atproto.Resolver {
 	let defaultResolver: Atproto.Resolver

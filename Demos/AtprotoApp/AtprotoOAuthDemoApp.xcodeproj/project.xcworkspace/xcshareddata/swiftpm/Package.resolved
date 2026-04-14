@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/ATResolve",
       "state" : {
-        "revision" : "b446aeed42ac45642bdd88f6a0af7b6c253ac23d",
-        "version" : "1.1.1"
+        "revision" : "90048493b1ecb529518de29fbcdc46be8bc2cbdf",
+        "version" : "1.0.0-germ.4"
       }
     },
     {
