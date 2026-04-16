@@ -138,6 +138,21 @@ extension InitialAuthorizer: OAuth.ClientAuthenticatable {
 	}
 }
 
+extension InitialAuthorizer: DPoPSigning {
+	func getNonce(origin: String) -> OAuth4Swift.IndexedNonce? {
+		nonceCache.object(forKey: origin as NSString)
+	}
+	
+	func cacheNonce(response: GermConvenience.HTTPDataResponse, requestUrl: URL) throws {
+		let indexedNonce = try AuthDPopState.decode(
+			dataResponse: response, requestUrl: requestUrl)
+		if let indexedNonce {
+			nonceCache.setObject(indexedNonce, forKey: indexedNonce.origin as NSString)
+		}
+	}
+}
+
+
 extension AtprotoOAuthClient {
 	public func restore(
 		archive: AtprotoOAuthAgent.Archive,
