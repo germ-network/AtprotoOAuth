@@ -36,12 +36,20 @@ extension AtprotoOAuthClient {
 		identity: AuthIdentity,
 	) async throws -> OAuth.SessionState.Archive {
 		let did: Atproto.DID
+		let additionalParameters: FormParameters?
 		switch identity {
-		case .did(let _did, _):
+		case .did(let _did, let handle):
 			did = _did
+			if let handle {
+				additionalParameters = FormParameters(["login_hint": handle])
+			} else {
+				additionalParameters = nil
+			}
 		case .handle(let handle):
 			//resolve handle to pds, uncached
+			//TODO: use verified resolve
 			did = try await resolver.resolve(handle: handle)
+			additionalParameters = FormParameters(["login_hint": handle])
 		}
 
 		//resolve pds and pds metadata
@@ -60,7 +68,8 @@ extension AtprotoOAuthClient {
 			authorizeInputs: .init(
 				clientInfo: clientInfo,
 				issuer: authorizationServerUrl,
-				inputToken: nil
+				inputToken: nil,
+				additionalParameters: additionalParameters
 			),
 			authServerRequestOptions:
 					.atproto(
