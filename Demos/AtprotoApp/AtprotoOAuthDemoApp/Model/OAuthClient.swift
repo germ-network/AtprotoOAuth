@@ -8,7 +8,7 @@
 import Foundation
 import OAuth
 
-extension OAuthClient {
+extension OAuth.ClientInfo {
 	static var demo: OAuthClient {
 		.init(
 			clientId:

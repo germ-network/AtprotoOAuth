@@ -8,22 +8,23 @@
 import AtprotoTypes
 import Foundation
 import GermConvenience
-import OAuth
+import HTTPTypes
+import OAuth4Swift
 
 //encapsulate the objects needed to authorize and restore a session
 public struct AtprotoOAuthClient: Sendable {
-	public let clientMetadata: OAuthClient
+	public let clientInfo: OAuth.ClientInfo
 	public let resolver: Atproto.Resolver
 	public let authFetcher: HTTPFetcher
 	public let userAuthenticator: UserAuthenticator
 
 	public init(
-		clientMetadata: OAuthClient,
+		clientInfo: OAuth.ClientInfo,
 		resolver: Atproto.Resolver,
 		authFetcher: HTTPFetcher,
 		userAuthenticator: @escaping UserAuthenticator
 	) {
-		self.clientMetadata = clientMetadata
+		self.clientInfo = clientInfo
 		self.resolver = resolver
 		self.authFetcher = authFetcher
 		self.userAuthenticator = userAuthenticator
@@ -33,7 +34,7 @@ public struct AtprotoOAuthClient: Sendable {
 extension AtprotoOAuthClient {
 	public func authorize(
 		identity: AuthIdentity,
-	) async throws -> SessionState.Archive {
+	) async throws -> OAuth.SessionState.Archive {
 		let did: Atproto.DID
 		switch identity {
 		case .did(let _did, _):
@@ -54,36 +55,100 @@ extension AtprotoOAuthClient {
 		let authorizationServerUrl =
 			try await didDoc
 			.getAuthorizationUrl(authFetcher: authFetcher)
-
-		return try await AuthServerRequestOptions.atproto(
-			clientMetadata: clientMetadata,
-			did: did,
-			authFetcher: authFetcher,
-			dpopSigner: AuthDPopState(
-				dpopKey: .generateP256(),
-				decoder: AuthDPopState.decode
-			)
-		).performUserAuthentication(
+		
+		let authorizer = Authorizer(
 			authorizeInputs: .init(
-				clientMetadata: clientMetadata,
-				parConfig: .init(
-					parameters: ["login_hint": identity.serverHint]
-				),
-				issuer: authorizationServerUrl
+				clientInfo: clientInfo,
+				issuer: authorizationServerUrl,
+				inputToken: nil
 			),
+			authServerRequestOptions:
+					.atproto(
+						did: did,
+						authFetcher: authFetcher
+					),
 			userAuthenticator: userAuthenticator,
+			authFetcher: authFetcher
 		)
+		
+		return try await authorizer.performUserAuthentication()
+	}
+	
+	struct Authorizer {
+		let authorizeInputs: OAuth.AuthorizeInputs
+		let authServerRequestOptions: OAuth.AuthServerRequestOptions
+		let userAuthenticator: UserAuthenticator
+		let authFetcher: any HTTPFetcher
+	}
+}
+
+extension AtprotoOAuthClient.Authorizer: OAuth.Authorizer {
+	func negotiate(authServerMetadata: AuthServerMetadata) throws -> any OAuth.ClientAuthenticatable {
+		let serverMethods = authServerMetadata.tokenEndpointAuthMethodsSupported ?? []
+		guard serverMethods.contains(OAuth.TokenEndpointMethods.none.rawValue) else {
+			throw OAuth.Errors.notImplemented
+		}
+		
+		return InitialAuthorizer(
+			clientId: authorizeInputs.clientInfo.clientId,
+			authFetcher: authFetcher,
+			dpopKey: .generateP256(),
+			decoder: AuthDPopState.decode
+		)
+	}
+}
+
+actor InitialAuthorizer {
+	nonisolated public let clientId: String
+	nonisolated public let dpopKey: DPoPKey
+	nonisolated public let authFetcher: any HTTPFetcher
+	
+	nonisolated public let tokenEndpointAuthMethod:  OAuth.TokenEndpointMethods = .none
+	let clientAuth = OAuth.ClientAuthNone()
+
+	let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
+	private let decoder: (HTTPDataResponse, URL) throws -> IndexedNonce?
+
+	public init(
+		clientId: String,
+		authFetcher: HTTPFetcher,
+		dpopKey: DPoPKey,
+		decoder: @escaping (HTTPDataResponse, URL) throws -> IndexedNonce?
+	) {
+		self.clientId = clientId
+		self.dpopKey = dpopKey
+		self.decoder = decoder
+		self.authFetcher = authFetcher
+	}
+}
+
+extension InitialAuthorizer: OAuth.ClientAuthenticatable {
+	func authenticate(inputs: OAuth.ClientAuthInputs) async throws -> (
+		FormParameters,
+		HTTPFields
+	) {
+		try await clientAuth.authenticate(
+			clientId: clientId,
+			inputs: inputs
+		)
+	}
+	
+	var clientAuthArchive: Data? {
+		nil
 	}
 }
 
 extension AtprotoOAuthClient {
 	public func restore(
 		archive: AtprotoOAuthAgent.Archive,
-	) throws -> (AtprotoOAuthAgent, AsyncStream<SessionState.Mutable?>) {
+	) throws -> (
+		AtprotoOAuthAgent,
+		AsyncStream<OAuth.SessionState.Archive.Mutable?>
+	) {
 		try AtprotoOAuthAgent
 			.restore(
 				archive: archive,
-				clientMetadata: clientMetadata,
+				clientId: clientInfo.clientId,
 				authFetcher: authFetcher,
 				atprotoResolver: resolver
 			)
