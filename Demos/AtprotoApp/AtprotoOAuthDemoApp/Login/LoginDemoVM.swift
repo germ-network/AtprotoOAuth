@@ -12,7 +12,7 @@ import AuthenticationServices
 import Foundation
 import GermConvenience
 import Microcosm
-import OAuth
+import OAuth4Swift
 import SwiftUI
 
 @Observable final class LoginDemoVM {
@@ -30,7 +30,7 @@ import SwiftUI
 	var logs: [LogEntry] = []
 
 	let client: AtprotoOAuthClient = AtprotoOAuthClient(
-		clientMetadata: .demo,
+		clientInfo: .demo,
 		resolver: AtprotoLegacyResolver(
 			resourceFetcher: URLSession.shared),
 		authFetcher: URLSession.manualRedirect(),

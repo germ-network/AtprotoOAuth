@@ -6,10 +6,10 @@
 //
 
 import Foundation
-import OAuth
+import OAuth4Swift
 
 extension OAuth.ClientInfo {
-	static var demo: OAuthClient {
+	static var demo: Self {
 		.init(
 			clientId:
 				"https://static.germnetwork.com/client-metadata.json",

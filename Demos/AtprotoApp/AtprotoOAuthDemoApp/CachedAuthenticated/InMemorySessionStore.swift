@@ -7,7 +7,7 @@
 
 import AtprotoTypes
 import Foundation
-import OAuth
+import OAuth4Swift
 import SwiftUI
 
 //A backing store for one session (e.g. if you had one model object per account)
@@ -17,9 +17,9 @@ import SwiftUI
 @Observable
 final class InMemorySessionStore {
 	let did: Atproto.DID
-	var sessionArchive: SessionState.Archive?
+	var sessionArchive: OAuth.SessionState.Archive?
 
-	init(did: Atproto.DID, sessionArchive: SessionState.Archive? = nil) {
+	init(did: Atproto.DID, sessionArchive: OAuth.SessionState.Archive? = nil) {
 		self.did = did
 		self.sessionArchive = sessionArchive
 	}

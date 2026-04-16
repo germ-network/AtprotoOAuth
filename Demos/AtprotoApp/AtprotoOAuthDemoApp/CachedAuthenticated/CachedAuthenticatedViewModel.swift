@@ -9,7 +9,7 @@ import AtprotoClient
 import AtprotoOAuth
 import AtprotoTypes
 import AuthenticationServices
-import OAuth
+import OAuth4Swift
 import SwiftUI
 import os
 
