@@ -92,9 +92,10 @@ extension AtprotoOAuthClient {
 }
 
 extension AtprotoOAuthClient.Authorizer: OAuth.Authorizer {
-	func negotiate(authServerMetadata: AuthServerMetadata) throws -> any OAuth.ClientAuthenticatable {
+	func negotiate(authServerMetadata: AuthServerMetadata) throws -> any OAuth.ClientAuth.Authenticable {
 		let serverMethods = authServerMetadata.tokenEndpointAuthMethodsSupported ?? []
-		guard serverMethods.contains(OAuth.TokenEndpointMethods.none.rawValue) else {
+		guard serverMethods
+			.contains(OAuth.ClientAuth.TokenEndpointMethods.none.rawValue) else {
 			throw OAuth.Errors.notImplemented
 		}
 		
@@ -112,8 +113,8 @@ actor InitialAuthorizer {
 	nonisolated public let dpopKey: DPoPKey
 	nonisolated public let authFetcher: any HTTPFetcher
 	
-	nonisolated public let tokenEndpointAuthMethod:  OAuth.TokenEndpointMethods = .none
-	let clientAuth = OAuth.ClientAuthNone()
+	nonisolated public let tokenEndpointAuthMethod:  OAuth.ClientAuth.TokenEndpointMethods = .none
+	let clientAuth = OAuth.ClientAuth.None()
 
 	let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
 	private let decoder: (HTTPDataResponse, URL) throws -> IndexedNonce?
@@ -131,8 +132,8 @@ actor InitialAuthorizer {
 	}
 }
 
-extension InitialAuthorizer: OAuth.ClientAuthenticatable {
-	func authenticate(inputs: OAuth.ClientAuthInputs) async throws -> (
+extension InitialAuthorizer: OAuth.ClientAuth.Authenticable {
+	func authenticate(inputs: OAuth.ClientAuth.Inputs) async throws -> (
 		FormParameters,
 		HTTPFields
 	) {

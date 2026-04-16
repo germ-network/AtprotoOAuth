@@ -48,7 +48,7 @@ public actor AtprotoOAuthAgent {
 	public let updateStream: AsyncStream<StateUpdate>
 	private let updateContinuation: AsyncStream<StateUpdate>.Continuation
 	
-	private let clientAuth = OAuth.ClientAuthNone()
+	private let clientAuth = OAuth.ClientAuth.None()
 
 	private init(
 		did: Atproto.DID,
@@ -298,12 +298,12 @@ extension AtprotoOAuthAgent {
 	}
 }
 
-extension AtprotoOAuthAgent: OAuth.ClientAuthenticatable {
-	public nonisolated var tokenEndpointAuthMethod: OAuth4Swift.OAuth.TokenEndpointMethods {
+extension AtprotoOAuthAgent: OAuth.ClientAuth.Authenticable {
+	public nonisolated var tokenEndpointAuthMethod: OAuth.ClientAuth.TokenEndpointMethods {
 		.none
 	}
 
-	public func authenticate(inputs: OAuth.ClientAuthInputs) async throws -> (
+	public func authenticate(inputs: OAuth.ClientAuth.Inputs) async throws -> (
 		FormParameters,
 		HTTPFields
 	) {
