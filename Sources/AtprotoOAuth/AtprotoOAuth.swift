@@ -8,21 +8,15 @@
 import AtprotoTypes
 import Foundation
 import GermConvenience
-import OAuth
+import OAuth4Swift
 
-extension AuthServerRequestOptions {
+extension OAuth.AuthServerRequestOptions {
 	static func atproto(
-		clientMetadata: OAuthClient,
 		did: Atproto.DID,
 		authFetcher: HTTPFetcher,
-		dpopSigner: DPoPSigning,
-	) -> AuthServerRequestOptions {
+	) -> OAuth.AuthServerRequestOptions {
 		.init(
-			// FIXME: Remove once client authentication is implemented.
-			additionalParameters: [
-				"client_id": clientMetadata.clientId
-			],
-			authFetcher: authFetcher,
+			additionalParameters: [:],
 			tokenValidator: { tokenResponse, authServerMetadata, previousSession in
 				guard tokenResponse.tokenType == .dpop else {
 					throw OAuthSessionError.expectedDpopToken(
@@ -68,7 +62,6 @@ extension AuthServerRequestOptions {
 
 				return true
 			},
-			dpopSigner: dpopSigner
 		)
 	}
 }

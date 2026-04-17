@@ -11,7 +11,7 @@ import AuthenticationServices
 import Crypto
 import Foundation
 import GermConvenience
-import OAuth
+import OAuth4Swift
 
 //Germ will always do pre-processing so we will know did,
 //but you can start from handle

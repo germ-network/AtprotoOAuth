@@ -1,5 +1,17 @@
 # @germ-network/atprotooauth
 
+## 0.2.1
+
+### Patch Changes
+
+- [#39](https://github.com/germ-network/AtprotoOAuth/pull/39) [`fda8080`](https://github.com/germ-network/AtprotoOAuth/commit/fda8080ba4cae5a61fe4af45e1189acb65b82c04) Thanks [@germ-mark](https://github.com/germ-mark)! - adopt atprotoTypes 0.3.0
+
+## 0.2.0
+
+### Minor Changes
+
+- [#34](https://github.com/germ-network/AtprotoOAuth/pull/34) [`d46bfb8`](https://github.com/germ-network/AtprotoOAuth/commit/d46bfb83eacae1acb8c48905a1ad05977c3afe04) Thanks [@germ-mark](https://github.com/germ-mark)! - Contain the .authorize and .restore parameters in a Client struct
+
 ## 0.1.1
 
 ### Patch Changes

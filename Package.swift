@@ -28,8 +28,8 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			branch: "main"
-			
+//			from: "0.2.0"
+			branch: "feat/client-auth-refine"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
@@ -46,7 +46,7 @@ let package = Package(
 				"AtprotoTypes",
 				.product(name: "Crypto", package: "swift-crypto"),
 				.product(name: "HTTPTypes", package: "swift-http-types"),
-				.product(name: "OAuth", package: "oauth4swift"),
+				.product(name: "OAuth4Swift", package: "oauth4swift"),
 			]
 		),
 		.testTarget(

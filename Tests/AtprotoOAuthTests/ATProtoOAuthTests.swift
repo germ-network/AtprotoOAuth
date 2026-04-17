@@ -2,7 +2,7 @@ import AtprotoClient
 import Foundation
 import GermConvenience
 import Microcosm
-import OAuth
+import OAuth4Swift
 import Testing
 
 @testable import AtprotoOAuth
@@ -31,11 +31,7 @@ struct APITests {
 	@Test func testAgentCreation() async throws {
 		let _ = try AtprotoOAuthAgent.restore(
 			archive: .init(did: "did:plc:4yvwfwxfz5sney4twepuzdu7", session: nil),
-			clientMetadata: .init(
-				clientId: APITests.clientId,
-				scopes: Self.genericScopes,
-				redirectURI: APITests.redirectUri
-			),
+			clientId: APITests.clientId,
 			authFetcher: URLSession.manualRedirect(),
 			atprotoResolver: resolver,
 		)
@@ -57,11 +53,7 @@ struct ClientAPITests {
 	init() async throws {
 		let (oauthAgent, _) = try AtprotoOAuthAgent.restore(
 			archive: .init(did: "did:plc:4yvwfwxfz5sney4twepuzdu7", session: nil),
-			clientMetadata: .init(
-				clientId: APITests.clientId,
-				scopes: Self.genericScopes,
-				redirectURI: APITests.redirectUri
-			),
+			clientId: APITests.clientId,
 			authFetcher: URLSession.manualRedirect(),
 			atprotoResolver: resolver,
 		)
