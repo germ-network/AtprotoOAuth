@@ -1,5 +1,5 @@
 {
-  "originHash" : "782a4819d016bcb20f8e415b4abeae4b376e518ca11c569c85d0ce160d76cbe6",
+  "originHash" : "2825cfd80594a774187a46ef6ca431630a48fc177b0134f1d701fa007254f149",
   "pins" : [
     {
       "identity" : "atprotoclient",
@@ -34,7 +34,7 @@
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
         "branch" : "feat/form-parameters-multipart-boundary",
-        "revision" : "4ad6042542a10334c541833795787a7ce57fed8a"
+        "revision" : "a0a6bee8ed64e2e436615459e90197511ec7e543"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
-        "revision" : "89b1698a4c7d0f1a85c678a2744cd9d276802498",
-        "version" : "0.2.0"
+        "revision" : "4785539d77004118b8068285d2d9ae6f14261bfa",
+        "version" : "0.3.0"
       }
     },
     {
@@ -52,7 +52,7 @@
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
         "branch" : "feat/client-auth-refine",
-        "revision" : "eeeed616dd25f0356735d243e4d88c4aa20be70d"
+        "revision" : "eddcb5b590bbfdedf69b2559d9494aafe7ad44c9"
       }
     },
     {
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-asn1.git",
       "state" : {
-        "revision" : "9f542610331815e29cc3821d3b6f488db8715517",
-        "version" : "1.6.0"
+        "revision" : "eb50cbd14606a9161cbc5d452f18797c90ef0bab",
+        "version" : "1.7.0"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "bb4ba815dab96d4edc1e0b86d7b9acf9ff973a84",
-        "version" : "4.3.1"
+        "revision" : "476538ccb827f2dd18efc5de754cc87d77127a47",
+        "version" : "4.4.0"
       }
     },
     {
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log",
       "state" : {
-        "revision" : "8c0f217f01000dd30f60d6e536569ad4e74291f9",
-        "version" : "1.11.0"
+        "revision" : "5073617dac96330a486245e4c0179cb0a6fd2256",
+        "version" : "1.12.0"
       }
     }
   ],

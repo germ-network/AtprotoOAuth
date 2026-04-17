@@ -10,7 +10,13 @@ import AtprotoTypes
 import Foundation
 import Microcosm
 
+//for testing, when adopted will be better to wrap in a struct to hide
+//the microcosm API's and expose Atproto.Resolver instead
 extension Microcosm.Slingshot: Atproto.Resolver {
+	public func resolve(handle: Atproto.Handle) async throws -> AtprotoTypes.Atproto.DID {
+		try await resolveHandle(handle).tryUnwrap
+	}
+
 	public func resolve(
 		did: Atproto.DID
 	) async throws -> Atproto.DIDDocument {

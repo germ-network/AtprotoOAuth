@@ -51,7 +51,7 @@ extension AtprotoOAuthClient {
 			did = try await resolver.resolve(handle: handle)
 			additionalParameters = FormParameters(["login_hint": handle])
 		}
-
+		
 		//resolve pds and pds metadata
 		let didDoc = try await resolver.resolve(did: did)
 		if case .handle(let handle) = identity {
@@ -60,17 +60,31 @@ extension AtprotoOAuthClient {
 			}
 		}
 
-		let authorizationServerUrl =
-			try await didDoc
-			.getAuthorizationUrl(authFetcher: authFetcher)
+		let (authServerMetadata, authorizationServerUrl) =
+		try await resolver
+			.resolveAuthorizationServer(
+				identity: .did(did),
+				authFetcher: authFetcher
+			)
+		
+		let clientAuthenticator = InitialAuthorizer(
+			clientId: clientInfo.clientId,
+			authFetcher: authFetcher,
+			dpopKey: .generateP256(),
+			decoder: AuthDPopState.decode
+		)
 		
 		let authorizer = Authorizer(
-			authorizeInputs: .init(
-				clientInfo: clientInfo,
-				issuer: authorizationServerUrl,
-				inputToken: nil,
-				additionalParameters: additionalParameters
-			),
+			authorizeInputs:
+					.init(
+						clientInfo: clientInfo,
+						authServerMetadata: authServerMetadata,
+						authEndpoint: authorizationServerUrl,
+						inputToken: nil,
+						additionalParameters: additionalParameters,
+						clientAuthenticator: clientAuthenticator
+					),
+					
 			authServerRequestOptions:
 					.atproto(
 						did: did,
@@ -177,31 +191,5 @@ extension AtprotoOAuthClient {
 				authFetcher: authFetcher,
 				atprotoResolver: resolver
 			)
-	}
-}
-
-extension Atproto.DIDDocument {
-	func getAuthorizationUrl(
-		authFetcher: HTTPFetcher
-	) async throws -> URL {
-		let pdsMetadata =
-			try await authFetcher.resourceDiscoveryRequest(url: pdsUrl)
-
-		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
-		//PDS doesn't actually fill this field, so we only check it if present
-		if let supportedAlgs = pdsMetadata.dpopSigningAlgValuesSupported {
-			guard supportedAlgs.contains("ES256")
-			else {
-				throw OAuthClientError.notImplemented
-			}
-		}
-
-		guard
-			let authorizationServerString = pdsMetadata.authorizationServers?.first,
-			let authorizationServerUrl = URL(string: authorizationServerString)
-		else {
-			throw OAuthClientError.missingUrlHost
-		}
-		return authorizationServerUrl
 	}
 }

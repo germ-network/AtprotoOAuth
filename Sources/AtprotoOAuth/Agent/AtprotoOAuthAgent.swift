@@ -37,7 +37,6 @@ public actor AtprotoOAuthAgent {
 	//concurrency workaround to store the key held in SessionState
 	private let _dpopKey: DPoPKey?
 	public var lazyServerMetadata: LazyResource<AuthServerMetadata>
-	public var lazyIssuer: LazyResource<URL>
 	public var refreshTask: Task<OAuth.SessionState.TokenState, Error>?
 
 	private let saveStream: AsyncStream<OAuth.SessionState.Archive.Mutable?>
@@ -74,68 +73,14 @@ public actor AtprotoOAuthAgent {
 		self.lazyServerMetadata = .init(
 			fetchTaskGenerator: {
 				Task {
-					let pdsHost = try await atprotoResolver.resolve(did: did)
-						.pdsUrl
-					let pdsMetadata =
-						try await authFetcher.resourceDiscoveryRequest(
-							url: pdsHost)
-
-					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
-					//PDS doesn't actually fill this field, so we only check it if present
-					if let supportedAlgs = pdsMetadata
-						.dpopSigningAlgValuesSupported
-					{
-						guard supportedAlgs.contains("ES256")
-						else {
-							throw OAuthSessionError
-								.unsupportedDpopSigningAlgorithm
-						}
-					}
-
-					guard
-						let authorizationServerUrlString = pdsMetadata
-							.authorizationServers?.first,
-						let authorizationServerUrl = URL(
-							string: authorizationServerUrlString)
-					else {
-						throw OAuthSessionError.cantFormURL
-					}
-
+					let authorizationServerURL =
+						try await atprotoResolver.resolveAuthorizationServer(
+							identity: .did(did),
+							authFetcher: authFetcher
+						).1
 					return try await authFetcher.authServerDiscovery(
-						issuer: authorizationServerUrl)
-				}
-			})
-
-		self.lazyIssuer = .init(
-			fetchTaskGenerator: {
-				Task {
-					let pdsHost = try await atprotoResolver.resolve(did: did)
-						.pdsUrl
-					let pdsMetadata =
-						try await authFetcher.resourceDiscoveryRequest(
-							url: pdsHost)
-
-					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
-					//PDS doesn't actually fill this field, so we only check it if present
-					if let supportedAlgs = pdsMetadata
-						.dpopSigningAlgValuesSupported
-					{
-						guard supportedAlgs.contains("ES256")
-						else {
-							throw OAuthSessionError.unsupported
-						}
-					}
-
-					guard
-						let authorizationServerUrl = pdsMetadata
-							.authorizationServers?.first,
-						let authorizationServer = URL(
-							string: authorizationServerUrl)
-					else {
-						throw OAuthSessionError.cantFormURL
-					}
-
-					return authorizationServer
+						endpoint: authorizationServerURL
+					).tryUnwrap
 				}
 			})
 
@@ -256,11 +201,9 @@ extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
 			return sessionState
 		}
 	}
-
-	public var retriableIssuer: URL {
-		get async throws {
-			try await lazyIssuer.lazyValue(isolation: self)
-		}
+	
+	public func refreshed(tokenState: OAuth.SessionState.TokenState, sessionMutable: OAuth.SessionState.Archive.Mutable?) throws {
+		try save(tokenState: tokenState)
 	}
 
 	public var authServerRequestOptions: OAuth.AuthServerRequestOptions {
