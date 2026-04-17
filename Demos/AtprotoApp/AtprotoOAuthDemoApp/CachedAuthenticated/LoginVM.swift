@@ -192,7 +192,7 @@ import os
 		guard let authedClient else {
 			return
 		}
-		let otherDid = try await resolver.resolve(handle: otherHandle)
+		let otherDid = try await resolver.resolve(handle: otherHandle).tryUnwrap
 		let metadata = try await authedClient.authBskyProfileViewerState(for: otherDid)
 		blocking = metadata.blocking != nil
 		blocked = metadata.blockedBy
