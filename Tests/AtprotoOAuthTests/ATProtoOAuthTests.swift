@@ -20,15 +20,16 @@ struct APITests {
 	//move this to the handle resolution library
 	@Test func testHandleResolution() async throws {
 		let parsedDid = try Atproto.DID(string: "did:plc:4yvwfwxfz5sney4twepuzdu7")
-		let (resolvedDid, _) = try await resolver
+		let (resolvedDid, _) =
+			try await resolver
 			.verifiedResolve(handle: "germnetwork.com")
 			.tryUnwrap
 		#expect(parsedDid == resolvedDid)
 
 		//don't yet have correct resoultion to nil
-//		#expect(try await resolver.verifiedResolve(handle: "null.germnetwork.com") == nil)
+		//		#expect(try await resolver.verifiedResolve(handle: "null.germnetwork.com") == nil)
 		//https://github.com/germ-network/Microcosm/issues/11
-		
+
 		await #expect(throws: (any Error).self) {
 			try await resolver.verifiedResolve(handle: "example.com") == nil
 		}
@@ -70,7 +71,8 @@ struct ClientAPITests {
 
 	@Test func exampleUsage() async throws {
 		let inputHandle = "markmx.bsky.social"
-		let (resolvedDid, _) = try await resolver
+		let (resolvedDid, _) =
+			try await resolver
 			.verifiedResolve(handle: inputHandle)
 			.tryUnwrap
 

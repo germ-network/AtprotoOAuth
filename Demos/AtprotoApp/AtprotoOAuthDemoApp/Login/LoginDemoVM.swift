@@ -29,15 +29,9 @@ import SwiftUI
 	}
 	var logs: [LogEntry] = []
 
-	let client: AtprotoOAuthClient = AtprotoOAuthClient(
-<<<<<<< HEAD
+	let client = AtprotoOAuthClient(
 		clientInfo: .demo,
-		resolver: AtprotoLegacyResolver(
-=======
-		clientMetadata: .demo,
-		resolver: ATResolveResolver(
->>>>>>> main
-			resourceFetcher: URLSession.shared),
+		resolver: ATResolveResolver(resourceFetcher: URLSession.shared),
 		authFetcher: URLSession.manualRedirect(),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator()
 	)

@@ -34,7 +34,7 @@ public struct AtprotoOAuthClient: Sendable {
 extension AtprotoOAuthClient {
 	public func authorize(
 		identity: AuthIdentity,
-//<<<<<<< HEAD
+		//<<<<<<< HEAD
 	) async throws -> OAuth.SessionState.Archive {
 		let did: Atproto.DID
 		let additionalParameters: FormParameters?
@@ -46,55 +46,54 @@ extension AtprotoOAuthClient {
 			} else {
 				additionalParameters = nil
 			}
-		
+
 		case .handle(let handle):
 			//resolve handle to pds, uncached
 
-			(did, _) = try await resolver
+			(did, _) =
+				try await resolver
 				.verifiedResolve(handle: handle)
 				.tryUnwrap
 			additionalParameters = FormParameters(["login_hint": handle])
 		}
-		
 
 		let (authServerMetadata, authorizationServerUrl) =
-		try await resolver
+			try await resolver
 			.resolveAuthorizationServer(
 				identity: .did(did),
 				authFetcher: authFetcher
 			)
 
-		
 		let clientAuthenticator = InitialAuthorizer(
 			clientId: clientInfo.clientId,
 			authFetcher: authFetcher,
 			dpopKey: .generateP256(),
 			decoder: AuthDPopState.decode
 		)
-		
+
 		let authorizer = Authorizer(
 			authorizeInputs:
-					.init(
-						clientInfo: clientInfo,
-						authServerMetadata: authServerMetadata,
-						authEndpoint: authorizationServerUrl,
-						inputToken: nil,
-						additionalParameters: additionalParameters,
-						clientAuthenticator: clientAuthenticator
-					),
-					
+				.init(
+					clientInfo: clientInfo,
+					authServerMetadata: authServerMetadata,
+					authEndpoint: authorizationServerUrl,
+					inputToken: nil,
+					additionalParameters: additionalParameters,
+					clientAuthenticator: clientAuthenticator
+				),
+
 			authServerRequestOptions:
-					.atproto(
-						did: did,
-						authFetcher: authFetcher
-					),
+				.atproto(
+					did: did,
+					authFetcher: authFetcher
+				),
 			userAuthenticator: userAuthenticator,
 			authFetcher: authFetcher
 		)
-		
+
 		return try await authorizer.performUserAuthentication()
 	}
-	
+
 	struct Authorizer {
 		let authorizeInputs: OAuth.AuthorizeInputs
 		let authServerRequestOptions: OAuth.AuthServerRequestOptions
@@ -104,13 +103,17 @@ extension AtprotoOAuthClient {
 }
 
 extension AtprotoOAuthClient.Authorizer: OAuth.Authorizer {
-	func negotiate(authServerMetadata: AuthServerMetadata) throws -> any OAuth.ClientAuth.Authenticable {
+	func negotiate(authServerMetadata: AuthServerMetadata) throws -> any OAuth.ClientAuth
+		.Authenticable
+	{
 		let serverMethods = authServerMetadata.tokenEndpointAuthMethodsSupported ?? []
-		guard serverMethods
-			.contains(OAuth.ClientAuth.TokenEndpointMethods.none.rawValue) else {
+		guard
+			serverMethods
+				.contains(OAuth.ClientAuth.TokenEndpointMethods.none.rawValue)
+		else {
 			throw OAuth.Errors.notImplemented
 		}
-		
+
 		return InitialAuthorizer(
 			clientId: authorizeInputs.clientInfo.clientId,
 			authFetcher: authFetcher,
@@ -124,8 +127,9 @@ actor InitialAuthorizer {
 	nonisolated public let clientId: String
 	nonisolated public let dpopKey: DPoPKey
 	nonisolated public let authFetcher: any HTTPFetcher
-	
-	nonisolated public let tokenEndpointAuthMethod:  OAuth.ClientAuth.TokenEndpointMethods = .none
+
+	nonisolated public let tokenEndpointAuthMethod: OAuth.ClientAuth.TokenEndpointMethods =
+		.none
 	let clientAuth = OAuth.ClientAuth.None()
 
 	let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
@@ -154,7 +158,7 @@ extension InitialAuthorizer: OAuth.ClientAuth.Authenticable {
 			inputs: inputs
 		)
 	}
-	
+
 	var clientAuthArchive: Data? {
 		nil
 	}
@@ -164,7 +168,7 @@ extension InitialAuthorizer: DPoPSigning {
 	func getNonce(origin: String) -> OAuth4Swift.IndexedNonce? {
 		nonceCache.object(forKey: origin as NSString)
 	}
-	
+
 	func cacheNonce(response: GermConvenience.HTTPDataResponse, requestUrl: URL) throws {
 		let indexedNonce = try AuthDPopState.decode(
 			dataResponse: response, requestUrl: requestUrl)
@@ -173,7 +177,6 @@ extension InitialAuthorizer: DPoPSigning {
 		}
 	}
 }
-
 
 extension AtprotoOAuthClient {
 	public func restore(

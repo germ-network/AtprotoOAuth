@@ -22,11 +22,7 @@ public struct ATResolveResolver: Atproto.Resolver {
 
 	public func resolve(
 		handle: Atproto.Handle
-<<<<<<< HEAD
-	) async throws -> AtprotoTypes.Atproto.DID {
-=======
 	) async throws -> Atproto.DID? {
->>>>>>> main
 		let did = try await ATResolver(provider: URLSession.shared)
 			.didForHandle(handle.lowercased())
 

@@ -37,8 +37,9 @@ public struct AtprotoOAuthUtils {
 	) async throws -> (AuthServerMetadata, URL)? {
 		//We start with a resource server so missing metadata is a throwing error
 		let pdsResourceMetadata = try await authFetcher.resourceDiscoveryRequest(
-			url: pdsServiceEndpoint)
-			.tryUnwrap
+			url: pdsServiceEndpoint
+		)
+		.tryUnwrap
 
 		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 		//PDS doesn't actually fill this field, so we only check it if present
@@ -61,12 +62,13 @@ public struct AtprotoOAuthUtils {
 		guard let authorizationServerUrl = URL(string: authorizationServerString) else {
 			throw OAuthClientError.missingUrlHost
 		}
-		
+
 		//not a valid auth server unless we can get metadata from it
-		let pdsAuthMetadata = try await authFetcher
+		let pdsAuthMetadata =
+			try await authFetcher
 			.authServerDiscovery(endpoint: pdsServiceEndpoint)
 			.tryUnwrap
-		
+
 		return (pdsAuthMetadata, authorizationServerUrl)
 	}
 
@@ -75,7 +77,8 @@ public struct AtprotoOAuthUtils {
 		pdsServiceEndpoint: URL,
 		authFetcher: HTTPFetcher
 	) async throws -> (AuthServerMetadata, URL)? {
-		let pdsAuthMetadata = try await authFetcher
+		let pdsAuthMetadata =
+			try await authFetcher
 			.authServerDiscovery(endpoint: pdsServiceEndpoint)
 			.tryUnwrap
 

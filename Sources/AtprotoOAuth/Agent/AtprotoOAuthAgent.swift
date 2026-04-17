@@ -46,7 +46,7 @@ public actor AtprotoOAuthAgent {
 	}
 	public let updateStream: AsyncStream<StateUpdate>
 	private let updateContinuation: AsyncStream<StateUpdate>.Continuation
-	
+
 	private let clientAuth = OAuth.ClientAuth.None()
 
 	private init(
@@ -62,7 +62,7 @@ public actor AtprotoOAuthAgent {
 		self.state = state
 		self.authFetcher = authFetcher
 		self.resolver = atprotoResolver
-		
+
 		switch state {
 		case .active(let sessionState):
 			_dpopKey = sessionState.dPopKey
@@ -201,8 +201,11 @@ extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
 			return sessionState
 		}
 	}
-	
-	public func refreshed(tokenState: OAuth.SessionState.TokenState, sessionMutable: OAuth.SessionState.Archive.Mutable?) throws {
+
+	public func refreshed(
+		tokenState: OAuth.SessionState.TokenState,
+		sessionMutable: OAuth.SessionState.Archive.Mutable?
+	) throws {
 		try save(tokenState: tokenState)
 	}
 
@@ -257,5 +260,4 @@ extension AtprotoOAuthAgent: OAuth.ClientAuth.Authenticable {
 		nil
 	}
 
-	
 }

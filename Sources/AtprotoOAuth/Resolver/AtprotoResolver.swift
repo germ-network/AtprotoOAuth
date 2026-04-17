@@ -7,8 +7,8 @@
 
 import AtprotoTypes
 import Foundation
-import OAuth4Swift
 import GermConvenience
+import OAuth4Swift
 
 extension Atproto {
 	public protocol Resolver: Sendable {
@@ -24,30 +24,41 @@ extension Atproto {
 
 // Default implementation for verifiedResolve, can be overridden
 extension Atproto.Resolver {
-	public func verifiedResolve(handle: Atproto.Handle) async throws -> Atproto
-		.DIDDocument?
-	{
+	public func verifiedResolve(handle: Atproto.Handle) async throws -> (
+		Atproto.DID,
+		Atproto
+			.DIDDocument
+	)? {
 		guard let did = try await resolve(handle: handle) else {
 			return nil
 		}
-		return try await resolve(did: did)
+
+		//if a did doc doesn't resolve it's an error
+		let document = try await resolve(did: did).tryUnwrap
+
+		guard document.alsoKnownAs?.count == 1,
+			document.alsoKnownAs?.first == handle
+		else {
+			throw OAuthClientError.handleMismatch
+		}
+		return (did, document)
 	}
 
 	public func resolve(
 		atIdentifier: AtIdentifier
-	) async throws -> Atproto.DIDDocument? {
+	) async throws -> (Atproto.DID, Atproto.DIDDocument)? {
 		switch atIdentifier {
 		case .handle(let handle):
 			try await verifiedResolve(handle: handle)
 		case .did(let did):
-			try await resolve(did: did)
+			(did, try await resolve(did: did).tryUnwrap)
 		}
 	}
 }
 
 extension Atproto.Resolver {
 	public func resolveAuthorizationServer(identity: AtIdentifier, authFetcher: HTTPFetcher)
-	async throws -> (AuthServerMetadata, URL)
+		async throws -> (AuthServerMetadata, URL)
 	{
 		let did: Atproto.DID
 		switch identity {

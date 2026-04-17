@@ -10,12 +10,8 @@ import AtprotoClient
 import AtprotoOAuth
 import AtprotoTypes
 import AuthenticationServices
-<<<<<<< HEAD
-import OAuth4Swift
-=======
 import GermConvenience
-import OAuth
->>>>>>> main
+import OAuth4Swift
 import SwiftUI
 import os
 
