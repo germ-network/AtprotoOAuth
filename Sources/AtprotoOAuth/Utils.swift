@@ -66,7 +66,7 @@ public struct AtprotoOAuthUtils {
 		//not a valid auth server unless we can get metadata from it
 		let pdsAuthMetadata =
 			try await authFetcher
-			.authServerDiscovery(endpoint: pdsServiceEndpoint)
+			.authServerDiscovery(endpoint: authorizationServerUrl)
 			.tryUnwrap
 
 		return (pdsAuthMetadata, authorizationServerUrl)

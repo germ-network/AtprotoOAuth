@@ -34,7 +34,6 @@ public struct AtprotoOAuthClient: Sendable {
 extension AtprotoOAuthClient {
 	public func authorize(
 		identity: AuthIdentity,
-		//<<<<<<< HEAD
 	) async throws -> OAuth.SessionState.Archive {
 		let did: Atproto.DID
 		let additionalParameters: FormParameters?

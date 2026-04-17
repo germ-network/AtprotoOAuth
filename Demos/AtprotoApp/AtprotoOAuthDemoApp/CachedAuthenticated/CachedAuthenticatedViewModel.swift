@@ -17,9 +17,7 @@ import os
 
 @MainActor
 @Observable class CachedAuthenticatedViewModel {
-	let resolver = ATResolveResolver(
-		resourceFetcher: URLSession.shared
-	)
+	let resolver = FallbackResolver.slingshotToDirect
 	static let logger = Logger(
 		subsystem: "com.germnetwork.ATProtoLiteClient",
 		category: "CachedAuthenticatedViewModel")
