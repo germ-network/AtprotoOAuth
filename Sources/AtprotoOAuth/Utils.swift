@@ -69,8 +69,6 @@ public struct AtprotoOAuthUtils {
 		pdsServiceEndpoint: URL,
 		authFetcher: HTTPFetcher
 	) async throws -> URL? {
-		// TODO: Update authServerDiscovery to return optional, and return nil
-		// if we get a nil result from authServerDiscovery instead of throwing
 		let pdsMetadata = try await authFetcher
 			.authServerDiscovery(issuer: pdsServiceEndpoint)
 			.tryUnwrap
