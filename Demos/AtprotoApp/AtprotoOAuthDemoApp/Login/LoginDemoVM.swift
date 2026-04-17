@@ -30,8 +30,13 @@ import SwiftUI
 	var logs: [LogEntry] = []
 
 	let client: AtprotoOAuthClient = AtprotoOAuthClient(
+<<<<<<< HEAD
 		clientInfo: .demo,
 		resolver: AtprotoLegacyResolver(
+=======
+		clientMetadata: .demo,
+		resolver: ATResolveResolver(
+>>>>>>> main
 			resourceFetcher: URLSession.shared),
 		authFetcher: URLSession.manualRedirect(),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator()
@@ -45,10 +50,13 @@ import SwiftUI
 		state = .validating(handle)
 		Task {
 			do {
-				let resolver = AtprotoLegacyResolver(
+				let resolver = ATResolveResolver(
 					resourceFetcher: URLSession.shared)
 				let resolvedDid = try await resolver.resolve(handle: handle)
-				appendLog("Resolved DID: \(resolvedDid.stringRepresentation)")
+					.tryUnwrap
+				appendLog(
+					"Resolved DID: \(resolvedDid.stringRepresentation)"
+				)
 
 				let sessionArchive =
 					try await client

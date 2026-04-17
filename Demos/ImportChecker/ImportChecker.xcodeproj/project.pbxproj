@@ -7,79 +7,67 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		01268A9A2F49795700058D68 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 01268A992F49795700058D68 /* Microcosm */; };
-		016FA9882F4930760061B936 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 016FA9872F4930760061B936 /* Microcosm */; };
-		01E7F7142F7A58E3007AF235 /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 01E7F7132F7A58E3007AF235 /* Microcosm */; };
-		2C83CAF22F72FD9E00168B01 /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 2C83CAF12F72FD9E00168B01 /* AtprotoOAuth */; };
-		2C83CDD32F72FECB00168B01 /* ATResolve in Frameworks */ = {isa = PBXBuildFile; productRef = 2C83CDD22F72FECB00168B01 /* ATResolve */; };
-		9092014E2F64DBCA00BABF6A /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 9092014D2F64DBCA00BABF6A /* AtprotoOAuth */; };
-		909201512F64DBD900BABF6A /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 909201502F64DBD900BABF6A /* Microcosm */; };
+		0124A2702F8EDA2B00A11879 /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 0124A26F2F8EDA2B00A11879 /* AtprotoOAuth */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		01E50C522F483FF800C0D8E0 /* PBXContainerItemProxy */ = {
+		0124A2462F8ED9C300A11879 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 01E50C3C2F483FF800C0D8E0 /* Project object */;
+			containerPortal = 0124A2302F8ED9C200A11879 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 01E50C432F483FF800C0D8E0;
-			remoteInfo = AtprotoOAuthDemoApp;
+			remoteGlobalIDString = 0124A2372F8ED9C200A11879;
+			remoteInfo = ImportChecker;
 		};
-		01E50C5C2F483FF800C0D8E0 /* PBXContainerItemProxy */ = {
+		0124A2502F8ED9C400A11879 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 01E50C3C2F483FF800C0D8E0 /* Project object */;
+			containerPortal = 0124A2302F8ED9C200A11879 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 01E50C432F483FF800C0D8E0;
-			remoteInfo = AtprotoOAuthDemoApp;
+			remoteGlobalIDString = 0124A2372F8ED9C200A11879;
+			remoteInfo = ImportChecker;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		01E50C442F483FF800C0D8E0 /* AtprotoOAuthDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AtprotoOAuthDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		01E50C512F483FF800C0D8E0 /* AtprotoOAuthDemoAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AtprotoOAuthDemoAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		01E50C5B2F483FF800C0D8E0 /* AtprotoOAuthDemoAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AtprotoOAuthDemoAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0124A2382F8ED9C200A11879 /* ImportChecker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImportChecker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0124A2452F8ED9C300A11879 /* ImportCheckerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImportCheckerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0124A24F2F8ED9C400A11879 /* ImportCheckerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImportCheckerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		01E50C462F483FF800C0D8E0 /* AtprotoOAuthDemoApp */ = {
+		0124A23A2F8ED9C200A11879 /* ImportChecker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = AtprotoOAuthDemoApp;
+			path = ImportChecker;
 			sourceTree = "<group>";
 		};
-		01E50C542F483FF800C0D8E0 /* AtprotoOAuthDemoAppTests */ = {
+		0124A2482F8ED9C300A11879 /* ImportCheckerTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = AtprotoOAuthDemoAppTests;
+			path = ImportCheckerTests;
 			sourceTree = "<group>";
 		};
-		01E50C5E2F483FF800C0D8E0 /* AtprotoOAuthDemoAppUITests */ = {
+		0124A2522F8ED9C400A11879 /* ImportCheckerUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = AtprotoOAuthDemoAppUITests;
+			path = ImportCheckerUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		01E50C412F483FF800C0D8E0 /* Frameworks */ = {
+		0124A2352F8ED9C200A11879 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				01E7F7142F7A58E3007AF235 /* Microcosm in Frameworks */,
-				2C83CDD32F72FECB00168B01 /* ATResolve in Frameworks */,
-				01268A9A2F49795700058D68 /* Microcosm in Frameworks */,
-				909201512F64DBD900BABF6A /* Microcosm in Frameworks */,
-				2C83CAF22F72FD9E00168B01 /* AtprotoOAuth in Frameworks */,
-				9092014E2F64DBCA00BABF6A /* AtprotoOAuth in Frameworks */,
-				016FA9882F4930760061B936 /* Microcosm in Frameworks */,
+				0124A2702F8EDA2B00A11879 /* AtprotoOAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		01E50C4E2F483FF800C0D8E0 /* Frameworks */ = {
+		0124A2422F8ED9C300A11879 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		01E50C582F483FF800C0D8E0 /* Frameworks */ = {
+		0124A24C2F8ED9C400A11879 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -89,30 +77,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		015D043C2F50C34500996C25 /* Frameworks */ = {
+		0124A22F2F8ED9C200A11879 = {
 			isa = PBXGroup;
 			children = (
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		01E50C3B2F483FF800C0D8E0 = {
-			isa = PBXGroup;
-			children = (
-				01E50C462F483FF800C0D8E0 /* AtprotoOAuthDemoApp */,
-				01E50C542F483FF800C0D8E0 /* AtprotoOAuthDemoAppTests */,
-				01E50C5E2F483FF800C0D8E0 /* AtprotoOAuthDemoAppUITests */,
-				015D043C2F50C34500996C25 /* Frameworks */,
-				01E50C452F483FF800C0D8E0 /* Products */,
+				0124A23A2F8ED9C200A11879 /* ImportChecker */,
+				0124A2482F8ED9C300A11879 /* ImportCheckerTests */,
+				0124A2522F8ED9C400A11879 /* ImportCheckerUITests */,
+				0124A2392F8ED9C200A11879 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		01E50C452F483FF800C0D8E0 /* Products */ = {
+		0124A2392F8ED9C200A11879 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				01E50C442F483FF800C0D8E0 /* AtprotoOAuthDemoApp.app */,
-				01E50C512F483FF800C0D8E0 /* AtprotoOAuthDemoAppTests.xctest */,
-				01E50C5B2F483FF800C0D8E0 /* AtprotoOAuthDemoAppUITests.xctest */,
+				0124A2382F8ED9C200A11879 /* ImportChecker.app */,
+				0124A2452F8ED9C300A11879 /* ImportCheckerTests.xctest */,
+				0124A24F2F8ED9C400A11879 /* ImportCheckerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -120,146 +100,138 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		01E50C432F483FF800C0D8E0 /* AtprotoOAuthDemoApp */ = {
+		0124A2372F8ED9C200A11879 /* ImportChecker */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 01E50C652F483FF800C0D8E0 /* Build configuration list for PBXNativeTarget "AtprotoOAuthDemoApp" */;
+			buildConfigurationList = 0124A2592F8ED9C400A11879 /* Build configuration list for PBXNativeTarget "ImportChecker" */;
 			buildPhases = (
-				01E50C402F483FF800C0D8E0 /* Sources */,
-				01E50C412F483FF800C0D8E0 /* Frameworks */,
-				01E50C422F483FF800C0D8E0 /* Resources */,
+				0124A2342F8ED9C200A11879 /* Sources */,
+				0124A2352F8ED9C200A11879 /* Frameworks */,
+				0124A2362F8ED9C200A11879 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				01E50C462F483FF800C0D8E0 /* AtprotoOAuthDemoApp */,
+				0124A23A2F8ED9C200A11879 /* ImportChecker */,
 			);
-			name = AtprotoOAuthDemoApp;
+			name = ImportChecker;
 			packageProductDependencies = (
-				016FA9872F4930760061B936 /* Microcosm */,
-				01268A992F49795700058D68 /* Microcosm */,
-				9092014D2F64DBCA00BABF6A /* AtprotoOAuth */,
-				909201502F64DBD900BABF6A /* Microcosm */,
-				2C83CAF12F72FD9E00168B01 /* AtprotoOAuth */,
-				2C83CDD22F72FECB00168B01 /* ATResolve */,
-				01E7F7132F7A58E3007AF235 /* Microcosm */,
+				0124A26F2F8EDA2B00A11879 /* AtprotoOAuth */,
 			);
-			productName = AtprotoOAuthDemoApp;
-			productReference = 01E50C442F483FF800C0D8E0 /* AtprotoOAuthDemoApp.app */;
+			productName = ImportChecker;
+			productReference = 0124A2382F8ED9C200A11879 /* ImportChecker.app */;
 			productType = "com.apple.product-type.application";
 		};
-		01E50C502F483FF800C0D8E0 /* AtprotoOAuthDemoAppTests */ = {
+		0124A2442F8ED9C300A11879 /* ImportCheckerTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 01E50C682F483FF800C0D8E0 /* Build configuration list for PBXNativeTarget "AtprotoOAuthDemoAppTests" */;
+			buildConfigurationList = 0124A25C2F8ED9C400A11879 /* Build configuration list for PBXNativeTarget "ImportCheckerTests" */;
 			buildPhases = (
-				01E50C4D2F483FF800C0D8E0 /* Sources */,
-				01E50C4E2F483FF800C0D8E0 /* Frameworks */,
-				01E50C4F2F483FF800C0D8E0 /* Resources */,
+				0124A2412F8ED9C300A11879 /* Sources */,
+				0124A2422F8ED9C300A11879 /* Frameworks */,
+				0124A2432F8ED9C300A11879 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				01E50C532F483FF800C0D8E0 /* PBXTargetDependency */,
+				0124A2472F8ED9C300A11879 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				01E50C542F483FF800C0D8E0 /* AtprotoOAuthDemoAppTests */,
+				0124A2482F8ED9C300A11879 /* ImportCheckerTests */,
 			);
-			name = AtprotoOAuthDemoAppTests;
+			name = ImportCheckerTests;
 			packageProductDependencies = (
 			);
-			productName = AtprotoOAuthDemoAppTests;
-			productReference = 01E50C512F483FF800C0D8E0 /* AtprotoOAuthDemoAppTests.xctest */;
+			productName = ImportCheckerTests;
+			productReference = 0124A2452F8ED9C300A11879 /* ImportCheckerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		01E50C5A2F483FF800C0D8E0 /* AtprotoOAuthDemoAppUITests */ = {
+		0124A24E2F8ED9C400A11879 /* ImportCheckerUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 01E50C6B2F483FF800C0D8E0 /* Build configuration list for PBXNativeTarget "AtprotoOAuthDemoAppUITests" */;
+			buildConfigurationList = 0124A25F2F8ED9C400A11879 /* Build configuration list for PBXNativeTarget "ImportCheckerUITests" */;
 			buildPhases = (
-				01E50C572F483FF800C0D8E0 /* Sources */,
-				01E50C582F483FF800C0D8E0 /* Frameworks */,
-				01E50C592F483FF800C0D8E0 /* Resources */,
+				0124A24B2F8ED9C400A11879 /* Sources */,
+				0124A24C2F8ED9C400A11879 /* Frameworks */,
+				0124A24D2F8ED9C400A11879 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				01E50C5D2F483FF800C0D8E0 /* PBXTargetDependency */,
+				0124A2512F8ED9C400A11879 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				01E50C5E2F483FF800C0D8E0 /* AtprotoOAuthDemoAppUITests */,
+				0124A2522F8ED9C400A11879 /* ImportCheckerUITests */,
 			);
-			name = AtprotoOAuthDemoAppUITests;
+			name = ImportCheckerUITests;
 			packageProductDependencies = (
 			);
-			productName = AtprotoOAuthDemoAppUITests;
-			productReference = 01E50C5B2F483FF800C0D8E0 /* AtprotoOAuthDemoAppUITests.xctest */;
+			productName = ImportCheckerUITests;
+			productReference = 0124A24F2F8ED9C400A11879 /* ImportCheckerUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		01E50C3C2F483FF800C0D8E0 /* Project object */ = {
+		0124A2302F8ED9C200A11879 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
-					01E50C432F483FF800C0D8E0 = {
+					0124A2372F8ED9C200A11879 = {
 						CreatedOnToolsVersion = 26.3;
 					};
-					01E50C502F483FF800C0D8E0 = {
+					0124A2442F8ED9C300A11879 = {
 						CreatedOnToolsVersion = 26.3;
-						TestTargetID = 01E50C432F483FF800C0D8E0;
+						TestTargetID = 0124A2372F8ED9C200A11879;
 					};
-					01E50C5A2F483FF800C0D8E0 = {
+					0124A24E2F8ED9C400A11879 = {
 						CreatedOnToolsVersion = 26.3;
-						TestTargetID = 01E50C432F483FF800C0D8E0;
+						TestTargetID = 0124A2372F8ED9C200A11879;
 					};
 				};
 			};
-			buildConfigurationList = 01E50C3F2F483FF800C0D8E0 /* Build configuration list for PBXProject "AtprotoOAuthDemoApp" */;
+			buildConfigurationList = 0124A2332F8ED9C200A11879 /* Build configuration list for PBXProject "ImportChecker" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 01E50C3B2F483FF800C0D8E0;
+			mainGroup = 0124A22F2F8ED9C200A11879;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				2C83CAF02F72FD9E00168B01 /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */,
-				2C83CDD12F72FECB00168B01 /* XCRemoteSwiftPackageReference "ATResolve" */,
-				01E7F7122F7A58E3007AF235 /* XCRemoteSwiftPackageReference "Microcosm" */,
+				0124A26E2F8EDA2B00A11879 /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */,
 			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 01E50C452F483FF800C0D8E0 /* Products */;
+			productRefGroup = 0124A2392F8ED9C200A11879 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				01E50C432F483FF800C0D8E0 /* AtprotoOAuthDemoApp */,
-				01E50C502F483FF800C0D8E0 /* AtprotoOAuthDemoAppTests */,
-				01E50C5A2F483FF800C0D8E0 /* AtprotoOAuthDemoAppUITests */,
+				0124A2372F8ED9C200A11879 /* ImportChecker */,
+				0124A2442F8ED9C300A11879 /* ImportCheckerTests */,
+				0124A24E2F8ED9C400A11879 /* ImportCheckerUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		01E50C422F483FF800C0D8E0 /* Resources */ = {
+		0124A2362F8ED9C200A11879 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		01E50C4F2F483FF800C0D8E0 /* Resources */ = {
+		0124A2432F8ED9C300A11879 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		01E50C592F483FF800C0D8E0 /* Resources */ = {
+		0124A24D2F8ED9C400A11879 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -269,21 +241,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		01E50C402F483FF800C0D8E0 /* Sources */ = {
+		0124A2342F8ED9C200A11879 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		01E50C4D2F483FF800C0D8E0 /* Sources */ = {
+		0124A2412F8ED9C300A11879 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		01E50C572F483FF800C0D8E0 /* Sources */ = {
+		0124A24B2F8ED9C400A11879 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -293,20 +265,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		01E50C532F483FF800C0D8E0 /* PBXTargetDependency */ = {
+		0124A2472F8ED9C300A11879 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 01E50C432F483FF800C0D8E0 /* AtprotoOAuthDemoApp */;
-			targetProxy = 01E50C522F483FF800C0D8E0 /* PBXContainerItemProxy */;
+			target = 0124A2372F8ED9C200A11879 /* ImportChecker */;
+			targetProxy = 0124A2462F8ED9C300A11879 /* PBXContainerItemProxy */;
 		};
-		01E50C5D2F483FF800C0D8E0 /* PBXTargetDependency */ = {
+		0124A2512F8ED9C400A11879 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 01E50C432F483FF800C0D8E0 /* AtprotoOAuthDemoApp */;
-			targetProxy = 01E50C5C2F483FF800C0D8E0 /* PBXContainerItemProxy */;
+			target = 0124A2372F8ED9C200A11879 /* ImportChecker */;
+			targetProxy = 0124A2502F8ED9C400A11879 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		01E50C632F483FF800C0D8E0 /* Debug */ = {
+		0124A2572F8ED9C400A11879 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -368,7 +340,7 @@
 			};
 			name = Debug;
 		};
-		01E50C642F483FF800C0D8E0 /* Release */ = {
+		0124A2582F8ED9C400A11879 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -422,7 +394,7 @@
 			};
 			name = Release;
 		};
-		01E50C662F483FF800C0D8E0 /* Debug */ = {
+		0124A25A2F8ED9C400A11879 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -432,17 +404,7 @@
 				DEVELOPMENT_TEAM = B6LD2YR8QA;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -460,7 +422,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.7;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.germnetwork.AtprotoOAuthDemoApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.germnetwork.atprotoOauth.ImportChecker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -476,7 +438,7 @@
 			};
 			name = Debug;
 		};
-		01E50C672F483FF800C0D8E0 /* Release */ = {
+		0124A25B2F8ED9C400A11879 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -486,17 +448,7 @@
 				DEVELOPMENT_TEAM = B6LD2YR8QA;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -514,7 +466,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.7;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.germnetwork.AtprotoOAuthDemoApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.germnetwork.atprotoOauth.ImportChecker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -530,7 +482,7 @@
 			};
 			name = Release;
 		};
-		01E50C692F483FF800C0D8E0 /* Debug */ = {
+		0124A25D2F8ED9C400A11879 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -541,7 +493,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				MACOSX_DEPLOYMENT_TARGET = 15.7;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.germnetwork.AtprotoOAuthDemoAppTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.germnetwork.atprotoOauth.ImportCheckerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -551,12 +503,12 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AtprotoOAuthDemoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AtprotoOAuthDemoApp";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ImportChecker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ImportChecker";
 				XROS_DEPLOYMENT_TARGET = 26.2;
 			};
 			name = Debug;
 		};
-		01E50C6A2F483FF800C0D8E0 /* Release */ = {
+		0124A25E2F8ED9C400A11879 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -567,7 +519,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				MACOSX_DEPLOYMENT_TARGET = 15.7;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.germnetwork.AtprotoOAuthDemoAppTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.germnetwork.atprotoOauth.ImportCheckerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -577,12 +529,12 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AtprotoOAuthDemoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AtprotoOAuthDemoApp";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ImportChecker.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ImportChecker";
 				XROS_DEPLOYMENT_TARGET = 26.2;
 			};
 			name = Release;
 		};
-		01E50C6C2F483FF800C0D8E0 /* Debug */ = {
+		0124A2602F8ED9C400A11879 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -592,7 +544,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				MACOSX_DEPLOYMENT_TARGET = 15.7;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.germnetwork.AtprotoOAuthDemoAppUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.germnetwork.atprotoOauth.ImportCheckerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -602,12 +554,12 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_TARGET_NAME = AtprotoOAuthDemoApp;
+				TEST_TARGET_NAME = ImportChecker;
 				XROS_DEPLOYMENT_TARGET = 26.2;
 			};
 			name = Debug;
 		};
-		01E50C6D2F483FF800C0D8E0 /* Release */ = {
+		0124A2612F8ED9C400A11879 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -617,7 +569,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				MACOSX_DEPLOYMENT_TARGET = 15.7;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.germnetwork.AtprotoOAuthDemoAppUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.germnetwork.atprotoOauth.ImportCheckerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -627,7 +579,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_TARGET_NAME = AtprotoOAuthDemoApp;
+				TEST_TARGET_NAME = ImportChecker;
 				XROS_DEPLOYMENT_TARGET = 26.2;
 			};
 			name = Release;
@@ -635,38 +587,38 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		01E50C3F2F483FF800C0D8E0 /* Build configuration list for PBXProject "AtprotoOAuthDemoApp" */ = {
+		0124A2332F8ED9C200A11879 /* Build configuration list for PBXProject "ImportChecker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				01E50C632F483FF800C0D8E0 /* Debug */,
-				01E50C642F483FF800C0D8E0 /* Release */,
+				0124A2572F8ED9C400A11879 /* Debug */,
+				0124A2582F8ED9C400A11879 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		01E50C652F483FF800C0D8E0 /* Build configuration list for PBXNativeTarget "AtprotoOAuthDemoApp" */ = {
+		0124A2592F8ED9C400A11879 /* Build configuration list for PBXNativeTarget "ImportChecker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				01E50C662F483FF800C0D8E0 /* Debug */,
-				01E50C672F483FF800C0D8E0 /* Release */,
+				0124A25A2F8ED9C400A11879 /* Debug */,
+				0124A25B2F8ED9C400A11879 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		01E50C682F483FF800C0D8E0 /* Build configuration list for PBXNativeTarget "AtprotoOAuthDemoAppTests" */ = {
+		0124A25C2F8ED9C400A11879 /* Build configuration list for PBXNativeTarget "ImportCheckerTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				01E50C692F483FF800C0D8E0 /* Debug */,
-				01E50C6A2F483FF800C0D8E0 /* Release */,
+				0124A25D2F8ED9C400A11879 /* Debug */,
+				0124A25E2F8ED9C400A11879 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		01E50C6B2F483FF800C0D8E0 /* Build configuration list for PBXNativeTarget "AtprotoOAuthDemoAppUITests" */ = {
+		0124A25F2F8ED9C400A11879 /* Build configuration list for PBXNativeTarget "ImportCheckerUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				01E50C6C2F483FF800C0D8E0 /* Debug */,
-				01E50C6D2F483FF800C0D8E0 /* Release */,
+				0124A2602F8ED9C400A11879 /* Debug */,
+				0124A2612F8ED9C400A11879 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -674,63 +626,18 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		2C83CAF02F72FD9E00168B01 /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */ = {
+		0124A26E2F8EDA2B00A11879 /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../../AtprotoOAuth;
 		};
 /* End XCLocalSwiftPackageReference section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		01E7F7122F7A58E3007AF235 /* XCRemoteSwiftPackageReference "Microcosm" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/germ-network/Microcosm.git";
-			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 0.3.0;
-			};
-		};
-		2C83CDD12F72FECB00168B01 /* XCRemoteSwiftPackageReference "ATResolve" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/germ-network/ATResolve";
-			requirement = {
-				kind = exactVersion;
-				version = "1.0.0-germ.4";
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		01268A992F49795700058D68 /* Microcosm */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Microcosm;
-		};
-		016FA9872F4930760061B936 /* Microcosm */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Microcosm;
-		};
-		01E7F7132F7A58E3007AF235 /* Microcosm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 01E7F7122F7A58E3007AF235 /* XCRemoteSwiftPackageReference "Microcosm" */;
-			productName = Microcosm;
-		};
-		2C83CAF12F72FD9E00168B01 /* AtprotoOAuth */ = {
+		0124A26F2F8EDA2B00A11879 /* AtprotoOAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AtprotoOAuth;
-		};
-		2C83CDD22F72FECB00168B01 /* ATResolve */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2C83CDD12F72FECB00168B01 /* XCRemoteSwiftPackageReference "ATResolve" */;
-			productName = ATResolve;
-		};
-		9092014D2F64DBCA00BABF6A /* AtprotoOAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = AtprotoOAuth;
-		};
-		909201502F64DBD900BABF6A /* Microcosm */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Microcosm;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = 01E50C3C2F483FF800C0D8E0 /* Project object */;
+	rootObject = 0124A2302F8ED9C200A11879 /* Project object */;
 }

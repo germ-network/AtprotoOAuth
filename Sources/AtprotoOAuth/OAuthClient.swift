@@ -34,6 +34,7 @@ public struct AtprotoOAuthClient: Sendable {
 extension AtprotoOAuthClient {
 	public func authorize(
 		identity: AuthIdentity,
+//<<<<<<< HEAD
 	) async throws -> OAuth.SessionState.Archive {
 		let did: Atproto.DID
 		let additionalParameters: FormParameters?
@@ -45,20 +46,16 @@ extension AtprotoOAuthClient {
 			} else {
 				additionalParameters = nil
 			}
+		
 		case .handle(let handle):
 			//resolve handle to pds, uncached
-			//TODO: use verified resolve
-			did = try await resolver.resolve(handle: handle)
+
+			(did, _) = try await resolver
+				.verifiedResolve(handle: handle)
+				.tryUnwrap
 			additionalParameters = FormParameters(["login_hint": handle])
 		}
 		
-		//resolve pds and pds metadata
-		let didDoc = try await resolver.resolve(did: did)
-		if case .handle(let handle) = identity {
-			if handle != didDoc.handle {
-				throw OAuthClientError.handleMismatch
-			}
-		}
 
 		let (authServerMetadata, authorizationServerUrl) =
 		try await resolver
@@ -66,6 +63,7 @@ extension AtprotoOAuthClient {
 				identity: .did(did),
 				authFetcher: authFetcher
 			)
+
 		
 		let clientAuthenticator = InitialAuthorizer(
 			clientId: clientInfo.clientId,

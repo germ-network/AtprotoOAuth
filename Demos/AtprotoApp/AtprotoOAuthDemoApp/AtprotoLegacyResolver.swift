@@ -13,7 +13,7 @@ import Foundation
 import GermConvenience
 import HTTPTypes
 
-public struct AtprotoLegacyResolver: Atproto.Resolver {
+public struct ATResolveResolver: Atproto.Resolver {
 	let resourceFetcher: HTTPFetcher
 
 	public init(resourceFetcher: HTTPFetcher) {
@@ -22,14 +22,18 @@ public struct AtprotoLegacyResolver: Atproto.Resolver {
 
 	public func resolve(
 		handle: Atproto.Handle
+<<<<<<< HEAD
 	) async throws -> AtprotoTypes.Atproto.DID {
+=======
+	) async throws -> Atproto.DID? {
+>>>>>>> main
 		let did = try await ATResolver(provider: URLSession.shared)
 			.didForHandle(handle.lowercased())
 
 		return try .init(string: did.tryUnwrap)
 	}
 
-	public func resolve(did: AtprotoTypes.Atproto.DID) async throws -> Atproto.DIDDocument {
+	public func resolve(did: Atproto.DID) async throws -> Atproto.DIDDocument? {
 		let url = try constructPlcQueryUrl(did: did)
 
 		let request = BundledHTTPRequest(

@@ -137,6 +137,6 @@ struct LoginView: View {
 	LoginView(
 		viewModel: .init(
 			did: did, handle: "germnetwork.com",
-			resolver: AtprotoLegacyResolver(resourceFetcher: URLSession.shared))
+			resolver: ATResolveResolver(resourceFetcher: URLSession.shared))
 	)
 }

@@ -15,7 +15,7 @@ import SwiftUI
 struct UnauthenticatedView: View {
 	@AppStorage("unauthHandle") var handleEntry: String = "anna.germnetwork.com"
 
-	let resolver = AtprotoLegacyResolver(resourceFetcher: URLSession.shared)
+	let resolver = ATResolveResolver(resourceFetcher: URLSession.shared)
 
 	@State private var followsGerm: Bool?
 	@State private var isFollowedByGerm: Bool?
@@ -169,6 +169,7 @@ struct UnauthenticatedView: View {
 			print("Loading DID document...")
 			do {
 				let didDoc = try await resolver.resolve(did: did)
+					.tryUnwrap
 				pdsURL = try didDoc.pdsUrl
 				handle = didDoc.handle
 			} catch {

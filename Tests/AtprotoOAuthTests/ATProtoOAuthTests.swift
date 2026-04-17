@@ -13,18 +13,24 @@ struct APITests {
 	static let redirectUri = URL(string: "com.germnetwork.static:/oauth")!
 	static let genericScopes = ["atproto", "transition:generic"]
 	//	let mockResolver = AtprotoMockResolver()
-	let resolver = Microcosm.Slingshot(resourceFetcher: URLSession.shared)
+	let resolver = SlingshotResolver(
+		slingshot: .init(resourceFetcher: URLSession.shared)
+	)
 
 	//move this to the handle resolution library
 	@Test func testHandleResolution() async throws {
 		let parsedDid = try Atproto.DID(string: "did:plc:4yvwfwxfz5sney4twepuzdu7")
-		let resolvedDid = try await resolver.resolveMiniDoc(
-			identifier: "germnetwork.com"
-		)?.did
+		let (resolvedDid, _) = try await resolver
+			.verifiedResolve(handle: "germnetwork.com")
+			.tryUnwrap
 		#expect(parsedDid == resolvedDid)
 
+		//don't yet have correct resoultion to nil
+//		#expect(try await resolver.verifiedResolve(handle: "null.germnetwork.com") == nil)
+		//https://github.com/germ-network/Microcosm/issues/11
+		
 		await #expect(throws: (any Error).self) {
-			let _ = try await resolver.resolve(handle: "example.com")
+			try await resolver.verifiedResolve(handle: "example.com") == nil
 		}
 	}
 
@@ -48,7 +54,9 @@ enum AuthHarness {
 struct ClientAPITests {
 	let oauthClient: XRPCProxyCallable
 	static let genericScopes = ["atproto", "transition:generic"]
-	let resolver = Microcosm.Slingshot(resourceFetcher: URLSession.shared)
+	let resolver = SlingshotResolver(
+		slingshot: .init(resourceFetcher: URLSession.shared)
+	)
 
 	init() async throws {
 		let (oauthAgent, _) = try AtprotoOAuthAgent.restore(
@@ -62,11 +70,12 @@ struct ClientAPITests {
 
 	@Test func exampleUsage() async throws {
 		let inputHandle = "markmx.bsky.social"
-		let resolvedDid = try await resolver.resolveMiniDoc(
-			identifier: inputHandle
-		)?.did
+		let (resolvedDid, _) = try await resolver
+			.verifiedResolve(handle: inputHandle)
+			.tryUnwrap
+
 		#expect(
-			resolvedDid?.stringRepresentation == "did:plc:lbu36k4mysk5g6gcrpw4dbwm"
+			resolvedDid.stringRepresentation == "did:plc:lbu36k4mysk5g6gcrpw4dbwm"
 		)
 
 		//		//make some unauthed requests. e.g. is this did already using germ?

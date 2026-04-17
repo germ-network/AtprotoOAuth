@@ -237,7 +237,7 @@ extension AtprotoOAuthAgent: DPoPSigning {
 
 extension AtprotoOAuthAgent {
 	func getPDSUrl() async throws -> URL {
-		try await self.resolver.resolve(did: repo).pdsUrl
+		try await self.resolver.resolve(did: repo).tryUnwrap.pdsUrl
 	}
 }
 
