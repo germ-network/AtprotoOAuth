@@ -21,7 +21,7 @@ public struct AtprotoLegacyResolver: Atproto.Resolver {
 	}
 
 	public func resolve(
-		handle: AtIdentifier.Handle
+		handle: Atproto.Handle
 	) async throws -> AtprotoTypes.Atproto.DID {
 		let did = try await ATResolver(provider: URLSession.shared)
 			.didForHandle(handle.lowercased())

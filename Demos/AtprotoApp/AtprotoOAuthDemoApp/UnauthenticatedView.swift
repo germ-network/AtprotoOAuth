@@ -249,7 +249,11 @@ struct UnauthenticatedView: View {
 		.tryUnwrap
 		.pds
 
-		return PublicPDSAgent(did: did, serviceUrl: pdsUrl)
+		return PublicPDSAgent(
+			did: did,
+			resourceFetcher: URLSession.shared,
+			serviceUrl: pdsUrl
+		)
 	}
 }
 
