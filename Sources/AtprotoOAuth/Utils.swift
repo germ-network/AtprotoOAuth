@@ -34,10 +34,10 @@ public struct AtprotoOAuthUtils {
 		pdsServiceEndpoint: URL,
 		authFetcher: HTTPFetcher
 	) async throws -> URL? {
-		// TODO: Update resourceDiscoveryRequest to return optional, and return nil
-		// if we get a nil result from resourceDiscoveryRequest instead of throwing
+		//We start with a resource server so missing metadata is a throwing error
 		let pdsMetadata = try await authFetcher.resourceDiscoveryRequest(
 			url: pdsServiceEndpoint)
+			.tryUnwrap
 
 		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 		//PDS doesn't actually fill this field, so we only check it if present
@@ -71,8 +71,9 @@ public struct AtprotoOAuthUtils {
 	) async throws -> URL? {
 		// TODO: Update authServerDiscovery to return optional, and return nil
 		// if we get a nil result from authServerDiscovery instead of throwing
-		let pdsMetadata = try await authFetcher.authServerDiscovery(
-			issuer: pdsServiceEndpoint)
+		let pdsMetadata = try await authFetcher
+			.authServerDiscovery(issuer: pdsServiceEndpoint)
+			.tryUnwrap
 
 		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 		//PDS doesn't actually fill this field, so we only check it if present

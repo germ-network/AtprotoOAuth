@@ -28,7 +28,8 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			branch: "mark/combine-lazy-fetchers"
+			branch: "main"
+			
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",

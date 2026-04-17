@@ -69,7 +69,7 @@ public actor AtprotoOAuthAgent {
 						)
 					return try await authFetcher.authServerDiscovery(
 						issuer: authorizationServerURL
-					)
+					).tryUnwrap
 				}
 			})
 

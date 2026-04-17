@@ -1,5 +1,5 @@
 {
-  "originHash" : "0f7ad0a68306b96af6f326db663b62cfde2f3e71806665c04804c56729a81dee",
+  "originHash" : "b8d86eaa07208f227dd13feb94e13611e6894255d114a2c55c3ab7c639b77e59",
   "pins" : [
     {
       "identity" : "atprotoclient",
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "branch" : "mark/combine-lazy-fetchers",
-        "revision" : "41634de0a5d55bdb9ea94df40119dca453c085b5"
+        "branch" : "main",
+        "revision" : "75f21817e9c3bf49cd38f9f04c76abc4c791ee9c"
       }
     },
     {
