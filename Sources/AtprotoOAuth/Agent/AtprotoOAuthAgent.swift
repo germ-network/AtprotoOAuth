@@ -37,7 +37,6 @@ public actor AtprotoOAuthAgent {
 	//concurrency workaround to store the key held in SessionState
 	private let _dpopKey: DPoPKey?
 	public var lazyServerMetadata: LazyResource<AuthServerMetadata>
-	public var lazyIssuer: LazyResource<URL>
 	public var refreshTask: Task<OAuth.SessionState.TokenState, Error>?
 
 	private let saveStream: AsyncStream<OAuth.SessionState.Archive.Mutable?>
@@ -78,10 +77,10 @@ public actor AtprotoOAuthAgent {
 						try await atprotoResolver.resolveAuthorizationServer(
 							identity: .did(did),
 							authFetcher: authFetcher
-						)
+						).1
 					return try await authFetcher.authServerDiscovery(
-						issuer: authorizationServerURL
-					)
+						endpoint: authorizationServerURL
+					).tryUnwrap
 				}
 			})
 
@@ -202,12 +201,12 @@ extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
 			return sessionState
 		}
 	}
-
-	public func refreshed(sessionMutable: SessionState.Mutable) throws {
-		try save(sessionMutable: sessionMutable)
+	
+	public func refreshed(tokenState: OAuth.SessionState.TokenState, sessionMutable: OAuth.SessionState.Archive.Mutable?) throws {
+		try save(tokenState: tokenState)
 	}
 
-	public var authServerRequestOptions: AuthServerRequestOptions {r
+	public var authServerRequestOptions: OAuth.AuthServerRequestOptions {
 		.atproto(
 			did: repo,
 			authFetcher: authFetcher

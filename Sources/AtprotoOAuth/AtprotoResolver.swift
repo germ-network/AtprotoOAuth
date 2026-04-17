@@ -8,6 +8,7 @@
 import AtprotoTypes
 import Foundation
 import GermConvenience
+import OAuth4Swift
 
 extension Atproto {
 	public protocol Resolver: Sendable {
@@ -18,7 +19,7 @@ extension Atproto {
 
 extension Atproto.Resolver {
 	public func resolveAuthorizationServer(identity: AtIdentifier, authFetcher: HTTPFetcher)
-		async throws -> URL
+	async throws -> (AuthServerMetadata, URL)
 	{
 		let did: Atproto.DID
 		switch identity {

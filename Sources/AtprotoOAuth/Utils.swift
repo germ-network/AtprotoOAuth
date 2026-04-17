@@ -8,12 +8,13 @@
 import AtprotoTypes
 import Foundation
 import GermConvenience
+import OAuth4Swift
 
 public struct AtprotoOAuthUtils {
 	public static func getAuthorizationServerURL(
 		pdsServiceEndpoint: URL,
 		authFetcher: HTTPFetcher
-	) async throws -> URL {
+	) async throws -> (AuthServerMetadata, URL) {
 		// If the pdsServiceEndpoint represents resource server metadata for the PDS
 		if let authURL = try await urlAsResourceServer(
 			pdsServiceEndpoint: pdsServiceEndpoint,
@@ -33,15 +34,15 @@ public struct AtprotoOAuthUtils {
 	private static func urlAsResourceServer(
 		pdsServiceEndpoint: URL,
 		authFetcher: HTTPFetcher
-	) async throws -> URL? {
+	) async throws -> (AuthServerMetadata, URL)? {
 		//We start with a resource server so missing metadata is a throwing error
-		let pdsMetadata = try await authFetcher.resourceDiscoveryRequest(
+		let pdsResourceMetadata = try await authFetcher.resourceDiscoveryRequest(
 			url: pdsServiceEndpoint)
 			.tryUnwrap
 
 		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 		//PDS doesn't actually fill this field, so we only check it if present
-		if let supportedAlgs = pdsMetadata.dpopSigningAlgValuesSupported {
+		if let supportedAlgs = pdsResourceMetadata.dpopSigningAlgValuesSupported {
 			guard supportedAlgs.contains("ES256") else {
 				throw OAuthSessionError.unsupportedDpopSigningAlgorithm
 			}
@@ -49,7 +50,7 @@ public struct AtprotoOAuthUtils {
 
 		// Return nil if there is not a single auth server
 		guard
-			let authServers = pdsMetadata.authorizationServers,
+			let authServers = pdsResourceMetadata.authorizationServers,
 			authServers.count == 1,
 			let authorizationServerString = authServers.first
 		else {
@@ -60,27 +61,32 @@ public struct AtprotoOAuthUtils {
 		guard let authorizationServerUrl = URL(string: authorizationServerString) else {
 			throw OAuthClientError.missingUrlHost
 		}
-
-		return authorizationServerUrl
+		
+		//not a valid auth server unless we can get metadata from it
+		let pdsAuthMetadata = try await authFetcher
+			.authServerDiscovery(endpoint: pdsServiceEndpoint)
+			.tryUnwrap
+		
+		return (pdsAuthMetadata, authorizationServerUrl)
 	}
 
 	// Treat the PDS service endpoint as an authorization server
 	private static func urlAsAuthServer(
 		pdsServiceEndpoint: URL,
 		authFetcher: HTTPFetcher
-	) async throws -> URL? {
-		let pdsMetadata = try await authFetcher
-			.authServerDiscovery(issuer: pdsServiceEndpoint)
+	) async throws -> (AuthServerMetadata, URL)? {
+		let pdsAuthMetadata = try await authFetcher
+			.authServerDiscovery(endpoint: pdsServiceEndpoint)
 			.tryUnwrap
 
 		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 		//PDS doesn't actually fill this field, so we only check it if present
-		if let supportedAlgs = pdsMetadata.dpopSigningAlgValuesSupported {
+		if let supportedAlgs = pdsAuthMetadata.dpopSigningAlgValuesSupported {
 			guard supportedAlgs.contains("ES256") else {
 				throw OAuthSessionError.unsupportedDpopSigningAlgorithm
 			}
 		}
 
-		return pdsServiceEndpoint
+		return (pdsAuthMetadata, pdsServiceEndpoint)
 	}
 }

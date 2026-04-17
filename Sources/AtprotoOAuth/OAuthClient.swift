@@ -60,20 +60,31 @@ extension AtprotoOAuthClient {
 			}
 		}
 
-		let authorizationServerUrl =
+		let (authServerMetadata, authorizationServerUrl) =
 		try await resolver
 			.resolveAuthorizationServer(
 				identity: .did(did),
 				authFetcher: authFetcher
 			)
 		
+		let clientAuthenticator = InitialAuthorizer(
+			clientId: clientInfo.clientId,
+			authFetcher: authFetcher,
+			dpopKey: .generateP256(),
+			decoder: AuthDPopState.decode
+		)
+		
 		let authorizer = Authorizer(
-			authorizeInputs: .init(
-				clientInfo: clientInfo,
-				issuer: authorizationServerUrl,
-				inputToken: nil,
-				additionalParameters: additionalParameters
-			),
+			authorizeInputs:
+					.init(
+						clientInfo: clientInfo,
+						authServerMetadata: authServerMetadata,
+						authEndpoint: authorizationServerUrl,
+						inputToken: nil,
+						additionalParameters: additionalParameters,
+						clientAuthenticator: clientAuthenticator
+					),
+					
 			authServerRequestOptions:
 					.atproto(
 						did: did,
