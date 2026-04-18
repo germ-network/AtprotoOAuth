@@ -93,32 +93,11 @@ extension AtprotoOAuthClient {
 		return try await authorizer.performUserAuthentication()
 	}
 
-	struct Authorizer {
+	struct Authorizer: OAuth.Authorizer {
 		let authorizeInputs: OAuth.AuthorizeInputs
 		let authServerRequestOptions: OAuth.AuthServerRequestOptions
 		let userAuthenticator: UserAuthenticator
 		let authFetcher: any HTTPFetcher
-	}
-}
-
-extension AtprotoOAuthClient.Authorizer: OAuth.Authorizer {
-	func negotiate(authServerMetadata: AuthServerMetadata) throws -> any OAuth.ClientAuth
-		.Authenticable
-	{
-		let serverMethods = authServerMetadata.tokenEndpointAuthMethodsSupported ?? []
-		guard
-			serverMethods
-				.contains(OAuth.ClientAuth.TokenEndpointMethods.none.rawValue)
-		else {
-			throw OAuth.Errors.notImplemented
-		}
-
-		return InitialAuthorizer(
-			clientId: authorizeInputs.clientInfo.clientId,
-			authFetcher: authFetcher,
-			dpopKey: .generateP256(),
-			decoder: AuthDPopState.decode
-		)
 	}
 }
 
