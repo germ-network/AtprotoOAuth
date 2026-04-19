@@ -19,23 +19,27 @@ public actor AtprotoOAuthAgent {
 	public let clientId: String
 	public let authFetcher: HTTPFetcher
 
-	private let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
-
 	enum State {
 		case active(OAuth.SessionState)
 		case expired
 
 		init(archive: OAuth.SessionState.Archive?) throws {
 			if let archive {
-				self = .active(try .init(archive: archive))
+				self = .active(
+					try .init(
+						archive: archive,
+						dpopDecoder: OAuth.DPoP.decodeAtproto
+					)
+				)
 			} else {
 				self = .expired
 			}
 		}
 	}
 	var state: State
-	//concurrency workaround to store the key held in SessionState
-	private let _dpopKey: DPoPKey?
+	//we require one, so get the reference to the state in the SessionState at restore (or throw)
+	public nonisolated let dpopKey: OAuth.DPoP.Key
+
 	public var lazyServerMetadata: LazyResource<AuthServerMetadata>
 	public var refreshTask: Task<OAuth.SessionState.TokenState, Error>?
 
@@ -49,26 +53,26 @@ public actor AtprotoOAuthAgent {
 
 	private let clientAuth = OAuth.ClientAuth.None()
 
-	private init(
+	private init?(
 		did: Atproto.DID,
 		clientId: String,
 		state: State,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: Atproto.Resolver
-	) {
+	) throws {
+		guard case .active(let sessionState) = state else {
+			return nil
+		}
+		let dpopState = try sessionState.dPoPState.tryUnwrap
+		dpopState.nonceCache.countLimit = 25
+
 		self.repo = did
 		self.authenticatedDID = did
 		self.clientId = clientId
 		self.state = state
 		self.authFetcher = authFetcher
 		self.resolver = atprotoResolver
-
-		switch state {
-		case .active(let sessionState):
-			_dpopKey = sessionState.dPopKey
-		case .expired:
-			_dpopKey = nil
-		}
+		self.dpopKey = dpopState.signingKey
 
 		self.lazyServerMetadata = .init(
 			fetchTaskGenerator: {
@@ -83,8 +87,6 @@ public actor AtprotoOAuthAgent {
 					).tryUnwrap
 				}
 			})
-
-		nonceCache.countLimit = 25
 
 		(saveStream, saveContinuation) = AsyncStream<OAuth.SessionState.Archive.Mutable?>
 			.makeStream(bufferingPolicy: .bufferingNewest(1))
@@ -115,6 +117,15 @@ public actor AtprotoOAuthAgent {
 		saveContinuation.yield(nil)
 		updateContinuation.yield(.loggedOut)
 	}
+
+	var sessionState: OAuth.SessionState? {
+		switch state {
+		case .active(let sessionState):
+			sessionState
+		case .expired:
+			nil
+		}
+	}
 }
 
 extension AtprotoOAuthAgent {
@@ -142,11 +153,11 @@ extension AtprotoOAuthAgent {
 			clientId: clientId,
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
-		)
+		).tryUnwrap
 		return (session, session.saveStream)
 	}
 
-	private init(
+	private init?(
 		archive: Archive,
 		clientId: String,
 		authFetcher: HTTPFetcher,
@@ -159,16 +170,6 @@ extension AtprotoOAuthAgent {
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
 		)
-	}
-
-	//if expired not worth saving
-	var archive: OAuth.SessionState.Archive? {
-		get throws {
-			guard case .active(let sessionState) = state else {
-				return nil
-			}
-			return try sessionState.archive
-		}
 	}
 }
 
@@ -202,14 +203,7 @@ extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
 		}
 	}
 
-	public func refreshed(
-		tokenState: OAuth.SessionState.TokenState,
-		sessionMutable: OAuth.SessionState.Archive.Mutable?
-	) throws {
-		try save(tokenState: tokenState)
-	}
-
-	public var authServerRequestOptions: OAuth.AuthServerRequestOptions {
+	public var authServerRequestOptions: OAuth.TokenRequestOptions {
 		.atproto(
 			did: repo,
 			authFetcher: authFetcher
@@ -217,23 +211,18 @@ extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
 	}
 }
 
-extension AtprotoOAuthAgent: DPoPSigning {
-	public nonisolated var dpopKey: DPoPKey {
-		get throws {
-			try _dpopKey.tryUnwrap
-		}
+extension AtprotoOAuthAgent: OAuth.DPoP.Signing {
+
+	public func getNonce(origin: String) -> OAuth.DPoP.IndexedNonce? {
+		sessionState?.dPoPState?.getNonce(origin: origin)
 	}
 
-	public func getNonce(origin: String) -> IndexedNonce? {
-		nonceCache.object(forKey: origin as NSString)
-	}
-
-	public func cacheNonce(response: GermConvenience.HTTPDataResponse, requestUrl: URL) throws {
-		let indexedNonce = try AuthDPopState.decode(
-			dataResponse: response, requestUrl: requestUrl)
-		if let indexedNonce {
-			nonceCache.setObject(indexedNonce, forKey: indexedNonce.origin as NSString)
-		}
+	public func cacheNonce(
+		response: HTTPDataResponse,
+		requestUrl: URL
+	) throws {
+		try sessionState?.dPoPState?
+			.cacheNonce(response: response, requestUrl: requestUrl)
 	}
 
 }

@@ -37,7 +37,10 @@ struct APITests {
 
 	@Test func testAgentCreation() async throws {
 		let _ = try AtprotoOAuthAgent.restore(
-			archive: .init(did: "did:plc:4yvwfwxfz5sney4twepuzdu7", session: nil),
+			archive: .init(
+				did: "did:plc:4yvwfwxfz5sney4twepuzdu7",
+				session: .mock()
+			),
 			clientId: APITests.clientId,
 			authFetcher: URLSession.manualRedirect(),
 			atprotoResolver: resolver,
@@ -61,7 +64,10 @@ struct ClientAPITests {
 
 	init() async throws {
 		let (oauthAgent, _) = try AtprotoOAuthAgent.restore(
-			archive: .init(did: "did:plc:4yvwfwxfz5sney4twepuzdu7", session: nil),
+			archive: .init(
+				did: "did:plc:4yvwfwxfz5sney4twepuzdu7",
+				session: .mock()
+			),
 			clientId: APITests.clientId,
 			authFetcher: URLSession.manualRedirect(),
 			atprotoResolver: resolver,

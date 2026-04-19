@@ -10,11 +10,11 @@ import Foundation
 import GermConvenience
 import OAuth4Swift
 
-extension OAuth.AuthServerRequestOptions {
+extension OAuth.TokenRequestOptions {
 	static func atproto(
 		did: Atproto.DID,
 		authFetcher: HTTPFetcher,
-	) -> OAuth.AuthServerRequestOptions {
+	) -> Self {
 		.init(
 			additionalParameters: [:],
 			tokenValidator: { tokenResponse, authServerMetadata, previousSession in
@@ -62,24 +62,6 @@ extension OAuth.AuthServerRequestOptions {
 
 				return true
 			},
-		)
-	}
-}
-
-extension AuthDPopState {
-	static func decode(
-		dataResponse: HTTPDataResponse,
-		requestUrl: URL,
-	) throws -> IndexedNonce? {
-		let nonce = dataResponse.response.headerFields[try .dpopNonce.tryUnwrap]
-		guard let nonce else {
-			return nil
-		}
-
-		//henceforth should throw instead of return nil as nonce is expected
-		return try IndexedNonce(
-			requestUrl: requestUrl,
-			nonce: nonce
 		)
 	}
 }

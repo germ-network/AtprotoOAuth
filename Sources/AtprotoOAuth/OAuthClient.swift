@@ -66,8 +66,6 @@ extension AtprotoOAuthClient {
 		let clientAuthenticator = InitialAuthorizer(
 			clientId: clientInfo.clientId,
 			authFetcher: authFetcher,
-			dpopKey: .generateP256(),
-			decoder: AuthDPopState.decode
 		)
 
 		let authorizer = Authorizer(
@@ -78,15 +76,15 @@ extension AtprotoOAuthClient {
 					authEndpoint: authorizationServerUrl,
 					inputToken: nil,
 					additionalParameters: additionalParameters,
-					clientAuthenticator: clientAuthenticator
+					userAuthenticator: userAuthenticator,
+					clientAuthenticator: clientAuthenticator,
 				),
 
-			authServerRequestOptions:
+			tokenRequestOptions:
 				.atproto(
 					did: did,
 					authFetcher: authFetcher
 				),
-			userAuthenticator: userAuthenticator,
 			authFetcher: authFetcher
 		)
 
@@ -95,33 +93,31 @@ extension AtprotoOAuthClient {
 
 	struct Authorizer: OAuth.Authorizer {
 		let authorizeInputs: OAuth.AuthorizeInputs
-		let authServerRequestOptions: OAuth.AuthServerRequestOptions
-		let userAuthenticator: UserAuthenticator
+		let tokenRequestOptions: OAuth.TokenRequestOptions
 		let authFetcher: any HTTPFetcher
 	}
 }
 
 actor InitialAuthorizer {
 	nonisolated public let clientId: String
-	nonisolated public let dpopKey: DPoPKey
 	nonisolated public let authFetcher: any HTTPFetcher
 
+	//for client auth
 	nonisolated public let tokenEndpointAuthMethod: OAuth.ClientAuth.TokenEndpointMethods =
 		.none
 	let clientAuth = OAuth.ClientAuth.None()
 
-	let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
-	private let decoder: (HTTPDataResponse, URL) throws -> IndexedNonce?
+	//for dpop
+	let dpopState = OAuth.DPoP.State(
+		signingKey: .generateP256(),
+		decoder: OAuth.DPoP.decodeAtproto(dataResponse:requestUrl:)
+	)
 
 	public init(
 		clientId: String,
 		authFetcher: HTTPFetcher,
-		dpopKey: DPoPKey,
-		decoder: @escaping (HTTPDataResponse, URL) throws -> IndexedNonce?
 	) {
 		self.clientId = clientId
-		self.dpopKey = dpopKey
-		self.decoder = decoder
 		self.authFetcher = authFetcher
 	}
 }
@@ -142,17 +138,17 @@ extension InitialAuthorizer: OAuth.ClientAuth.Authenticable {
 	}
 }
 
-extension InitialAuthorizer: DPoPSigning {
-	func getNonce(origin: String) -> OAuth4Swift.IndexedNonce? {
-		nonceCache.object(forKey: origin as NSString)
+extension InitialAuthorizer: OAuth.DPoP.Signing {
+	var dpopKey: OAuth.DPoP.Key {
+		dpopState.signingKey
 	}
 
-	func cacheNonce(response: GermConvenience.HTTPDataResponse, requestUrl: URL) throws {
-		let indexedNonce = try AuthDPopState.decode(
-			dataResponse: response, requestUrl: requestUrl)
-		if let indexedNonce {
-			nonceCache.setObject(indexedNonce, forKey: indexedNonce.origin as NSString)
-		}
+	func getNonce(origin: String) -> OAuth.DPoP.IndexedNonce? {
+		dpopState.getNonce(origin: origin)
+	}
+
+	func cacheNonce(response: HTTPDataResponse, requestUrl: URL) throws {
+		try dpopState.cacheNonce(response: response, requestUrl: requestUrl)
 	}
 }
 
