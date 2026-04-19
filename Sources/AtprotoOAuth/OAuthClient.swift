@@ -36,6 +36,7 @@ extension AtprotoOAuthClient {
 		identity: AuthIdentity,
 	) async throws -> OAuth.SessionState.Archive {
 		let did: Atproto.DID
+		let didDoc: Atproto.DIDDocument
 		let additionalParameters: FormParameters?
 		switch identity {
 		case .did(let _did, let handle):
@@ -45,11 +46,12 @@ extension AtprotoOAuthClient {
 			} else {
 				additionalParameters = nil
 			}
+			didDoc = try await resolver.resolve(did: did).tryUnwrap
 
 		case .handle(let handle):
 			//resolve handle to pds, uncached
 
-			(did, _) =
+			(did, didDoc) =
 				try await resolver
 				.verifiedResolve(handle: handle)
 				.tryUnwrap
@@ -57,18 +59,13 @@ extension AtprotoOAuthClient {
 		}
 
 		let (authServerMetadata, authorizationServerUrl) =
-			try await resolver
-			.resolveAuthorizationServer(
-				identity: .did(did),
+			try await AtprotoOAuthUtils.getAuthorizationServerURL(
+				pdsServiceEndpoint: didDoc.pdsUrl,
 				authFetcher: authFetcher
 			)
 
-		let clientAuthenticator = InitialAuthorizer(
-			clientId: clientInfo.clientId,
-			authFetcher: authFetcher,
-		)
-
 		let authorizer = Authorizer(
+			clientId: clientInfo.clientId,
 			authorizeInputs:
 				.init(
 					clientInfo: clientInfo,
@@ -77,7 +74,6 @@ extension AtprotoOAuthClient {
 					inputToken: nil,
 					additionalParameters: additionalParameters,
 					userAuthenticator: userAuthenticator,
-					clientAuthenticator: clientAuthenticator,
 				),
 
 			tokenRequestOptions:
@@ -85,44 +81,45 @@ extension AtprotoOAuthClient {
 					did: did,
 					authFetcher: authFetcher
 				),
-			authFetcher: authFetcher
+			authFetcher: authFetcher,
 		)
 
 		return try await authorizer.performUserAuthentication()
 	}
 
-	struct Authorizer: OAuth.Authorizer {
+	actor Authorizer: OAuth.Authorizer, OAuth.DPoP.Signing {
+		let clientId: String
 		let authorizeInputs: OAuth.AuthorizeInputs
 		let tokenRequestOptions: OAuth.TokenRequestOptions
 		let authFetcher: any HTTPFetcher
+		
+		//for client auth
+		nonisolated public let tokenEndpointAuthMethod: OAuth.ClientAuth.TokenEndpointMethods =
+			.none
+		let clientAuth = OAuth.ClientAuth.None()
+		
+		//for dpop
+		let dpopState = OAuth.DPoP.State(
+			signingKey: .generateP256(),
+			decoder: OAuth.DPoP.decodeAtproto(dataResponse:requestUrl:)
+		)
+		
+		public init(
+			clientId: String,
+			authorizeInputs: OAuth.AuthorizeInputs,
+			tokenRequestOptions: OAuth.TokenRequestOptions,
+			authFetcher: any HTTPFetcher,
+		) {
+			self.clientId = clientId
+			self.authorizeInputs = authorizeInputs
+			self.tokenRequestOptions = tokenRequestOptions
+			self.authFetcher = authFetcher
+		}
 	}
 }
 
-actor InitialAuthorizer {
-	nonisolated public let clientId: String
-	nonisolated public let authFetcher: any HTTPFetcher
-
-	//for client auth
-	nonisolated public let tokenEndpointAuthMethod: OAuth.ClientAuth.TokenEndpointMethods =
-		.none
-	let clientAuth = OAuth.ClientAuth.None()
-
-	//for dpop
-	let dpopState = OAuth.DPoP.State(
-		signingKey: .generateP256(),
-		decoder: OAuth.DPoP.decodeAtproto(dataResponse:requestUrl:)
-	)
-
-	public init(
-		clientId: String,
-		authFetcher: HTTPFetcher,
-	) {
-		self.clientId = clientId
-		self.authFetcher = authFetcher
-	}
-}
-
-extension InitialAuthorizer: OAuth.ClientAuth.Authenticable {
+//OAuth.ClientAuth.Authenticable
+extension AtprotoOAuthClient.Authorizer {
 	func authenticate(inputs: OAuth.ClientAuth.Inputs) async throws -> (
 		FormParameters,
 		HTTPFields
@@ -133,12 +130,12 @@ extension InitialAuthorizer: OAuth.ClientAuth.Authenticable {
 		)
 	}
 
-	var clientAuthArchive: Data? {
+	nonisolated var clientAuthArchive: Data? {
 		nil
 	}
 }
 
-extension InitialAuthorizer: OAuth.DPoP.Signing {
+extension AtprotoOAuthClient.Authorizer {
 	var dpopKey: OAuth.DPoP.Key {
 		dpopState.signingKey
 	}

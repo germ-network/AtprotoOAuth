@@ -77,14 +77,14 @@ public actor AtprotoOAuthAgent {
 		self.lazyServerMetadata = .init(
 			fetchTaskGenerator: {
 				Task {
-					let authorizationServerURL =
-						try await atprotoResolver.resolveAuthorizationServer(
-							identity: .did(did),
+					let didDoc = try await atprotoResolver.resolve(did: did)
+						.tryUnwrap
+					return
+						try await AtprotoOAuthUtils
+						.getAuthorizationServerURL(
+							pdsServiceEndpoint: didDoc.pdsUrl,
 							authFetcher: authFetcher
-						).1
-					return try await authFetcher.authServerDiscovery(
-						endpoint: authorizationServerURL
-					).tryUnwrap
+						).0
 				}
 			})
 
@@ -245,7 +245,7 @@ extension AtprotoOAuthAgent: OAuth.ClientAuth.Authenticable {
 		try await clientAuth.authenticate(clientId: clientId, inputs: inputs)
 	}
 
-	public var clientAuthArchive: Data? {
+	public nonisolated var clientAuthArchive: Data? {
 		nil
 	}
 
