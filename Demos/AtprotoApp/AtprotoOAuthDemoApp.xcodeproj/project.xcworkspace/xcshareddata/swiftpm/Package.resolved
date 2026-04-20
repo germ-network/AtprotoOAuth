@@ -61,7 +61,7 @@
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
         "branch" : "feat/client-auth-refine",
-        "revision" : "4b53cacbac561bf5bd35afea2da1a6cf64401a59"
+        "revision" : "6e2f0011c20fbb047f44def3307f38ba30c0123a"
       }
     },
     {

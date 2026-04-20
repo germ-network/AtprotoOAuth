@@ -244,9 +244,4 @@ extension AtprotoOAuthAgent: OAuth.ClientAuth.Authenticable {
 	) {
 		try await clientAuth.authenticate(clientId: clientId, inputs: inputs)
 	}
-
-	public nonisolated var clientAuthArchive: Data? {
-		nil
-	}
-
 }
