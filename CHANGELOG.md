@@ -1,5 +1,18 @@
 # @germ-network/atprotooauth
 
+## 0.3.0
+
+### Minor Changes
+
+- [#37](https://github.com/germ-network/AtprotoOAuth/pull/37) [`68b0610`](https://github.com/germ-network/AtprotoOAuth/commit/68b061099f94febd8340c584631b6805f4ec3699) Thanks [@anna-germ](https://github.com/anna-germ)! - Get rid of AtprotoOAuthAgent's lazyIssuer
+  Make convenience function on Atproto.Resolver that combines getAuthorizationServerURL with initial identity resolution logic
+
+### Patch Changes
+
+- [#41](https://github.com/germ-network/AtprotoOAuth/pull/41) [`80712a6`](https://github.com/germ-network/AtprotoOAuth/commit/80712a6f6d21f80971403628380828914d09db78) Thanks [@germ-mark](https://github.com/germ-mark)! - adopt a Fallback resolver that combines two resolvers in serial
+
+- [#37](https://github.com/germ-network/AtprotoOAuth/pull/37) [`4a45b28`](https://github.com/germ-network/AtprotoOAuth/commit/4a45b2879af2d86edcbe2f6fc914637c11821764) Thanks [@anna-germ](https://github.com/anna-germ)! - Fix implementation of getAuthorizationURL
+
 ## 0.2.1
 
 ### Patch Changes
