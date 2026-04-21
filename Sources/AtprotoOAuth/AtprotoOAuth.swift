@@ -17,13 +17,16 @@ extension OAuth.TokenRequestOptions {
 	) -> Self {
 		.init(
 			additionalParameters: [:],
-			tokenValidator: { tokenResponse, authServerMetadata, previousSession in
+			tokenValidator: {
+ tokenResponse,
+ authServerMetadata,
+ previousSession in
 				guard tokenResponse.tokenType == .dpop else {
 					throw OAuthSessionError.expectedDpopToken(
 						tokenResponse.tokenType.rawValue)
 				}
 
-				let sub = try tokenResponse.additionalFields?["sub"].tryUnwrap
+				let sub = try tokenResponse.additionalTokenFields?["sub"].tryUnwrap
 				let subString = try (sub as? String).tryUnwrap
 
 				//for now, enforcing the did is the same as what we started with

@@ -92,18 +92,19 @@ extension AtprotoOAuthClient {
 		let authorizeInputs: OAuth.AuthorizeInputs
 		let tokenRequestOptions: OAuth.TokenRequestOptions
 		let authFetcher: any HTTPFetcher
-		
+
 		//for client auth
-		nonisolated public let tokenEndpointAuthMethod: OAuth.ClientAuth.TokenEndpointMethods =
-			.none
+		nonisolated public let tokenEndpointAuthMethod:
+			OAuth.ClientAuth.TokenEndpointMethods =
+				.none
 		let clientAuth = OAuth.ClientAuth.None()
-		
+
 		//for dpop
 		let dpopState = OAuth.DPoP.State(
 			signingKey: .generateP256(),
 			decoder: OAuth.DPoP.decodeAtproto(dataResponse:requestUrl:)
 		)
-		
+
 		public init(
 			clientId: String,
 			authorizeInputs: OAuth.AuthorizeInputs,
