@@ -8,22 +8,23 @@
 import AtprotoTypes
 import Foundation
 import GermConvenience
-import OAuth
+import HTTPTypes
+import OAuth4Swift
 
 //encapsulate the objects needed to authorize and restore a session
 public struct AtprotoOAuthClient: Sendable {
-	public let clientMetadata: OAuthClient
+	public let clientInfo: OAuth.ClientInfo
 	public let resolver: Atproto.Resolver
 	public let authFetcher: HTTPFetcher
 	public let userAuthenticator: UserAuthenticator
 
 	public init(
-		clientMetadata: OAuthClient,
+		clientInfo: OAuth.ClientInfo,
 		resolver: Atproto.Resolver,
 		authFetcher: HTTPFetcher,
 		userAuthenticator: @escaping UserAuthenticator
 	) {
-		self.clientMetadata = clientMetadata
+		self.clientInfo = clientInfo
 		self.resolver = resolver
 		self.authFetcher = authFetcher
 		self.userAuthenticator = userAuthenticator
@@ -33,90 +34,135 @@ public struct AtprotoOAuthClient: Sendable {
 extension AtprotoOAuthClient {
 	public func authorize(
 		identity: AuthIdentity,
-	) async throws -> SessionState.Archive {
-		let didDoc: Atproto.DIDDocument = try await {
-			switch identity {
-			case .handle(let handle):
-				return
-					try await resolver
-					.verifiedResolve(handle: handle)
-					.tryUnwrap
-			//handle is provided for the login UI, we accept the
-			//alsoKnown at from the did doc. Client's job to compare
-			//if that matters if they differ
-			case .did(let did, _):
-				return try await resolver.resolve(did: did)
-					.tryUnwrap
+	) async throws -> OAuth.SessionState.Archive {
+		let did: Atproto.DID
+		let didDoc: Atproto.DIDDocument
+		let additionalParameters: FormParameters?
+		switch identity {
+		case .did(let _did, let handle):
+			did = _did
+			if let handle {
+				additionalParameters = FormParameters(["login_hint": handle])
+			} else {
+				additionalParameters = nil
 			}
-		}()
+			didDoc = try await resolver.resolve(did: did).tryUnwrap
 
-		let authorizationServerUrl =
-			try await didDoc
-			.getAuthorizationUrl(authFetcher: authFetcher)
+		case .handle(let handle):
+			//resolve handle to pds, uncached
 
-		return try await AuthServerRequestOptions.atproto(
-			clientMetadata: clientMetadata,
-			did: didDoc.did,
-			authFetcher: authFetcher,
-			dpopSigner: AuthDPopState(
-				dpopKey: .generateP256(),
-				decoder: AuthDPopState.decode
+			(did, didDoc) =
+				try await resolver
+				.verifiedResolve(handle: handle)
+				.tryUnwrap
+			additionalParameters = FormParameters(["login_hint": handle])
+		}
+
+		let (authServerMetadata, authorizationServerUrl) =
+			try await AtprotoOAuthUtils.getAuthorizationServerURL(
+				pdsServiceEndpoint: didDoc.pdsUrl,
+				authFetcher: authFetcher
 			)
-		).performUserAuthentication(
-			authorizeInputs: .init(
-				clientMetadata: clientMetadata,
-				parConfig: .init(
-					parameters: ["login_hint": identity.serverHint]
+
+		let authorizer = Authorizer(
+			clientId: clientInfo.clientId,
+			authorizeInputs:
+				.init(
+					clientInfo: clientInfo,
+					authServerMetadata: authServerMetadata,
+					authEndpoint: authorizationServerUrl,
+					inputToken: nil,
+					additionalParameters: additionalParameters,
+					userAuthenticator: userAuthenticator,
 				),
-				issuer: authorizationServerUrl
-			),
-			userAuthenticator: userAuthenticator,
+
+			tokenRequestOptions:
+				.atproto(
+					did: did,
+					authFetcher: authFetcher
+				),
+			authFetcher: authFetcher,
 		)
+
+		return try await authorizer.performUserAuthentication()
+	}
+
+	actor Authorizer: OAuth.Authorizer, OAuth.DPoP.Signing {
+		let clientId: String
+		let authorizeInputs: OAuth.AuthorizeInputs
+		let tokenRequestOptions: OAuth.TokenRequestOptions
+		let authFetcher: any HTTPFetcher
+
+		//for client auth
+		nonisolated public let tokenEndpointAuthMethod:
+			OAuth.ClientAuth.TokenEndpointMethods =
+				.none
+		let clientAuth = OAuth.ClientAuth.None()
+
+		//for dpop
+		let dpopState = OAuth.DPoP.State(
+			signingKey: .generateP256(),
+			decoder: OAuth.DPoP.decodeAtproto(dataResponse:requestUrl:)
+		)
+
+		public init(
+			clientId: String,
+			authorizeInputs: OAuth.AuthorizeInputs,
+			tokenRequestOptions: OAuth.TokenRequestOptions,
+			authFetcher: any HTTPFetcher,
+		) {
+			self.clientId = clientId
+			self.authorizeInputs = authorizeInputs
+			self.tokenRequestOptions = tokenRequestOptions
+			self.authFetcher = authFetcher
+		}
+	}
+}
+
+//OAuth.ClientAuth.Authenticable
+extension AtprotoOAuthClient.Authorizer {
+	func authenticate(inputs: OAuth.ClientAuth.Inputs) async throws -> (
+		FormParameters,
+		HTTPFields
+	) {
+		try await clientAuth.authenticate(
+			clientId: clientId,
+			inputs: inputs
+		)
+	}
+
+	nonisolated var clientAuthArchive: Data? {
+		nil
+	}
+}
+
+extension AtprotoOAuthClient.Authorizer {
+	var dpopKey: OAuth.DPoP.Key {
+		dpopState.signingKey
+	}
+
+	func getNonce(origin: String) -> OAuth.DPoP.IndexedNonce? {
+		dpopState.getNonce(origin: origin)
+	}
+
+	func cacheNonce(response: HTTPDataResponse, requestUrl: URL) throws {
+		try dpopState.cacheNonce(response: response, requestUrl: requestUrl)
 	}
 }
 
 extension AtprotoOAuthClient {
 	public func restore(
 		archive: AtprotoOAuthAgent.Archive,
-	) throws -> (AtprotoOAuthAgent, AsyncStream<SessionState.Mutable?>) {
+	) throws -> (
+		AtprotoOAuthAgent,
+		AsyncStream<OAuth.SessionState.Archive.Mutable?>
+	) {
 		try AtprotoOAuthAgent
 			.restore(
 				archive: archive,
-				clientMetadata: clientMetadata,
+				clientId: clientInfo.clientId,
 				authFetcher: authFetcher,
 				atprotoResolver: resolver
 			)
-	}
-}
-
-extension Atproto.DIDDocument {
-	func getAuthorizationUrl(
-		authFetcher: HTTPFetcher
-	) async throws -> URL {
-		let pdsMetadata =
-			try await authFetcher.resourceDiscoveryRequest(url: pdsUrl)
-
-		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
-		//PDS doesn't actually fill this field, so we only check it if present
-		if let supportedAlgs = pdsMetadata.dpopSigningAlgValuesSupported {
-			guard supportedAlgs.contains("ES256")
-			else {
-				throw OAuthClientError.notImplemented
-			}
-		}
-
-		guard
-			let authorizationServerString = pdsMetadata.authorizationServers?.first,
-			let authorizationServerUrl = URL(string: authorizationServerString)
-		else {
-			throw OAuthClientError.missingUrlHost
-		}
-		return authorizationServerUrl
-	}
-
-	var did: Atproto.DID {
-		get throws {
-			try .init(string: id)
-		}
 	}
 }

@@ -8,28 +8,25 @@
 import AtprotoTypes
 import Foundation
 import GermConvenience
-import OAuth
+import OAuth4Swift
 
-extension AuthServerRequestOptions {
+extension OAuth.TokenRequestOptions {
 	static func atproto(
-		clientMetadata: OAuthClient,
 		did: Atproto.DID,
 		authFetcher: HTTPFetcher,
-		dpopSigner: DPoPSigning,
-	) -> AuthServerRequestOptions {
+	) -> Self {
 		.init(
-			// FIXME: Remove once client authentication is implemented.
-			additionalParameters: [
-				"client_id": clientMetadata.clientId
-			],
-			authFetcher: authFetcher,
-			tokenValidator: { tokenResponse, authServerMetadata, previousSession in
+			additionalParameters: [:],
+			tokenValidator: {
+ tokenResponse,
+ authServerMetadata,
+ previousSession in
 				guard tokenResponse.tokenType == .dpop else {
 					throw OAuthSessionError.expectedDpopToken(
 						tokenResponse.tokenType.rawValue)
 				}
 
-				let sub = try tokenResponse.additionalFields?["sub"].tryUnwrap
+				let sub = try tokenResponse.additionalTokenFields?["sub"].tryUnwrap
 				let subString = try (sub as? String).tryUnwrap
 
 				//for now, enforcing the did is the same as what we started with
@@ -68,25 +65,6 @@ extension AuthServerRequestOptions {
 
 				return true
 			},
-			dpopSigner: dpopSigner
-		)
-	}
-}
-
-extension AuthDPopState {
-	static func decode(
-		dataResponse: HTTPDataResponse,
-		requestUrl: URL,
-	) throws -> IndexedNonce? {
-		let nonce = dataResponse.response.headerFields[try .dpopNonce.tryUnwrap]
-		guard let nonce else {
-			return nil
-		}
-
-		//henceforth should throw instead of return nil as nonce is expected
-		return try IndexedNonce(
-			requestUrl: requestUrl,
-			nonce: nonce
 		)
 	}
 }

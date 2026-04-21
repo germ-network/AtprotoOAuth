@@ -5,7 +5,7 @@
 //  Created by Mark @ Germ on 2/19/26 from OAuthenticate
 //
 
-import OAuth
+import OAuth4Swift
 
 enum WebAuthenticationSessionError: Error {
 	case resultInvalid

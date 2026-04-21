@@ -10,129 +10,85 @@ import AtprotoTypes
 import Foundation
 import GermConvenience
 import HTTPTypes
-import OAuth
+import OAuth4Swift
 
 public actor AtprotoOAuthAgent {
 	public nonisolated let repo: Atproto.DID
 	public nonisolated let authenticatedDID: Atproto.DID
 	public nonisolated let resolver: Atproto.Resolver
-	public let clientMetadata: OAuthClient
+	public let clientId: String
 	public let authFetcher: HTTPFetcher
 
-	private let nonceCache: NSCache<NSString, IndexedNonce> = NSCache()
-
 	enum State {
-		case active(SessionState)
+		case active(OAuth.SessionState)
 		case expired
 
-		init(archive: SessionState.Archive?) {
+		init(archive: OAuth.SessionState.Archive?) throws {
 			if let archive {
-				self = .active(.init(archive: archive))
+				self = .active(
+					try .init(
+						archive: archive,
+						dpopDecoder: OAuth.DPoP.decodeAtproto
+					)
+				)
 			} else {
 				self = .expired
 			}
 		}
 	}
 	var state: State
-	public var lazyServerMetadata: LazyResource<AuthServerMetadata>
-	public var lazyIssuer: LazyResource<URL>
-	public var refreshTask: Task<SessionState.Mutable, Error>?
+	//we require one, so get the reference to the state in the SessionState at restore (or throw)
+	public nonisolated let dpopKey: OAuth.DPoP.Key
 
-	private let saveStream: AsyncStream<SessionState.Mutable?>
-	private let saveContinuation: AsyncStream<SessionState.Mutable?>.Continuation
+	public var lazyServerMetadata: LazyResource<AuthServerMetadata>
+	public var refreshTask: Task<OAuth.SessionState.TokenState, Error>?
+
+	private let saveStream: AsyncStream<OAuth.SessionState.Archive.Mutable?>
+	private let saveContinuation: AsyncStream<OAuth.SessionState.Archive.Mutable?>.Continuation
 	public enum StateUpdate {
 		case loggedOut
 	}
 	public let updateStream: AsyncStream<StateUpdate>
 	private let updateContinuation: AsyncStream<StateUpdate>.Continuation
 
-	private init(
+	private let clientAuth = OAuth.ClientAuth.None()
+
+	private init?(
 		did: Atproto.DID,
-		clientMetadata: OAuthClient,
+		clientId: String,
 		state: State,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: Atproto.Resolver
-	) {
+	) throws {
+		guard case .active(let sessionState) = state else {
+			return nil
+		}
+		let dpopState = try sessionState.dPoPState.tryUnwrap
+		dpopState.nonceCache.countLimit = 25
+
 		self.repo = did
 		self.authenticatedDID = did
-		self.clientMetadata = clientMetadata
+		self.clientId = clientId
 		self.state = state
 		self.authFetcher = authFetcher
 		self.resolver = atprotoResolver
+		self.dpopKey = dpopState.signingKey
 
 		self.lazyServerMetadata = .init(
 			fetchTaskGenerator: {
 				Task {
-					let pdsHost = try await atprotoResolver.resolve(did: did)
+					let didDoc = try await atprotoResolver.resolve(did: did)
 						.tryUnwrap
-						.pdsUrl
-					let pdsMetadata =
-						try await authFetcher.resourceDiscoveryRequest(
-							url: pdsHost)
-
-					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
-					//PDS doesn't actually fill this field, so we only check it if present
-					if let supportedAlgs = pdsMetadata
-						.dpopSigningAlgValuesSupported
-					{
-						guard supportedAlgs.contains("ES256")
-						else {
-							throw OAuthSessionError
-								.unsupportedDpopSigningAlgorithm
-						}
-					}
-
-					guard
-						let authorizationServerUrlString = pdsMetadata
-							.authorizationServers?.first,
-						let authorizationServerUrl = URL(
-							string: authorizationServerUrlString)
-					else {
-						throw OAuthSessionError.cantFormURL
-					}
-
-					return try await authFetcher.authServerDiscovery(
-						issuer: authorizationServerUrl)
+					return
+						try await AtprotoOAuthUtils
+						.getAuthorizationServerURL(
+							pdsServiceEndpoint: didDoc.pdsUrl,
+							authFetcher: authFetcher
+						).0
 				}
 			})
 
-		self.lazyIssuer = .init(
-			fetchTaskGenerator: {
-				Task {
-					let pdsHost = try await atprotoResolver.resolve(did: did)
-						.tryUnwrap
-						.pdsUrl
-					let pdsMetadata =
-						try await authFetcher.resourceDiscoveryRequest(
-							url: pdsHost)
-
-					//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
-					//PDS doesn't actually fill this field, so we only check it if present
-					if let supportedAlgs = pdsMetadata
-						.dpopSigningAlgValuesSupported
-					{
-						guard supportedAlgs.contains("ES256")
-						else {
-							throw OAuthSessionError.unsupported
-						}
-					}
-
-					guard
-						let authorizationServerUrl = pdsMetadata
-							.authorizationServers?.first,
-						let authorizationServer = URL(
-							string: authorizationServerUrl)
-					else {
-						throw OAuthSessionError.cantFormURL
-					}
-
-					return authorizationServer
-				}
-			})
-
-		nonceCache.countLimit = 25
-
-		(saveStream, saveContinuation) = AsyncStream<SessionState.Mutable?>
+		(saveStream, saveContinuation) = AsyncStream<OAuth.SessionState.Archive.Mutable?>
 			.makeStream(bufferingPolicy: .bufferingNewest(1))
 
 		(updateStream, updateContinuation) = AsyncStream<StateUpdate>
@@ -142,10 +98,15 @@ public actor AtprotoOAuthAgent {
 	//propagate new state to our in-memory opject properties
 	//then through the async streams
 
-	private func save(sessionMutable: SessionState.Mutable) throws {
-		try session.updated(mutable: sessionMutable)
+	private func save(tokenState: OAuth.SessionState.TokenState) throws {
+		try session.updated(tokenState: tokenState)
 
-		saveContinuation.yield(sessionMutable)
+		saveContinuation.yield(
+			.init(
+				clientAuth: try session.authArchive,
+				tokenState: tokenState
+			)
+		)
 		//don't need to undestand refresh in the UI yet
 		//		updateContinuation.yield( )
 	}
@@ -156,14 +117,23 @@ public actor AtprotoOAuthAgent {
 		saveContinuation.yield(nil)
 		updateContinuation.yield(.loggedOut)
 	}
+
+	var sessionState: OAuth.SessionState? {
+		switch state {
+		case .active(let sessionState):
+			sessionState
+		case .expired:
+			nil
+		}
+	}
 }
 
 extension AtprotoOAuthAgent {
 	public struct Archive: Sendable, Codable {
 		let did: String
-		public let session: SessionState.Archive?
+		public let session: OAuth.SessionState.Archive?
 
-		public init(did: String, session: SessionState.Archive?) {
+		public init(did: String, session: OAuth.SessionState.Archive?) {
 			self.did = did
 			self.session = session
 		}
@@ -171,40 +141,35 @@ extension AtprotoOAuthAgent {
 
 	static func restore(
 		archive: Archive,
-		clientMetadata: OAuthClient,
+		clientId: String,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: Atproto.Resolver
-	) throws -> (AtprotoOAuthAgent, AsyncStream<SessionState.Mutable?>) {
+	) throws -> (
+		AtprotoOAuthAgent,
+		AsyncStream<OAuth.SessionState.Archive.Mutable?>
+	) {
 		let session = try AtprotoOAuthAgent(
 			archive: archive,
-			clientMetadata: clientMetadata,
+			clientId: clientId,
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
-		)
+		).tryUnwrap
 		return (session, session.saveStream)
 	}
 
-	private init(
+	private init?(
 		archive: Archive,
-		clientMetadata: OAuthClient,
+		clientId: String,
 		authFetcher: HTTPFetcher,
 		atprotoResolver: Atproto.Resolver
 	) throws {
 		try self.init(
 			did: .init(string: archive.did),
-			clientMetadata: clientMetadata,
+			clientId: clientId,
 			state: .init(archive: archive.session),
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
 		)
-	}
-
-	//if expired not worth saving
-	var archive: SessionState.Archive? {
-		guard case .active(let sessionState) = state else {
-			return nil
-		}
-		return sessionState.archive
 	}
 }
 
@@ -224,8 +189,12 @@ extension AtprotoOAuthAgent: AuthPDSAgent {
 	}
 }
 
-extension AtprotoOAuthAgent: OAuthSessionCapabilities {
-	public var session: SessionState {
+extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
+	public func refreshed(tokenState: OAuth.SessionState.TokenState) throws {
+		try save(tokenState: tokenState)
+	}
+
+	public var session: OAuth.SessionState {
 		get throws {
 			guard case .active(let sessionState) = state else {
 				throw OAuthSessionError.sessionInactive
@@ -234,43 +203,26 @@ extension AtprotoOAuthAgent: OAuthSessionCapabilities {
 		}
 	}
 
-	public func refreshed(sessionMutable: SessionState.Mutable) throws {
-		try save(sessionMutable: sessionMutable)
-	}
-
-	public var retriableIssuer: URL {
-		get async throws {
-			try await lazyIssuer.lazyValue(isolation: self)
-		}
-	}
-
-	public var authServerRequestOptions: AuthServerRequestOptions {
+	public var authServerRequestOptions: OAuth.TokenRequestOptions {
 		.atproto(
-			clientMetadata: clientMetadata,
 			did: repo,
-			authFetcher: authFetcher,
-			dpopSigner: self
+			authFetcher: authFetcher
 		)
 	}
 }
 
-extension AtprotoOAuthAgent: DPoPSigning {
-	public var dpopKey: OAuth.DPoPKey {
-		get throws {
-			try session.dPopKey.tryUnwrap
-		}
+extension AtprotoOAuthAgent: OAuth.DPoP.Signing {
+
+	public func getNonce(origin: String) -> OAuth.DPoP.IndexedNonce? {
+		sessionState?.dPoPState?.getNonce(origin: origin)
 	}
 
-	public func getNonce(origin: String) -> OAuth.IndexedNonce? {
-		nonceCache.object(forKey: origin as NSString)
-	}
-
-	public func cacheNonce(response: GermConvenience.HTTPDataResponse, requestUrl: URL) throws {
-		let indexedNonce = try AuthDPopState.decode(
-			dataResponse: response, requestUrl: requestUrl)
-		if let indexedNonce {
-			nonceCache.setObject(indexedNonce, forKey: indexedNonce.origin as NSString)
-		}
+	public func cacheNonce(
+		response: HTTPDataResponse,
+		requestUrl: URL
+	) throws {
+		try sessionState?.dPoPState?
+			.cacheNonce(response: response, requestUrl: requestUrl)
 	}
 
 }
@@ -278,5 +230,18 @@ extension AtprotoOAuthAgent: DPoPSigning {
 extension AtprotoOAuthAgent {
 	func getPDSUrl() async throws -> URL {
 		try await self.resolver.resolve(did: repo).tryUnwrap.pdsUrl
+	}
+}
+
+extension AtprotoOAuthAgent: OAuth.ClientAuth.Authenticable {
+	public nonisolated var tokenEndpointAuthMethod: OAuth.ClientAuth.TokenEndpointMethods {
+		.none
+	}
+
+	public func authenticate(inputs: OAuth.ClientAuth.Inputs) async throws -> (
+		FormParameters,
+		HTTPFields
+	) {
+		try await clientAuth.authenticate(clientId: clientId, inputs: inputs)
 	}
 }

@@ -2,7 +2,7 @@ import AtprotoClient
 import Foundation
 import GermConvenience
 import Microcosm
-import OAuth
+import OAuth4Swift
 import Testing
 
 @testable import AtprotoOAuth
@@ -20,15 +20,16 @@ struct APITests {
 	//move this to the handle resolution library
 	@Test func testHandleResolution() async throws {
 		let parsedDid = try Atproto.DID(string: "did:plc:4yvwfwxfz5sney4twepuzdu7")
-		let resolvedDid = try await resolver
-			.verifiedResolve(handle: "germnetwork.com")?
-			.did
+		let (resolvedDid, _) =
+			try await resolver
+			.verifiedResolve(handle: "germnetwork.com")
+			.tryUnwrap
 		#expect(parsedDid == resolvedDid)
 
 		//don't yet have correct resoultion to nil
-//		#expect(try await resolver.verifiedResolve(handle: "null.germnetwork.com") == nil)
+		//		#expect(try await resolver.verifiedResolve(handle: "null.germnetwork.com") == nil)
 		//https://github.com/germ-network/Microcosm/issues/11
-		
+
 		await #expect(throws: (any Error).self) {
 			try await resolver.verifiedResolve(handle: "example.com") == nil
 		}
@@ -36,12 +37,11 @@ struct APITests {
 
 	@Test func testAgentCreation() async throws {
 		let _ = try AtprotoOAuthAgent.restore(
-			archive: .init(did: "did:plc:4yvwfwxfz5sney4twepuzdu7", session: nil),
-			clientMetadata: .init(
-				clientId: APITests.clientId,
-				scopes: Self.genericScopes,
-				redirectURI: APITests.redirectUri
+			archive: .init(
+				did: "did:plc:4yvwfwxfz5sney4twepuzdu7",
+				session: .mock()
 			),
+			clientId: APITests.clientId,
 			authFetcher: URLSession.manualRedirect(),
 			atprotoResolver: resolver,
 		)
@@ -64,12 +64,11 @@ struct ClientAPITests {
 
 	init() async throws {
 		let (oauthAgent, _) = try AtprotoOAuthAgent.restore(
-			archive: .init(did: "did:plc:4yvwfwxfz5sney4twepuzdu7", session: nil),
-			clientMetadata: .init(
-				clientId: APITests.clientId,
-				scopes: Self.genericScopes,
-				redirectURI: APITests.redirectUri
+			archive: .init(
+				did: "did:plc:4yvwfwxfz5sney4twepuzdu7",
+				session: .mock()
 			),
+			clientId: APITests.clientId,
 			authFetcher: URLSession.manualRedirect(),
 			atprotoResolver: resolver,
 		)
@@ -78,11 +77,13 @@ struct ClientAPITests {
 
 	@Test func exampleUsage() async throws {
 		let inputHandle = "markmx.bsky.social"
-		let resolvedDid = try await resolver
-			.verifiedResolve(handle: inputHandle)?
-			.did
+		let (resolvedDid, _) =
+			try await resolver
+			.verifiedResolve(handle: inputHandle)
+			.tryUnwrap
+
 		#expect(
-			resolvedDid?.stringRepresentation == "did:plc:lbu36k4mysk5g6gcrpw4dbwm"
+			resolvedDid.stringRepresentation == "did:plc:lbu36k4mysk5g6gcrpw4dbwm"
 		)
 
 		//		//make some unauthed requests. e.g. is this did already using germ?

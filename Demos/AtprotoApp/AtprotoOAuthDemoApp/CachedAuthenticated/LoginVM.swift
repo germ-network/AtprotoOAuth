@@ -12,7 +12,7 @@ import AuthenticationServices
 import Foundation
 import GermConvenience
 import Microcosm
-import OAuth
+import OAuth4Swift
 import os
 
 //has a storage that my
@@ -47,7 +47,7 @@ import os
 		self.sessionStorage = .init(did: did)
 
 		self.client = AtprotoOAuthClient(
-			clientMetadata: .demo,
+			clientInfo: .demo,
 			resolver: resolver,
 			authFetcher: URLSession.manualRedirect(),
 			userAuthenticator: ASWebAuthenticationSession.userAuthenticator()
@@ -111,19 +111,19 @@ import os
 		}
 	}
 
-	private func saved(update: SessionState.Mutable?) {
+	private func saved(update: OAuth.SessionState.Archive.Mutable?) {
 		//if we get nil, signifies we tear down the session
 		guard let update else {
 			self.sessionStorage.sessionArchive = nil
 			return
 		}
-		guard let existing = self.sessionStorage.sessionArchive else {
+		guard var editState = self.sessionStorage.sessionArchive else {
 			Self.logger.error("saving without an archive to save to")
 			return
 		}
-		self.sessionStorage.sessionArchive =
-			existing
-			.merge(update: update)
+		editState.clientAuth = update.clientAuth
+		editState.tokenState = update.tokenState
+		self.sessionStorage.sessionArchive = editState
 	}
 
 	//clear inMemory state
@@ -215,7 +215,11 @@ import os
 			.tryUnwrap
 			.pds
 
-			return PublicPDSAgent(did: did, serviceUrl: pdsUrl)
+			return PublicPDSAgent(
+				did: did,
+				resourceFetcher: URLSession.shared,
+				serviceUrl: pdsUrl
+			)
 		}
 	}
 
@@ -252,13 +256,13 @@ import os
 struct SessionWrapper {
 	// TODO: I don't know that the agent is the right thing to store here
 	let agent: AtprotoOAuthAgent
-	private let saveStream: AsyncStream<SessionState.Mutable?>
+	private let saveStream: AsyncStream<OAuth.SessionState.Archive.Mutable?>
 	//hold onto the save continuation
 	let saveTask: Task<Void, Never>
 
 	init(
 		agent: AtprotoOAuthAgent,
-		saveStream: AsyncStream<SessionState.Mutable?>,
+		saveStream: AsyncStream<OAuth.SessionState.Archive.Mutable?>,
 		saveClosure: @escaping () async -> Void
 	) {
 		self.agent = agent

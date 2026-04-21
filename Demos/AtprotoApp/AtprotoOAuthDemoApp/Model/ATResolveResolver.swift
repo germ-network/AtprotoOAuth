@@ -1,5 +1,5 @@
 //
-//  AtprotoPLCResolver.swift
+//  ATResolveResolver.swift
 //  AtprotoClient
 //
 //  Created by Anna Mistele on 3/18/26.
