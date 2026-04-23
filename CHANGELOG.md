@@ -1,5 +1,12 @@
 # @germ-network/atprotooauth
 
+## 0.4.0
+
+### Minor Changes
+
+- [#44](https://github.com/germ-network/AtprotoOAuth/pull/44) [`e7ec3af`](https://github.com/germ-network/AtprotoOAuth/commit/e7ec3afd3486abde0134faf8ae8d3500302373ca) Thanks [@germ-mark](https://github.com/germ-mark)! - \* adopt refresh changes in oauth4Swift, consuming an optional saved state, changing our refreshed(tokenState:) api to take an optional parameter.
+  - expose an api to merge session archive state
+
 ## 0.3.0
 
 ### Minor Changes
