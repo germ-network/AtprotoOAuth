@@ -18,9 +18,9 @@ extension OAuth.TokenRequestOptions {
 		.init(
 			additionalParameters: [:],
 			tokenValidator: {
- tokenResponse,
- authServerMetadata,
- previousSession in
+				tokenResponse,
+				authServerMetadata,
+				previousSession in
 				guard tokenResponse.tokenType == .dpop else {
 					throw OAuthSessionError.expectedDpopToken(
 						tokenResponse.tokenType.rawValue)

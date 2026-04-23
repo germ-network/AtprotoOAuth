@@ -98,15 +98,20 @@ public actor AtprotoOAuthAgent {
 	//propagate new state to our in-memory opject properties
 	//then through the async streams
 
-	private func save(tokenState: OAuth.SessionState.TokenState) throws {
-		try session.updated(tokenState: tokenState)
+	private func save(tokenState: OAuth.SessionState.TokenState?) throws {
 
-		saveContinuation.yield(
-			.init(
-				clientAuth: try session.authArchive,
-				tokenState: tokenState
+		if let tokenState {
+			try session.updated(tokenState: tokenState)
+
+			saveContinuation.yield(
+				.init(
+					clientAuth: try session.authArchive,
+					tokenState: tokenState
+				)
 			)
-		)
+		} else {
+			saveContinuation.yield(nil)
+		}
 		//don't need to undestand refresh in the UI yet
 		//		updateContinuation.yield( )
 	}
@@ -131,11 +136,21 @@ public actor AtprotoOAuthAgent {
 extension AtprotoOAuthAgent {
 	public struct Archive: Sendable, Codable {
 		let did: String
-		public let session: OAuth.SessionState.Archive?
+		public var session: OAuth.SessionState.Archive?
 
 		public init(did: String, session: OAuth.SessionState.Archive?) {
 			self.did = did
 			self.session = session
+		}
+
+		public mutating func merge(
+			mutableArchive: OAuth.SessionState.Archive.Mutable?
+		) {
+			guard let mutableArchive else {
+				session = nil
+				return
+			}
+			session?.merge(mutable: mutableArchive)
 		}
 	}
 
@@ -190,7 +205,7 @@ extension AtprotoOAuthAgent: AuthPDSAgent {
 }
 
 extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
-	public func refreshed(tokenState: OAuth.SessionState.TokenState) throws {
+	public func refreshed(tokenState: OAuth.SessionState.TokenState?) throws {
 		try save(tokenState: tokenState)
 	}
 
