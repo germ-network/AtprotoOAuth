@@ -136,11 +136,21 @@ public actor AtprotoOAuthAgent {
 extension AtprotoOAuthAgent {
 	public struct Archive: Sendable, Codable {
 		let did: String
-		public let session: OAuth.SessionState.Archive?
+		public var session: OAuth.SessionState.Archive?
 
 		public init(did: String, session: OAuth.SessionState.Archive?) {
 			self.did = did
 			self.session = session
+		}
+
+		public mutating func merge(
+			mutableArchive: OAuth.SessionState.Archive.Mutable?
+		) {
+			guard let mutableArchive else {
+				session = nil
+				return
+			}
+			session?.merge(mutable: mutableArchive)
 		}
 	}
 
