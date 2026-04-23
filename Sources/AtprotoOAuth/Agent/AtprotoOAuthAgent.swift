@@ -98,15 +98,20 @@ public actor AtprotoOAuthAgent {
 	//propagate new state to our in-memory opject properties
 	//then through the async streams
 
-	private func save(tokenState: OAuth.SessionState.TokenState) throws {
-		try session.updated(tokenState: tokenState)
+	private func save(tokenState: OAuth.SessionState.TokenState?) throws {
 
-		saveContinuation.yield(
-			.init(
-				clientAuth: try session.authArchive,
-				tokenState: tokenState
+		if let tokenState {
+			try session.updated(tokenState: tokenState)
+
+			saveContinuation.yield(
+				.init(
+					clientAuth: try session.authArchive,
+					tokenState: tokenState
+				)
 			)
-		)
+		} else {
+			saveContinuation.yield(nil)
+		}
 		//don't need to undestand refresh in the UI yet
 		//		updateContinuation.yield( )
 	}
@@ -190,7 +195,7 @@ extension AtprotoOAuthAgent: AuthPDSAgent {
 }
 
 extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
-	public func refreshed(tokenState: OAuth.SessionState.TokenState) throws {
+	public func refreshed(tokenState: OAuth.SessionState.TokenState?) throws {
 		try save(tokenState: tokenState)
 	}
 

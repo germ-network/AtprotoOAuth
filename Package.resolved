@@ -52,7 +52,7 @@
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
         "branch" : "fix/refresh-api",
-        "revision" : "ade905431ac6bd75c7c388bf556c46006e804f1a"
+        "revision" : "32791c3904b6bab01f6d14a552542c1f512b967c"
       }
     },
     {
