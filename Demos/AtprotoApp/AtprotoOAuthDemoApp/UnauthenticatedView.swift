@@ -21,6 +21,7 @@ struct UnauthenticatedView: View {
 	@State private var isFollowedByGerm: Bool?
 
 	@State private var follows: [Atproto.DID] = []
+	@State private var blocks: [Atproto.DID] = []
 	@State private var profileRecord: Lexicon.App.Bsky.Actor.Profile?
 	@State private var handle: String?
 	@State private var avatarBlob: Data?
@@ -136,6 +137,11 @@ struct UnauthenticatedView: View {
 							Text($0.stringRepresentation)
 						}
 					}
+					Section("\(blocks.count) Blocks") {
+						ForEach(blocks, id: \.self) {
+							Text($0.stringRepresentation)
+						}
+					}
 				}
 			}
 		}
@@ -230,6 +236,18 @@ struct UnauthenticatedView: View {
 				}
 			} catch {
 				print("Error loading follows: \(error)")
+			}
+
+			// Blocks
+			print("Loading blocks...")
+			do {
+				let stream = try await agent.getBlocksStream()
+				blocks = []
+				for try await batch in stream {
+					blocks += batch
+				}
+			} catch {
+				print("Error loading blocks: \(error)")
 			}
 		}
 

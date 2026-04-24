@@ -86,6 +86,31 @@ struct LoginView: View {
 						Text(verbatim: "Followed by: \(followedBy)")
 					}
 				}
+				Section("Block") {
+					HStack {
+						Text("@").foregroundStyle(.blue)
+						TextField(
+							"username.bsky.social",
+							text: $otherHandle
+						)
+						#if os(iOS)
+							.keyboardType(.URL)
+							.textInputAutocapitalization(.never)
+						#endif
+						.autocorrectionDisabled()
+						Spacer()
+					}
+					if viewModel.blockingTask == nil {
+						Button("Block") {
+							viewModel.blockUser(otherHandle)
+						}
+						if let blockResult = viewModel.blockResult {
+							Text(blockResult)
+						}
+					} else {
+						ProgressView()
+					}
+				}
 				Section("Message Delegate") {
 					Button("Post messaging delegate: users I follow") {
 						Task {
