@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.4.1
+
+### Patch Changes
+
+- [#46](https://github.com/germ-network/AtprotoOAuth/pull/46) [`4e491db`](https://github.com/germ-network/AtprotoOAuth/commit/4e491dbd76c5bf5962c4cb05333bc5d9c2ffa939) Thanks [@germ-mark](https://github.com/germ-mark)! - check for handle with at:// prefix when confirming handle
+
 ## 0.4.0
 
 ### Minor Changes
