@@ -11,7 +11,7 @@ import SwiftUI
 struct Resolver: View {
 	@State private var viewModel = ResolverVM()
 	private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-	
+
 	var body: some View {
 		VStack(alignment: .center, spacing: 20) {
 			Picker("Resolver", selection: $viewModel.choices) {
@@ -19,7 +19,7 @@ struct Resolver: View {
 				Text("ATResolve").tag(ResolverVM.Choices.atresolve)
 				Text("Fallback").tag(ResolverVM.Choices.fallback)
 			}
-			
+
 			switch viewModel.state {
 			case .collectHandle:
 				EmptyView()
@@ -33,7 +33,7 @@ struct Resolver: View {
 						}
 					}
 			}
-			
+
 			switch viewModel.state {
 			case .collectHandle:
 				Spacer()
@@ -47,9 +47,9 @@ struct Resolver: View {
 			case .complete(let time):
 				Text("Resolution took \(time) seconds")
 			}
-			
+
 			Spacer()
-			
+
 			Section(viewModel.logs.count > 0 ? "Logs" : "") {
 				VStack(alignment: .leading, spacing: 10) {
 					ForEach(viewModel.logs) { log in
@@ -66,5 +66,5 @@ struct Resolver: View {
 }
 
 #Preview {
-    Resolver()
+	Resolver()
 }

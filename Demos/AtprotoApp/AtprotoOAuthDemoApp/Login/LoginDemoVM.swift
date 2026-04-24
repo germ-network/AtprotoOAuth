@@ -28,7 +28,7 @@ struct LogEntry: Identifiable {
 		case loggedIn(AtprotoOAuthAgent)
 	}
 	var state: State = .collectHandle
-	
+
 	var logs: [LogEntry] = []
 
 	let client = AtprotoOAuthClient(

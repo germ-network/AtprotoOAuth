@@ -37,7 +37,7 @@ extension Atproto.Resolver {
 		let document = try await resolve(did: did).tryUnwrap
 
 		guard document.alsoKnownAs?.count == 1,
-			document.alsoKnownAs?.first == handle
+			document.alsoKnownAs?.first == "at://" + handle
 		else {
 			throw OAuthClientError.handleMismatch
 		}
