@@ -15,6 +15,11 @@ import Microcosm
 import OAuth4Swift
 import SwiftUI
 
+struct LogEntry: Identifiable {
+	let id: UUID = .init()
+	let body: String
+}
+
 @Observable final class LoginDemoVM {
 	enum State {
 		case collectHandle
@@ -23,10 +28,7 @@ import SwiftUI
 		case loggedIn(AtprotoOAuthAgent)
 	}
 	var state: State = .collectHandle
-	struct LogEntry: Identifiable {
-		let id: UUID = .init()
-		let body: String
-	}
+
 	var logs: [LogEntry] = []
 
 	let client = AtprotoOAuthClient(
@@ -85,5 +87,11 @@ import SwiftUI
 	func reset() {
 		state = .collectHandle
 		logs = []
+	}
+}
+
+extension LoginDemoVM: CollectHandleParent {
+	func collected(handle: String) {
+		login(handle: handle)
 	}
 }

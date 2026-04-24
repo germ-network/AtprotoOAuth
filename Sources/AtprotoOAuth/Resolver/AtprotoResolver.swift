@@ -36,9 +36,7 @@ extension Atproto.Resolver {
 		//if a did doc doesn't resolve it's an error
 		let document = try await resolve(did: did).tryUnwrap
 
-		guard document.alsoKnownAs?.count == 1,
-			document.alsoKnownAs?.first == handle
-		else {
+		guard document.handle == handle else {
 			throw OAuthClientError.handleMismatch
 		}
 		return (did, document)
