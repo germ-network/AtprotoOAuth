@@ -14,6 +14,12 @@ struct Resolver: View {
 	
 	var body: some View {
 		VStack(alignment: .center, spacing: 20) {
+			Picker("Resolver", selection: $viewModel.choices) {
+				Text("Slingshot").tag(ResolverVM.Choices.slingshot)
+				Text("ATResolve").tag(ResolverVM.Choices.atresolve)
+				Text("Fallback").tag(ResolverVM.Choices.fallback)
+			}
+			
 			switch viewModel.state {
 			case .collectHandle:
 				EmptyView()
