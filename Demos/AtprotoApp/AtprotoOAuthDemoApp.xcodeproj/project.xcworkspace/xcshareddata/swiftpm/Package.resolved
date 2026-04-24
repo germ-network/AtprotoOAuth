@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "branch" : "feat/form-parameters-multipart-boundary",
-        "revision" : "a0a6bee8ed64e2e436615459e90197511ec7e543"
+        "revision" : "aa6c84822b0b0093a21dd307718795a51f0aa9c9",
+        "version" : "0.1.2"
       }
     },
     {
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "branch" : "feat/client-auth-refine",
-        "revision" : "6e2f0011c20fbb047f44def3307f38ba30c0123a"
+        "revision" : "0c8aea27ca8800846d45008e6920e36c67a8f581",
+        "version" : "0.3.2"
       }
     },
     {
