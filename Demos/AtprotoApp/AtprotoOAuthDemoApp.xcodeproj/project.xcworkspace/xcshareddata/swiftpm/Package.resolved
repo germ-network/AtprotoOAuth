@@ -1,13 +1,13 @@
 {
-  "originHash" : "0cba7458a08618996cb7bdf5e875da6559d1e9087a8c7f6afa51a46266417450",
+  "originHash" : "63f988c145920b210d460a15be3adeedc3aa8ebc6443869964efc65b01e5f5dc",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "9e5982e6d7271adc1bf700505506b8a86220f93c",
-        "version" : "0.5.1"
+        "revision" : "b432a91a5ce448e6b73ad4a961d5a8ee7137bb98",
+        "version" : "0.5.2"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "8f04a0251e785c6b17c9b8784b7f0ec6b2f41701",
-        "version" : "0.3.0"
+        "revision" : "6d3c1ab1aeb16f48df54bed02170bfff90d8b9d3",
+        "version" : "0.3.4"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "branch" : "feat/form-parameters-multipart-boundary",
-        "revision" : "a0a6bee8ed64e2e436615459e90197511ec7e543"
+        "revision" : "aa6c84822b0b0093a21dd307718795a51f0aa9c9",
+        "version" : "0.1.2"
       }
     },
     {
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "branch" : "feat/client-auth-refine",
-        "revision" : "6e2f0011c20fbb047f44def3307f38ba30c0123a"
+        "revision" : "0c8aea27ca8800846d45008e6920e36c67a8f581",
+        "version" : "0.3.2"
       }
     },
     {
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "476538ccb827f2dd18efc5de754cc87d77127a47",
-        "version" : "4.4.0"
+        "revision" : "1b6b2e274e85105bfa155183145a1dcfd63331f1",
+        "version" : "4.5.0"
       }
     },
     {
