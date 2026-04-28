@@ -11,15 +11,18 @@ import Foundation
 
 ///https://github.com/germ-network/lexicon/blob/main/lexicons/com/germnetwork/declaration.json
 extension Lexicon.Com.GermNetwork {
-	public nonisolated struct Declaration: Sendable, Codable {
-		/// The identifier of the lexicon.
-		///
-		/// - Warning: The value must not change.
-		//is "id" in the lexicon but avoid conflict with Swift id
-		public static let nsid: Atproto.NSID = "com.germnetwork.declaration"
-		public typealias Key = Lexicon.LiteralSelfRecordKey
+	public nonisolated struct Declaration: Atproto.Record {
+		public struct Collection: Atproto.RecordType {
+			static public var nsid: Atproto.NSID {
+				.init(string: "com.germnetwork.declaration")
+			}
+			public init() {}
+		}
+		
 		//for encoding
-		private(set) var nsid: Atproto.NSID = Self.nsid
+		//periphery: ignore
+		private(set) var nsid = Collection()
+		public typealias Key = Atproto.LiteralSelfRecordKey
 
 		/// Required, Opaque.
 		/// Expected to parse to a SemVer. While the lexicon is fixed, the version applies to the format of opaque content
@@ -27,11 +30,11 @@ extension Lexicon.Com.GermNetwork {
 
 		/// Required, Opaque to AppViews (possible future - parse this and validate signature over the DID in keyPackage)
 		/// ed25519 public key prefixed with a byte enum
-		public let currentKey: LexiconBytes
+		public let currentKey: Atproto.Primitive.Bytes
 
 		/// Required, Opaque to AppViews
 		/// Contains MLS KeyPackage(s), and other signature data, and is signed by the currentKey
-		public let keyPackage: LexiconBytes?
+		public let keyPackage: Atproto.Primitive.Bytes?
 
 		/// Optional
 		/// Encapsulates the required url and `showButtonTo`  properties to show a button to other users
@@ -50,26 +53,7 @@ extension Lexicon.Com.GermNetwork {
 			case continuityProofs
 		}
 
-		public init(from decoder: any Decoder) throws {
-			let container = try decoder.container(keyedBy: CodingKeys.self)
-
-			self.nsid =
-				try container
-				.decode(String.self, forKey: CodingKeys.nsid)
-			guard self.nsid == Self.nsid else {
-				throw AtprotoTypeError.invalidRecordType
-			}
-
-			self.version = try container.decode(String.self, forKey: CodingKeys.version)
-			self.currentKey = try container.decode(
-				LexiconBytes.self, forKey: CodingKeys.currentKey)
-			self.keyPackage = try container.decodeIfPresent(
-				LexiconBytes.self, forKey: CodingKeys.keyPackage)
-			self.messageMe = try container.decodeIfPresent(
-				MessageMeInstructions.self, forKey: CodingKeys.messageMe)
-			self.continuityProofs = try container.decodeIfPresent(
-				[Data].self, forKey: CodingKeys.continuityProofs)
-		}
+		
 
 		public init(
 			version: String,
@@ -116,7 +100,7 @@ extension Lexicon.Com.GermNetwork {
 	}
 }
 
-nonisolated extension Lexicon.Com.GermNetwork.Declaration: AtprotoRecord {
+nonisolated extension Lexicon.Com.GermNetwork.Declaration {
 	public static func mock() -> Lexicon.Com.GermNetwork.Declaration {
 		.init(
 			version: "1.1.0",

@@ -26,8 +26,7 @@ extension Atproto {
 extension Atproto.Resolver {
 	public func verifiedResolve(handle: Atproto.Handle) async throws -> (
 		Atproto.DID,
-		Atproto
-			.DIDDocument
+		Atproto.DIDDocument
 	)? {
 		guard let did = try await resolve(handle: handle) else {
 			return nil
@@ -35,17 +34,17 @@ extension Atproto.Resolver {
 
 		//if a did doc doesn't resolve it's an error
 		let document = try await resolve(did: did).tryUnwrap
-
-		guard document.alsoKnownAs?.count == 1,
-			document.alsoKnownAs?.first == handle
-		else {
+		
+		guard let documentHandle = document.handle,
+			  documentHandle == handle else {
 			throw OAuthClientError.handleMismatch
 		}
+
 		return (did, document)
 	}
 
 	public func resolve(
-		atIdentifier: AtIdentifier
+		atIdentifier: LexiconString.AtIdentifier
 	) async throws -> (Atproto.DID, Atproto.DIDDocument)? {
 		switch atIdentifier {
 		case .handle(let handle):

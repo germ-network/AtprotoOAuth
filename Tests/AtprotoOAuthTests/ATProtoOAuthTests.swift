@@ -22,7 +22,7 @@ struct APITests {
 		let parsedDid = try Atproto.DID(string: "did:plc:4yvwfwxfz5sney4twepuzdu7")
 		let (resolvedDid, _) =
 			try await resolver
-			.verifiedResolve(handle: "germnetwork.com")
+			.verifiedResolve(handle: .init(string: "germnetwork.com"))
 			.tryUnwrap
 		#expect(parsedDid == resolvedDid)
 
@@ -31,7 +31,7 @@ struct APITests {
 		//https://github.com/germ-network/Microcosm/issues/11
 
 		await #expect(throws: (any Error).self) {
-			try await resolver.verifiedResolve(handle: "example.com") == nil
+			try await resolver.verifiedResolve(handle: .init(string:  "example.com")) == nil
 		}
 	}
 
@@ -56,7 +56,7 @@ enum AuthHarness {
 }
 
 struct ClientAPITests {
-	let oauthClient: XRPCProxyCallable
+	let oauthClient: Atproto.XRPC.ProxyCallable
 	static let genericScopes = ["atproto", "transition:generic"]
 	let resolver = SlingshotResolver(
 		slingshot: .init(resourceFetcher: URLSession.shared)
@@ -76,14 +76,14 @@ struct ClientAPITests {
 	}
 
 	@Test func exampleUsage() async throws {
-		let inputHandle = "markmx.bsky.social"
+		let inputHandle = try Atproto.Handle(string: "germnetwork.com")
 		let (resolvedDid, _) =
 			try await resolver
 			.verifiedResolve(handle: inputHandle)
 			.tryUnwrap
 
 		#expect(
-			resolvedDid.stringRepresentation == "did:plc:lbu36k4mysk5g6gcrpw4dbwm"
+			resolvedDid.rawValue == "did:plc:4yvwfwxfz5sney4twepuzdu7"
 		)
 
 		//		//make some unauthed requests. e.g. is this did already using germ?

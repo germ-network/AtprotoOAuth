@@ -42,7 +42,7 @@ import os
 		}
 
 		let task = Task {
-			try await resolver.resolve(handle: handle).tryUnwrap
+			try await resolver.resolve(handle: .init(string: handle)).tryUnwrap
 		}
 		state = .handleToDid(task)
 

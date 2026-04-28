@@ -26,7 +26,7 @@ public struct SlingshotResolver: Atproto.Resolver {
 
 	public func resolve(did: Atproto.DID) async throws -> Atproto.DIDDocument? {
 		try await slingshot
-			.resolveMiniDoc(identifier: did.stringRepresentation)?
+			.resolveMiniDoc(identifier: .did(did))?
 			.didDocument
 	}
 
@@ -34,7 +34,7 @@ public struct SlingshotResolver: Atproto.Resolver {
 		handle: Atproto.Handle
 	) async throws -> (Atproto.DID, Atproto.DIDDocument)? {
 		let document = try await slingshot
-			.resolveMiniDoc(identifier: handle.stringRepresentation)?
+			.resolveMiniDoc(identifier: .handle(handle))?
 			.didDocument
 		guard let document else {
 			return nil
@@ -54,23 +54,5 @@ extension SlingshotResolver {
 				"not implemented"
 			}
 		}
-	}
-}
-
-extension Lexicon.Blue.Microcosm.Identity.ResolveMiniDoc.Output {
-	var didDocument: Atproto.DIDDocument {
-		.init(
-			context: [],
-			id: did.stringRepresentation,
-			alsoKnownAs: [handle],
-			verificationMethod: [],
-			service: [
-				.init(
-					id: "#atproto_pds",
-					type: "AtprotoPersonalDataServer",
-					serviceEndpoint: pds
-				)
-			]
-		)
 	}
 }

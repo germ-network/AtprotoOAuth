@@ -40,7 +40,7 @@ extension OAuth.TokenRequestOptions {
 
 				//more full implementation is to check the new did if different
 				//and its issuer
-				guard subString == did.stringRepresentation else {
+				guard subString == did.rawValue else {
 					throw OAuthClientError.subDidMismatch
 				}
 

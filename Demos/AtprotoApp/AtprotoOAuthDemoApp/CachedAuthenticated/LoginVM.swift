@@ -67,7 +67,7 @@ import os
 			}
 
 			let sessionState = try await client.authorize(
-				identity: .did(did, handle: handle)
+				identity: .did(did, handle: .init(string: handle))
 			)
 
 			let (oauthAgent, saveStream) =
@@ -75,7 +75,7 @@ import os
 				.restore(
 					archive:
 						.init(
-							did: did.stringRepresentation,
+							did: did.rawValue,
 							session: sessionState
 						)
 				)
@@ -145,7 +145,7 @@ import os
 		let restoreTask = Task {
 			let (restored, saveStream) = try client.restore(
 				archive: .init(
-					did: sessionStorage.did.stringRepresentation,
+					did: sessionStorage.did.rawValue,
 					session: archive,
 				),
 			)
@@ -192,7 +192,9 @@ import os
 		guard let authedClient else {
 			return
 		}
-		let otherDid = try await resolver.resolve(handle: otherHandle).tryUnwrap
+		let otherDid = try await resolver.resolve(
+			handle: .init(string: otherHandle)
+		).tryUnwrap
 		let metadata = try await authedClient.authBskyProfileViewerState(for: otherDid)
 		blocking = metadata.blocking != nil
 		blocked = metadata.blockedBy
@@ -211,9 +213,9 @@ import os
 			let pdsUrl = try await Microcosm.Slingshot(
 				resourceFetcher: URLSession.shared
 			)
-			.resolveMiniDoc(identifier: did.stringRepresentation)
-			.tryUnwrap
-			.pds
+				.resolveMiniDoc(identifier: .did(did))
+				.tryUnwrap
+				.pds
 
 			return PublicPDSAgent(
 				did: did,

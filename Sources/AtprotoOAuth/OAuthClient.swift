@@ -37,15 +37,9 @@ extension AtprotoOAuthClient {
 	) async throws -> OAuth.SessionState.Archive {
 		let did: Atproto.DID
 		let didDoc: Atproto.DIDDocument
-		let additionalParameters: FormParameters?
 		switch identity {
 		case .did(let _did, let handle):
 			did = _did
-			if let handle {
-				additionalParameters = FormParameters(["login_hint": handle])
-			} else {
-				additionalParameters = nil
-			}
 			didDoc = try await resolver.resolve(did: did).tryUnwrap
 
 		case .handle(let handle):
@@ -55,8 +49,10 @@ extension AtprotoOAuthClient {
 				try await resolver
 				.verifiedResolve(handle: handle)
 				.tryUnwrap
-			additionalParameters = FormParameters(["login_hint": handle])
 		}
+		let additionalParameters = FormParameters(
+			["login_hint": identity.serverHint]
+		)
 
 		let (authServerMetadata, authorizationServerUrl) =
 			try await AtprotoOAuthUtils.getAuthorizationServerURL(

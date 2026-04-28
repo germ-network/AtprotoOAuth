@@ -24,7 +24,7 @@ public struct ATResolveResolver: Atproto.Resolver {
 		handle: Atproto.Handle
 	) async throws -> Atproto.DID? {
 		let did = try await ATResolver(provider: URLSession.shared)
-			.didForHandle(handle.lowercased())
+			.didForHandle(handle.rawValue.lowercased())
 
 		return try .init(string: did.tryUnwrap)
 	}
@@ -45,7 +45,7 @@ public struct ATResolveResolver: Atproto.Resolver {
 		var components = URLComponents()
 		components.scheme = URLScheme.https.rawValue
 		components.host = "plc.directory"
-		components.path = "/\(did.stringRepresentation)"
+		components.path = "/\(did.rawValue)"
 		return try components.url.tryUnwrap
 	}
 }

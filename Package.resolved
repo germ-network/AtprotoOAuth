@@ -1,13 +1,13 @@
 {
-  "originHash" : "2070ec790fac35301c47a7c815a10caec2234da96b38c2f7848836371963770f",
+  "originHash" : "7a747e6ff008f54eeaab9c00bdc5497dc12334feb4d0cd0bc2f6b20741d1ee62",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "9e5982e6d7271adc1bf700505506b8a86220f93c",
-        "version" : "0.5.1"
+        "branch" : "reorg/rename-mocks",
+        "revision" : "aa0fb957ca4c569ea768262e8dc5e1c78c3c58b7"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "8f04a0251e785c6b17c9b8784b7f0ec6b2f41701",
-        "version" : "0.3.0"
+        "branch" : "reorg/rename+mocks",
+        "revision" : "60c2e09e54cb04f00b9756573348ce13440f7ce0"
       }
     },
     {
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "revision" : "aa6c84822b0b0093a21dd307718795a51f0aa9c9",
-        "version" : "0.1.2"
+        "branch" : "reorg/rename+mocks",
+        "revision" : "109501a5111aca1b45f26546f465b4c8df7e2daf"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
-        "revision" : "4785539d77004118b8068285d2d9ae6f14261bfa",
-        "version" : "0.3.0"
+        "branch" : "feat/adopt-type-renaming",
+        "revision" : "fbc6b1057c6d9845a2800ea58a0afb915ded0f4e"
       }
     },
     {

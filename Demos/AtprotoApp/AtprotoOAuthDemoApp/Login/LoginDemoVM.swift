@@ -46,21 +46,29 @@ import SwiftUI
 			do {
 				let resolver = ATResolveResolver(
 					resourceFetcher: URLSession.shared)
-				let resolvedDid = try await resolver.resolve(handle: handle)
+				let resolvedDid = try await resolver.resolve(
+					handle: .init(string: handle)
+				)
 					.tryUnwrap
 				appendLog(
-					"Resolved DID: \(resolvedDid.stringRepresentation)"
+					"Resolved DID: \(resolvedDid.rawValue)"
 				)
 
 				let sessionArchive =
 					try await client
-					.authorize(identity: .did(resolvedDid, handle: handle))
+					.authorize(
+						identity:
+								.did(
+									resolvedDid,
+									handle: .init(rawValue: handle)
+								)
+					)
 
 				appendLog("Authorized OAuth agent")
 
 				let (oauthAgent, _) = try client.restore(
 					archive: .init(
-						did: resolvedDid.stringRepresentation,
+						did: resolvedDid.rawValue,
 						session: sessionArchive,
 					),
 				)
