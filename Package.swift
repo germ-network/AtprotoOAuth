@@ -11,7 +11,8 @@ let package = Package(
 		.library(
 			name: "AtprotoOAuth",
 			targets: ["AtprotoOAuth"]
-		)
+		),
+		.library(name: "AtprotoOAuthMocks", targets: ["AtprotoOAuthMocks"]),
 	],
 	dependencies: [
 		.package(
@@ -50,6 +51,14 @@ let package = Package(
 				.product(name: "Crypto", package: "swift-crypto"),
 				.product(name: "HTTPTypes", package: "swift-http-types"),
 				.product(name: "OAuth4Swift", package: "oauth4swift"),
+			]
+		),
+		.target(
+			name: "AtprotoOAuthMocks",
+			dependencies: [
+				"AtprotoOAuth",
+				.product(name: "AtprotoClientMocks", package: "AtprotoClient"),
+				.product(name: "Mockable", package: "AtprotoTypes"),
 			]
 		),
 		.testTarget(

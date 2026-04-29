@@ -1,5 +1,5 @@
 {
-  "originHash" : "7a747e6ff008f54eeaab9c00bdc5497dc12334feb4d0cd0bc2f6b20741d1ee62",
+  "originHash" : "59a5de264f69a705ed7a0474a655b055f92413bd738c19beab7f5720dee96f81",
   "pins" : [
     {
       "identity" : "atprotoclient",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
         "branch" : "reorg/rename-mocks",
-        "revision" : "248a8fb0393a66f8e4d6fbe5ce7a8a7491d9a109"
+        "revision" : "8ea778f1d1ebbd66dbc26318a76d7497e423b5da"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
         "branch" : "reorg/rename+mocks",
-        "revision" : "60c2e09e54cb04f00b9756573348ce13440f7ce0"
+        "revision" : "45110bdd84318e3df793e7566611e45a0a47a1a0"
       }
     },
     {
@@ -34,7 +34,7 @@
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
         "branch" : "reorg/rename+mocks",
-        "revision" : "109501a5111aca1b45f26546f465b4c8df7e2daf"
+        "revision" : "0ffbfa63a7819405e367382276c4a1014b0fa98c"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "476538ccb827f2dd18efc5de754cc87d77127a47",
-        "version" : "4.4.0"
+        "revision" : "1b6b2e274e85105bfa155183145a1dcfd63331f1",
+        "version" : "4.5.0"
       }
     },
     {

@@ -5,6 +5,7 @@
 //  Created by Mark @ Germ on 4/14/26.
 //
 
+import AtprotoClient
 import AtprotoOAuth
 import AtprotoTypes
 import Foundation
