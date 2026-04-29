@@ -49,7 +49,7 @@ import SwiftUI
 				let resolvedDid = try await resolver.resolve(
 					handle: .init(string: handle)
 				)
-					.tryUnwrap
+				.tryUnwrap
 				appendLog(
 					"Resolved DID: \(resolvedDid.rawValue)"
 				)
@@ -58,10 +58,10 @@ import SwiftUI
 					try await client
 					.authorize(
 						identity:
-								.did(
-									resolvedDid,
-									handle: .init(rawValue: handle)
-								)
+							.did(
+								resolvedDid,
+								handle: .init(rawValue: handle)
+							)
 					)
 
 				appendLog("Authorized OAuth agent")

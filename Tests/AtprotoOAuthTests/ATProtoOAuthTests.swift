@@ -31,7 +31,8 @@ struct APITests {
 		//https://github.com/germ-network/Microcosm/issues/11
 
 		await #expect(throws: (any Error).self) {
-			try await resolver.verifiedResolve(handle: .init(string:  "example.com")) == nil
+			try await resolver.verifiedResolve(handle: .init(string: "example.com"))
+				== nil
 		}
 	}
 

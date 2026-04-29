@@ -213,9 +213,9 @@ import os
 			let pdsUrl = try await Microcosm.Slingshot(
 				resourceFetcher: URLSession.shared
 			)
-				.resolveMiniDoc(identifier: .did(did))
-				.tryUnwrap
-				.pds
+			.resolveMiniDoc(identifier: .did(did))
+			.tryUnwrap
+			.pds
 
 			return PublicPDSAgent(
 				did: did,

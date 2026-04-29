@@ -149,7 +149,8 @@ struct UnauthenticatedView: View {
 		let newTask = Task {
 			print("Loading DID...")
 			do {
-				did = try await resolver
+				did =
+					try await resolver
 					.resolve(handle: .init(string: handleEntry))
 			} catch {
 				print("Error loading DID: \(error)")
@@ -244,11 +245,12 @@ struct UnauthenticatedView: View {
 	}
 
 	private func lazyPDSAgent(did: Atproto.DID) async throws -> PublicPDSAgent {
-		let pdsUrl = try await Slingshot(resourceFetcher: URLSession.shared
+		let pdsUrl = try await Slingshot(
+			resourceFetcher: URLSession.shared
 		)
-			.resolveMiniDoc(identifier: .did(did))
-			.tryUnwrap
-			.pds
+		.resolveMiniDoc(identifier: .did(did))
+		.tryUnwrap
+		.pds
 
 		return PublicPDSAgent(
 			did: did,

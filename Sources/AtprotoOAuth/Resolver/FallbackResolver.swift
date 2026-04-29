@@ -5,6 +5,7 @@
 //  Created by Anna Mistele on 4/8/26.
 //
 
+import AtprotoClient
 import AtprotoTypes
 import GermConvenience
 

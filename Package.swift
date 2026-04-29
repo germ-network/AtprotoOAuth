@@ -16,7 +16,7 @@ let package = Package(
 	dependencies: [
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-//			from: "0.4.0"
+			//			from: "0.4.0"
 			branch: "reorg/rename-mocks"
 		),
 		.package(
@@ -27,7 +27,7 @@ let package = Package(
 		//does not get included in the main package
 		.package(
 			url: "https://github.com/germ-network/Microcosm.git",
-//			from: "0.1.0"
+			//			from: "0.1.0"
 			branch: "feat/adopt-type-renaming"
 		),
 		.package(

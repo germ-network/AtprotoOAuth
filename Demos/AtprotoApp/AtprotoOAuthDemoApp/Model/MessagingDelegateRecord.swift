@@ -18,7 +18,7 @@ extension Lexicon.Com.GermNetwork {
 			}
 			public init() {}
 		}
-		
+
 		//for encoding
 		//periphery: ignore
 		private(set) var nsid = Collection()
@@ -52,8 +52,6 @@ extension Lexicon.Com.GermNetwork {
 			case messageMe
 			case continuityProofs
 		}
-
-		
 
 		public init(
 			version: String,

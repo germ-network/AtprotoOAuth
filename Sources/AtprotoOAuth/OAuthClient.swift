@@ -5,6 +5,7 @@
 //  Created by Mark @ Germ on 4/7/26.
 //
 
+import AtprotoClient
 import AtprotoTypes
 import Foundation
 import GermConvenience
