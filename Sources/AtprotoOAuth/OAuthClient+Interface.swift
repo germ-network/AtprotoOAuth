@@ -25,8 +25,9 @@ public enum AuthIdentity: Sendable {
 		case .handle(let handle):
 			handle.rawValue
 		case .did(let did, let handle):
-			//favor did and not handle
-			did.rawValue
+			//Bluesky server shows did if we pass a did, so we favor
+			//the user-facing handle
+			handle?.rawValue ?? did.rawValue
 		}
 	}
 }

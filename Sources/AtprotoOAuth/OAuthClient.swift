@@ -39,7 +39,7 @@ extension AtprotoOAuthClient {
 		let did: Atproto.DID
 		let didDoc: Atproto.DIDDocument
 		switch identity {
-		case .did(let _did, let handle):
+		case .did(let _did, _):
 			did = _did
 			didDoc = try await resolver.resolve(did: did).tryUnwrap
 
