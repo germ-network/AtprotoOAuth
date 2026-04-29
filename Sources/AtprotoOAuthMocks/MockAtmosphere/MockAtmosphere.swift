@@ -20,8 +20,8 @@ public actor MockAtmosphere {
 	private let salt = SymmetricKey(size: .bits256)
 	private var tokenLookup: [String: Atproto.DID] = [:]
 
-	var handleResolution: [Atproto.Handle: Atproto.DID] = [:]
-	var didDocs: [Atproto.DID: Atproto.DIDDocument] = [:]
+	public var handleResolution: [Atproto.Handle: Atproto.DID] = [:]
+	public var didDocs: [Atproto.DID: Atproto.DIDDocument] = [:]
 	private var repos: [URL: MockPDS] = [:]
 
 	//a big pause button
