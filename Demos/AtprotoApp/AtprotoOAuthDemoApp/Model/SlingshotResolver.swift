@@ -30,12 +30,17 @@ public struct SlingshotResolver: Atproto.Resolver {
 			.didDocument
 	}
 
-	public func verifiedResolve(handle: Atproto.Handle) async throws -> Atproto
-		.DIDDocument?
-	{
-		try await slingshot
-			.resolveMiniDoc(identifier: .handle(handle))?
-			.didDocument
+	public func verifiedResolve(
+		handle: Atproto.Handle
+	) async throws -> (Atproto.DID, Atproto.DIDDocument)? {
+		let didDoc =
+			try await slingshot
+			.resolveMiniDoc(identifier: .handle(handle))
+		if let didDoc {
+			return (didDoc.did, didDoc.didDocument)
+		} else {
+			return nil
+		}
 	}
 }
 
@@ -51,3 +56,4 @@ extension SlingshotResolver {
 		}
 	}
 }
+

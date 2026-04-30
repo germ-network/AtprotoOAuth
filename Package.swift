@@ -18,11 +18,10 @@ let package = Package(
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
 			from: "0.5.3"
-
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			from: "0.2.3"
+			from: "0.3.4"
 		),
 		//use this as a out of the box resolver for tests
 		//does not get included in the main package

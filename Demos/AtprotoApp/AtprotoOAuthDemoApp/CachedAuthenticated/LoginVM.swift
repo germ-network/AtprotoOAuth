@@ -38,6 +38,9 @@ import os
 	var following: Bool? = nil
 	var followedBy: Bool? = nil
 
+	var blockingTask: Task<Void, Never>? = nil
+	var blockResult: String? = nil
+
 	var messageDelegate: Lexicon.Com.GermNetwork.Declaration? = nil
 
 	init(did: Atproto.DID, handle: String, resolver: Atproto.Resolver) {
@@ -222,6 +225,29 @@ import os
 				resourceFetcher: URLSession.shared,
 				serviceUrl: pdsUrl
 			)
+		}
+	}
+
+	func blockUser(_ otherHandle: String) {
+		guard let authedClient else {
+			return
+		}
+		blockingTask = Task {
+			do {
+				let otherDid = try await resolver
+					.resolve(handle: .init(string: otherHandle))
+					.tryUnwrap
+				let _ = try await authedClient.createRecord(
+					Lexicon.App.Bsky.Graph.Block.init(subject: otherDid)
+				)
+				blockResult = "Blocked @\(otherHandle)!"
+			} catch {
+				blockResult = error.localizedDescription
+			}
+		}
+		Task {
+			await blockingTask?.value
+			blockingTask = nil
 		}
 	}
 

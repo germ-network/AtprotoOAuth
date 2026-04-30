@@ -7,9 +7,13 @@
 
 import SwiftUI
 
+protocol CollectHandleParent {
+	func collected(handle: String)
+}
+
 struct CollectHandleView: View {
 	@State private var handle: String = ""
-	let viewModel: LoginDemoVM
+	let viewModel: CollectHandleParent
 
 	var body: some View {
 		VStack(alignment: .center) {
@@ -19,8 +23,7 @@ struct CollectHandleView: View {
 					Text("@").foregroundStyle(.blue)
 					TextField("username.bsky.social", text: $handle)
 						.onSubmit {
-							viewModel.login(
-								handle: handle)
+							viewModel.collected(handle: handle)
 						}
 						#if os(iOS)
 							.keyboardType(.URL)
@@ -38,7 +41,7 @@ struct CollectHandleView: View {
 			}
 
 			Button("Authenticate") {
-				viewModel.login(handle: handle)
+				viewModel.collected(handle: handle)
 			}
 			.apply { view in
 				if #available(iOS 17.0, macOS 26.0, *) {
@@ -52,5 +55,5 @@ struct CollectHandleView: View {
 }
 
 #Preview {
-	CollectHandleView(viewModel: .init())
+	CollectHandleView(viewModel: LoginDemoVM())
 }

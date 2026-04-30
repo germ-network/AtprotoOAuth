@@ -20,6 +20,9 @@ struct ContentView: View {
 			Tab("Unauthenticated", systemImage: "smartphone") {
 				UnauthenticatedView()
 			}
+			Tab("Resolver", systemImage: "person") {
+				Resolver()
+			}
 		}
 	}
 }
