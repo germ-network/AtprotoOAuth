@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.5.0
+
+### Minor Changes
+
+- [#49](https://github.com/germ-network/AtprotoOAuth/pull/49) [`a958f42`](https://github.com/germ-network/AtprotoOAuth/commit/a958f42110cde8c56db88db4caff24a85e4ae69a) Thanks [@germ-mark](https://github.com/germ-mark)! - Adopt test renaming, mock target pattern, and add a Mock Atmosphere
+
 ## 0.4.1
 
 ### Patch Changes
