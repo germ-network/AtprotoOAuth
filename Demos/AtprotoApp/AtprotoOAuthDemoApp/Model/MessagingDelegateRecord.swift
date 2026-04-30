@@ -21,7 +21,7 @@ extension Lexicon.Com.GermNetwork {
 
 		//for encoding
 		//periphery: ignore
-		private(set) var nsid = Collection()
+		public private(set) var nsid = Collection()
 		public typealias Key = Atproto.LiteralSelfRecordKey
 
 		/// Required, Opaque.

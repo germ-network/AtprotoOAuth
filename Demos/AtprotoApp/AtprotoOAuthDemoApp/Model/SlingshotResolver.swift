@@ -5,7 +5,7 @@
 //  Created by Mark @ Germ on 4/14/26.
 //
 
-import AtprotoOAuth
+import AtprotoClient
 import AtprotoTypes
 import Foundation
 import Microcosm
