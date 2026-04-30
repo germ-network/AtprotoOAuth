@@ -16,16 +16,18 @@ import OAuth4Swift
 //Germ will always do pre-processing so we will know did,
 //but you can start from handle
 public enum AuthIdentity: Sendable {
-	case handle(String)
+	case handle(Atproto.Handle)
 	//optionally pass in handle to fill into the UI of the web auth sheet
-	case did(Atproto.DID, handle: String?)
+	case did(Atproto.DID, handle: Atproto.Handle?)
 
 	var serverHint: String {
 		switch self {
-		case .handle(let string):
-			string
+		case .handle(let handle):
+			handle.rawValue
 		case .did(let did, let handle):
-			handle ?? did.stringRepresentation
+			//Bluesky server shows did if we pass a did, so we favor
+			//the user-facing handle
+			handle?.rawValue ?? did.rawValue
 		}
 	}
 }

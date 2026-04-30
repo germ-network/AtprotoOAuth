@@ -67,7 +67,7 @@ struct UnauthenticatedView: View {
 			if let did {
 				List {
 					Section("Atproto") {
-						Text("**DID:** \(did.stringRepresentation)")
+						Text("**DID:** \(did.rawValue)")
 						Text("**PDS:** \(pdsURL?.absoluteString ?? "N/A")")
 						Text("**Handle:** \(handle ?? "N/A")")
 					}
@@ -134,12 +134,12 @@ struct UnauthenticatedView: View {
 					}
 					Section("\(follows.count) Follows") {
 						ForEach(follows, id: \.self) {
-							Text($0.stringRepresentation)
+							Text($0.rawValue)
 						}
 					}
 					Section("\(blocks.count) Blocks") {
 						ForEach(blocks, id: \.self) {
-							Text($0.stringRepresentation)
+							Text($0.rawValue)
 						}
 					}
 				}
@@ -155,7 +155,9 @@ struct UnauthenticatedView: View {
 		let newTask = Task {
 			print("Loading DID...")
 			do {
-				did = try await resolver.resolve(handle: handleEntry)
+				did =
+					try await resolver
+					.resolve(handle: .init(string: handleEntry))
 			} catch {
 				print("Error loading DID: \(error)")
 			}
@@ -177,7 +179,7 @@ struct UnauthenticatedView: View {
 				let didDoc = try await resolver.resolve(did: did)
 					.tryUnwrap
 				pdsURL = try didDoc.pdsUrl
-				handle = didDoc.handle
+				handle = didDoc.handle?.rawValue
 			} catch {
 				print("Error loading DID doc and/or PDS URL: \(error)")
 			}
@@ -261,10 +263,10 @@ struct UnauthenticatedView: View {
 	}
 
 	private func lazyPDSAgent(did: Atproto.DID) async throws -> PublicPDSAgent {
-		let pdsUrl = try await Microcosm.Slingshot(
+		let pdsUrl = try await Slingshot(
 			resourceFetcher: URLSession.shared
 		)
-		.resolveMiniDoc(identifier: did.stringRepresentation)
+		.resolveMiniDoc(identifier: .did(did))
 		.tryUnwrap
 		.pds
 

@@ -5,6 +5,7 @@
 //  Created by Mark @ Germ on 4/7/26.
 //
 
+import AtprotoClient
 import AtprotoTypes
 import Foundation
 import GermConvenience
@@ -37,15 +38,9 @@ extension AtprotoOAuthClient {
 	) async throws -> OAuth.SessionState.Archive {
 		let did: Atproto.DID
 		let didDoc: Atproto.DIDDocument
-		let additionalParameters: FormParameters?
 		switch identity {
-		case .did(let _did, let handle):
+		case .did(let _did, _):
 			did = _did
-			if let handle {
-				additionalParameters = FormParameters(["login_hint": handle])
-			} else {
-				additionalParameters = nil
-			}
 			didDoc = try await resolver.resolve(did: did).tryUnwrap
 
 		case .handle(let handle):
@@ -55,8 +50,10 @@ extension AtprotoOAuthClient {
 				try await resolver
 				.verifiedResolve(handle: handle)
 				.tryUnwrap
-			additionalParameters = FormParameters(["login_hint": handle])
 		}
+		let additionalParameters = FormParameters(
+			["login_hint": identity.serverHint]
+		)
 
 		let (authServerMetadata, authorizationServerUrl) =
 			try await AtprotoOAuthUtils.getAuthorizationServerURL(

@@ -11,24 +11,27 @@ let package = Package(
 		.library(
 			name: "AtprotoOAuth",
 			targets: ["AtprotoOAuth"]
-		)
+		),
+		.library(name: "AtprotoOAuthMocks", targets: ["AtprotoOAuthMocks"]),
 	],
 	dependencies: [
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.5.2"
+			from: "0.5.3"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
 			from: "0.3.4"
 		),
+		//use this as a out of the box resolver for tests
+		//does not get included in the main package
 		.package(
 			url: "https://github.com/germ-network/Microcosm.git",
-			from: "0.1.0"
+			from: "0.3.1"
 		),
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			from: "0.3.2"
+			from: "0.3.3"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
@@ -46,6 +49,14 @@ let package = Package(
 				.product(name: "Crypto", package: "swift-crypto"),
 				.product(name: "HTTPTypes", package: "swift-http-types"),
 				.product(name: "OAuth4Swift", package: "oauth4swift"),
+			]
+		),
+		.target(
+			name: "AtprotoOAuthMocks",
+			dependencies: [
+				"AtprotoOAuth",
+				.product(name: "AtprotoClientMocks", package: "AtprotoClient"),
+				.product(name: "Mockable", package: "AtprotoTypes"),
 			]
 		),
 		.testTarget(

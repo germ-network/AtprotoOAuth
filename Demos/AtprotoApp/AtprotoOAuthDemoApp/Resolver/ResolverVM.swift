@@ -6,6 +6,7 @@
 //
 
 import ATResolve
+import AtprotoClient
 import AtprotoOAuth
 import AtprotoTypes
 import Foundation
@@ -63,7 +64,8 @@ extension ResolverVM: CollectHandleParent {
 	func collected(handle: String) {
 		let fetchTask = Task {
 			logs.append(.init(body: "Starting to resolve \(handle)"))
-			let result = try await choices.resolver.verifiedResolve(handle: handle)
+			let result = try await choices.resolver
+				.verifiedResolve(handle: .init(string: handle))
 
 			guard let (did, didDoc) = result else {
 				return
