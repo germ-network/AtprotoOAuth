@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Test platform ${{ matrix.destination }}
-        run: set -o pipefail && xcodebuild -skipMacroValidation -scheme AtprotoOAuth -destination "${{ matrix.destination }}" test | xcbeautify
+        run: set -o pipefail && xcodebuild -skipMacroValidation -scheme AtprotoOAuth-Package -destination "${{ matrix.destination }}" test | xcbeautify
   testDemoApp:
       name: Test MacOS Demo App
       runs-on: macOS-26
