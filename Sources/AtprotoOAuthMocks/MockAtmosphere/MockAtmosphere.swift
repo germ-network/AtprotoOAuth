@@ -73,7 +73,7 @@ extension MockAtmosphere {
 		didDocs[newDid] = .init(
 			context: [],
 			id: newDid.rawValue,
-			alsoKnownAs: ["at://\(handle)"],
+			alsoKnownAs: ["at://" + handle.rawValue],
 			verificationMethod: [],
 			service: [
 				.init(
