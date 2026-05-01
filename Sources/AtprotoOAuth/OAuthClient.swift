@@ -36,17 +36,15 @@ extension AtprotoOAuthClient {
 	public func authorize(
 		identity: AuthIdentity,
 	) async throws -> OAuth.SessionState.Archive {
-		let did: Atproto.DID
-		let didDoc: Atproto.DIDDocument
+		let didDoc: Atproto.DIDDocument.Verified
 		switch identity {
-		case .did(let _did, _):
-			did = _did
-			didDoc = try await resolver.resolve(did: did).tryUnwrap
+		case .did(let did, _):
+			didDoc =
+				try await resolver
+				.verifiedResolve(atIdentifier: .did(did)).tryUnwrap
 
 		case .handle(let handle):
-			//resolve handle to pds, uncached
-
-			(did, didDoc) =
+			didDoc =
 				try await resolver
 				.verifiedResolve(handle: handle)
 				.tryUnwrap
@@ -57,7 +55,7 @@ extension AtprotoOAuthClient {
 
 		let (authServerMetadata, authorizationServerUrl) =
 			try await AtprotoOAuthUtils.getAuthorizationServerURL(
-				pdsServiceEndpoint: didDoc.pdsUrl,
+				pdsServiceEndpoint: didDoc.document.pdsUrl,
 				authFetcher: authFetcher
 			)
 
@@ -75,7 +73,7 @@ extension AtprotoOAuthClient {
 
 			tokenRequestOptions:
 				.atproto(
-					did: did,
+					did: didDoc.did,
 					authFetcher: authFetcher
 				),
 			authFetcher: authFetcher,

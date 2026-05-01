@@ -41,9 +41,9 @@ public struct FallbackResolver: Atproto.Resolver {
 		}
 	}
 
-	public func verifiedResolve(handle: Atproto.Handle) async throws -> (
-		Atproto.DID, Atproto.DIDDocument
-	)? {
+	public func verifiedResolve(
+		handle: Atproto.Handle
+	) async throws -> (Atproto.DIDDocument.Verified)? {
 		do {
 			return try await defaultResolver.verifiedResolve(handle: handle)
 		} catch {

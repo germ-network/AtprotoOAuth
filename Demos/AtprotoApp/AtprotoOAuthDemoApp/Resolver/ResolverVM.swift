@@ -64,17 +64,17 @@ extension ResolverVM: CollectHandleParent {
 	func collected(handle: String) {
 		let fetchTask = Task {
 			logs.append(.init(body: "Starting to resolve \(handle)"))
-			let result = try await choices.resolver
+			let didDoc = try await choices.resolver
 				.verifiedResolve(handle: .init(string: handle))
 
-			guard let (did, didDoc) = result else {
+			guard let didDoc else {
 				return
 			}
 
 			logs.append(
 				.init(
 					body:
-						"Resolved \(handle) to \(did) with document:\n\(didDoc)"
+						"Resolved \(handle) to \(didDoc.did) with document:\n\(didDoc.document)"
 				))
 		}
 		let start = Date.now
