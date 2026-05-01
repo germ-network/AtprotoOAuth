@@ -1,12 +1,11 @@
 import AtprotoClient
+import AtprotoOAuth
+import AtprotoTypes
 import Foundation
 import GermConvenience
 import Microcosm
 import OAuth4Swift
 import Testing
-
-@testable import AtprotoOAuth
-@testable import AtprotoTypes
 
 struct APITests {
 	static let clientId = "https://static.germnetwork.com/client-metadata.json"
@@ -52,7 +51,7 @@ struct APITests {
 enum AuthHarness {
 	@Sendable
 	public static func failingUserAuthenticator(_ url: URL, _ user: String) throws -> URL {
-		throw OAuthClientError.generic("failed user autheticator")
+		throw OAuthClientError.generic("failed user authenticator")
 	}
 }
 

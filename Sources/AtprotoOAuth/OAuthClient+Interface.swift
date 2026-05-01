@@ -34,7 +34,7 @@ public enum AuthIdentity: Sendable {
 }
 
 extension Atproto {
-	struct TokenError: Hashable, Sendable, Codable {
+	package struct TokenError: Hashable, Sendable, Codable {
 		let error: String
 		let errorDescription: String
 
