@@ -18,7 +18,7 @@ enum OAuthSessionError: Error, Equatable {
 }
 
 extension OAuthSessionError: LocalizedError {
-	var localizedDescription: String? {
+	var errorDescription: String? {
 		switch self {
 		case .cantFormURL: "can't form URL"
 		case .sessionInactive: "session is inactive"
