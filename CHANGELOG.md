@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.5.1
+
+### Patch Changes
+
+- [#51](https://github.com/germ-network/AtprotoOAuth/pull/51) [`4f82073`](https://github.com/germ-network/AtprotoOAuth/commit/4f82073768b7060a96d381a6e7992d208f89cdb7) Thanks [@germ-mark](https://github.com/germ-mark)! - adopt handle verification
+
 ## 0.5.0
 
 ### Minor Changes
