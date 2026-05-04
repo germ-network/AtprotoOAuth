@@ -176,10 +176,12 @@ struct UnauthenticatedView: View {
 			// PDS and handle
 			print("Loading DID document...")
 			do {
-				let didDoc = try await resolver.resolve(did: did)
-					.tryUnwrap
-				pdsURL = try didDoc.pdsUrl
-				handle = didDoc.handle?.rawValue
+				let didDoc =
+					try await resolver
+					.verifiedResolve(atIdentifier: .did(did))
+
+				pdsURL = try didDoc?.document.pdsUrl
+				handle = didDoc?.verifiedHandle.rawValue
 			} catch {
 				print("Error loading DID doc and/or PDS URL: \(error)")
 			}

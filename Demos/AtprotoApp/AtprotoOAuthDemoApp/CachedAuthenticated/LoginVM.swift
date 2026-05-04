@@ -234,7 +234,8 @@ import os
 		}
 		blockingTask = Task {
 			do {
-				let otherDid = try await resolver
+				let otherDid =
+					try await resolver
 					.resolve(handle: .init(string: otherHandle))
 					.tryUnwrap
 				let _ = try await authedClient.createRecord(

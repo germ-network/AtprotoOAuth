@@ -100,7 +100,9 @@ extension MockAtmosphere {
 
 		let actorProfile = try await pds(for: actorDid)
 			.getBskyProfile(did: actorDid)
-		let handle = try (resolve(did: actorDid)?.handle).tryUnwrap
+		let handle = try await verifiedResolve(atIdentifier: .did(actorDid))
+			.tryUnwrap
+			.verifiedHandle
 
 		/// Indicates whether the authed user has been blocked by the account requested. Optional.
 		let blockedBy = subjectBlocks.contains {

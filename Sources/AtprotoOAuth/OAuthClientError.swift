@@ -8,7 +8,7 @@
 import AtprotoTypes
 import Foundation
 
-enum OAuthClientError: Error, Equatable {
+package enum OAuthClientError: Error, Equatable {
 	case noDidForHandle
 	case missingUrlHost
 	case handleMismatch
@@ -27,7 +27,7 @@ enum OAuthClientError: Error, Equatable {
 }
 
 extension OAuthClientError: LocalizedError {
-	var errorDescription: String? {
+	package var errorDescription: String? {
 		switch self {
 		case .noDidForHandle: "Handle didn't resolve to a did."
 		case .missingUrlHost: "URL did not contain a host."
