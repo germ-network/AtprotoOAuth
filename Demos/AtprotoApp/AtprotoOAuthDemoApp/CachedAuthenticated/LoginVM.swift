@@ -198,11 +198,16 @@ import os
 		let otherDid = try await resolver.resolve(
 			handle: .init(string: otherHandle)
 		).tryUnwrap
-		let metadata = try await authedClient.authBskyProfileViewerState(for: otherDid)
-		blocking = metadata.blocking != nil
-		blocked = metadata.blockedBy
-		following = metadata.following != nil
-		followedBy = metadata.followedBy != nil
+		let metadata = try await authedClient.authBskyProfile(
+			for: otherDid
+		).viewer
+
+		if let metadata {
+			blocking = metadata.blocking != nil
+			blocked = metadata.blockedBy
+			following = metadata.following != nil
+			followedBy = metadata.followedBy != nil
+		}
 	}
 
 	func getMessageDelegate() async throws {

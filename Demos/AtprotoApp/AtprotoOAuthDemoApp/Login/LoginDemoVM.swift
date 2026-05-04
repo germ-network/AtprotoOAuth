@@ -79,13 +79,21 @@ struct LogEntry: Identifiable {
 				appendLog("Restored OAuth agent")
 
 				//make an auth request
-				let profileMetadata =
-					try await oauthAgent.authBskyProfileViewerState(
-						for: resolvedDid
-					)
+				let authProfile =
+					try await oauthAgent
+					.authBskyProfile(for: resolvedDid)
 
-				debugPrint(profileMetadata)
-				appendLog("Fetched profile metadata: \(profileMetadata)")
+				debugPrint(authProfile)
+				appendLog("Fetched auth profile metadata: \(authProfile)")
+
+				//compare with unauth request:
+				let unauthProfile = try await BlueskyPublicAgent(
+					resourceFetcher: URLSession.shared
+				).bskyProfile(for: resolvedDid)
+
+				debugPrint(unauthProfile)
+				appendLog("Fetched unauth profile metadata: \(unauthProfile)")
+
 			} catch {
 				appendLog("Error: \(error)")
 			}

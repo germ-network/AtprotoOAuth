@@ -125,14 +125,22 @@ extension MockAtmosphere {
 			did: try .init(string: actor),
 			handle: handle,
 			displayName: actorProfile?.displayName,
+			description: actorProfile?.description,
 			pronouns: actorProfile?.pronouns,
+			website: nil,
 			avatar: nil,
+			banner: nil,
+			followersCount: 2,
+			followsCount: 5,
+			postsCount: 10,
+			indexedAt: .init(date: .now),
+			createdAt: .init(date: .distantPast),
 			viewer: .init(
 				muted: nil,
 				blockedBy: blockedBy ? true : nil,
-				blocking: blocking ? "example.com" : nil,
-				following: following ? "example.com" : nil,
-				followedBy: followedBy ? "example.com" : nil
+				blocking: blocking ? .mock() : nil,
+				following: following ? .mock() : nil,
+				followedBy: followedBy ? .mock() : nil
 			)
 		)
 
