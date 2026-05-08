@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.5.2
+
+### Patch Changes
+
+- [#55](https://github.com/germ-network/AtprotoOAuth/pull/55) [`211e4aa`](https://github.com/germ-network/AtprotoOAuth/commit/211e4aac14520bcda782dbf62322b713e8e5ad23) Thanks [@germ-mark](https://github.com/germ-mark)! - add dependencies to Mocks targets to fix issues when building in an xcodeproj
+
 ## 0.5.1
 
 ### Patch Changes
