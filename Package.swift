@@ -54,8 +54,10 @@ let package = Package(
 		.target(
 			name: "AtprotoOAuthMocks",
 			dependencies: [
+				"AtprotoClient",
 				"AtprotoOAuth",
 				.product(name: "AtprotoClientMocks", package: "AtprotoClient"),
+				.product(name: "AtprotoTypesMocks", package: "AtprotoTypes"),
 				.product(name: "Mockable", package: "AtprotoTypes"),
 			]
 		),
