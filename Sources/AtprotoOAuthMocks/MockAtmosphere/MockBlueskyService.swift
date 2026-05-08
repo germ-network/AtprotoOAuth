@@ -155,6 +155,25 @@ extension MockAtmosphere {
 		queryParameters: [String: String],
 		body: Data?,
 	) async throws -> HTTPDataResponse {
-		throw Errors.notImplemented
+		switch xrpcNsid {
+		case Lexicon.Com.Atproto.Repo.GetRecordNSID.nsid:
+			if queryParameters["collection"]
+				== Lexicon.App.Bsky.Actor.Profile.Collection.nsid.rawValue,
+				queryParameters["rkey"] == Atproto.LiteralSelfRecordKey.fixedValue
+			{
+				let did = try Atproto.DID(
+					string: queryParameters["repo"].tryUnwrap
+				)
+
+				return try await handleGetProfile(
+					queryParameters: queryParameters,
+					authedDid: did
+				)
+			} else {
+				throw Errors.notImplemented
+			}
+		default:
+			throw Errors.notImplemented
+		}
 	}
 }
