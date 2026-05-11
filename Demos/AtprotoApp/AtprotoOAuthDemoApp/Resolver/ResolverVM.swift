@@ -5,7 +5,6 @@
 //  Created by Mark @ Germ on 4/23/26.
 //
 
-import ATResolve
 import AtprotoClient
 import AtprotoOAuth
 import AtprotoTypes

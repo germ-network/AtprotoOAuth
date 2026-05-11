@@ -691,10 +691,10 @@
 		};
 		2C83CDD12F72FECB00168B01 /* XCRemoteSwiftPackageReference "ATResolve" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/germ-network/ATResolve";
+			repositoryURL = "https://github.com/mattmassicotte/ATResolve.git";
 			requirement = {
-				kind = exactVersion;
-				version = "1.0.0-germ.4";
+				kind = upToNextMinorVersion;
+				minimumVersion = 1.1.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
