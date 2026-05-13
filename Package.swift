@@ -17,11 +17,12 @@ let package = Package(
 	dependencies: [
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.5.5"
+			//			from: "0.5.5"
+			branch: "fix/mockPDS-list"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-//			from: "0.4.2"
+			//			from: "0.4.2"
 			branch: "fix/silentAtidentifier"
 		),
 		//use this as a out of the box resolver for tests
