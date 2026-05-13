@@ -76,7 +76,7 @@ extension MockAtmosphere {
 	) async throws -> HTTPDataResponse {
 		switch xrpcNsid {
 		case Lexicon.App.Bsky.Actor.GetProfile.Id.nsid:
-			return try await handleGetProfile(
+			return try await handleGetDetailedProfile(
 				queryParameters: queryParameters,
 				authedDid: authedDid
 			)
@@ -84,45 +84,136 @@ extension MockAtmosphere {
 			throw Errors.notImplemented
 		}
 	}
-
-	private func handleGetProfile(
+	
+	private func handleGetRecordProfile(
 		queryParameters: [String: String],
 		authedDid: Atproto.DID,
+	) async throws -> HTTPDataResponse {
+		let repo = try queryParameters["repo"].tryUnwrap
+		let did = try Atproto.DID(string: repo)
+
+		let output = try await Lexicon.Com.Atproto.Repo.GetRecord<Lexicon.App.Bsky.Actor.Profile>.Output(
+			uri: .mock(),
+			cid: Atproto.CID.mock().string,
+			value: try await profile(did: did)
+		)
+
+		return .init(
+			data: try JSONEncoder().encode(output),
+			response: .init(status: .ok)
+		)
+	}
+	
+	private func profile(
+		did: Atproto.DID,
+	) async throws -> Lexicon.App.Bsky.Actor.Profile {
+		let actorProfile = try await pds(for: did)
+			.getBskyProfile(did: did)
+		let handle = try await verifiedResolve(atIdentifier: .did(did))
+			.tryUnwrap
+			.verifiedHandle
+		
+		return .init(
+			avatar: nil,
+			banner: nil,
+			createdAt: .distantPast,
+			description: actorProfile?.description,
+			displayName: actorProfile?.displayName,
+			pronouns: actorProfile?.pronouns,
+			website: nil
+		)
+	}
+	
+	private func profileView(
+		did: Atproto.DID,
+	) async throws -> Lexicon.App.Bsky.Actor.Defs.ProfileView {
+		let actorProfile = try await pds(for: did)
+			.getBskyProfile(did: did)
+		let handle = try await verifiedResolve(atIdentifier: .did(did))
+			.tryUnwrap
+			.verifiedHandle
+
+		return .init(
+				did: did,
+				handle: handle,
+				displayName: actorProfile?.displayName,
+				pronouns: actorProfile?.pronouns,
+				description: actorProfile?.description,
+				avatar: nil,
+				indexedAt: .init(date: .now),
+				createdAt: .init(date: .distantPast),
+				viewer: nil
+			)
+	}
+	
+	private func handleGetDetailedProfile(
+		queryParameters: [String: String],
+		authedDid: Atproto.DID?,
 	) async throws -> HTTPDataResponse {
 		let actor = try queryParameters["actor"].tryUnwrap
 		let actorDid = try Atproto.DID(string: actor)
 
-		let (viewerFollows, viewerBlocks) = try await pds(for: authedDid)
-			.getGraph(did: authedDid)
+		let output = try await detailedProfile(
+			actor: actorDid,
+			authedViewer: authedDid
+		)
 
-		let (subjectFollows, subjectBlocks) = try await pds(for: actorDid)
-			.getGraph(did: actorDid)
+		return .init(
+			data: try JSONEncoder().encode(output),
+			response: .init(status: .ok)
+		)
+	}
 
-		let actorProfile = try await pds(for: actorDid)
-			.getBskyProfile(did: actorDid)
-		let handle = try await verifiedResolve(atIdentifier: .did(actorDid))
+	private func detailedProfile(
+		actor: Atproto.DID,
+		authedViewer: Atproto.DID?,
+	) async throws -> Lexicon.App.Bsky.Actor.Defs.ProfileViewDetailed {
+
+		let (subjectFollows, subjectBlocks) = try await pds(for: actor)
+			.getGraph(did: actor)
+
+		let actorProfile = try await pds(for: actor)
+			.getBskyProfile(did: actor)
+		let handle = try await verifiedResolve(atIdentifier: .did(actor))
 			.tryUnwrap
 			.verifiedHandle
 
-		/// Indicates whether the authed user has been blocked by the account requested. Optional.
-		let blockedBy = subjectBlocks.contains {
-			$0.subject == authedDid
-		}
+		
+		let viewer: Lexicon.App.Bsky.Actor.Defs.ViewerState? = try await {
+			guard let authedViewer else {
+				return nil
+			}
+			let (viewerFollows, viewerBlocks) = try await pds(for: authedViewer)
+				.getGraph(did: authedViewer)
+			
+			/// Indicates whether the authed user has been blocked by the account requested. Optional.
+			let blockedBy = subjectBlocks.contains {
+				$0.subject == authedViewer
+			}
 
-		let blocking = viewerBlocks.contains {
-			$0.subject == actorDid
-		}
+			let blocking = viewerBlocks.contains {
+				$0.subject == actor
+			}
 
-		let followedBy = subjectFollows.contains {
-			$0.subject == authedDid
-		}
+			let followedBy = subjectFollows.contains {
+				$0.subject == authedViewer
+			}
 
-		let following = viewerFollows.contains {
-			$0.subject == actorDid
-		}
+			let following = viewerFollows.contains {
+				$0.subject == actor
+			}
+			
+			return .init(
+				muted: nil,
+				blockedBy: blockedBy ? true : nil,
+				blocking: blocking ? .mock() : nil,
+				following: following ? .mock() : nil,
+				followedBy: followedBy ? .mock() : nil
+			)
+		}()
 
-		let output = Lexicon.App.Bsky.Actor.GetProfile.Output(
-			did: try .init(string: actor),
+		return .init(
+			did: actor,
 			handle: handle,
 			displayName: actorProfile?.displayName,
 			description: actorProfile?.description,
@@ -135,18 +226,7 @@ extension MockAtmosphere {
 			postsCount: 10,
 			indexedAt: .init(date: .now),
 			createdAt: .init(date: .distantPast),
-			viewer: .init(
-				muted: nil,
-				blockedBy: blockedBy ? true : nil,
-				blocking: blocking ? .mock() : nil,
-				following: following ? .mock() : nil,
-				followedBy: followedBy ? .mock() : nil
-			)
-		)
-
-		return .init(
-			data: try JSONEncoder().encode(output),
-			response: .init(status: .ok)
+			viewer: viewer
 		)
 	}
 
@@ -165,13 +245,19 @@ extension MockAtmosphere {
 					string: queryParameters["repo"].tryUnwrap
 				)
 
-				return try await handleGetProfile(
+				return try await handleGetRecordProfile(
 					queryParameters: queryParameters,
 					authedDid: did
 				)
 			} else {
 				throw Errors.notImplemented
 			}
+		case Lexicon.App.Bsky.Actor.GetProfile.Id.nsid:
+			return try await handleGetDetailedProfile(
+				queryParameters: queryParameters,
+				authedDid: nil
+			)
+			
 		default:
 			throw Errors.notImplemented
 		}

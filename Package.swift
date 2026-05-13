@@ -21,7 +21,8 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			from: "0.4.2"
+//			from: "0.4.2"
+			branch: "fix/silentAtidentifier"
 		),
 		//use this as a out of the box resolver for tests
 		//does not get included in the main package

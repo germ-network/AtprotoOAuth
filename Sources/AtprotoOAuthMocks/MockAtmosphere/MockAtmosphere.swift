@@ -178,7 +178,7 @@ extension MockAtmosphere: HTTPFetcher {
 			} else {
 				throw HTTPResponseError.unsuccessfulString(400, "Invalid Request")
 			}
-		} else if host.absoluteString == "https://public.api.bsky.app" {
+		} else if host.absoluteString == "https://bsky.app.example.com" {
 			return try await blueskyPublicServiceResponse(
 				xrpcComponents: xrpcComponents
 			)
