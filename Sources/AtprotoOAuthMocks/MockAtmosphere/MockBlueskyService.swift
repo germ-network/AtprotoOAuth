@@ -92,7 +92,7 @@ extension MockAtmosphere {
 		let repo = try queryParameters["repo"].tryUnwrap
 		let did = try Atproto.DID(string: repo)
 
-		let output = try await Lexicon.Com.Atproto.Repo.GetRecord<
+		let output = Lexicon.Com.Atproto.Repo.GetRecord<
 			Lexicon.App.Bsky.Actor.Profile
 		>.Output(
 			uri: .mock(),
@@ -111,9 +111,6 @@ extension MockAtmosphere {
 	) async throws -> Lexicon.App.Bsky.Actor.Profile {
 		let actorProfile = try await pds(for: did)
 			.getBskyProfile(did: did)
-		let handle = try await verifiedResolve(atIdentifier: .did(did))
-			.tryUnwrap
-			.verifiedHandle
 
 		return .init(
 			avatar: nil,
