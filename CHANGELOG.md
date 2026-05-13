@@ -1,5 +1,13 @@
 # @germ-network/atprotooauth
 
+## 0.5.3
+
+### Patch Changes
+
+- [#57](https://github.com/germ-network/AtprotoOAuth/pull/57) [`722ce4e`](https://github.com/germ-network/AtprotoOAuth/commit/722ce4eba00b11738d89010442b014fc96f43be5) Thanks [@germ-mark](https://github.com/germ-mark)! - add mockAmosphere handling of public service getProfile
+
+- [#57](https://github.com/germ-network/AtprotoOAuth/pull/57) [`4bab357`](https://github.com/germ-network/AtprotoOAuth/commit/4bab3576be466486c502bcae910bff73f44292a4) Thanks [@germ-mark](https://github.com/germ-mark)! - don't use non-reserved domain in mock atmosphere, separate out various flavors of getProfile
+
 ## 0.5.2
 
 ### Patch Changes
