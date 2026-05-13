@@ -236,7 +236,7 @@ struct UnauthenticatedView: View {
 				let stream = try await agent.getFollowsStream()
 				follows = []
 				for try await batch in stream {
-					follows += batch
+					follows += batch.map(\.subject)
 				}
 			} catch {
 				print("Error loading follows: \(error)")
@@ -248,7 +248,7 @@ struct UnauthenticatedView: View {
 				let stream = try await agent.getBlocksStream()
 				blocks = []
 				for try await batch in stream {
-					blocks += batch
+					blocks += batch.map(\.subject)
 				}
 			} catch {
 				print("Error loading blocks: \(error)")

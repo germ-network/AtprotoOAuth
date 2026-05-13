@@ -1,13 +1,13 @@
 {
-  "originHash" : "0cba7458a08618996cb7bdf5e875da6559d1e9087a8c7f6afa51a46266417450",
+  "originHash" : "92257a9ca1575893ace407c9987aeb23b0f5f5bdb8698db975f9fd4954671568",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "f9ce03e05b011685b6a8eb63d76282224289bef2",
-        "version" : "0.5.5"
+        "revision" : "c92abfd74defeb60c09b45b8ab11e215987920a3",
+        "version" : "0.5.7"
       }
     },
     {
@@ -15,17 +15,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "0a699e816d5bd0c34dac50b11fdc127df2392526",
-        "version" : "0.4.2"
+        "revision" : "3c6ed6c378f1174aa4aed30779387a1a98571e0b",
+        "version" : "0.4.4"
       }
     },
     {
       "identity" : "atresolve",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/germ-network/ATResolve",
+      "location" : "https://github.com/mattmassicotte/ATResolve.git",
       "state" : {
-        "revision" : "90048493b1ecb529518de29fbcdc46be8bc2cbdf",
-        "version" : "1.0.0-germ.4"
+        "revision" : "3ec4b8509b018c9b0da791c74355c58eb83dcd24",
+        "version" : "1.1.0"
       }
     },
     {

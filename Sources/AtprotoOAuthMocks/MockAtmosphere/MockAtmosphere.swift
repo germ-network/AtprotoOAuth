@@ -27,11 +27,22 @@ public actor MockAtmosphere {
 	//a big pause button
 	private var holdingResponses: (AsyncStream<Void>, AsyncStream<Void>.Continuation)?
 
-	enum Errors: Error {
+	enum Errors: LocalizedError {
 		case notImplemented
+		case incorrectRkey
 		case noHost
 		case authHeaderMismatch
 		case unexpectedAuthHeader
+
+		var errorDescription: String? {
+			switch self {
+			case .notImplemented: "Not implemented"
+			case .incorrectRkey: "Incorrect rkey"
+			case .noHost: "No host"
+			case .authHeaderMismatch: "Auth header mismatch"
+			case .unexpectedAuthHeader: "Unexpected auth header"
+			}
+		}
 	}
 
 	public init() {}
@@ -58,7 +69,8 @@ extension MockAtmosphere: Atproto.Resolver {
 
 extension MockAtmosphere {
 	public func createDid(
-		handle: Atproto.Handle
+		handle: Atproto.Handle,
+		bskyProfile: Lexicon.App.Bsky.Actor.Profile? = .mock()
 	) async throws -> Atproto.DID {
 		let newDid = Atproto.DID.mock()
 		let newPds = try MockPDS()
@@ -67,7 +79,7 @@ extension MockAtmosphere {
 		assert(didDocs[newDid] == nil)
 		assert(repos[newPds.serviceUrl] == nil)
 
-		let _ = try await newPds.host(did: newDid)
+		let _ = try await newPds.host(did: newDid, bskyProfile: bskyProfile)
 
 		handleResolution[handle] = newDid
 		didDocs[newDid] = .init(
@@ -178,7 +190,7 @@ extension MockAtmosphere: HTTPFetcher {
 			} else {
 				throw HTTPResponseError.unsuccessfulString(400, "Invalid Request")
 			}
-		} else if host.absoluteString == "https://public.api.bsky.app" {
+		} else if host.absoluteString == "https://bsky.app.example.com" {
 			return try await blueskyPublicServiceResponse(
 				xrpcComponents: xrpcComponents
 			)
