@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "f9ce03e05b011685b6a8eb63d76282224289bef2",
-        "version" : "0.5.5"
+        "revision" : "c92abfd74defeb60c09b45b8ab11e215987920a3",
+        "version" : "0.5.7"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "0a699e816d5bd0c34dac50b11fdc127df2392526",
-        "version" : "0.4.2"
+        "revision" : "3c6ed6c378f1174aa4aed30779387a1a98571e0b",
+        "version" : "0.4.4"
       }
     },
     {

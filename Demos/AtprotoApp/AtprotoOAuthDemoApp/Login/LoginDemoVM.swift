@@ -87,9 +87,9 @@ struct LogEntry: Identifiable {
 				appendLog("Fetched auth profile metadata: \(authProfile)")
 
 				//compare with unauth request:
-				let unauthProfile = try await BlueskyPublicAgent(
+				let unauthProfile = try await BskyAppViewAgent.blueskyAppView(
 					resourceFetcher: URLSession.shared
-				).bskyProfile(for: resolvedDid)
+				).bskyProfile(actor: .did(resolvedDid))
 
 				debugPrint(unauthProfile)
 				appendLog("Fetched unauth profile metadata: \(unauthProfile)")
