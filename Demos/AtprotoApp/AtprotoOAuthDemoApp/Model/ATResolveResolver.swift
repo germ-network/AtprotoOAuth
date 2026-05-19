@@ -11,7 +11,6 @@ import AtprotoOAuth
 import AtprotoTypes
 import Foundation
 import GermConvenience
-import HTTPTypes
 
 public struct ATResolveResolver: Atproto.Resolver {
 	let resourceFetcher: HTTPFetcher

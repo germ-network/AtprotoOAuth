@@ -12,7 +12,8 @@ import AtprotoTypes
 import CryptoKit
 import Foundation
 import GermConvenience
-import HTTPTypes
+
+//import HTTPTypes
 
 ///A local mock of the Atmosphere for local testing
 public actor MockAtmosphere {
@@ -107,7 +108,10 @@ extension MockAtmosphere {
 	public func salted(did: Atproto.DID) throws -> String {
 		var hmac = HMAC<SHA256>(key: salt)
 		hmac.update(data: did.rawValue.utf8Data)
-		return hmac.finalize().dataRepresentation.base64URLEncodedString()
+		return
+			hmac
+			.finalize().dataRepresentation
+			.base64URLEncoded(padded: false)
 	}
 }
 
@@ -176,7 +180,7 @@ extension MockAtmosphere: HTTPFetcher {
 	) async throws -> HTTPDataResponse {
 		let (host, xrpcComponents) = try bundledRequest.decomposed
 
-		let authedDid = try checkAuth(request: bundledRequest.request)
+		let authedDid = try checkAuth(request: bundledRequest)
 
 		if let proxyHeader =
 			xrpcComponents
@@ -202,9 +206,9 @@ extension MockAtmosphere: HTTPFetcher {
 		}
 	}
 
-	func checkAuth(request: HTTPRequest) throws -> Atproto.DID? {
-		let authHeader = request.headerFields[.authorization]
-		let dpopHeader = request.headerFields[try .dpop.tryUnwrap]
+	func checkAuth(request: BundledHTTPRequest) throws -> Atproto.DID? {
+		let authHeader = request.request.headerFields[.authorization]
+		let dpopHeader = request.request.headerFields[try .dpop.tryUnwrap]
 
 		guard let authHeader, let dpopHeader else {
 			guard authHeader == nil, dpopHeader == nil else {

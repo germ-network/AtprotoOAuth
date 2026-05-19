@@ -9,8 +9,9 @@ import AtprotoClient
 import AtprotoTypes
 import Foundation
 import GermConvenience
-import HTTPTypes
 import OAuth4Swift
+
+import struct HTTPTypes.HTTPFields
 
 //encapsulate the objects needed to authorize and restore a session
 public struct AtprotoOAuthClient: Sendable {
