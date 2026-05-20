@@ -29,7 +29,8 @@ let package = Package(
 		//does not get included in the main package
 		.package(
 			url: "https://github.com/germ-network/Microcosm.git",
-			from: "0.3.2"
+//			from: "0.3.2"
+			branch: "fix/http-types"
 		),
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
