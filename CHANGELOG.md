@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.5.6
+
+### Patch Changes
+
+- [#63](https://github.com/germ-network/AtprotoOAuth/pull/63) [`80c06bb`](https://github.com/germ-network/AtprotoOAuth/commit/80c06bb3cb85aecc6cc33e052fdcaa7037e235ff) Thanks [@germ-mark](https://github.com/germ-mark)! - properly include base64 in mock target
+
 ## 0.5.5
 
 ### Patch Changes
