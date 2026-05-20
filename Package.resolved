@@ -1,5 +1,5 @@
 {
-  "originHash" : "3e750c6229af1d2d207d1c45495ebb3f5c97a84964f82fdd10dd2ac106dd0ef4",
+  "originHash" : "b69f184589d928804ee3200d7e4470cda143edf00544e6e9a17fa120c0a2f92a",
   "pins" : [
     {
       "identity" : "atprotoclient",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
         "branch" : "fix/imports",
-        "revision" : "643a091806500164977b2b6b565a89b2c782f687"
+        "revision" : "433f819a0256d7c6b54cf3fe9907e7a9ec7f01bf"
       }
     },
     {
@@ -25,7 +25,7 @@
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
         "branch" : "fix/http-scheme-precondition",
-        "revision" : "8e9ce216aadb82b336cfcde655d3bab37a453398"
+        "revision" : "c141c8101704d802e7a2541f01d773ecdff12807"
       }
     },
     {
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
-        "revision" : "f7310fd701890df14d8cb75b710773f4da658ff2",
-        "version" : "0.3.2"
+        "branch" : "fix/http-types",
+        "revision" : "24bf366bcc8f9fc0c6769dd1e70bcc58fb7a9122"
       }
     },
     {
