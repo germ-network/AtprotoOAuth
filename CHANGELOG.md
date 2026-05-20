@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.5.4
+
+### Patch Changes
+
+- [#59](https://github.com/germ-network/AtprotoOAuth/pull/59) [`4f848c9`](https://github.com/germ-network/AtprotoOAuth/commit/4f848c963879c0a615e18139c06d1c666095e8ab) Thanks [@germ-mark](https://github.com/germ-mark)! - adopt upstream changes to HTTP API
+
 ## 0.5.3
 
 ### Patch Changes
