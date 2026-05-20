@@ -41,6 +41,7 @@ let package = Package(
 			url: "https://github.com/apple/swift-crypto.git",
 			.upToNextMajor(from: "4.2.0")),
 		.package(url: "https://github.com/apple/swift-http-types.git", from: "1.5.1"),
+		.package(url: "https://github.com/swift-libp2p/swift-bases.git", from: "0.2.0"),
 	],
 	targets: [
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -64,6 +65,7 @@ let package = Package(
 				.product(name: "AtprotoClientMocks", package: "AtprotoClient"),
 				.product(name: "AtprotoTypesMocks", package: "AtprotoTypes"),
 				.product(name: "Mockable", package: "AtprotoTypes"),
+				.product(name: "Base64", package: "swift-bases"),
 			]
 		),
 		.testTarget(
