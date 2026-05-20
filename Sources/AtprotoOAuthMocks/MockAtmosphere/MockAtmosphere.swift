@@ -9,6 +9,7 @@ import AtprotoClient
 import AtprotoClientMocks
 import AtprotoOAuth
 import AtprotoTypes
+import Base64
 import CryptoKit
 import Foundation
 import GermConvenience
