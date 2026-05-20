@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "c92abfd74defeb60c09b45b8ab11e215987920a3",
-        "version" : "0.5.7"
+        "revision" : "44d9c79f58080472ee979ee12373ef74344e0e1b",
+        "version" : "0.5.8"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "3c6ed6c378f1174aa4aed30779387a1a98571e0b",
-        "version" : "0.4.4"
+        "revision" : "12207f3ede15d1a4e6997a0bac6b3718400d2a5f",
+        "version" : "0.4.5"
       }
     },
     {
@@ -29,21 +29,12 @@
       }
     },
     {
-      "identity" : "base32",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Jarema/Base32.git",
-      "state" : {
-        "revision" : "7f723a2e55f1c76e7c79263aebf89dbfcd58e77d",
-        "version" : "0.10.2"
-      }
-    },
-    {
       "identity" : "germconvenience",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "revision" : "e98a7fc5301e1b1562f18180eb05bcfcdbd7632d",
-        "version" : "0.1.5"
+        "revision" : "f78b7436a2b62b4e083f7e61a67a25779f6abcd2",
+        "version" : "0.2.2"
       }
     },
     {
@@ -60,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "revision" : "27c3d4005a924b0cfac235f7982979c4a0d4cb8b",
-        "version" : "0.3.3"
+        "revision" : "2a5837083ab0b78d5b54458cf250bcddc25511ee",
+        "version" : "0.3.4"
       }
     },
     {
@@ -80,6 +71,15 @@
       "state" : {
         "revision" : "9900d9b4113427a170d5f26075c2128be94984df",
         "version" : "0.7.0"
+      }
+    },
+    {
+      "identity" : "swift-bases",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swift-libp2p/swift-bases.git",
+      "state" : {
+        "revision" : "96615d4b582f9f6536d8278304ce2a64c8e5288a",
+        "version" : "0.2.0"
       }
     },
     {

@@ -17,25 +17,25 @@ let package = Package(
 	dependencies: [
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			//			from: "0.5.7"
-			branch: "fix/imports"
+			from: "0.5.8"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			//			from: "0.4.4"
-			branch: "fix/reduce-imports"
+			from: "0.4.5"
+		),
+		.package(
+			url: "https://github.com/germ-network/GermConvenience.git",
+			from: "0.2.2"
 		),
 		//use this as a out of the box resolver for tests
 		//does not get included in the main package
 		.package(
 			url: "https://github.com/germ-network/Microcosm.git",
-//			from: "0.3.2"
-			branch: "fix/http-types"
+			from: "0.3.3"
 		),
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			//			from: "0.3.3"
-			branch: "fix/imports"
+			from: "0.3.4"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
@@ -50,6 +50,7 @@ let package = Package(
 			dependencies: [
 				"AtprotoClient",
 				"AtprotoTypes",
+				"GermConvenience",
 				.product(name: "Crypto", package: "swift-crypto"),
 				.product(name: "HTTPTypes", package: "swift-http-types"),
 				.product(name: "OAuth4Swift", package: "oauth4swift"),

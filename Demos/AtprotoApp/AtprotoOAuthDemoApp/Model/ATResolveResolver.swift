@@ -11,6 +11,7 @@ import AtprotoOAuth
 import AtprotoTypes
 import Foundation
 import GermConvenience
+import HTTPTypes
 
 public struct ATResolveResolver: Atproto.Resolver {
 	let resourceFetcher: HTTPFetcher
@@ -31,8 +32,9 @@ public struct ATResolveResolver: Atproto.Resolver {
 	public func resolve(did: Atproto.DID) async throws -> Atproto.DIDDocument? {
 		let url = try constructPlcQueryUrl(did: did)
 
-		let request = BundledHTTPRequest(
-			request: .init(method: .get, url: url)
+		let request = try BundledHTTPRequest(
+			method: .get,
+			url: url
 		)
 
 		return try await resourceFetcher.data(for: request)
