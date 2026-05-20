@@ -13,8 +13,6 @@ import CryptoKit
 import Foundation
 import GermConvenience
 
-//import HTTPTypes
-
 ///A local mock of the Atmosphere for local testing
 public actor MockAtmosphere {
 
