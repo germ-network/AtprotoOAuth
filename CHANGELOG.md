@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.5.5
+
+### Patch Changes
+
+- [#61](https://github.com/germ-network/AtprotoOAuth/pull/61) [`c26844b`](https://github.com/germ-network/AtprotoOAuth/commit/c26844b5679ee4a4c38869256fca306877150e47) Thanks [@germ-mark](https://github.com/germ-mark)! - use patched oauth4swift for base64/base64url confusion
+
 ## 0.5.4
 
 ### Patch Changes
