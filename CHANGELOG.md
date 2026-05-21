@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.5.7
+
+### Patch Changes
+
+- [#65](https://github.com/germ-network/AtprotoOAuth/pull/65) [`20a7c39`](https://github.com/germ-network/AtprotoOAuth/commit/20a7c39844145e0f67005ece073f19d6337f8264) Thanks [@germ-mark](https://github.com/germ-mark)! - add mock atmosphere implementation of getrelationship
+
 ## 0.5.6
 
 ### Patch Changes
