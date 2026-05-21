@@ -15,11 +15,10 @@ let package = Package(
 		.library(name: "AtprotoOAuthMocks", targets: ["AtprotoOAuthMocks"]),
 	],
 	dependencies: [
-		//		.package(
-		//			url: "https://github.com/germ-network/AtprotoClient.git",
-		//			from: "0.5.8"
-		//		),
-		.package(path: "../AtprotoClient"),
+		.package(
+			url: "https://github.com/germ-network/AtprotoClient.git",
+			from: "0.5.9"
+		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
 			from: "0.4.5"

@@ -274,7 +274,7 @@ extension MockAtmosphere {
 	) async throws -> HTTPDataResponse {
 		let actor = try (queryItems?["actor"]).tryUnwrap
 		let others = queryItems?
-			.filter { $0.name == "other" }
+			.filter { $0.name == "others" }
 			.compactMap(\.value)
 			.compactMap { try? LexiconString.AtIdentifier(string: $0) }
 
@@ -357,7 +357,7 @@ extension MockAtmosphere {
 
 		return .relationship(
 			.init(
-				did: actor,
+				did: targetDid,
 				blocking: blocking ? .mock() : nil,
 				blockedBy: blockedBy ? .mock() : nil,
 				following: following ? .mock() : nil,
