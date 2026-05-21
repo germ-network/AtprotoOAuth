@@ -1,5 +1,17 @@
 # @germ-network/atprotooauth
 
+## 0.5.6
+
+### Patch Changes
+
+- [#63](https://github.com/germ-network/AtprotoOAuth/pull/63) [`80c06bb`](https://github.com/germ-network/AtprotoOAuth/commit/80c06bb3cb85aecc6cc33e052fdcaa7037e235ff) Thanks [@germ-mark](https://github.com/germ-mark)! - properly include base64 in mock target
+
+## 0.5.5
+
+### Patch Changes
+
+- [#61](https://github.com/germ-network/AtprotoOAuth/pull/61) [`c26844b`](https://github.com/germ-network/AtprotoOAuth/commit/c26844b5679ee4a4c38869256fca306877150e47) Thanks [@germ-mark](https://github.com/germ-mark)! - use patched oauth4swift for base64/base64url confusion
+
 ## 0.5.4
 
 ### Patch Changes
