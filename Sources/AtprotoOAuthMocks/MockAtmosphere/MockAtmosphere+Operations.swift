@@ -11,6 +11,7 @@ import Foundation
 extension MockAtmosphere {
 	public func follow(subjectDid: Atproto.DID, from viewerDid: Atproto.DID) async throws {
 		try await pds(for: viewerDid)
+			.tryUnwrap
 			.follow(did: subjectDid, from: viewerDid)
 	}
 }

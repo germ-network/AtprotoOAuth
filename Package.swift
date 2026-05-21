@@ -17,7 +17,7 @@ let package = Package(
 	dependencies: [
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.5.8"
+			from: "0.5.9"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
@@ -40,6 +40,7 @@ let package = Package(
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
 			.upToNextMajor(from: "4.2.0")),
+		.package(url: "https://github.com/apple/swift-log", from: "1.6.0"),
 		.package(url: "https://github.com/apple/swift-http-types.git", from: "1.5.1"),
 		.package(url: "https://github.com/swift-libp2p/swift-bases.git", from: "0.2.0"),
 	],
@@ -66,6 +67,7 @@ let package = Package(
 				.product(name: "AtprotoTypesMocks", package: "AtprotoTypes"),
 				.product(name: "Mockable", package: "AtprotoTypes"),
 				.product(name: "Base64", package: "swift-bases"),
+				.product(name: "Logging", package: "swift-log"),
 			]
 		),
 		.testTarget(
