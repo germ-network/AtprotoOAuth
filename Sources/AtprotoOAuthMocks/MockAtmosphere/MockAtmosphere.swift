@@ -13,9 +13,11 @@ import Base64
 import CryptoKit
 import Foundation
 import GermConvenience
+import Logging
 
 ///A local mock of the Atmosphere for local testing
 public actor MockAtmosphere {
+	static let logger = Logger(label: "MockAtmosphere")
 
 	private let salt = SymmetricKey(size: .bits256)
 	private var tokenLookup: [String: Atproto.DID] = [:]
@@ -47,11 +49,11 @@ public actor MockAtmosphere {
 
 	public init() {}
 
-	func pds(for did: Atproto.DID) throws -> MockPDS {
-		let pdsUrl = try didDocs[did].tryUnwrap
-			.pdsUrl
-
-		return try repos[pdsUrl].tryUnwrap
+	func pds(for did: Atproto.DID) throws -> MockPDS? {
+		guard let didDoc = didDocs[did] else {
+			return nil
+		}
+		return try repos[didDoc.pdsUrl].tryUnwrap
 	}
 }
 
