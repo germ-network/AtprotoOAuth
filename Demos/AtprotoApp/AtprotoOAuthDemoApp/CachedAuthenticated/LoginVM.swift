@@ -302,7 +302,7 @@ import os
 					.resolve(handle: .init(string: handle))
 					.tryUnwrap
 				let knownFollowersStream =
-					try await authedClient.streamProfileViews(
+					try await authedClient.streamSocialGraphs(
 						for: .did(did),
 						socialGraphType: .knownFollowers
 					)
