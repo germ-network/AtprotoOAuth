@@ -1,13 +1,13 @@
 {
-  "originHash" : "c566c6b1053a412a066584a1e4c28f90b9df1776fdd500a221b5a8452ddd5aa1",
+  "originHash" : "7d8f5b12fdec2a0d9ed9db303284f9c30bdd01389ff066edad88958b02c13b92",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "5afa90a438a0d1409225824e830591bc252cd826",
-        "version" : "0.5.9"
+        "revision" : "f4c74fdaf033a720532352919b3d80ce8cef23a4",
+        "version" : "0.5.10"
       }
     },
     {
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log",
       "state" : {
-        "revision" : "5073617dac96330a486245e4c0179cb0a6fd2256",
-        "version" : "1.12.0"
+        "revision" : "a012e0ad8a8a72de92b0e008c81a9b793f70e73a",
+        "version" : "1.12.1"
       }
     }
   ],
