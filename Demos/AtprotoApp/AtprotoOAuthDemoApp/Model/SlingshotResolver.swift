@@ -21,7 +21,7 @@ public struct SlingshotResolver: Atproto.Resolver {
 	public func resolve(handle: AtprotoTypes.Atproto.Handle) async throws
 		-> AtprotoTypes.Atproto.DID?
 	{
-		throw Errors.notImplemented
+		try await slingshot.resolveHandle(handle)
 	}
 
 	public func resolve(did: Atproto.DID) async throws -> Atproto.DIDDocument? {
