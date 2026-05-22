@@ -36,7 +36,7 @@ public struct AtprotoOAuthClient: Sendable {
 extension AtprotoOAuthClient {
 	public func authorize(
 		identity: AuthIdentity,
-	) async throws -> OAuth.SessionState.Archive {
+	) async throws -> (OAuth.SessionState.Archive, Atproto.DID) {
 		let didDoc: Atproto.DIDDocument.Verified
 		switch identity {
 		case .did(let did, _):
@@ -70,12 +70,12 @@ extension AtprotoOAuthClient {
 					inputToken: nil,
 					additionalParameters: additionalParameters,
 					userAuthenticator: userAuthenticator,
-				),
+					tokenAuthOptions: .init(
+						alreadyResolvedDIDs: [didDoc.did],
+						resolver: resolver,
+						authFetcher: authFetcher
+					),
 
-			tokenRequestOptions:
-				.atproto(
-					did: didDoc.did,
-					authFetcher: authFetcher
 				),
 			authFetcher: authFetcher,
 		)
@@ -85,8 +85,7 @@ extension AtprotoOAuthClient {
 
 	actor Authorizer: OAuth.Authorizer, OAuth.DPoP.Signing {
 		let clientId: String
-		let authorizeInputs: OAuth.AuthorizeInputs
-		let tokenRequestOptions: OAuth.TokenRequestOptions
+		let authorizeInputs: OAuth.AuthorizeInputs<TokenOptions>
 		let authFetcher: any HTTPFetcher
 
 		//for client auth
@@ -103,13 +102,11 @@ extension AtprotoOAuthClient {
 
 		public init(
 			clientId: String,
-			authorizeInputs: OAuth.AuthorizeInputs,
-			tokenRequestOptions: OAuth.TokenRequestOptions,
+			authorizeInputs: OAuth.AuthorizeInputs<TokenOptions>,
 			authFetcher: any HTTPFetcher,
 		) {
 			self.clientId = clientId
 			self.authorizeInputs = authorizeInputs
-			self.tokenRequestOptions = tokenRequestOptions
 			self.authFetcher = authFetcher
 		}
 	}

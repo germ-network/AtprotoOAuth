@@ -35,7 +35,8 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			from: "0.4.0"
+			//			from: "0.4.0"
+			branch: "tokenValidator"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",

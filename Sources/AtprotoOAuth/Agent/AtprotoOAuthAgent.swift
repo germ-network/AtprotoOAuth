@@ -260,10 +260,10 @@ extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
 		}
 	}
 
-	public var authServerRequestOptions: OAuth.TokenRequestOptions {
-		.atproto(
-			did: repo,
-			authFetcher: authFetcher
+	public var authServerRequestOptions: OAuth.TokenRefreshOptions {
+		TokenOptions(
+			additionalParameters: [:],
+			did: did
 		)
 	}
 }
