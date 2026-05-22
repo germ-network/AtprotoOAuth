@@ -30,6 +30,7 @@ struct UnauthenticatedView: View {
 	@State private var did: Atproto.DID?
 	//	@State private var keyPackage: GermLexicon.ArchivedKeyPackageRecord?
 	@State private var messagingDelegate: Lexicon.Com.GermNetwork.Declaration?
+	@State private var relationships: Lexicon.App.Bsky.Graph.Relationships? = nil
 
 	@State private var processing: Task<Void, Error>? = nil
 
@@ -142,6 +143,30 @@ struct UnauthenticatedView: View {
 							Text($0.rawValue)
 						}
 					}
+					Section("Relationship with @bsky.app") {
+						if let relationships {
+							Text(
+								"**Blocked by:** \(relationships.blockedBy?.rawValue ?? "None")"
+							)
+							Text(
+								"**Blocked by list:** \(relationships.blockedByList?.rawValue ?? "None")"
+							)
+							Text(
+								"**Blocking:** \(relationships.blocking?.rawValue ?? "None")"
+							)
+							Text(
+								"**Blocking by list:** \(relationships.blockingbyList?.rawValue ?? "None")"
+							)
+							Text(
+								"**Following:** \(relationships.following?.rawValue ?? "None")"
+							)
+							Text(
+								"**Followed by:** \(relationships.followedBy?.rawValue ?? "None")"
+							)
+						} else {
+							Text("N/A")
+						}
+					}
 				}
 			}
 		}
@@ -172,6 +197,9 @@ struct UnauthenticatedView: View {
 			}
 
 			let agent = try await lazyPDSAgent(did: did)
+			let appView = try BskyAppViewAgent.blackskyAppView(
+				resourceFetcher: URLSession.shared
+			)
 
 			// PDS and handle
 			print("Loading DID document...")
@@ -253,6 +281,27 @@ struct UnauthenticatedView: View {
 			} catch {
 				print("Error loading blocks: \(error)")
 			}
+
+			// Blocks
+			print("Loading relationship with @bsky.app...")
+			do {
+				let relationship =
+					try await appView
+					.getRelationships(
+						actor: did,
+						subjects: [
+							.init(
+								string:
+									"did:plc:z72i7hdynmk6r22z27h6tvur"
+							)
+						]
+					)
+					.first
+				relationships = try relationship.tryUnwrap
+			} catch {
+				print("Error loading relationship: \(error)")
+			}
+			print("Successfully loaded relationship")
 		}
 
 		processing = newTask

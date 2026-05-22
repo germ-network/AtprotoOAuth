@@ -1,13 +1,13 @@
 {
-  "originHash" : "c566c6b1053a412a066584a1e4c28f90b9df1776fdd500a221b5a8452ddd5aa1",
+  "originHash" : "67ad28a4fc32215aa22ccdaa844f37847b4d659e0b97fec5f722095d1025e5e3",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "5afa90a438a0d1409225824e830591bc252cd826",
-        "version" : "0.5.9"
+        "branch" : "anna/more-friends",
+        "revision" : "f7b0726f911079306d54ccf758ba27d85b90912c"
       }
     },
     {
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log",
       "state" : {
-        "revision" : "5073617dac96330a486245e4c0179cb0a6fd2256",
-        "version" : "1.12.0"
+        "revision" : "a012e0ad8a8a72de92b0e008c81a9b793f70e73a",
+        "version" : "1.12.1"
       }
     }
   ],

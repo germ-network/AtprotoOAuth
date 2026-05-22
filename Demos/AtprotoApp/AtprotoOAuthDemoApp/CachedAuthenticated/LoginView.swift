@@ -111,6 +111,31 @@ struct LoginView: View {
 						ProgressView()
 					}
 				}
+				Section("Known Followers (Mutuals)") {
+					HStack {
+						Text("@").foregroundStyle(.blue)
+						TextField(
+							"username.bsky.social",
+							text: $otherHandle
+						)
+						#if os(iOS)
+							.keyboardType(.URL)
+							.textInputAutocapitalization(.never)
+						#endif
+						.autocorrectionDisabled()
+						Spacer()
+					}
+					Button("Fetch known followers") {
+						viewModel.getKnownFollowers(for: otherHandle)
+					}
+					if let knownFollowersResult = viewModel.knownFollowersResult
+					{
+						Text(knownFollowersResult)
+					}
+					ForEach(viewModel.knownFollowers, id: \.self) {
+						Text($0.rawValue)
+					}
+				}
 				Section("Message Delegate") {
 					Button("Post messaging delegate: users I follow") {
 						Task {

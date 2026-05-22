@@ -43,6 +43,9 @@ import os
 
 	var messageDelegate: Lexicon.Com.GermNetwork.Declaration? = nil
 
+	var knownFollowersResult: String? = nil
+	var knownFollowers: [Atproto.DID] = []
+
 	init(did: Atproto.DID, handle: String, resolver: Atproto.Resolver) {
 		self.handle = handle
 		self.did = did
@@ -283,6 +286,43 @@ import os
 			)
 		} catch {
 			Self.logger.error("Error posting message delegate: \(error)")
+		}
+	}
+
+	func getKnownFollowers(for handle: String) {
+		guard let authedClient else {
+			return
+		}
+		Task {
+			do {
+				knownFollowers = []
+				knownFollowersResult = "Loading..."
+				let did =
+					try await resolver
+					.resolve(handle: .init(string: handle))
+					.tryUnwrap
+				let knownFollowersStream =
+					try await authedClient.streamProfileViews(
+						for: .did(did),
+						socialGraphType: .knownFollowers
+					)
+				for try await mutual in knownFollowersStream {
+					knownFollowers.append(
+						contentsOf: mutual.compactMap({ $0.did })
+					)
+				}
+				if knownFollowers.isEmpty {
+					knownFollowersResult = "No known followers"
+				} else {
+					knownFollowersResult = nil
+				}
+			} catch {
+				knownFollowersResult =
+					"Error fetching: \(error.localizedDescription)"
+				Self.logger.error(
+					"Couldn't get known followers: \(error.localizedDescription)"
+				)
+			}
 		}
 	}
 }
