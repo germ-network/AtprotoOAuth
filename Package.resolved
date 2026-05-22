@@ -1,13 +1,13 @@
 {
-  "originHash" : "67ad28a4fc32215aa22ccdaa844f37847b4d659e0b97fec5f722095d1025e5e3",
+  "originHash" : "7d8f5b12fdec2a0d9ed9db303284f9c30bdd01389ff066edad88958b02c13b92",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "branch" : "anna/more-friends",
-        "revision" : "f7b0726f911079306d54ccf758ba27d85b90912c"
+        "revision" : "f4c74fdaf033a720532352919b3d80ce8cef23a4",
+        "version" : "0.5.10"
       }
     },
     {
