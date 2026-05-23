@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum OAuthSessionError: Error, Equatable {
+package enum OAuthSessionError: Error, Equatable {
 	case cantFormURL
 	case sessionInactive
 	case incorrectResponseType
@@ -18,7 +18,7 @@ enum OAuthSessionError: Error, Equatable {
 }
 
 extension OAuthSessionError: LocalizedError {
-	var errorDescription: String? {
+	package var errorDescription: String? {
 		switch self {
 		case .cantFormURL: "can't form URL"
 		case .sessionInactive: "session is inactive"

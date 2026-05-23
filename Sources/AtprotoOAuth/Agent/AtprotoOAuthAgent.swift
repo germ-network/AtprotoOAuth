@@ -23,7 +23,7 @@ public actor AtprotoOAuthAgent {
 	public let clientId: String
 	public let authFetcher: HTTPFetcher
 
-	enum State {
+	package enum State {
 		case active(OAuth.SessionState)
 		case refreshing(
 			Task<OAuth.AccessToken, Error>,
@@ -44,7 +44,7 @@ public actor AtprotoOAuthAgent {
 			}
 		}
 	}
-	var state: State
+	package var state: State
 	//we require one, so get the reference to the state in the SessionState at restore (or throw)
 	public nonisolated let dpopKey: OAuth.DPoP.Key
 

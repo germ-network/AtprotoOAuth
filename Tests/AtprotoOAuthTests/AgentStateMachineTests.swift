@@ -14,44 +14,38 @@ import GermConvenience
 import OAuth4Swift
 import Testing
 
-@testable import AtprotoOAuth
+import AtprotoOAuth
 
 @Suite("AtprotoOAuthAgent state machine")
 struct AgentStateMachineTests {
-	static let clientId = "https://test.example/client.json"
+	static let clientId = "https://test.example.com/client.json"
 	static let testDID = "did:plc:4yvwfwxfz5sney4twepuzdu7"
+	
+	let agent: AtprotoOAuthAgent
+	let saveStream: AsyncStream<OAuth.SessionState.TokenState?>
+	let originalAccessToken: OAuth.AccessToken
 
 	let resolver: Atproto.Resolver = StubResolver()
-
-	private func makeAgent(includeRefreshToken: Bool = true) throws
-		-> (
-			agent: AtprotoOAuthAgent,
-			saveStream: AsyncStream<OAuth.SessionState.TokenState?>,
-			originalAccessToken: String
-		)
-	{
+	
+	init() throws {
 		var archive = OAuth.SessionState.Archive.mock()
-		let accessTokenValue = "access-\(UUID().uuidString)"
-		let refreshToken: OAuth.RefreshToken? =
-			includeRefreshToken
-			? .mock(value: "refresh-\(UUID().uuidString)")
-			: nil
-		archive.tokenState = .mock(
-			accessToken: .mock(value: accessTokenValue),
-			refreshToken: refreshToken
+		originalAccessToken = archive.tokenState.accessToken
+		let refreshToken = OAuth.RefreshToken.mock(
+			value: "refresh-\(UUID().uuidString)"
 		)
-		let (agent, saveStream) = try AtprotoOAuthAgent.restore(
+		
+		archive.tokenState.refreshToken = .mock()
+	
+		(agent, saveStream) = try AtprotoOAuthAgent.restore(
 			archive: .init(did: Self.testDID, session: archive),
 			clientId: Self.clientId,
 			authFetcher: URLSession.manualRedirect(),
 			atprotoResolver: resolver
 		)
-		return (agent, saveStream, accessTokenValue)
 	}
 
 	@Test("startRefresh coalesces concurrent calls into a single Task")
 	func coalesce() async throws {
-		let (agent, _, _) = try makeAgent()
 		let (gate, gateContinuation) =
 			AsyncStream<OAuth.SessionState.TokenState?>.makeStream()
 
@@ -82,7 +76,6 @@ struct AgentStateMachineTests {
 
 	@Test("continueCondition returning false skips refresh and leaves state active")
 	func skipsWhenConditionFalse() async throws {
-		let (agent, _, originalAccessToken) = try makeAgent()
 		let result = await agent.startRefresh(
 			continueCondition: { _ in false },
 			refreshClosure: { _, _ in
@@ -94,12 +87,11 @@ struct AgentStateMachineTests {
 		)
 		#expect(result == nil)
 		let token = try await agent.authToken
-		#expect(token.value == originalAccessToken)
+		#expect(token == originalAccessToken)
 	}
 
 	@Test("refreshClosure returning nil transitions to expired and emits loggedOut")
 	func nilResultExpiresSession() async throws {
-		let (agent, saveStream, _) = try makeAgent()
 
 		// Subscribe before triggering so we don't race the buffering policy
 		// (bufferingNewest(1) keeps only the most recent event).
@@ -140,7 +132,6 @@ struct AgentStateMachineTests {
 
 	@Test("refreshClosure throwing reverts to active and surfaces previous access token")
 	func throwRevertsToActive() async throws {
-		let (agent, _, originalAccessToken) = try makeAgent()
 		struct Boom: Error {}
 
 		let task = await agent.startRefresh(
@@ -149,15 +140,16 @@ struct AgentStateMachineTests {
 		)
 		let unwrapped = try #require(task)
 		let returned = try await unwrapped.value
-		#expect(returned.value == originalAccessToken)
+		#expect(returned == originalAccessToken)
 
 		let token = try await agent.authToken
-		#expect(token.value == originalAccessToken)
+		#expect(token == originalAccessToken)
 	}
 
 	@Test("active state without a refresh token returns nil from startRefresh")
 	func noRefreshTokenReturnsNil() async throws {
-		let (agent, _, _) = try makeAgent(includeRefreshToken: false)
+//		let (agent, _, _) = try makeAgent(includeRefreshToken: false)
+		try await agent.clearRefresh()
 		let result = await agent.startRefresh(
 			continueCondition: { _ in true },
 			refreshClosure: { _, _ in
@@ -172,7 +164,6 @@ struct AgentStateMachineTests {
 
 	@Test("successful refresh installs the new access token and stays active")
 	func successUpdatesAccessToken() async throws {
-		let (agent, saveStream, originalAccessToken) = try makeAgent()
 		var saveIter = saveStream.makeAsyncIterator()
 
 		let newAccessTokenValue = "access-\(UUID().uuidString)"
@@ -188,7 +179,7 @@ struct AgentStateMachineTests {
 		let unwrapped = try #require(task)
 		let returned = try await unwrapped.value
 		#expect(returned.value == newAccessTokenValue)
-		#expect(returned.value != originalAccessToken)
+		#expect(returned != originalAccessToken)
 
 		switch await saveIter.next() {
 		case .some(.some(let saved)):
@@ -205,7 +196,6 @@ struct AgentStateMachineTests {
 
 	@Test("startRefresh on an expired session returns nil")
 	func expiredStateReturnsNil() async throws {
-		let (agent, _, _) = try makeAgent()
 
 		// First refresh returns nil → transitions agent into .expired.
 		let expireTask = await agent.startRefresh(
@@ -229,6 +219,21 @@ struct AgentStateMachineTests {
 			}
 		)
 		#expect(result == nil)
+	}
+	
+	enum Errors: LocalizedError {
+		case forceThrow
+		case incorrectState
+	}
+}
+
+extension AtprotoOAuthAgent {
+	func clearRefresh() throws {
+		guard case .active(let sessionState) = state else {
+			throw AgentStateMachineTests.Errors.incorrectState
+		}
+		sessionState.tokenState.refreshToken = nil
+		state = .active(sessionState)
 	}
 }
 
