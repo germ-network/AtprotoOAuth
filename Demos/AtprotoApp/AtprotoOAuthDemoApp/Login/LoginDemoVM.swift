@@ -33,7 +33,9 @@ struct LogEntry: Identifiable {
 
 	let client = AtprotoOAuthClient(
 		clientInfo: .demo,
-		resolver: ATResolveResolver(resourceFetcher: URLSession.shared),
+		resolver: SlingshotResolver(
+			slingshot: .init(resourceFetcher: URLSession.shared)
+		),
 		authFetcher: URLSession.manualRedirect(),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator()
 	)
@@ -46,8 +48,9 @@ struct LogEntry: Identifiable {
 		state = .validating(handle)
 		Task {
 			do {
-				let resolver = ATResolveResolver(
-					resourceFetcher: URLSession.shared)
+				let resolver = SlingshotResolver(
+					slingshot: .init(resourceFetcher: URLSession.shared)
+				)
 				let resolvedDid = try await resolver.resolve(
 					handle: .init(string: handle)
 				)
