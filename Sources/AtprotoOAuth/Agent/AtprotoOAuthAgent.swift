@@ -9,6 +9,7 @@ import AtprotoClient
 import AtprotoTypes
 import Foundation
 import GermConvenience
+import Logging
 import OAuth4Swift
 
 import struct HTTPTypes.HTTPFields
@@ -22,6 +23,10 @@ public actor AtprotoOAuthAgent {
 
 	enum State {
 		case active(OAuth.SessionState)
+		case refreshing(
+			Task<OAuth.AccessToken, Error>,
+			previous: OAuth.SessionState
+		)
 		case expired
 
 		init(archive: OAuth.SessionState.Archive?) throws {
@@ -99,15 +104,15 @@ public actor AtprotoOAuthAgent {
 	//propagate new state to our in-memory opject properties
 	//then through the async streams
 
-	private func save(tokenState: OAuth.SessionState.TokenState?) throws {
-
-		if let tokenState {
-			try session.updated(tokenState: tokenState)
-
+	private func save(
+		previousSession: OAuth.SessionState,
+		newTokenState: OAuth.SessionState.TokenState?
+	) {
+		if let newTokenState {
 			saveContinuation.yield(
 				.init(
-					clientAuth: try session.authArchive,
-					tokenState: tokenState
+					clientAuth: clientAuth.archive,
+					tokenState: newTokenState
 				)
 			)
 		} else {
@@ -127,6 +132,8 @@ public actor AtprotoOAuthAgent {
 	var sessionState: OAuth.SessionState? {
 		switch state {
 		case .active(let sessionState):
+			sessionState
+		case .refreshing(_, previous: let sessionState):
 			sessionState
 		case .expired:
 			nil
@@ -206,16 +213,80 @@ extension AtprotoOAuthAgent: AuthPDSAgent {
 }
 
 extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
-	public func refreshed(tokenState: OAuth.SessionState.TokenState?) throws {
-		try save(tokenState: tokenState)
+	public var authServerMetadata: AuthServerMetadata {
+		get async throws {
+			try await lazyServerMetadata.lazyValue(isolation: self)
+		}
 	}
 
-	public var session: OAuth.SessionState {
-		get throws {
-			guard case .active(let sessionState) = state else {
+	public var authToken: OAuth.AccessToken {
+		get async throws {
+			switch state {
+			case .active(let sessionState):
+				return sessionState.tokenState.accessToken
+			case .refreshing(let refreshTask, previous: _):
+				return try await refreshTask.value
+			case .expired:
 				throw OAuthSessionError.sessionInactive
 			}
-			return sessionState
+		}
+	}
+
+	public func startRefresh(
+		continueCondition: (OAuth.RefreshToken?) -> Bool,
+		refreshClosure:
+			@escaping (
+				OAuth.SessionState.Snapshot,
+				OAuth.RefreshToken
+			) async throws -> OAuth.SessionState.TokenState?
+	) -> Task<OAuth.AccessToken, Error>? {
+		switch state {
+		case .refreshing(let task, previous: _):
+			return task
+		case .expired:
+			return nil
+		case .active(let sessionState):
+			guard continueCondition(sessionState.tokenState.refreshToken) else {
+				Logger(label: "AtprotoOAuthAgent").notice("Skipping refresh")
+				return nil
+			}
+			//get sendable objects from the mutable sessionState
+			let snapshot = sessionState.snapshot
+			guard let refreshToken = sessionState.tokenState.refreshToken else {
+				//can't refresh without a refresh token
+				return nil
+			}
+
+			let newTask = Task {
+				do {
+					let newTokenState = try await refreshClosure(
+						snapshot,
+						refreshToken
+					)
+
+					save(
+						previousSession: sessionState,
+						newTokenState: newTokenState
+					)
+					if let newTokenState {
+						sessionState.updated(tokenState: newTokenState)
+						state = .active(sessionState)
+
+						return sessionState.tokenState.accessToken
+					} else {
+						state = .expired
+					}
+				} catch {
+					//return to previous
+					state = .active(sessionState)
+					return sessionState.tokenState.accessToken
+				}
+				throw OAuthSessionError.sessionInactive
+			}
+
+			state = .refreshing(newTask, previous: sessionState)
+
+			return newTask
 		}
 	}
 

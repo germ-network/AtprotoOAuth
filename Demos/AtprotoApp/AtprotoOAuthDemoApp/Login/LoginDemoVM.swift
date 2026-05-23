@@ -35,7 +35,7 @@ struct LogEntry: Identifiable {
 		clientInfo: .demo,
 		resolver: SlingshotResolver(
 			slingshot: .init(resourceFetcher: URLSession.shared)
-			  ),
+		),
 		authFetcher: URLSession.manualRedirect(),
 		userAuthenticator: ASWebAuthenticationSession.userAuthenticator()
 	)
