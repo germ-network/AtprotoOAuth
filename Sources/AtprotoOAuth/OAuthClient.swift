@@ -151,7 +151,7 @@ extension AtprotoOAuthClient {
 		archive: AtprotoOAuthAgent.Archive,
 	) throws -> (
 		AtprotoOAuthAgent,
-		AsyncStream<OAuth.SessionState.Archive.Mutable?>
+		AsyncStream<OAuth.SessionState.TokenState?>
 	) {
 		try AtprotoOAuthAgent
 			.restore(

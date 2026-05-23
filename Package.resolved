@@ -1,5 +1,5 @@
 {
-  "originHash" : "470c4b6f949384e686bdd40276bd6e7af6a3d21c7d8cde8566e13e28ab732617",
+  "originHash" : "42b528d08bec64f5de890daca28399a5c86800396f3fdf7e7b41f8c441495160",
   "pins" : [
     {
       "identity" : "atprotoclient",
@@ -43,7 +43,7 @@
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
         "branch" : "debounce-refresh",
-        "revision" : "d37765287e23a41547641f53bf451bffc5dd7579"
+        "revision" : "d8db329213b1cf2d4dd78a8213eb14b3bd5eb28b"
       }
     },
     {

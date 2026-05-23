@@ -15,6 +15,8 @@ import OAuth4Swift
 import struct HTTPTypes.HTTPFields
 
 public actor AtprotoOAuthAgent {
+	static let logger = Logger(label: "AtprotoOAuthAgent")
+
 	public nonisolated let repo: Atproto.DID
 	public nonisolated let authenticatedDID: Atproto.DID
 	public nonisolated let resolver: Atproto.Resolver
@@ -47,10 +49,9 @@ public actor AtprotoOAuthAgent {
 	public nonisolated let dpopKey: OAuth.DPoP.Key
 
 	public var lazyServerMetadata: LazyResource<AuthServerMetadata>
-	public var refreshTask: Task<OAuth.SessionState.TokenState, Error>?
 
-	private let saveStream: AsyncStream<OAuth.SessionState.Archive.Mutable?>
-	private let saveContinuation: AsyncStream<OAuth.SessionState.Archive.Mutable?>.Continuation
+	private let saveStream: AsyncStream<OAuth.SessionState.TokenState?>
+	private let saveContinuation: AsyncStream<OAuth.SessionState.TokenState?>.Continuation
 	public enum StateUpdate {
 		case loggedOut
 	}
@@ -94,39 +95,14 @@ public actor AtprotoOAuthAgent {
 				}
 			})
 
-		(saveStream, saveContinuation) = AsyncStream<OAuth.SessionState.Archive.Mutable?>
+		(
+			saveStream,
+			saveContinuation
+		) = AsyncStream<OAuth.SessionState.TokenState?>
 			.makeStream(bufferingPolicy: .bufferingNewest(1))
 
 		(updateStream, updateContinuation) = AsyncStream<StateUpdate>
 			.makeStream(bufferingPolicy: .bufferingNewest(1))
-	}
-
-	//propagate new state to our in-memory opject properties
-	//then through the async streams
-
-	private func save(
-		previousSession: OAuth.SessionState,
-		newTokenState: OAuth.SessionState.TokenState?
-	) {
-		if let newTokenState {
-			saveContinuation.yield(
-				.init(
-					clientAuth: clientAuth.archive,
-					tokenState: newTokenState
-				)
-			)
-		} else {
-			saveContinuation.yield(nil)
-		}
-		//don't need to undestand refresh in the UI yet
-		//		updateContinuation.yield( )
-	}
-
-	//TODO: determine when we are expired and call this
-	//so clients know they need to get a new session
-	private func expired() {
-		saveContinuation.yield(nil)
-		updateContinuation.yield(.loggedOut)
 	}
 
 	var sessionState: OAuth.SessionState? {
@@ -150,16 +126,6 @@ extension AtprotoOAuthAgent {
 			self.did = did
 			self.session = session
 		}
-
-		public mutating func merge(
-			mutableArchive: OAuth.SessionState.Archive.Mutable?
-		) {
-			guard let mutableArchive else {
-				session = nil
-				return
-			}
-			session?.merge(mutable: mutableArchive)
-		}
 	}
 
 	package static func restore(
@@ -169,7 +135,7 @@ extension AtprotoOAuthAgent {
 		atprotoResolver: Atproto.Resolver
 	) throws -> (
 		AtprotoOAuthAgent,
-		AsyncStream<OAuth.SessionState.Archive.Mutable?>
+		AsyncStream<OAuth.SessionState.TokenState?>
 	) {
 		let session = try AtprotoOAuthAgent(
 			archive: archive,
@@ -247,7 +213,7 @@ extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
 			return nil
 		case .active(let sessionState):
 			guard continueCondition(sessionState.tokenState.refreshToken) else {
-				Logger(label: "AtprotoOAuthAgent").notice("Skipping refresh")
+				Self.logger.notice("Skipping refresh")
 				return nil
 			}
 			//get sendable objects from the mutable sessionState
@@ -258,30 +224,34 @@ extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
 			}
 
 			let newTask = Task {
+				let newTokenState: OAuth.SessionState.TokenState?
 				do {
-					let newTokenState = try await refreshClosure(
+					newTokenState = try await refreshClosure(
 						snapshot,
 						refreshToken
 					)
-
-					save(
-						previousSession: sessionState,
-						newTokenState: newTokenState
-					)
-					if let newTokenState {
-						sessionState.updated(tokenState: newTokenState)
-						state = .active(sessionState)
-
-						return sessionState.tokenState.accessToken
-					} else {
-						state = .expired
-					}
 				} catch {
-					//return to previous
+					//return to previous. If auth was actually unauthorized
+					//oauth4swift would return nil to signal we terminate the session
 					state = .active(sessionState)
+					Self.logger.notice(
+						"refresh failed with error \(error), restoring previous state"
+					)
 					return sessionState.tokenState.accessToken
 				}
-				throw OAuthSessionError.sessionInactive
+
+				saveContinuation.yield(newTokenState)
+
+				if let newTokenState {
+					sessionState.updated(tokenState: newTokenState)
+					state = .active(sessionState)
+
+					return sessionState.tokenState.accessToken
+				} else {
+					state = .expired
+					updateContinuation.yield(.loggedOut)
+					throw OAuthSessionError.sessionInactive
+				}
 			}
 
 			state = .refreshing(newTask, previous: sessionState)

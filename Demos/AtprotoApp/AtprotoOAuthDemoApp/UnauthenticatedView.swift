@@ -282,8 +282,8 @@ struct UnauthenticatedView: View {
 				print("Error loading blocks: \(error)")
 			}
 
-			// Blocks
-			print("Loading relationship with @bsky.app...")
+			// Relationships
+			print("Loading relationships with @bsky.app...")
 			do {
 				let relationship =
 					try await appView

@@ -96,7 +96,7 @@ import os
 						guard !Task.isCancelled else {
 							return
 						}
-						self.saved(update: value)
+						self.saved(newTokenState: value)
 					}
 				}
 			}
@@ -117,9 +117,9 @@ import os
 		}
 	}
 
-	private func saved(update: OAuth.SessionState.Archive.Mutable?) {
+	private func saved(newTokenState: OAuth.SessionState.TokenState?) {
 		//if we get nil, signifies we tear down the session
-		guard let update else {
+		guard let newTokenState else {
 			self.sessionStorage.sessionArchive = nil
 			return
 		}
@@ -127,8 +127,7 @@ import os
 			Self.logger.error("saving without an archive to save to")
 			return
 		}
-		editState.clientAuth = update.clientAuth
-		editState.tokenState = update.tokenState
+		editState.tokenState = newTokenState
 		self.sessionStorage.sessionArchive = editState
 	}
 
@@ -165,7 +164,7 @@ import os
 						guard !Task.isCancelled else {
 							return
 						}
-						self.saved(update: value)
+						self.saved(newTokenState: value)
 					}
 				}
 			}
@@ -330,13 +329,13 @@ import os
 struct SessionWrapper {
 	// TODO: I don't know that the agent is the right thing to store here
 	let agent: AtprotoOAuthAgent
-	private let saveStream: AsyncStream<OAuth.SessionState.Archive.Mutable?>
+	private let saveStream: AsyncStream<OAuth.SessionState.TokenState?>
 	//hold onto the save continuation
 	let saveTask: Task<Void, Never>
 
 	init(
 		agent: AtprotoOAuthAgent,
-		saveStream: AsyncStream<OAuth.SessionState.Archive.Mutable?>,
+		saveStream: AsyncStream<OAuth.SessionState.TokenState?>,
 		saveClosure: @escaping () async -> Void
 	) {
 		self.agent = agent
