@@ -85,7 +85,7 @@ extension AtprotoOAuthClient {
 
 	actor Authorizer: OAuth.Authorizer, OAuth.DPoP.Signing {
 		let clientId: String
-		let authorizeInputs: OAuth.AuthorizeInputs<TokenOptions>
+		let authorizeInputs: OAuth.AuthorizeInputs<TokenAuthOptions>
 		let authFetcher: any HTTPFetcher
 
 		//for client auth
@@ -102,7 +102,7 @@ extension AtprotoOAuthClient {
 
 		public init(
 			clientId: String,
-			authorizeInputs: OAuth.AuthorizeInputs<TokenOptions>,
+			authorizeInputs: OAuth.AuthorizeInputs<TokenAuthOptions>,
 			authFetcher: any HTTPFetcher,
 		) {
 			self.clientId = clientId
