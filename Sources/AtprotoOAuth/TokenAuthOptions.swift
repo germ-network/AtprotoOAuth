@@ -23,7 +23,7 @@ extension AtprotoOAuthClient {
 			authServerMetadata: AuthServerMetadata
 		) async throws -> Atproto.DID {
 			let subDid = try tokenResponse.atprotoParse()
-			
+
 			if alreadyResolvedDIDs.contains(subDid) {
 				return subDid
 			}
@@ -54,14 +54,14 @@ extension AtprotoOAuthClient {
 extension AtprotoOAuthAgent {
 	struct TokenRefreshOptions: OAuth.TokenRefreshOptions {
 		let did: Atproto.DID
-		
+
 		func validate(
 			tokenResponse: TokenEndpointResponse,
 			authServerMetadata: AuthServerMetadata,
 			previousState: OAuth.SessionState.Snapshot
 		) async throws -> Bool {
 			let subDid = try tokenResponse.atprotoParse()
-			
+
 			guard subDid == did else {
 				throw OAuthClientError.subDidMismatch
 			}
@@ -75,7 +75,7 @@ extension TokenEndpointResponse {
 		guard tokenType == .dpop else {
 			throw OAuthSessionError.expectedDpopToken(tokenType.rawValue)
 		}
-		
+
 		let sub = try additionalTokenFields?["sub"].tryUnwrap
 		let subString = try (sub as? String).tryUnwrap
 		return try .init(string: subString)
