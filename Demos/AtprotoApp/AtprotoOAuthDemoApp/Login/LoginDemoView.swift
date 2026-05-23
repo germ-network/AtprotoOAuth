@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import OAuth4Swift
 
 //replace this with the CachedAuthenticationView
 
@@ -36,8 +37,13 @@ struct LoginDemoView: View {
 				Text("Validating \(handle)")
 			case .agentCreated(_):
 				Text("Agent created. Loading...")
-			case .loggedIn(_):
+			case .loggedIn(let agent):
 				Text("Successfully Logged In")
+				Button("Refresh") {
+					Task {
+						let _ = try await agent.refresh()
+					}
+				}
 			}
 
 			Spacer()
