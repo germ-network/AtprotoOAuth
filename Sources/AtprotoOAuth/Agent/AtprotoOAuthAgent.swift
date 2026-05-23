@@ -52,7 +52,7 @@ public actor AtprotoOAuthAgent {
 
 	private let saveStream: AsyncStream<OAuth.SessionState.TokenState?>
 	private let saveContinuation: AsyncStream<OAuth.SessionState.TokenState?>.Continuation
-	public enum StateUpdate {
+	public enum StateUpdate: Sendable {
 		case loggedOut
 	}
 	public let updateStream: AsyncStream<StateUpdate>
