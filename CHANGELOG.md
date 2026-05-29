@@ -1,5 +1,15 @@
 # @germ-network/atprotooauth
 
+## 0.5.8
+
+### Patch Changes
+
+- [#68](https://github.com/germ-network/AtprotoOAuth/pull/68) [`340a330`](https://github.com/germ-network/AtprotoOAuth/commit/340a330380b8a3a63442419e4af16b47b29bc066) Thanks [@anna-germ](https://github.com/anna-germ)! - Add known followers and relationships to demo app
+
+- [#70](https://github.com/germ-network/AtprotoOAuth/pull/70) [`b9e7192`](https://github.com/germ-network/AtprotoOAuth/commit/b9e7192761fe70b9024e19d62066d5a2b7696ffb) Thanks [@germ-mark](https://github.com/germ-mark)! - add parameter (with default value) on atprotoOauthAgent.refresh to specify a debounce interval
+
+- [#67](https://github.com/germ-network/AtprotoOAuth/pull/67) [`a902bef`](https://github.com/germ-network/AtprotoOAuth/commit/a902befa08a00ac7c556c9fa9b4fea4212f2c598) Thanks [@germ-mark](https://github.com/germ-mark)! - Validate the did's issuer
+
 ## 0.5.7
 
 ### Patch Changes
