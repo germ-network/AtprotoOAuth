@@ -25,7 +25,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/GermConvenience.git",
-			from: "0.2.2"
+			from: "0.2.4"
 		),
 		//use this as a out of the box resolver for tests
 		//does not get included in the main package
