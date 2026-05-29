@@ -17,8 +17,8 @@ import struct HTTPTypes.HTTPFields
 public actor AtprotoOAuthAgent {
 	static let logger = Logger(label: "AtprotoOAuthAgent")
 
-	public nonisolated let repo: Atproto.DID
 	public nonisolated let authenticatedDID: Atproto.DID
+	public nonisolated var repo: Atproto.DID { authenticatedDID }
 	public nonisolated let resolver: Atproto.Resolver
 	public let clientId: String
 	public let authFetcher: HTTPFetcher
@@ -73,7 +73,6 @@ public actor AtprotoOAuthAgent {
 		let dpopState = try sessionState.dPoPState.tryUnwrap
 		dpopState.nonceCache.countLimit = 25
 
-		self.repo = did
 		self.authenticatedDID = did
 		self.clientId = clientId
 		self.state = state
@@ -260,11 +259,8 @@ extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
 		}
 	}
 
-	public var authServerRequestOptions: OAuth.TokenRequestOptions {
-		.atproto(
-			did: repo,
-			authFetcher: authFetcher
-		)
+	public var tokenRefreshOptions: OAuth.TokenRefreshOptions {
+		TokenRefreshOptions(did: did)
 	}
 }
 

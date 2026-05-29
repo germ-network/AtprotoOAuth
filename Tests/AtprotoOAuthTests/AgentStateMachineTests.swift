@@ -8,34 +8,36 @@
 //
 
 import AtprotoClient
+import AtprotoOAuth
 import AtprotoTypes
 import Foundation
 import GermConvenience
 import OAuth4Swift
 import Testing
 
-import AtprotoOAuth
+#if canImport(FoundationNetworking)
+	import FoundationNetworking
+#endif
 
 @Suite("AtprotoOAuthAgent state machine")
 struct AgentStateMachineTests {
 	static let clientId = "https://test.example.com/client.json"
 	static let testDID = "did:plc:4yvwfwxfz5sney4twepuzdu7"
-	
+
 	let agent: AtprotoOAuthAgent
 	let saveStream: AsyncStream<OAuth.SessionState.TokenState?>
 	let originalAccessToken: OAuth.AccessToken
 
 	let resolver: Atproto.Resolver = StubResolver()
-	
+
 	init() throws {
 		var archive = OAuth.SessionState.Archive.mock()
 		originalAccessToken = archive.tokenState.accessToken
-		let refreshToken = OAuth.RefreshToken.mock(
+
+		archive.tokenState.refreshToken = .mock(
 			value: "refresh-\(UUID().uuidString)"
 		)
-		
-		archive.tokenState.refreshToken = .mock()
-	
+
 		(agent, saveStream) = try AtprotoOAuthAgent.restore(
 			archive: .init(did: Self.testDID, session: archive),
 			clientId: Self.clientId,
@@ -148,7 +150,7 @@ struct AgentStateMachineTests {
 
 	@Test("active state without a refresh token returns nil from startRefresh")
 	func noRefreshTokenReturnsNil() async throws {
-//		let (agent, _, _) = try makeAgent(includeRefreshToken: false)
+		//		let (agent, _, _) = try makeAgent(includeRefreshToken: false)
 		try await agent.clearRefresh()
 		let result = await agent.startRefresh(
 			continueCondition: { _ in true },
@@ -220,7 +222,7 @@ struct AgentStateMachineTests {
 		)
 		#expect(result == nil)
 	}
-	
+
 	enum Errors: LocalizedError {
 		case forceThrow
 		case incorrectState

@@ -1,5 +1,5 @@
 {
-  "originHash" : "4d67d55d190f7f91e87208c83abf918e4afb067ab93bc5e025ab6b7c7290b14a",
+  "originHash" : "26e10fbfcc9aa6ee54c984efdc81700db36e89814e2f88aa2807064df9cdcf75",
   "pins" : [
     {
       "identity" : "atprotoclient",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "revision" : "0ceb4174c93e5c4b59e85f396ce8b8122aaeeee6",
-        "version" : "0.2.3"
+        "revision" : "5ec8573dbceb2e03b9a32c3e84a53af471df5b89",
+        "version" : "0.2.4"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "revision" : "3d331207b12492b8b9db0e1e908b8615ac8c5bc8",
-        "version" : "0.4.0"
+        "revision" : "1e502cbd0772253d1dd015a0d144c62dda4fa1dd",
+        "version" : "0.5.0"
       }
     },
     {

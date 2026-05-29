@@ -59,7 +59,7 @@ struct LogEntry: Identifiable {
 					"Resolved DID: \(resolvedDid.rawValue)"
 				)
 
-				let sessionArchive =
+				let (sessionArchive, authedDid) =
 					try await client
 					.authorize(
 						identity:
@@ -73,7 +73,7 @@ struct LogEntry: Identifiable {
 
 				let (oauthAgent, _) = try client.restore(
 					archive: .init(
-						did: resolvedDid.rawValue,
+						did: authedDid.rawValue,
 						session: sessionArchive,
 					),
 				)

@@ -7,6 +7,10 @@ import Microcosm
 import OAuth4Swift
 import Testing
 
+#if canImport(FoundationNetworking)
+	import FoundationNetworking
+#endif
+
 struct APITests {
 	static let clientId = "https://static.germnetwork.com/client-metadata.json"
 	static let redirectUri = URL(string: "com.germnetwork.static:/oauth")!

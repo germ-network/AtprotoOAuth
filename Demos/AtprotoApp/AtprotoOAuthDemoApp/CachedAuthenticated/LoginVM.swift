@@ -72,7 +72,7 @@ import os
 				return
 			}
 
-			let sessionState = try await client.authorize(
+			let (sessionState, authedDid) = try await client.authorize(
 				identity: .did(did, handle: .init(string: handle))
 			)
 
@@ -81,7 +81,7 @@ import os
 				.restore(
 					archive:
 						.init(
-							did: did.rawValue,
+							did: authedDid.rawValue,
 							session: sessionState
 						)
 				)
