@@ -49,8 +49,6 @@ extension AtprotoOAuthClient {
 						authServerMetadata.issuer
 					)
 			}
-			
-			
 
 			return subDid
 		}
