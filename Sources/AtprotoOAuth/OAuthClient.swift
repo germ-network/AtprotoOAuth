@@ -71,7 +71,7 @@ extension AtprotoOAuthClient {
 					additionalParameters: additionalParameters,
 					userAuthenticator: userAuthenticator,
 					tokenAuthOptions: .init(
-						alreadyResolvedDIDs: [didDoc.did],
+						justResolved: didDoc.did,
 						resolver: resolver,
 						authFetcher: authFetcher
 					),

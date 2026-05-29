@@ -14,7 +14,11 @@ extension AtprotoOAuthClient {
 	struct TokenAuthOptions: OAuth.TokenAuthorizeOptions {
 		//unless a user entered an auth server, in most cases
 		//we resolve from a did to this issuer so we don't need to check it again
-		let alreadyResolvedDIDs: Set<Atproto.DID>
+		//The DID <> Issuer link should only be cached for at most 10 minutes
+		//https://atproto.com/specs/oauth#identity-authentication
+		//so this is not expeted to be used more broadly than this just
+		//resolved scenario
+		let justResolved: Atproto.DID?
 		let resolver: Atproto.Resolver
 		let authFetcher: HTTPFetcher
 
@@ -24,7 +28,7 @@ extension AtprotoOAuthClient {
 		) async throws -> Atproto.DID {
 			let subDid = try tokenResponse.atprotoParse()
 
-			if alreadyResolvedDIDs.contains(subDid) {
+			if subDid == justResolved {
 				return subDid
 			}
 
