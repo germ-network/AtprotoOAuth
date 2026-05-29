@@ -15,6 +15,10 @@ import GermConvenience
 import OAuth4Swift
 import Testing
 
+#if canImport(FoundationNetworking)
+	import FoundationNetworking
+#endif
+
 @Suite("AtprotoOAuthAgent state machine")
 struct AgentStateMachineTests {
 	static let clientId = "https://test.example.com/client.json"
