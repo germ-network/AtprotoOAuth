@@ -29,11 +29,9 @@ struct AgentStateMachineTests {
 	init() throws {
 		var archive = OAuth.SessionState.Archive.mock()
 		originalAccessToken = archive.tokenState.accessToken
-		let refreshToken = OAuth.RefreshToken.mock(
-			value: "refresh-\(UUID().uuidString)"
-		)
 
-		archive.tokenState.refreshToken = .mock()
+		archive.tokenState.refreshToken = .mock(value: "refresh-\(UUID().uuidString)"
+		)
 
 		(agent, saveStream) = try AtprotoOAuthAgent.restore(
 			archive: .init(did: Self.testDID, session: archive),
