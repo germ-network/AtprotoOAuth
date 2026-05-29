@@ -259,7 +259,7 @@ extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
 		}
 	}
 
-	public var authServerRequestOptions: OAuth.TokenRefreshOptions {
+	public var tokenRefreshOptions: OAuth.TokenRefreshOptions {
 		TokenRefreshOptions(did: did)
 	}
 }

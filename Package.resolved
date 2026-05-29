@@ -43,7 +43,7 @@
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
         "branch" : "tokenValidator",
-        "revision" : "754558be164111af5e2a718245224f3bf0683b9e"
+        "revision" : "5db3da4533e8071eeb91fdc0578f363f7351e075"
       }
     },
     {
