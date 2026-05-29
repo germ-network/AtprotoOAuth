@@ -67,7 +67,11 @@ extension AtprotoOAuthAgent {
 			let subDid = try tokenResponse.atprotoParse()
 
 			guard subDid == did else {
-				throw OAuthClientError.subDidMismatch
+				throw OAuth.Errors
+					.subjectMismatch(
+						actual: subDid.rawValue,
+						expected: did.rawValue
+					)
 			}
 			return true
 		}
