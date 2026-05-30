@@ -1,5 +1,5 @@
 {
-  "originHash" : "285c3c63566a92a10a3d100563b7f1d30330e22f498dc1afea3b759314c082bf",
+  "originHash" : "6fef2d2c3610b8e2f17d2cfd4abe3749f8771393b5da8acf7712a46799d8b62d",
   "pins" : [
     {
       "identity" : "atprotoclient",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
         "branch" : "mock/block",
-        "revision" : "9baf2b680fdcb214781753447241a6ca33852674"
+        "revision" : "c9262612fdefe4cf9bb061850e8cca81489a6d69"
       }
     },
     {

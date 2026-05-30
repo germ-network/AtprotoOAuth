@@ -26,6 +26,9 @@ public actor MockAtmosphere {
 	public var didDocs: [Atproto.DID: Atproto.DIDDocument] = [:]
 	private var repos: [URL: MockPDS] = [:]
 
+	//server-side state for cursor-paginated queries
+	var pendingKnownFollowers: [UUID: [Atproto.DID]] = [:]
+
 	//a big pause button
 	private var holdingResponses: (AsyncStream<Void>, AsyncStream<Void>.Continuation)?
 
@@ -35,6 +38,7 @@ public actor MockAtmosphere {
 		case noHost
 		case authHeaderMismatch
 		case unexpectedAuthHeader
+		case invalidCursor
 
 		var errorDescription: String? {
 			switch self {
@@ -43,6 +47,7 @@ public actor MockAtmosphere {
 			case .noHost: "No host"
 			case .authHeaderMismatch: "Auth header mismatch"
 			case .unexpectedAuthHeader: "Unexpected auth header"
+			case .invalidCursor: "Invalid cursor"
 			}
 		}
 	}
