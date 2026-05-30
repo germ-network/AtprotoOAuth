@@ -56,9 +56,9 @@ extension MockAtmosphere {
 			}
 		}
 
-		for (follower, followPDS) in followers {
+		for (follower, _) in followers {
 			if Self.diceRoll(chance: blockChance) {
-				try await followPDS.block(did: actor, from: follower)
+				try await actorPDS.block(did: follower, from: actor)
 			}
 		}
 	}
