@@ -19,10 +19,18 @@ extension MockAtmosphere {
 		minFollowers: UInt,
 		//applied to followers in a final pass
 		blockChance: Double
-	) async throws {
+	) async throws -> (
+		follows: [Atproto.DID],
+		followers: [Atproto.DID],
+		mutuals: [Atproto.DID],
+		blocking: [Atproto.DID]
+	) {
 		let actorPDS = try pds(for: actor).tryUnwrap
 
+		var followsDids: [Atproto.DID] = []
 		var followers: [Atproto.DID: MockPDS] = [:]
+		var mutuals: [Atproto.DID] = []
+		var blocking: [Atproto.DID] = []
 
 		for _ in 0..<follows {
 			do {
@@ -31,10 +39,12 @@ extension MockAtmosphere {
 					bskyProfile: .mock()
 				)
 				try await actorPDS.follow(did: follow, from: actor)
+				followsDids.append(follow)
 
 				if Self.diceRoll(chance: mutualChance) {
 					try await followPDS.follow(did: actor, from: follow)
 					followers[follow] = followPDS
+					mutuals.append(follow)
 				}
 			} catch {
 				Self.logger.error("Setting up follow \(error)")
@@ -58,9 +68,21 @@ extension MockAtmosphere {
 
 		for (follower, _) in followers {
 			if Self.diceRoll(chance: blockChance) {
-				try await actorPDS.block(did: follower, from: actor)
+				do {
+					try await actorPDS.block(did: follower, from: actor)
+					blocking.append(follower)
+				} catch {
+					Self.logger.error("Setting up block \(error)")
+				}
+
 			}
 		}
+		return (
+			follows: followsDids,
+			followers: .init(followers.keys),
+			mutuals: mutuals,
+			blocking: blocking
+		)
 	}
 
 	static private func diceRoll(chance: Double) -> Bool {
