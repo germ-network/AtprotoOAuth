@@ -1,13 +1,13 @@
 {
-  "originHash" : "26e10fbfcc9aa6ee54c984efdc81700db36e89814e2f88aa2807064df9cdcf75",
+  "originHash" : "285c3c63566a92a10a3d100563b7f1d30330e22f498dc1afea3b759314c082bf",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "f4c74fdaf033a720532352919b3d80ce8cef23a4",
-        "version" : "0.5.10"
+        "branch" : "mock/block",
+        "revision" : "9baf2b680fdcb214781753447241a6ca33852674"
       }
     },
     {
