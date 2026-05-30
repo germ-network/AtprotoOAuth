@@ -74,6 +74,13 @@ extension MockAtmosphere {
 		handle: Atproto.Handle,
 		bskyProfile: Lexicon.App.Bsky.Actor.Profile? = .mock()
 	) async throws -> Atproto.DID {
+		try await createDid(handle: handle, bskyProfile: bskyProfile).0
+	}
+
+	func createDid(
+		handle: Atproto.Handle,
+		bskyProfile: Lexicon.App.Bsky.Actor.Profile?
+	) async throws -> (Atproto.DID, MockPDS) {
 		let newDid = Atproto.DID.mock()
 		let newPds = try MockPDS()
 
@@ -103,7 +110,7 @@ extension MockAtmosphere {
 		let saltedToken = try salted(did: newDid)
 		tokenLookup[saltedToken] = newDid
 
-		return newDid
+		return (newDid, newPds)
 	}
 
 	public func salted(did: Atproto.DID) throws -> String {
