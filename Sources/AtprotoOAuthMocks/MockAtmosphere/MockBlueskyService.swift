@@ -78,8 +78,109 @@ extension MockAtmosphere {
 				queryItems: queryItems,
 				authedDid: authedDid
 			)
+		case Lexicon.App.Bsky.Graph.GetKnownFollowers.Id.nsid:
+			return try await handleGetKnownFollowers(
+				queryItems: queryItems,
+				authedDid: authedDid
+			)
 		default:
 			throw Errors.notImplemented
+		}
+	}
+
+	private func handleGetKnownFollowers(
+		queryItems: [URLQueryItem]?,
+		authedDid: Atproto.DID,
+	) async throws -> HTTPDataResponse {
+		let actor = try (queryItems?["actor"]).tryUnwrap
+		let actorDid = try Atproto.DID(string: actor)
+		let limit = Self.clampedLimit((queryItems?["limit"]).flatMap(Int.init))
+		let cursorParam = queryItems?["cursor"]
+
+		//resume an in-flight query, or compute a fresh result set keyed by a new uuid
+		let cursorId: UUID
+		var remaining: [Atproto.DID]
+		if let cursorParam {
+			guard
+				let id = UUID(uuidString: cursorParam),
+				let stored = pendingKnownFollowers[id]
+			else {
+				throw Errors.invalidCursor
+			}
+			cursorId = id
+			remaining = stored
+		} else {
+			cursorId = UUID()
+			remaining = try await computeKnownFollowers(
+				actor: actorDid,
+				viewer: authedDid
+			)
+		}
+
+		let pageSize = limit ?? remaining.count
+		let page = Array(remaining.prefix(pageSize))
+		remaining.removeFirst(page.count)
+
+		let nextCursor: String?
+		if remaining.isEmpty {
+			pendingKnownFollowers[cursorId] = nil
+			nextCursor = nil
+		} else {
+			pendingKnownFollowers[cursorId] = remaining
+			nextCursor = cursorId.uuidString
+		}
+
+		var followerViews: [Lexicon.App.Bsky.Actor.Defs.ProfileView] = []
+		for did in page {
+			followerViews.append(try await profileView(did: did))
+		}
+
+		let output = Lexicon.App.Bsky.Graph.GetKnownFollowers.Output(
+			subject: try await profileView(did: actorDid),
+			cursor: nextCursor,
+			followers: followerViews
+		)
+
+		return .init(
+			data: try JSONEncoder().encode(output),
+			response: .init(status: .ok)
+		)
+	}
+
+	private func computeKnownFollowers(
+		actor: Atproto.DID,
+		viewer: Atproto.DID
+	) async throws -> [Atproto.DID] {
+		let (viewerFollows, _) = try await pds(for: viewer)
+			.tryUnwrap
+			.getGraph(did: viewer)
+		let viewerFollowDids = Set(viewerFollows.map(\.subject))
+
+		var found: [Atproto.DID] = []
+		for candidate in didDocs.keys
+		where candidate != actor && candidate != viewer
+			&& viewerFollowDids.contains(candidate)
+		{
+			let (candidateFollows, _) = try await pds(for: candidate)
+				.tryUnwrap
+				.getGraph(did: candidate)
+			if candidateFollows.contains(where: { $0.subject == actor }) {
+				found.append(candidate)
+			}
+		}
+
+		//deterministic order; mock has no native ordering
+		found.sort { $0.rawValue < $1.rawValue }
+		return found
+	}
+
+	//mirrors GetKnownFollowers.Parameters.boundLimit: clamp to 1...100
+	private static func clampedLimit(_ limit: Int?) -> Int? {
+		guard let limit else { return nil }
+		switch limit {
+		case 100...: return 100
+		case ...1: return 1
+		default: return limit
 		}
 	}
 

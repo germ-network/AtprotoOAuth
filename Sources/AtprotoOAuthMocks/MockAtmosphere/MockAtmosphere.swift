@@ -26,6 +26,9 @@ public actor MockAtmosphere {
 	public var didDocs: [Atproto.DID: Atproto.DIDDocument] = [:]
 	private var repos: [URL: MockPDS] = [:]
 
+	//server-side state for cursor-paginated queries
+	var pendingKnownFollowers: [UUID: [Atproto.DID]] = [:]
+
 	//a big pause button
 	private var holdingResponses: (AsyncStream<Void>, AsyncStream<Void>.Continuation)?
 
@@ -35,6 +38,7 @@ public actor MockAtmosphere {
 		case noHost
 		case authHeaderMismatch
 		case unexpectedAuthHeader
+		case invalidCursor
 
 		var errorDescription: String? {
 			switch self {
@@ -43,6 +47,7 @@ public actor MockAtmosphere {
 			case .noHost: "No host"
 			case .authHeaderMismatch: "Auth header mismatch"
 			case .unexpectedAuthHeader: "Unexpected auth header"
+			case .invalidCursor: "Invalid cursor"
 			}
 		}
 	}
@@ -74,6 +79,13 @@ extension MockAtmosphere {
 		handle: Atproto.Handle,
 		bskyProfile: Lexicon.App.Bsky.Actor.Profile? = .mock()
 	) async throws -> Atproto.DID {
+		try await createDid(handle: handle, bskyProfile: bskyProfile).0
+	}
+
+	func createDid(
+		handle: Atproto.Handle,
+		bskyProfile: Lexicon.App.Bsky.Actor.Profile?
+	) async throws -> (Atproto.DID, MockPDS) {
 		let newDid = Atproto.DID.mock()
 		let newPds = try MockPDS()
 
@@ -103,7 +115,7 @@ extension MockAtmosphere {
 		let saltedToken = try salted(did: newDid)
 		tokenLookup[saltedToken] = newDid
 
-		return newDid
+		return (newDid, newPds)
 	}
 
 	public func salted(did: Atproto.DID) throws -> String {
