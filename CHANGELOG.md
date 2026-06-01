@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.5.9
+
+### Patch Changes
+
+- [#71](https://github.com/germ-network/AtprotoOAuth/pull/71) [`8cf6ce1`](https://github.com/germ-network/AtprotoOAuth/commit/8cf6ce1012e1604c6caa0b9ce3cd46699d152f7e) Thanks [@germ-mark](https://github.com/germ-mark)! - add mock atmosphere block
+
 ## 0.5.8
 
 ### Patch Changes
