@@ -240,6 +240,7 @@ extension MockAtmosphere {
 			pronouns: actorProfile?.pronouns,
 			description: actorProfile?.description,
 			avatar: nil,
+			associated: nil,
 			indexedAt: .init(date: .now),
 			createdAt: .init(date: .distantPast),
 			viewer: nil
@@ -326,6 +327,7 @@ extension MockAtmosphere {
 			followersCount: 2,
 			followsCount: 5,
 			postsCount: 10,
+			associated: nil,
 			indexedAt: .init(date: .now),
 			createdAt: .init(date: .distantPast),
 			viewer: viewer
