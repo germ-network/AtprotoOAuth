@@ -1,5 +1,5 @@
 {
-  "originHash" : "c03298ad0f752380acf7c69c663771496e2007786e42b949aacb4b1b9e7157fa",
+  "originHash" : "92257a9ca1575893ace407c9987aeb23b0f5f5bdb8698db975f9fd4954671568",
   "pins" : [
     {
       "identity" : "atprotoclient",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
         "branch" : "anna/get-profiles",
-        "revision" : "733975a2fc4025137275c1c0e49480a829a4be80"
+        "revision" : "3567f668d0e638dbb82536beb82acbd32015ddb4"
       }
     },
     {

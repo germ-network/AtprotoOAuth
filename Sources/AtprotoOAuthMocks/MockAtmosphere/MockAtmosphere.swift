@@ -162,13 +162,6 @@ extension MockAtmosphere {
 
 		return try await repos[url].tryUnwrap.publicAgent(did: did)
 	}
-
-	public func authAgent(did: Atproto.DID) async throws -> MockPDS.AuthAgent {
-		let url = try didDocs[did].tryUnwrap
-			.pdsUrl
-
-		return try await repos[url].tryUnwrap.authAgent(did: did)
-	}
 }
 
 extension MockAtmosphere: HTTPFetcher {
