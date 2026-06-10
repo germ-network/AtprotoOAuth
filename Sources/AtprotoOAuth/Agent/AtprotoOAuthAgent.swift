@@ -161,7 +161,7 @@ extension AtprotoOAuthAgent {
 	}
 }
 
-extension AtprotoOAuthAgent: AuthPDSAgent {
+extension AtprotoOAuthAgent: Atproto.AuthPDSAgent {
 	public nonisolated var did: AtprotoTypes.Atproto.DID {
 		repo
 	}
