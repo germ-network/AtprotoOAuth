@@ -26,8 +26,10 @@ public actor MockAtmosphere {
 	public var didDocs: [Atproto.DID: Atproto.DIDDocument] = [:]
 	private var repos: [URL: MockPDS] = [:]
 
-	//server-side state for cursor-paginated queries
-	var pendingKnownFollowers: [UUID: [Atproto.DID]] = [:]
+	//server-side state for cursor-paginated queries, keyed by an opaque cursor uuid.
+	//the originating query is retained so a cursor can't be replayed against a
+	//different endpoint than the one that minted it.
+	var pendingProfilePages: [UUID: (query: Atproto.NSID, remaining: [Atproto.DID])] = [:]
 
 	//a big pause button
 	private var holdingResponses: (AsyncStream<Void>, AsyncStream<Void>.Continuation)?
@@ -159,13 +161,6 @@ extension MockAtmosphere {
 			.pdsUrl
 
 		return try await repos[url].tryUnwrap.publicAgent(did: did)
-	}
-
-	public func authAgent(did: Atproto.DID) async throws -> MockPDS.AuthAgent {
-		let url = try didDocs[did].tryUnwrap
-			.pdsUrl
-
-		return try await repos[url].tryUnwrap.authAgent(did: did)
 	}
 }
 

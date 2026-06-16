@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "branch" : "mock/block",
-        "revision" : "5bb26f084b64ccef3d97711e12f0b8b661c6d522"
+        "branch" : "anna/get-profiles",
+        "revision" : "3567f668d0e638dbb82536beb82acbd32015ddb4"
       }
     },
     {

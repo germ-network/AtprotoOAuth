@@ -92,53 +92,21 @@ extension MockAtmosphere {
 		queryItems: [URLQueryItem]?,
 		authedDid: Atproto.DID,
 	) async throws -> HTTPDataResponse {
-		let actor = try (queryItems?["actor"]).tryUnwrap
-		let actorDid = try Atproto.DID(string: actor)
-		let limit = Self.clampedLimit((queryItems?["limit"]).flatMap(Int.init))
-		let cursorParam = queryItems?["cursor"]
+		let actorDid = try Atproto.DID(
+			string: (queryItems?["actor"]).tryUnwrap
+		)
 
-		//resume an in-flight query, or compute a fresh result set keyed by a new uuid
-		let cursorId: UUID
-		var remaining: [Atproto.DID]
-		if let cursorParam {
-			guard
-				let id = UUID(uuidString: cursorParam),
-				let stored = pendingKnownFollowers[id]
-			else {
-				throw Errors.invalidCursor
-			}
-			cursorId = id
-			remaining = stored
-		} else {
-			cursorId = UUID()
-			remaining = try await computeKnownFollowers(
-				actor: actorDid,
-				viewer: authedDid
-			)
-		}
-
-		let pageSize = limit ?? remaining.count
-		let page = Array(remaining.prefix(pageSize))
-		remaining.removeFirst(page.count)
-
-		let nextCursor: String?
-		if remaining.isEmpty {
-			pendingKnownFollowers[cursorId] = nil
-			nextCursor = nil
-		} else {
-			pendingKnownFollowers[cursorId] = remaining
-			nextCursor = cursorId.uuidString
-		}
-
-		var followerViews: [Lexicon.App.Bsky.Actor.Defs.ProfileView] = []
-		for did in page {
-			followerViews.append(try await profileView(did: did))
+		let (page, nextCursor) = try await paginatedDids(
+			query: Lexicon.App.Bsky.Graph.GetKnownFollowers.Id.nsid,
+			queryItems: queryItems
+		) {
+			try await computeKnownFollowers(actor: actorDid, viewer: authedDid)
 		}
 
 		let output = Lexicon.App.Bsky.Graph.GetKnownFollowers.Output(
 			subject: try await profileView(did: actorDid),
 			cursor: nextCursor,
-			followers: followerViews
+			followers: try await profileViews(of: page)
 		)
 
 		return .init(
@@ -172,6 +140,141 @@ extension MockAtmosphere {
 		//deterministic order; mock has no native ordering
 		found.sort { $0.rawValue < $1.rawValue }
 		return found
+	}
+
+	private func handleGetFollowers(
+		queryItems: [URLQueryItem]?,
+	) async throws -> HTTPDataResponse {
+		let actorDid = try Atproto.DID(
+			string: (queryItems?["actor"]).tryUnwrap
+		)
+
+		let (page, nextCursor) = try await paginatedDids(
+			query: Lexicon.App.Bsky.Graph.GetFollowers.Id.nsid,
+			queryItems: queryItems
+		) {
+			try await computeFollowers(actor: actorDid)
+		}
+
+		let output = Lexicon.App.Bsky.Graph.GetFollowers.Output(
+			subject: try await profileView(did: actorDid),
+			cursor: nextCursor,
+			followers: try await profileViews(of: page)
+		)
+
+		return .init(
+			data: try JSONEncoder().encode(output),
+			response: .init(status: .ok)
+		)
+	}
+
+	private func computeFollowers(
+		actor: Atproto.DID
+	) async throws -> [Atproto.DID] {
+		var found: [Atproto.DID] = []
+		for candidate in didDocs.keys where candidate != actor {
+			let (candidateFollows, _) = try await pds(for: candidate)
+				.tryUnwrap
+				.getGraph(did: candidate)
+			if candidateFollows.contains(where: { $0.subject == actor }) {
+				found.append(candidate)
+			}
+		}
+
+		//deterministic order; mock has no native ordering
+		found.sort { $0.rawValue < $1.rawValue }
+		return found
+	}
+
+	private func handleGetFollows(
+		queryItems: [URLQueryItem]?,
+	) async throws -> HTTPDataResponse {
+		let actorDid = try Atproto.DID(
+			string: (queryItems?["actor"]).tryUnwrap
+		)
+
+		let (page, nextCursor) = try await paginatedDids(
+			query: Lexicon.App.Bsky.Graph.GetFollows.Id.nsid,
+			queryItems: queryItems
+		) {
+			try await computeFollows(actor: actorDid)
+		}
+
+		let output = Lexicon.App.Bsky.Graph.GetFollows.Output(
+			subject: try await profileView(did: actorDid),
+			cursor: nextCursor,
+			follows: try await profileViews(of: page)
+		)
+
+		return .init(
+			data: try JSONEncoder().encode(output),
+			response: .init(status: .ok)
+		)
+	}
+
+	private func computeFollows(
+		actor: Atproto.DID
+	) async throws -> [Atproto.DID] {
+		let (follows, _) = try await pds(for: actor)
+			.tryUnwrap
+			.getGraph(did: actor)
+
+		//drop follow edges pointing at DIDs the mock doesn't host, so a single
+		//unresolvable target can't fail the whole response; deterministic order
+		return follows.map(\.subject)
+			.filter { didDocs[$0] != nil }
+			.sorted { $0.rawValue < $1.rawValue }
+	}
+
+	//shared cursor pagination over a freshly computed DID list, keyed by a uuid.
+	//`query` scopes the cursor to its endpoint so it can't be replayed elsewhere.
+	private func paginatedDids(
+		query: Atproto.NSID,
+		queryItems: [URLQueryItem]?,
+		compute: () async throws -> [Atproto.DID]
+	) async throws -> (page: [Atproto.DID], cursor: String?) {
+		let limit = Self.clampedLimit((queryItems?["limit"]).flatMap(Int.init))
+		let cursorParam = queryItems?["cursor"]
+
+		//resume an in-flight query, or compute a fresh result set keyed by a new uuid
+		let cursorId: UUID
+		var remaining: [Atproto.DID]
+		if let cursorParam {
+			guard
+				let id = UUID(uuidString: cursorParam),
+				let stored = pendingProfilePages[id],
+				stored.query == query
+			else {
+				throw Errors.invalidCursor
+			}
+			cursorId = id
+			remaining = stored.remaining
+		} else {
+			cursorId = UUID()
+			remaining = try await compute()
+		}
+
+		let pageSize = limit ?? remaining.count
+		let page = Array(remaining.prefix(pageSize))
+		remaining.removeFirst(page.count)
+
+		if remaining.isEmpty {
+			pendingProfilePages[cursorId] = nil
+			return (page, nil)
+		} else {
+			pendingProfilePages[cursorId] = (query, remaining)
+			return (page, cursorId.uuidString)
+		}
+	}
+
+	private func profileViews(
+		of dids: [Atproto.DID]
+	) async throws -> [Lexicon.App.Bsky.Actor.Defs.ProfileView] {
+		var views: [Lexicon.App.Bsky.Actor.Defs.ProfileView] = []
+		for did in dids {
+			views.append(try await profileView(did: did))
+		}
+		return views
 	}
 
 	//mirrors GetKnownFollowers.Parameters.boundLimit: clamp to 1...100
@@ -240,6 +343,7 @@ extension MockAtmosphere {
 			pronouns: actorProfile?.pronouns,
 			description: actorProfile?.description,
 			avatar: nil,
+			associated: nil,
 			indexedAt: .init(date: .now),
 			createdAt: .init(date: .distantPast),
 			viewer: nil
@@ -326,6 +430,7 @@ extension MockAtmosphere {
 			followersCount: 2,
 			followsCount: 5,
 			postsCount: 10,
+			associated: nil,
 			indexedAt: .init(date: .now),
 			createdAt: .init(date: .distantPast),
 			viewer: viewer
@@ -351,6 +456,14 @@ extension MockAtmosphere {
 		case Lexicon.App.Bsky.Graph.GetRelationships.Id.nsid:
 			return try await handleGetRelationships(
 				queryItems: queryItems,
+			)
+		case Lexicon.App.Bsky.Graph.GetFollowers.Id.nsid:
+			return try await handleGetFollowers(
+				queryItems: queryItems
+			)
+		case Lexicon.App.Bsky.Graph.GetFollows.Id.nsid:
+			return try await handleGetFollows(
+				queryItems: queryItems
 			)
 		default:
 			throw Errors.notImplemented
