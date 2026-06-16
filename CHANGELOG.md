@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.5.11
+
+### Patch Changes
+
+- [#75](https://github.com/germ-network/AtprotoOAuth/pull/75) [`fbe89eb`](https://github.com/germ-network/AtprotoOAuth/commit/fbe89ebca6e5c21c3e90c463fea000c39fd0a864) Thanks [@germ-mark](https://github.com/germ-mark)! - Mock the public `app.bsky.graph.getFollowers` and `app.bsky.graph.getFollows` social-graph endpoints in MockBskyService
+
 ## 0.5.10
 
 ### Patch Changes
