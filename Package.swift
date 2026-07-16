@@ -16,8 +16,11 @@ let package = Package(
 	],
 	dependencies: [
 		.package(
+			// Pinned to the #44 merge commit that adds `unfollow`; the automated
+			// release is blocked upstream, so we can't pin a version yet. Restore
+			// `from: "0.6.x"` once AtprotoClient cuts the release with unfollow.
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.6.0"
+			revision: "468246ddc3b4bb596085506b13d777a9361d9553"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
