@@ -16,8 +16,9 @@ let package = Package(
 	],
 	dependencies: [
 		.package(
+			// 0.7.0 is the release that adds `unfollow` (MockRepo/MockPDS).
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.6.0"
+			from: "0.7.0"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",

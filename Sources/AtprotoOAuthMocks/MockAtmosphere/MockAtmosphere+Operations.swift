@@ -20,4 +20,10 @@ extension MockAtmosphere {
 			.tryUnwrap
 			.block(did: subjectDid, from: viewerDid)
 	}
+
+	public func unfollow(subjectDid: Atproto.DID, from viewerDid: Atproto.DID) async throws {
+		try await pds(for: viewerDid)
+			.tryUnwrap
+			.unfollow(did: subjectDid, from: viewerDid)
+	}
 }
