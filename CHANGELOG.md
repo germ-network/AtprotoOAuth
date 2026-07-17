@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.6.0
+
+### Minor Changes
+
+- [#78](https://github.com/germ-network/AtprotoOAuth/pull/78) [`e57f4c3`](https://github.com/germ-network/AtprotoOAuth/commit/e57f4c302a082fef5f77369117d6d3ea129def70) Thanks [@germ-mark](https://github.com/germ-mark)! - Add `MockAtmosphere.unfollow(subjectDid:from:)` — mirrors `follow`/`block`, delegating to `MockPDS.unfollow`. Lets tests undo a follow to construct a "not followed" social-graph state. Requires AtprotoClient 0.7.0 (the release that adds `unfollow`); the dependency floor is bumped to `from: "0.7.0"`.
+
 ## 0.5.11
 
 ### Patch Changes
