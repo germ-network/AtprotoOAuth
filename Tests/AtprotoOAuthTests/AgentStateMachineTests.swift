@@ -196,6 +196,86 @@ struct AgentStateMachineTests {
 		#expect(token.value == newAccessTokenValue)
 	}
 
+	@Test("refreshNotSupported with a valid access token preserves the session")
+	func refreshNotSupportedPreservesValidToken() async throws {
+		let validToken = OAuth.AccessToken.mock(expiresIn: 3600)
+		let (agent, _) = try Self.makeAgent(accessToken: validToken)
+
+		let task = await agent.startRefresh(
+			continueCondition: { _ in true },
+			refreshClosure: { _, _ in
+				throw OAuth.Errors.refreshNotSupported
+			}
+		)
+		let unwrapped = try #require(task)
+		let returned = try await unwrapped.value
+		#expect(returned == validToken)
+
+		let token = try await agent.authToken
+		#expect(token == validToken)
+	}
+
+	@Test("refreshNotSupported with an expired access token terminates the session")
+	func refreshNotSupportedExpiredTokenTerminates() async throws {
+		let (agent, saveStream) = try Self.makeAgent(
+			accessToken: .mock(expiresIn: -60)
+		)
+		var saveIter = saveStream.makeAsyncIterator()
+		var updateIter = await agent.updateStream.makeAsyncIterator()
+
+		let task = await agent.startRefresh(
+			continueCondition: { _ in true },
+			refreshClosure: { _, _ in
+				throw OAuth.Errors.refreshNotSupported
+			}
+		)
+		let unwrapped = try #require(task)
+		await #expect(throws: OAuthSessionError.sessionInactive) {
+			_ = try await unwrapped.value
+		}
+
+		switch await saveIter.next() {
+		case .some(.none):
+			break  // expected: stream yielded a nil TokenState on teardown
+		case .some(.some):
+			Issue.record(
+				"saveStream yielded a non-nil TokenState; expected nil on expiry"
+			)
+		case .none:
+			Issue.record("saveStream ended without yielding")
+		}
+
+		switch await updateIter.next() {
+		case .loggedOut:
+			break
+		case .none:
+			Issue.record("updateStream ended without yielding")
+		}
+
+		await #expect(throws: OAuthSessionError.sessionInactive) {
+			_ = try await agent.authToken
+		}
+	}
+
+	static func makeAgent(
+		accessToken: OAuth.AccessToken
+	) throws -> (
+		AtprotoOAuthAgent,
+		AsyncStream<OAuth.SessionState.TokenState?>
+	) {
+		var archive = OAuth.SessionState.Archive.mock()
+		archive.tokenState.accessToken = accessToken
+		archive.tokenState.refreshToken = .mock(
+			value: "refresh-\(UUID().uuidString)"
+		)
+		return try AtprotoOAuthAgent.restore(
+			archive: .init(did: testDID, session: archive),
+			clientId: clientId,
+			authFetcher: URLSession.manualRedirect(),
+			atprotoResolver: StubResolver()
+		)
+	}
+
 	@Test("startRefresh on an expired session returns nil")
 	func expiredStateReturnsNil() async throws {
 

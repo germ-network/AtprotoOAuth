@@ -36,7 +36,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			from: "0.5.0"
+			from: "0.6.0"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
