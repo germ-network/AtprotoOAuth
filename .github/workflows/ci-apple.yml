@@ -1,4 +1,4 @@
-name: CI
+name: Apple
 
 on:
   push:
@@ -79,30 +79,3 @@ jobs:
         - name: Test platform ${{ matrix.destination }}
           run: set -o pipefail && xcodebuild -skipMacroValidation -scheme AtprotoOAuthDemoApp -destination "${{ matrix.destination }}" build CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""| xcbeautify
           working-directory: Demos/AtprotoApp/
-  linux_test:
-    name: Test Linux
-    runs-on: ubuntu-latest
-    container:
-      image: swift:${{matrix.swift-version}}
-    timeout-minutes: 30
-    strategy:
-      matrix:
-        swift-version:
-          - "latest"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - run: swift --version
-      - name: Test
-        run: swift test
-
-  linux-android:
-    name: Test Android
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v6
-      - name: "Test Swift Package on Android"
-        uses: skiptools/swift-android-action@v2
-        with:
-          swift-version: '6.3'

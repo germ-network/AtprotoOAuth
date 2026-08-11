@@ -1,3 +1,7 @@
+[![Apple](https://github.com/germ-network/AtprotoOAuth/actions/workflows/ci-apple.yml/badge.svg)](https://github.com/germ-network/AtprotoOAuth/actions/workflows/ci-apple.yml)
+[![Linux](https://github.com/germ-network/AtprotoOAuth/actions/workflows/ci-linux.yml/badge.svg)](https://github.com/germ-network/AtprotoOAuth/actions/workflows/ci-linux.yml)
+[![Android](https://github.com/germ-network/AtprotoOAuth/actions/workflows/ci-android.yml/badge.svg)](https://github.com/germ-network/AtprotoOAuth/actions/workflows/ci-android.yml)
+
 Disclaimer: This code is provided for evaluation and is not ready for broader adoption yet!
 
 # Package Composition
