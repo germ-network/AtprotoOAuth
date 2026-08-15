@@ -229,6 +229,24 @@ extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
 						snapshot,
 						refreshToken
 					)
+				} catch OAuth.Errors.refreshNotSupported {
+					//the server will never honor a refresh, so an expired
+					//access token can't recover - terminate instead of
+					//looping on 401s
+					let accessToken = sessionState.tokenState.accessToken
+					if let expiry = accessToken.expiry,
+						expiry.timeIntervalSinceNow <= 0
+					{
+						saveContinuation.yield(nil)
+						state = .expired
+						updateContinuation.yield(.loggedOut)
+						throw OAuthSessionError.sessionInactive
+					}
+					state = .active(sessionState)
+					Self.logger.notice(
+						"refresh not supported by server, keeping valid access token"
+					)
+					return accessToken
 				} catch {
 					//return to previous. If auth was actually unauthorized
 					//oauth4swift would return nil to signal we terminate the session
