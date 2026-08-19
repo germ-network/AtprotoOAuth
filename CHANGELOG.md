@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.6.1
+
+### Patch Changes
+
+- [#80](https://github.com/germ-network/AtprotoOAuth/pull/80) [`235acff`](https://github.com/germ-network/AtprotoOAuth/commit/235acffa07de6663d56ce4b2d73f5734972dfe41) Thanks [@germ-mark](https://github.com/germ-mark)! - Handle `OAuth.Errors.refreshNotSupported` distinctly in `AtprotoOAuthAgent.startRefresh`: a valid access token preserves the session as before, but an expired one now transitions to `.expired` and emits `.loggedOut` instead of returning a stale token forever
+
 ## 0.6.0
 
 ### Minor Changes
