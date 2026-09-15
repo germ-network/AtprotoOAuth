@@ -42,7 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
-        "revision" : "7c586134d9d2ed2cad37c29ebfae52c6d08fd36f"
+        "revision" : "2ace452e4fd6140fadec95a23421519b0f38c907",
+        "version" : "0.4.1"
       }
     },
     {

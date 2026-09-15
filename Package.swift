@@ -33,12 +33,10 @@ let package = Package(
 		),
 		//use this as a out of the box resolver for tests
 		//does not get included in the main package
-		//TEMPORARY: revision-pinned to the open GermConvenienceHTTP-adoption
-		//PR's branch tip (germ-network/Microcosm#23) — no tagged release
-		//exists yet. Re-pin to a tag once that PR merges and releases.
+		//0.4.1 carries the GermConvenienceHTTP-adoption fix for 0.8.0.
 		.package(
 			url: "https://github.com/germ-network/Microcosm.git",
-			revision: "7c586134d9d2ed2cad37c29ebfae52c6d08fd36f"
+			from: "0.4.1"
 		),
 		//TEMPORARY: revision-pinned to oauth4swift's main tip, which carries
 		//the merged GermConvenienceHTTP-adoption fix (#65) but no tagged
