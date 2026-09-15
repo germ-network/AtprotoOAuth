@@ -38,12 +38,10 @@ let package = Package(
 			url: "https://github.com/germ-network/Microcosm.git",
 			from: "0.4.1"
 		),
-		//TEMPORARY: revision-pinned to oauth4swift's main tip, which carries
-		//the merged GermConvenienceHTTP-adoption fix (#65) but no tagged
-		//release yet. Re-pin to a tag once one is cut.
+		//0.7.0 carries the GermConvenienceHTTP-adoption fix for 0.8.0.
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			revision: "f8bed9aae685813c832ab87bb48d9dc6f86fcc30"
+			from: "0.7.0"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
