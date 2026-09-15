@@ -1,5 +1,16 @@
 # @germ-network/atprotooauth
 
+## 0.6.2
+
+### Patch Changes
+
+- [#85](https://github.com/germ-network/AtprotoOAuth/pull/85) [`f91920b`](https://github.com/germ-network/AtprotoOAuth/commit/f91920ba65b3e4875ae0fbc369ed195c6fe0e29e) Thanks [@germ-mark](https://github.com/germ-mark)! - Re-pin `oauth4swift` to its 0.7.0 release, replacing the temporary
+  revision pin the GermConvenienceHTTP-adoption fix ([#84](https://github.com/germ-network/AtprotoOAuth/issues/84)) shipped with —
+  0.7.0 didn't exist yet at the time. A revision-pinned dependency also
+  blocks this package from being consumed as a stable version by anything
+  that itself needs a stable pin (SwiftPM refuses to resolve a
+  stable-versioned package that transitively depends on an unstable one).
+
 ## 0.6.1
 
 ### Patch Changes
