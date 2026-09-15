@@ -38,10 +38,10 @@ let package = Package(
 			url: "https://github.com/germ-network/Microcosm.git",
 			from: "0.4.1"
 		),
-		//0.7.0 carries the GermConvenienceHTTP-adoption fix for 0.8.0.
+		// NEGATIVE PROBE (throwaway): revision pin must make the guard go red.
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			from: "0.7.0"
+			revision: "f8bed9aae685813c832ab87bb48d9dc6f86fcc30"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
