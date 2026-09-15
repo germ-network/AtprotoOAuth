@@ -1,0 +1,41 @@
+name: Stable pins
+
+# Surfaces (does not block) any PR that would put a branch:/revision: dependency
+# pin on main. A released package must pin its dependencies by version, never by
+# branch/revision — see the hard gate in release.yml, which blocks the same
+# condition at publish time.
+#
+# Non-required by design: a transient revision pin on a feature branch is
+# legitimate during a staged cross-repo rollout (land the code, re-pin to the
+# tag once the upstream releases). This check makes that debt visible for the
+# merge gate to weigh; release.yml is the actual enforcement that no *tag* ever
+# ships with one.
+#
+# Runs only on human-opened PRs. The changesets version PR (changeset-release/main)
+# is created with the default GITHUB_TOKEN and so triggers no workflows — the
+# release.yml guard covers that path at merge/publish time instead.
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  stable-pins:
+    name: Stable-pin check
+    runs-on: ubuntu-latest
+    container:
+      image: swift:latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Flag unstable (branch/revision) dependency pins
+        shell: bash
+        run: |
+          set -o pipefail
+          swift package dump-package | swift scripts/check-stable-pins.swift
