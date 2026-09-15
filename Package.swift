@@ -26,7 +26,9 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/GermConvenience.git",
-			from: "0.2.4"
+			// 0.8.0 split HTTP helpers into GermConvenienceHTTP — the floor this
+			// package now needs for HTTPFetcher/HTTPDataResponse.
+			from: "0.8.0"
 		),
 		//use this as a out of the box resolver for tests
 		//does not get included in the main package
@@ -54,6 +56,7 @@ let package = Package(
 				"AtprotoClient",
 				"AtprotoTypes",
 				"GermConvenience",
+				.product(name: "GermConvenienceHTTP", package: "GermConvenience"),
 				.product(name: "Crypto", package: "swift-crypto"),
 				.product(name: "HTTPTypes", package: "swift-http-types"),
 				.product(name: "OAuth4Swift", package: "oauth4swift"),
@@ -69,6 +72,7 @@ let package = Package(
 				.product(name: "Mockable", package: "AtprotoTypes"),
 				.product(name: "Base64", package: "swift-bases"),
 				.product(name: "Logging", package: "swift-log"),
+				.product(name: "GermConvenienceHTTP", package: "GermConvenience"),
 			]
 		),
 		.testTarget(

@@ -1,13 +1,13 @@
 {
-  "originHash" : "c6a5c314aca49140585ca815d7a7e26749798c0db827c63826a6fd10efea5a97",
+  "originHash" : "aa5411fcab71432b41829198b74971c6d7ab600a339816fd6f894d9729c260f2",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "73dded01903229243f9c1b107cafd70a3e9a77c3",
-        "version" : "0.7.0"
+        "revision" : "814d20f67fbab0eab5fa78da1b726e15d5598421",
+        "version" : "0.8.0"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "a20c1027bc446bb59efa839c7191b36f3c244052",
-        "version" : "0.4.6"
+        "revision" : "537310dd07df81f20f91e28164d3a97b21ad0c20",
+        "version" : "0.6.1"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "revision" : "bfe84a1678c6d7a21af3190c00bc78430befe36c",
-        "version" : "0.3.0"
+        "revision" : "e474915e5ab3f917d5f5496af5fb4814081fb75c",
+        "version" : "0.8.0"
       }
     },
     {
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
-        "revision" : "1db7d5425e2444f1ae0b2d0b699f69472a5ab28c",
-        "version" : "0.3.3"
+        "revision" : "dc3def34bc4c3b29401989b2013ab339bb4c5c08",
+        "version" : "0.4.0"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-asn1.git",
       "state" : {
-        "revision" : "eb50cbd14606a9161cbc5d452f18797c90ef0bab",
-        "version" : "1.7.0"
+        "revision" : "d9a5b37470adc940d22c3bcd5ca6953a516b727f",
+        "version" : "1.7.2"
       }
     },
     {
@@ -60,8 +60,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swift-libp2p/swift-bases.git",
       "state" : {
-        "revision" : "96615d4b582f9f6536d8278304ce2a64c8e5288a",
-        "version" : "0.2.0"
+        "revision" : "99bf30ca95313bbf2e815a82023a2aca99491a77",
+        "version" : "0.4.0"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "1b6b2e274e85105bfa155183145a1dcfd63331f1",
-        "version" : "4.5.0"
+        "revision" : "da9d28d69ebe3894b18376c8f2395c2f37b8448f",
+        "version" : "4.5.2"
       }
     },
     {
@@ -78,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-http-types.git",
       "state" : {
-        "revision" : "45eb0224913ea070ec4fba17291b9e7ecf4749ca",
-        "version" : "1.5.1"
+        "revision" : "bff4b6903cdc99dda49649dd52f46c11cfd3ed50",
+        "version" : "1.8.0"
       }
     },
     {
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log",
       "state" : {
-        "revision" : "a012e0ad8a8a72de92b0e008c81a9b793f70e73a",
-        "version" : "1.12.1"
+        "revision" : "9c6fb14227f55d8f711ce3847dc2f419fb0ecacb",
+        "version" : "1.15.1"
       }
     }
   ],

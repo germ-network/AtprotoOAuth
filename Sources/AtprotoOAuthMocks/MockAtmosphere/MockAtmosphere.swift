@@ -13,6 +13,7 @@ import Base64
 import Crypto
 import Foundation
 import GermConvenience
+import GermConvenienceHTTP
 import Logging
 
 ///A local mock of the Atmosphere for local testing
