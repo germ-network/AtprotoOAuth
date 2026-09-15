@@ -25,6 +25,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
       - name: Reject unstable (branch/revision) dependency pins
+        shell: bash
         run: |
           set -o pipefail
           swift package dump-package | swift scripts/check-stable-pins.swift
