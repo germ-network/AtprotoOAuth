@@ -9,6 +9,7 @@ import AtprotoClient
 import AtprotoTypes
 import Foundation
 import GermConvenience
+import GermConvenienceHTTP
 import Logging
 import OAuth4Swift
 

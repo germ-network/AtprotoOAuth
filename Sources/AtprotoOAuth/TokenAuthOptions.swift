@@ -8,6 +8,7 @@
 import AtprotoTypes
 import Foundation
 import GermConvenience
+import GermConvenienceHTTP
 import OAuth4Swift
 
 extension AtprotoOAuthClient {

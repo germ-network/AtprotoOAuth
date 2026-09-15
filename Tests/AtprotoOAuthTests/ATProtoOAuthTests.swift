@@ -3,6 +3,7 @@ import AtprotoOAuth
 import AtprotoTypes
 import Foundation
 import GermConvenience
+import GermConvenienceHTTP
 import Microcosm
 import OAuth4Swift
 import Testing

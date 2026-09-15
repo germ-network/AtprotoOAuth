@@ -15,10 +15,11 @@ let package = Package(
 		.library(name: "AtprotoOAuthMocks", targets: ["AtprotoOAuthMocks"]),
 	],
 	dependencies: [
+		// 0.7.0 is the release that adds `unfollow` (MockRepo/MockPDS).
+		// 0.9.0 carries the GermConvenienceHTTP-adoption fix for 0.8.0.
 		.package(
-			// 0.7.0 is the release that adds `unfollow` (MockRepo/MockPDS).
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.7.0"
+			from: "0.9.0"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
@@ -26,17 +27,23 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/GermConvenience.git",
-			from: "0.2.4"
+			// 0.8.0 split HTTP helpers into GermConvenienceHTTP — the floor this
+			// package now needs for HTTPFetcher/HTTPDataResponse.
+			from: "0.8.0"
 		),
 		//use this as a out of the box resolver for tests
 		//does not get included in the main package
+		//0.4.1 carries the GermConvenienceHTTP-adoption fix for 0.8.0.
 		.package(
 			url: "https://github.com/germ-network/Microcosm.git",
-			from: "0.3.3"
+			from: "0.4.1"
 		),
+		//TEMPORARY: revision-pinned to oauth4swift's main tip, which carries
+		//the merged GermConvenienceHTTP-adoption fix (#65) but no tagged
+		//release yet. Re-pin to a tag once one is cut.
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			from: "0.6.0"
+			revision: "f8bed9aae685813c832ab87bb48d9dc6f86fcc30"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
@@ -54,6 +61,7 @@ let package = Package(
 				"AtprotoClient",
 				"AtprotoTypes",
 				"GermConvenience",
+				.product(name: "GermConvenienceHTTP", package: "GermConvenience"),
 				.product(name: "Crypto", package: "swift-crypto"),
 				.product(name: "HTTPTypes", package: "swift-http-types"),
 				.product(name: "OAuth4Swift", package: "oauth4swift"),
@@ -69,6 +77,7 @@ let package = Package(
 				.product(name: "Mockable", package: "AtprotoTypes"),
 				.product(name: "Base64", package: "swift-bases"),
 				.product(name: "Logging", package: "swift-log"),
+				.product(name: "GermConvenienceHTTP", package: "GermConvenience"),
 			]
 		),
 		.testTarget(
@@ -76,6 +85,7 @@ let package = Package(
 			dependencies: [
 				"AtprotoOAuth",
 				"Microcosm",
+				.product(name: "GermConvenienceHTTP", package: "GermConvenience"),
 			]
 		),
 	]

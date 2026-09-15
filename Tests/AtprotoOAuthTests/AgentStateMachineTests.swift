@@ -12,6 +12,7 @@ import AtprotoOAuth
 import AtprotoTypes
 import Foundation
 import GermConvenience
+import GermConvenienceHTTP
 import OAuth4Swift
 import Testing
 

@@ -10,6 +10,7 @@ import AtprotoOAuth
 import AtprotoTypes
 import Foundation
 import GermConvenience
+import GermConvenienceHTTP
 
 extension MockAtmosphere {
 	/// Vends a mock ``Atproto/AuthPDSAgent`` for `did`.

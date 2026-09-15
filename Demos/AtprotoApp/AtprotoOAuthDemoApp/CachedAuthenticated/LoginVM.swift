@@ -11,6 +11,7 @@ import AtprotoTypes
 import AuthenticationServices
 import Foundation
 import GermConvenience
+import GermConvenienceHTTP
 import Microcosm
 import OAuth4Swift
 import os
