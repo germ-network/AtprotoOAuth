@@ -15,10 +15,13 @@ let package = Package(
 		.library(name: "AtprotoOAuthMocks", targets: ["AtprotoOAuthMocks"]),
 	],
 	dependencies: [
+		//TEMPORARY: revision-pinned to the open GermConvenienceHTTP-adoption
+		//PR's branch tip (germ-network/AtprotoClient#53) — no tagged release
+		//exists yet. Re-pin to a tag once that PR merges and releases.
+		// 0.7.0 is the release that adds `unfollow` (MockRepo/MockPDS).
 		.package(
-			// 0.7.0 is the release that adds `unfollow` (MockRepo/MockPDS).
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.7.0"
+			revision: "a7caa14942d931b0139282f272c46e4df8ba04bd"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
@@ -32,13 +35,19 @@ let package = Package(
 		),
 		//use this as a out of the box resolver for tests
 		//does not get included in the main package
+		//TEMPORARY: revision-pinned to the open GermConvenienceHTTP-adoption
+		//PR's branch tip (germ-network/Microcosm#23) — no tagged release
+		//exists yet. Re-pin to a tag once that PR merges and releases.
 		.package(
 			url: "https://github.com/germ-network/Microcosm.git",
-			from: "0.3.3"
+			revision: "6869f256bbd9e717a3f6badae2950f5dfab07bfc"
 		),
+		//TEMPORARY: revision-pinned to oauth4swift's main tip, which carries
+		//the merged GermConvenienceHTTP-adoption fix (#65) but no tagged
+		//release yet. Re-pin to a tag once one is cut.
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			from: "0.6.0"
+			revision: "f8bed9aae685813c832ab87bb48d9dc6f86fcc30"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
