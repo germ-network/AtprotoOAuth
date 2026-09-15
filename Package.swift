@@ -87,6 +87,7 @@ let package = Package(
 			dependencies: [
 				"AtprotoOAuth",
 				"Microcosm",
+				.product(name: "GermConvenienceHTTP", package: "GermConvenience"),
 			]
 		),
 	]

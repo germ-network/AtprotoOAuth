@@ -11,6 +11,7 @@ import AtprotoOAuth
 import AtprotoTypes
 import Foundation
 import GermConvenience
+import GermConvenienceHTTP
 import HTTPTypes
 
 public struct ATResolveResolver: Atproto.Resolver {

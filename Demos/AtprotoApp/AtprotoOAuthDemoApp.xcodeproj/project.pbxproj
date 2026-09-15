@@ -685,8 +685,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/germ-network/Microcosm.git";
 			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 0.3.1;
+				kind = revision;
+				revision = 7c586134d9d2ed2cad37c29ebfae52c6d08fd36f;
 			};
 		};
 		2C83CDD12F72FECB00168B01 /* XCRemoteSwiftPackageReference "ATResolve" */ = {
