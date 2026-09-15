@@ -1,12 +1,13 @@
 {
-  "originHash" : "5dc0a79a05c918dc599c595a9c3fe0c3fb705c161f815e729da348ee13ddbf18",
+  "originHash" : "6d9b159dba06a4c31b4d90752eb72fe156cc871b9b271a29fa970f1f293db17e",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "a7caa14942d931b0139282f272c46e4df8ba04bd"
+        "revision" : "281177935b6e87c01e2364b084b1f3fb23943dd7",
+        "version" : "0.9.0"
       }
     },
     {
@@ -32,7 +33,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
-        "revision" : "6869f256bbd9e717a3f6badae2950f5dfab07bfc"
+        "revision" : "7c586134d9d2ed2cad37c29ebfae52c6d08fd36f"
       }
     },
     {
