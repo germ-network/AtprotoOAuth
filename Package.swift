@@ -15,21 +15,19 @@ let package = Package(
 		.library(name: "AtprotoOAuthMocks", targets: ["AtprotoOAuthMocks"]),
 	],
 	dependencies: [
-		// 0.7.0 is the release that adds `unfollow` (MockRepo/MockPDS).
-		// 0.9.0 carries the GermConvenienceHTTP-adoption fix for 0.8.0.
+		// Temporary revision pins to the swift-crypto-5 commits during the
+		// org-wide migration; replace with released versions once they cut.
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.9.0"
+			revision: "a26d4f27dc2b1601313e0b7a8f5f265b1c84acf5"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			from: "0.4.5"
+			revision: "8e00dd81013fef864de2b0f3dde7ad7fcbdc119b"
 		),
 		.package(
 			url: "https://github.com/germ-network/GermConvenience.git",
-			// 0.8.0 split HTTP helpers into GermConvenienceHTTP — the floor this
-			// package now needs for HTTPFetcher/HTTPDataResponse.
-			from: "0.8.0"
+			revision: "f907c9018dd4c2f0110ab5f1f37c7c53fa0ae6ca"
 		),
 		//use this as a out of the box resolver for tests
 		//does not get included in the main package
@@ -41,22 +39,24 @@ let package = Package(
 		//0.7.0 carries the GermConvenienceHTTP-adoption fix for 0.8.0.
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			from: "0.7.0"
+			// Temporary revision pin to germ-network/oauth4swift#67 (exposes the
+			// archive/DPoP fields + token inits, and moves to swift-crypto 5);
+			// replace with the released version once it cuts.
+			revision: "3a3faeeff2a10925dbceaeb6942d16482aeba5e2"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
-			.upToNextMajor(from: "4.2.0")),
+			from: "5.0.0"),
 		.package(url: "https://github.com/apple/swift-log", from: "1.6.0"),
 		.package(url: "https://github.com/apple/swift-http-types.git", from: "1.5.1"),
 		.package(url: "https://github.com/swift-libp2p/swift-bases.git", from: "0.2.0"),
 		// Zeroizing custody for the secrets `AtprotoOAuthAgent.Archive` carries
-		// (DPoP private signing key, access/refresh tokens). 0.4.0 is the
-		// release that adds the `SecretArchive`/`@SecretField` SPI this archive
-		// rides; pinned to the same minor the rest of the org resolves against,
-		// and its `swift-crypto < 5` floor is the one oauth4swift already uses.
+		// (DPoP private signing key, access/refresh tokens). 0.5.0 is the
+		// swift-crypto-5 release that adds the `SecretArchive`/`@SecretField` SPI
+		// this archive rides, matching the org-wide swift-crypto 5 move.
 		.package(
 			url: "https://github.com/germ-network/swift-secret-bytes.git",
-			.upToNextMinor(from: "0.4.0")
+			.upToNextMinor(from: "0.5.0")
 		),
 	],
 	targets: [

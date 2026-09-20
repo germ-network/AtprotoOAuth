@@ -1,13 +1,12 @@
 {
-  "originHash" : "bcfc9503a125719f93a808a1545d62c09d8ce46b9d2fd96b20a28caf334602d6",
+  "originHash" : "c7bcfa26c59ac4bbc6bf8e34c54cb55baa5ccdb0e705800c3b0ee1b6f3d69b87",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "281177935b6e87c01e2364b084b1f3fb23943dd7",
-        "version" : "0.9.0"
+        "revision" : "a26d4f27dc2b1601313e0b7a8f5f265b1c84acf5"
       }
     },
     {
@@ -15,8 +14,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "537310dd07df81f20f91e28164d3a97b21ad0c20",
-        "version" : "0.6.1"
+        "revision" : "8e00dd81013fef864de2b0f3dde7ad7fcbdc119b"
       }
     },
     {
@@ -24,8 +22,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "revision" : "e474915e5ab3f917d5f5496af5fb4814081fb75c",
-        "version" : "0.8.0"
+        "revision" : "f907c9018dd4c2f0110ab5f1f37c7c53fa0ae6ca"
       }
     },
     {
@@ -42,8 +39,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "revision" : "3c31ae88fa6ad35f8a4da5312006e2087fe71ea5",
-        "version" : "0.7.0"
+        "revision" : "3a3faeeff2a10925dbceaeb6942d16482aeba5e2"
       }
     },
     {
@@ -69,8 +65,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "da9d28d69ebe3894b18376c8f2395c2f37b8448f",
-        "version" : "4.5.2"
+        "revision" : "a9d1d5ab8951ada40cafff8c8e2b551dfde4f390",
+        "version" : "5.0.0"
       }
     },
     {
@@ -96,8 +92,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/swift-secret-bytes.git",
       "state" : {
-        "revision" : "f10434b708c8685e28db46258c856ba1b66f4312",
-        "version" : "0.4.0"
+        "revision" : "8cadb9c25f855f6c1db4985c97a28af4dcf391dc",
+        "version" : "0.5.0"
       }
     }
   ],
