@@ -186,7 +186,9 @@ struct AgentStateMachineTests {
 
 		switch await saveIter.next() {
 		case .some(.some(let saved)):
-			#expect(try OAuth.SecretText.string(from: saved.accessToken.value) == newAccessTokenValue)
+			#expect(
+				try OAuth.SecretText.string(from: saved.accessToken.value)
+					== newAccessTokenValue)
 		case .some(.none):
 			Issue.record("saveStream yielded nil; expected the new TokenState")
 		case .none:
