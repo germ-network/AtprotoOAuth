@@ -21,11 +21,11 @@ let package = Package(
 		// org-wide migration; replace with released versions once they cut.
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			revision: "127284e9ca64339f3ec28b2d1c5a71a28810c499"
+			from: "0.10.0"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			revision: "e4cd0028639cb44b8ea24117f51d876954859493"
+			from: "0.7.0"
 		),
 		.package(
 			url: "https://github.com/germ-network/GermConvenience.git",
