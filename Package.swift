@@ -21,11 +21,11 @@ let package = Package(
 		// org-wide migration; replace with released versions once they cut.
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			revision: "a26d4f27dc2b1601313e0b7a8f5f265b1c84acf5"
+			revision: "127284e9ca64339f3ec28b2d1c5a71a28810c499"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			revision: "8e00dd81013fef864de2b0f3dde7ad7fcbdc119b"
+			revision: "e4cd0028639cb44b8ea24117f51d876954859493"
 		),
 		.package(
 			url: "https://github.com/germ-network/GermConvenience.git",
@@ -45,7 +45,7 @@ let package = Package(
 		// Replace with the released version once #67 + #68 cut.
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			revision: "7334811257509299c36490fbbd51b820256a3532"
+			revision: "61d250dff2e34f3b6cd946a66f70eb64232e7988"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
