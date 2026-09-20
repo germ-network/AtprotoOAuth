@@ -49,6 +49,15 @@ let package = Package(
 		.package(url: "https://github.com/apple/swift-log", from: "1.6.0"),
 		.package(url: "https://github.com/apple/swift-http-types.git", from: "1.5.1"),
 		.package(url: "https://github.com/swift-libp2p/swift-bases.git", from: "0.2.0"),
+		// Zeroizing custody for the secrets `AtprotoOAuthAgent.Archive` carries
+		// (DPoP private signing key, access/refresh tokens). 0.4.0 is the
+		// release that adds the `SecretArchive`/`@SecretField` SPI this archive
+		// rides; pinned to the same minor the rest of the org resolves against,
+		// and its `swift-crypto < 5` floor is the one oauth4swift already uses.
+		.package(
+			url: "https://github.com/germ-network/swift-secret-bytes.git",
+			.upToNextMinor(from: "0.4.0")
+		),
 	],
 	targets: [
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -63,6 +72,7 @@ let package = Package(
 				.product(name: "Crypto", package: "swift-crypto"),
 				.product(name: "HTTPTypes", package: "swift-http-types"),
 				.product(name: "OAuth4Swift", package: "oauth4swift"),
+				.product(name: "SecretBytes", package: "swift-secret-bytes"),
 			]
 		),
 		.target(

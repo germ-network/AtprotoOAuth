@@ -1,5 +1,5 @@
 {
-  "originHash" : "610ae892332bf9e58061adee750d9c261b7668c3b45a733b8d964414a8f2aebe",
+  "originHash" : "bcfc9503a125719f93a808a1545d62c09d8ce46b9d2fd96b20a28caf334602d6",
   "pins" : [
     {
       "identity" : "atprotoclient",
@@ -89,6 +89,15 @@
       "state" : {
         "revision" : "9c6fb14227f55d8f711ce3847dc2f419fb0ecacb",
         "version" : "1.15.1"
+      }
+    },
+    {
+      "identity" : "swift-secret-bytes",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/germ-network/swift-secret-bytes.git",
+      "state" : {
+        "revision" : "f10434b708c8685e28db46258c856ba1b66f4312",
+        "version" : "0.4.0"
       }
     }
   ],
