@@ -118,33 +118,21 @@ public actor AtprotoOAuthAgent {
 }
 
 extension AtprotoOAuthAgent {
-	/// The persisted session handle: the DID plus an optional secret-bearing
-	/// `SessionArchive`. Because the session carries `@SecretField` secrets,
-	/// `Archive` encodes only through `swift-secret-bytes`' `SecretArchive`
-	/// (`try SecretArchive(encoding: archive)` / `.decode(Archive.self)`); any
-	/// other coder throws rather than writing a private key or token plainly.
+	/// The persisted session handle: the DID plus an optional session archive.
+	///
+	/// The session archive carries its own `@SecretField` secrets — oauth4swift
+	/// holds the DPoP P-256 scalar and the access/refresh token values in
+	/// `SecretBytes` — so `Archive` encodes only through `swift-secret-bytes`'
+	/// `SecretArchive` (`try SecretArchive(encoding: archive)` /
+	/// `.decode(Archive.self)`); any other coder throws rather than writing a
+	/// private scalar or a token plainly.
 	public struct Archive: Sendable, Codable {
 		let did: String
-		public var session: SessionArchive?
+		public var session: OAuth.SessionState.Archive?
 
-		public init(did: String, session: OAuth.SessionState.Archive?) throws {
+		public init(did: String, session: OAuth.SessionState.Archive?) {
 			self.did = did
-			self.session = try session.map { try .init($0) }
-		}
-
-		/// For an already-secret-bearing session (round-tripped through
-		/// `SecretArchive`, or built from a mock) — no plaintext oauth4swift
-		/// archive to map.
-		public init(did: String, secretSession: SessionArchive?) {
-			self.did = did
-			self.session = secretSession
-		}
-
-		/// Restores the oauth4swift archive this session was built from.
-		public var oauthSession: OAuth.SessionState.Archive? {
-			get throws {
-				try session?.oauthArchive()
-			}
+			self.session = session
 		}
 	}
 
@@ -175,7 +163,7 @@ extension AtprotoOAuthAgent {
 		try self.init(
 			did: .init(string: archive.did),
 			clientId: clientId,
-			state: .init(archive: try archive.session?.oauthArchive()),
+			state: .init(archive: try archive.session),
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
 		)

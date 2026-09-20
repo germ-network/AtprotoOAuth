@@ -5,7 +5,9 @@ import PackageDescription
 
 let package = Package(
 	name: "AtprotoOAuth",
-	platforms: [.iOS(.v16), .macOS(.v15)],
+	// iOS 18 / macOS 15: swift-secret-bytes 0.5.0 and oauth4swift (which now
+	// carries its secrets in that type) both floor at iOS 18.
+	platforms: [.iOS(.v18), .macOS(.v15)],
 	products: [
 		// Products define the executables and libraries a package produces, making them visible to other packages.
 		.library(
@@ -36,13 +38,13 @@ let package = Package(
 			url: "https://github.com/germ-network/Microcosm.git",
 			from: "0.4.1"
 		),
-		//0.7.0 carries the GermConvenienceHTTP-adoption fix for 0.8.0.
+		// Temporary revision pin to germ-network/oauth4swift#68's branch tip
+		// (stacked on #67): it moves oauth4swift's session secrets into
+		// zeroizing custody, which this package's Archive now rides directly.
+		// Replace with the released version once #67 + #68 cut.
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			// Temporary revision pin to germ-network/oauth4swift#67 (exposes the
-			// archive/DPoP fields + token inits, and moves to swift-crypto 5);
-			// replace with the released version once it cuts.
-			revision: "3a3faeeff2a10925dbceaeb6942d16482aeba5e2"
+			revision: "7334811257509299c36490fbbd51b820256a3532"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
