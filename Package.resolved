@@ -1,5 +1,5 @@
 {
-  "originHash" : "c88d8734ca7f744cf1c8bbf84fb7b038ac4ff5207ec173b341270a34f59366a1",
+  "originHash" : "0f817f34ecacbe8475fa2e6a376c675cb281eaa09d3a6298a89f6d8e6ecbfa71",
   "pins" : [
     {
       "identity" : "atprotoclient",
@@ -42,7 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "revision" : "8287d2cc872c3aa037d5cb39a5b8cf594c894c7d"
+        "revision" : "87fbc78fe443321eeee934e107c894b4037617f8",
+        "version" : "0.8.0"
       }
     },
     {
