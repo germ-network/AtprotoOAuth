@@ -45,7 +45,7 @@ let package = Package(
 		// Replace with the released version once #67 + #68 cut.
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			revision: "61d250dff2e34f3b6cd946a66f70eb64232e7988"
+			revision: "8287d2cc872c3aa037d5cb39a5b8cf594c894c7d"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
