@@ -59,7 +59,7 @@ let package = Package(
 		// this archive rides, matching the org-wide swift-crypto 5 move.
 		.package(
 			url: "https://github.com/germ-network/swift-secret-bytes.git",
-			.upToNextMinor(from: "0.5.0")
+			from: "0.5.0"
 		),
 	],
 	targets: [
