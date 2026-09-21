@@ -118,6 +118,14 @@ public actor AtprotoOAuthAgent {
 }
 
 extension AtprotoOAuthAgent {
+	/// The persisted session handle: the DID plus an optional session archive.
+	///
+	/// The session archive carries its own `@SecretField` secrets — oauth4swift
+	/// holds the DPoP P-256 scalar and the access/refresh token values in
+	/// `SecretBytes` — so `Archive` encodes only through `swift-secret-bytes`'
+	/// `SecretArchive` (`try SecretArchive(encoding: archive)` /
+	/// `.decode(Archive.self)`); any other coder throws rather than writing a
+	/// private scalar or a token plainly.
 	public struct Archive: Sendable, Codable {
 		let did: String
 		public var session: OAuth.SessionState.Archive?
@@ -155,7 +163,7 @@ extension AtprotoOAuthAgent {
 		try self.init(
 			did: .init(string: archive.did),
 			clientId: clientId,
-			state: .init(archive: archive.session),
+			state: .init(archive: try archive.session),
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
 		)

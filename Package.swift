@@ -5,7 +5,9 @@ import PackageDescription
 
 let package = Package(
 	name: "AtprotoOAuth",
-	platforms: [.iOS(.v16), .macOS(.v15)],
+	// iOS 18 / macOS 15: swift-secret-bytes 0.5.0 and oauth4swift (which now
+	// carries its secrets in that type) both floor at iOS 18.
+	platforms: [.iOS(.v18), .macOS(.v15)],
 	products: [
 		// Products define the executables and libraries a package produces, making them visible to other packages.
 		.library(
@@ -15,21 +17,20 @@ let package = Package(
 		.library(name: "AtprotoOAuthMocks", targets: ["AtprotoOAuthMocks"]),
 	],
 	dependencies: [
-		// 0.7.0 is the release that adds `unfollow` (MockRepo/MockPDS).
-		// 0.9.0 carries the GermConvenienceHTTP-adoption fix for 0.8.0.
+		// Temporary revision pins to the swift-crypto-5 commits during the
+		// org-wide migration; replace with released versions once they cut.
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.9.0"
+			from: "0.10.0"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			from: "0.4.5"
+			from: "0.7.0"
 		),
 		.package(
 			url: "https://github.com/germ-network/GermConvenience.git",
-			// 0.8.0 split HTTP helpers into GermConvenienceHTTP — the floor this
-			// package now needs for HTTPFetcher/HTTPDataResponse.
-			from: "0.8.0"
+			// 0.10.0 is its swift-crypto-5 release — the revision pin drops.
+			from: "0.10.0"
 		),
 		//use this as a out of the box resolver for tests
 		//does not get included in the main package
@@ -38,17 +39,28 @@ let package = Package(
 			url: "https://github.com/germ-network/Microcosm.git",
 			from: "0.4.1"
 		),
-		//0.7.0 carries the GermConvenienceHTTP-adoption fix for 0.8.0.
+		// Temporary revision pin to germ-network/oauth4swift#68's branch tip
+		// (stacked on #67): it moves oauth4swift's session secrets into
+		// zeroizing custody, which this package's Archive now rides directly.
+		// Replace with the released version once #67 + #68 cut.
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			from: "0.7.0"
+			from: "0.8.0"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
-			.upToNextMajor(from: "4.2.0")),
+			from: "5.0.0"),
 		.package(url: "https://github.com/apple/swift-log", from: "1.6.0"),
 		.package(url: "https://github.com/apple/swift-http-types.git", from: "1.5.1"),
 		.package(url: "https://github.com/swift-libp2p/swift-bases.git", from: "0.2.0"),
+		// Zeroizing custody for the secrets `AtprotoOAuthAgent.Archive` carries
+		// (DPoP private signing key, access/refresh tokens). 0.5.0 is the
+		// swift-crypto-5 release that adds the `SecretArchive`/`@SecretField` SPI
+		// this archive rides, matching the org-wide swift-crypto 5 move.
+		.package(
+			url: "https://github.com/germ-network/swift-secret-bytes.git",
+			from: "0.5.0"
+		),
 	],
 	targets: [
 		// Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -63,6 +75,7 @@ let package = Package(
 				.product(name: "Crypto", package: "swift-crypto"),
 				.product(name: "HTTPTypes", package: "swift-http-types"),
 				.product(name: "OAuth4Swift", package: "oauth4swift"),
+				.product(name: "SecretBytes", package: "swift-secret-bytes"),
 			]
 		),
 		.target(

@@ -44,7 +44,7 @@ struct APITests {
 		let _ = try AtprotoOAuthAgent.restore(
 			archive: .init(
 				did: "did:plc:4yvwfwxfz5sney4twepuzdu7",
-				session: .mock()
+				session: try .mock()
 			),
 			clientId: APITests.clientId,
 			authFetcher: URLSession.manualRedirect(),
@@ -71,7 +71,7 @@ struct ClientAPITests {
 		let (oauthAgent, _) = try AtprotoOAuthAgent.restore(
 			archive: .init(
 				did: "did:plc:4yvwfwxfz5sney4twepuzdu7",
-				session: .mock()
+				session: try .mock()
 			),
 			clientId: APITests.clientId,
 			authFetcher: URLSession.manualRedirect(),

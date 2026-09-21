@@ -1,13 +1,13 @@
 {
-  "originHash" : "610ae892332bf9e58061adee750d9c261b7668c3b45a733b8d964414a8f2aebe",
+  "originHash" : "0f817f34ecacbe8475fa2e6a376c675cb281eaa09d3a6298a89f6d8e6ecbfa71",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "281177935b6e87c01e2364b084b1f3fb23943dd7",
-        "version" : "0.9.0"
+        "revision" : "7a25307118bed085e0e08bd9ea95e150428ed4d7",
+        "version" : "0.10.0"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "537310dd07df81f20f91e28164d3a97b21ad0c20",
-        "version" : "0.6.1"
+        "revision" : "46fbeeac594d236ed992cdffe547eebb9bce7ae6",
+        "version" : "0.7.0"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "revision" : "e474915e5ab3f917d5f5496af5fb4814081fb75c",
-        "version" : "0.8.0"
+        "revision" : "305053c5194bfd129a3feda8fe214ec33addee03",
+        "version" : "0.10.0"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "revision" : "3c31ae88fa6ad35f8a4da5312006e2087fe71ea5",
-        "version" : "0.7.0"
+        "revision" : "87fbc78fe443321eeee934e107c894b4037617f8",
+        "version" : "0.8.0"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "da9d28d69ebe3894b18376c8f2395c2f37b8448f",
-        "version" : "4.5.2"
+        "revision" : "a9d1d5ab8951ada40cafff8c8e2b551dfde4f390",
+        "version" : "5.0.0"
       }
     },
     {
@@ -89,6 +89,15 @@
       "state" : {
         "revision" : "9c6fb14227f55d8f711ce3847dc2f419fb0ecacb",
         "version" : "1.15.1"
+      }
+    },
+    {
+      "identity" : "swift-secret-bytes",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/germ-network/swift-secret-bytes.git",
+      "state" : {
+        "revision" : "fcd33784910cdc2aff9e83a14e16e613ffc86ca9",
+        "version" : "0.6.0"
       }
     }
   ],

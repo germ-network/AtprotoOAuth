@@ -32,10 +32,10 @@ struct AgentStateMachineTests {
 	let resolver: Atproto.Resolver = StubResolver()
 
 	init() throws {
-		var archive = OAuth.SessionState.Archive.mock()
+		var archive = try OAuth.SessionState.Archive.mock()
 		originalAccessToken = archive.tokenState.accessToken
 
-		archive.tokenState.refreshToken = .mock(
+		archive.tokenState.refreshToken = try .mock(
 			value: "refresh-\(UUID().uuidString)"
 		)
 
@@ -72,7 +72,7 @@ struct AgentStateMachineTests {
 		let second = try #require(task2)
 		#expect(first == second)
 
-		gateContinuation.yield(.mock())
+		gateContinuation.yield(try .mock())
 		gateContinuation.finish()
 		_ = try? await first.value
 	}
@@ -170,9 +170,9 @@ struct AgentStateMachineTests {
 		var saveIter = saveStream.makeAsyncIterator()
 
 		let newAccessTokenValue = "access-\(UUID().uuidString)"
-		let newTokenState = OAuth.SessionState.TokenState.mock(
-			accessToken: .mock(value: newAccessTokenValue),
-			refreshToken: .mock(value: "refresh-\(UUID().uuidString)")
+		let newTokenState = try OAuth.SessionState.TokenState.mock(
+			accessToken: try .mock(value: newAccessTokenValue),
+			refreshToken: try .mock(value: "refresh-\(UUID().uuidString)")
 		)
 
 		let task = await agent.startRefresh(
@@ -181,12 +181,14 @@ struct AgentStateMachineTests {
 		)
 		let unwrapped = try #require(task)
 		let returned = try await unwrapped.value
-		#expect(returned.value == newAccessTokenValue)
+		#expect(try returned.value.utf8String() == newAccessTokenValue)
 		#expect(returned != originalAccessToken)
 
 		switch await saveIter.next() {
 		case .some(.some(let saved)):
-			#expect(saved.accessToken.value == newAccessTokenValue)
+			#expect(
+				try saved.accessToken.value.utf8String()
+					== newAccessTokenValue)
 		case .some(.none):
 			Issue.record("saveStream yielded nil; expected the new TokenState")
 		case .none:
@@ -194,12 +196,12 @@ struct AgentStateMachineTests {
 		}
 
 		let token = try await agent.authToken
-		#expect(token.value == newAccessTokenValue)
+		#expect(try token.value.utf8String() == newAccessTokenValue)
 	}
 
 	@Test("refreshNotSupported with a valid access token preserves the session")
 	func refreshNotSupportedPreservesValidToken() async throws {
-		let validToken = OAuth.AccessToken.mock(expiresIn: 3600)
+		let validToken = try OAuth.AccessToken.mock(expiresIn: 3600)
 		let (agent, _) = try Self.makeAgent(accessToken: validToken)
 
 		let task = await agent.startRefresh(
@@ -264,9 +266,9 @@ struct AgentStateMachineTests {
 		AtprotoOAuthAgent,
 		AsyncStream<OAuth.SessionState.TokenState?>
 	) {
-		var archive = OAuth.SessionState.Archive.mock()
+		var archive = try OAuth.SessionState.Archive.mock()
 		archive.tokenState.accessToken = accessToken
-		archive.tokenState.refreshToken = .mock(
+		archive.tokenState.refreshToken = try .mock(
 			value: "refresh-\(UUID().uuidString)"
 		)
 		return try AtprotoOAuthAgent.restore(
