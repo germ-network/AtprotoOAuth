@@ -181,13 +181,13 @@ struct AgentStateMachineTests {
 		)
 		let unwrapped = try #require(task)
 		let returned = try await unwrapped.value
-		#expect(try OAuth.SecretText.string(from: returned.value) == newAccessTokenValue)
+		#expect(try returned.value.utf8String() == newAccessTokenValue)
 		#expect(returned != originalAccessToken)
 
 		switch await saveIter.next() {
 		case .some(.some(let saved)):
 			#expect(
-				try OAuth.SecretText.string(from: saved.accessToken.value)
+				try saved.accessToken.value.utf8String()
 					== newAccessTokenValue)
 		case .some(.none):
 			Issue.record("saveStream yielded nil; expected the new TokenState")
@@ -196,7 +196,7 @@ struct AgentStateMachineTests {
 		}
 
 		let token = try await agent.authToken
-		#expect(try OAuth.SecretText.string(from: token.value) == newAccessTokenValue)
+		#expect(try token.value.utf8String() == newAccessTokenValue)
 	}
 
 	@Test("refreshNotSupported with a valid access token preserves the session")
