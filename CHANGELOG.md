@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.7.1
+
+### Patch Changes
+
+- [#91](https://github.com/germ-network/AtprotoOAuth/pull/91) [`ec79488`](https://github.com/germ-network/AtprotoOAuth/commit/ec794881bb46600dbefd2c5c09d7418a789c5dcf) Thanks [@germ-mark](https://github.com/germ-mark)! - Require GermConvenience 0.11.0, whose `URLSession.manualRedirect()` (the recommended `authFetcher`) also refuses redirects on Linux and Android.
+
 ## 0.7.0
 
 ### Minor Changes
