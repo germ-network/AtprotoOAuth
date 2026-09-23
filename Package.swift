@@ -29,8 +29,9 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/GermConvenience.git",
-			// 0.10.0 is its swift-crypto-5 release — the revision pin drops.
-			from: "0.10.0"
+			// 0.11.0: manualRedirect(), the recommended authFetcher, also refuses redirects on
+			// Linux/Android.
+			from: "0.11.0"
 		),
 		//use this as a out of the box resolver for tests
 		//does not get included in the main package
