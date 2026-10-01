@@ -9,6 +9,7 @@ import AtprotoClient
 import AtprotoOAuth
 import AtprotoTypes
 import Foundation
+import GermConvenienceURLSession
 import Microcosm
 import SwiftUI
 

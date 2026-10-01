@@ -8,6 +8,7 @@
 import AtprotoClient
 import AtprotoOAuth
 import AtprotoTypes
+import GermConvenienceURLSession
 import SwiftUI
 import os
 

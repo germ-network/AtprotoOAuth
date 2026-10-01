@@ -4,6 +4,7 @@ import AtprotoTypes
 import Foundation
 import GermConvenience
 import GermConvenienceHTTP
+import GermConvenienceURLSession
 import Microcosm
 import OAuth4Swift
 import Testing

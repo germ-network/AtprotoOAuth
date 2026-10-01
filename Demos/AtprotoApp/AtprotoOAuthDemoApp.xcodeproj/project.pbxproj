@@ -14,6 +14,7 @@
 		2C83CDD32F72FECB00168B01 /* ATResolve in Frameworks */ = {isa = PBXBuildFile; productRef = 2C83CDD22F72FECB00168B01 /* ATResolve */; };
 		9092014E2F64DBCA00BABF6A /* AtprotoOAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 9092014D2F64DBCA00BABF6A /* AtprotoOAuth */; };
 		909201512F64DBD900BABF6A /* Microcosm in Frameworks */ = {isa = PBXBuildFile; productRef = 909201502F64DBD900BABF6A /* Microcosm */; };
+		01E7F7162F7A58E3007AF235 /* GermConvenienceURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = 01E7F7152F7A58E3007AF235 /* GermConvenienceURLSession */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,7 @@
 				2C83CAF22F72FD9E00168B01 /* AtprotoOAuth in Frameworks */,
 				9092014E2F64DBCA00BABF6A /* AtprotoOAuth in Frameworks */,
 				016FA9882F4930760061B936 /* Microcosm in Frameworks */,
+				01E7F7162F7A58E3007AF235 /* GermConvenienceURLSession in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,6 +146,7 @@
 				2C83CAF12F72FD9E00168B01 /* AtprotoOAuth */,
 				2C83CDD22F72FECB00168B01 /* ATResolve */,
 				01E7F7132F7A58E3007AF235 /* Microcosm */,
+				01E7F7152F7A58E3007AF235 /* GermConvenienceURLSession */,
 			);
 			productName = AtprotoOAuthDemoApp;
 			productReference = 01E50C442F483FF800C0D8E0 /* AtprotoOAuthDemoApp.app */;
@@ -231,6 +234,7 @@
 				2C83CAF02F72FD9E00168B01 /* XCLocalSwiftPackageReference "../../../AtprotoOAuth" */,
 				2C83CDD12F72FECB00168B01 /* XCRemoteSwiftPackageReference "ATResolve" */,
 				01E7F7122F7A58E3007AF235 /* XCRemoteSwiftPackageReference "Microcosm" */,
+				01E7F7172F7A58E3007AF235 /* XCRemoteSwiftPackageReference "GermConvenience" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 01E50C452F483FF800C0D8E0 /* Products */;
@@ -689,6 +693,14 @@
 				minimumVersion = 0.4.1;
 			};
 		};
+		01E7F7172F7A58E3007AF235 /* XCRemoteSwiftPackageReference "GermConvenience" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/germ-network/GermConvenience.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.14.0;
+			};
+		};
 		2C83CDD12F72FECB00168B01 /* XCRemoteSwiftPackageReference "ATResolve" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mattmassicotte/ATResolve.git";
@@ -707,6 +719,11 @@
 		016FA9872F4930760061B936 /* Microcosm */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Microcosm;
+		};
+		01E7F7152F7A58E3007AF235 /* GermConvenienceURLSession */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 01E7F7172F7A58E3007AF235 /* XCRemoteSwiftPackageReference "GermConvenience" */;
+			productName = GermConvenienceURLSession;
 		};
 		01E7F7132F7A58E3007AF235 /* Microcosm */ = {
 			isa = XCSwiftPackageProductDependency;

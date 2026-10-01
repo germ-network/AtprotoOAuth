@@ -12,6 +12,7 @@ import AtprotoTypes
 import Foundation
 import GermConvenience
 import GermConvenienceHTTP
+import GermConvenienceURLSession
 import HTTPTypes
 
 public struct ATResolveResolver: Atproto.Resolver {

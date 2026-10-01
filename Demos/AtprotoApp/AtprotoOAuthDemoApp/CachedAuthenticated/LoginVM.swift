@@ -12,6 +12,7 @@ import AuthenticationServices
 import Foundation
 import GermConvenience
 import GermConvenienceHTTP
+import GermConvenienceURLSession
 import Microcosm
 import OAuth4Swift
 import os

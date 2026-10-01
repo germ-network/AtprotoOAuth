@@ -13,6 +13,7 @@ import AtprotoTypes
 import Foundation
 import GermConvenience
 import GermConvenienceHTTP
+import GermConvenienceURLSession
 import OAuth4Swift
 import Testing
 
