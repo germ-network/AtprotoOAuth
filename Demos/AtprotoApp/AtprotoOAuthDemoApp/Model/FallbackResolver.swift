@@ -7,6 +7,7 @@
 
 import AtprotoOAuth
 import Foundation
+import GermConvenienceURLSession
 import Microcosm
 
 extension FallbackResolver {

@@ -29,9 +29,10 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/GermConvenience.git",
-			// 0.11.0: manualRedirect(), the recommended authFetcher, also refuses redirects on
-			// Linux/Android.
-			from: "0.11.0"
+			// 0.14.0 is the floor AtprotoClient 0.12.0 needs. URLSession's HTTPFetcher
+			// conformance and manualRedirect(), the recommended authFetcher, live in
+			// GermConvenienceURLSession from 0.13.0.
+			from: "0.14.0"
 		),
 		//use this as a out of the box resolver for tests
 		//does not get included in the main package
@@ -40,10 +41,8 @@ let package = Package(
 			url: "https://github.com/germ-network/Microcosm.git",
 			from: "0.4.1"
 		),
-		// Temporary revision pin to germ-network/oauth4swift#68's branch tip
-		// (stacked on #67): it moves oauth4swift's session secrets into
-		// zeroizing custody, which this package's Archive now rides directly.
-		// Replace with the released version once #67 + #68 cut.
+		// 0.8.0 moves oauth4swift's session secrets into zeroizing custody,
+		// which this package's Archive rides directly.
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
 			from: "0.8.0"
