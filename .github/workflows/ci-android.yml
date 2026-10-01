@@ -25,6 +25,20 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: "Test Swift Package on Android"
+        id: android
         uses: skiptools/swift-android-action@v2
         with:
           swift-version: '6.3'
+      # The library and its dependency closure must not link FoundationNetworking.
+      # `--target` builds just that closure.
+      - name: "Library does not link FoundationNetworking"
+        run: |
+          ${{ steps.android.outputs.swift-build }} --scratch-path .build-scan --target AtprotoOAuth
+          scripts/scan-foundation-networking.sh .build-scan
+      # Control: the scanner must flag a target that does import it, or a pass
+      # above could just mean it is not seeing the autolink entry. Built into a
+      # separate scratch path so the objects scanned are exactly that product's.
+      - name: "Scanner detects FoundationNetworking in the URLSession product"
+        run: |
+          ${{ steps.android.outputs.swift-build }} --scratch-path .build-scan-control --target GermConvenienceURLSession
+          scripts/scan-foundation-networking.sh --expect .build-scan-control
