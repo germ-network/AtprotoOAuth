@@ -17,11 +17,11 @@ let package = Package(
 		.library(name: "AtprotoOAuthMocks", targets: ["AtprotoOAuthMocks"]),
 	],
 	dependencies: [
-		// Temporary revision pins to the swift-crypto-5 commits during the
-		// org-wide migration; replace with released versions once they cut.
+		// 0.12.0 requires GermConvenience 0.14.0, where URLSession's HTTPFetcher
+		// conformance lives in GermConvenienceURLSession.
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.10.0"
+			from: "0.12.0"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
@@ -98,6 +98,7 @@ let package = Package(
 				"AtprotoOAuth",
 				"Microcosm",
 				.product(name: "GermConvenienceHTTP", package: "GermConvenience"),
+				.product(name: "GermConvenienceURLSession", package: "GermConvenience"),
 			]
 		),
 	]
