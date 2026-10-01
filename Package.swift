@@ -1,4 +1,4 @@
-// swift-tools-version: 6.2
+// swift-tools-version: 6.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -42,10 +42,11 @@ let package = Package(
 			from: "0.4.1"
 		),
 		// 0.8.0 moves oauth4swift's session secrets into zeroizing custody,
-		// which this package's Archive rides directly.
+		// which this package's Archive rides directly. 0.9.0 drops its
+		// FoundationNetworking imports.
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			from: "0.8.0"
+			from: "0.9.0"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
