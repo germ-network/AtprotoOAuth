@@ -1,5 +1,17 @@
 # @germ-network/atprotooauth
 
+## 0.8.0
+
+### Minor Changes
+
+- [#94](https://github.com/germ-network/AtprotoOAuth/pull/94) [`219d1e3`](https://github.com/germ-network/AtprotoOAuth/commit/219d1e36a7b8063dc9ca9e153e628229a722d7a6) Thanks [@germ-mark](https://github.com/germ-mark)! - Require Swift 6.3 and oauth4swift 0.9.0, which no longer imports FoundationNetworking, and check in Android CI that the library does not link it.
+
+### Patch Changes
+
+- [#91](https://github.com/germ-network/AtprotoOAuth/pull/91) [`ec79488`](https://github.com/germ-network/AtprotoOAuth/commit/ec794881bb46600dbefd2c5c09d7418a789c5dcf) Thanks [@germ-mark](https://github.com/germ-mark)! - Require GermConvenience 0.11.0, whose `URLSession.manualRedirect()` (the recommended `authFetcher`) also refuses redirects on Linux and Android.
+
+- [#93](https://github.com/germ-network/AtprotoOAuth/pull/93) [`87db908`](https://github.com/germ-network/AtprotoOAuth/commit/87db908773067affe6468191651c6712a1c3f79f) Thanks [@germ-mark](https://github.com/germ-mark)! - Require AtprotoClient 0.12.0 and GermConvenience 0.14.0, and depend on `GermConvenienceURLSession` from the tests that use `URLSession`. A `URLSession` conforms to `HTTPFetcher` from that product, so callers passing one as `authFetcher` add it.
+
 ## 0.7.0
 
 ### Minor Changes
