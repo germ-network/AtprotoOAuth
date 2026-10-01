@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "revision" : "87fbc78fe443321eeee934e107c894b4037617f8",
-        "version" : "0.8.0"
+        "revision" : "b6a7ad53adf5d38b4efbb4da9b9a7b56ef542739",
+        "version" : "0.9.0"
       }
     },
     {
