@@ -29,10 +29,8 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/germ-network/GermConvenience.git",
-			// 0.14.0 is the floor AtprotoClient 0.12.0 needs. URLSession's HTTPFetcher
-			// conformance and manualRedirect(), the recommended authFetcher, live in
-			// GermConvenienceURLSession from 0.13.0.
-			from: "0.14.0"
+			// 0.15.0 includes the Swift API naming updates adopted below.
+			from: "0.15.0"
 		),
 		//use this as a out of the box resolver for tests
 		//does not get included in the main package
@@ -98,7 +96,9 @@ let package = Package(
 				"AtprotoOAuth",
 				"Microcosm",
 				.product(name: "GermConvenienceHTTP", package: "GermConvenience"),
-				.product(name: "GermConvenienceURLSession", package: "GermConvenience"),
+				.product(
+					name: "GermConvenienceURLSession",
+					package: "GermConvenience"),
 			]
 		),
 	]
