@@ -299,7 +299,7 @@ extension MockAtmosphere {
 			Lexicon.App.Bsky.Actor.Profile
 		>.Output(
 			uri: .mock(),
-			cid: Atproto.CID.mock().string,
+			cid: Atproto.CID.mock().rawValue,
 			value: try await profile(did: did)
 		)
 
