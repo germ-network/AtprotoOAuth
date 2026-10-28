@@ -1,3 +1,4 @@
+---
 "@germ-network/atprotooauth": minor
 ---
 
