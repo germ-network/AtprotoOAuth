@@ -61,7 +61,7 @@ public actor MockAtmosphere {
 		guard let didDoc = didDocs[did] else {
 			return nil
 		}
-		return try repos[didDoc.pdsUrl].tryUnwrap
+		return try repos[didDoc.pdsUrl].unwrapped
 	}
 }
 
@@ -124,10 +124,11 @@ extension MockAtmosphere {
 	public func salted(did: Atproto.DID) throws -> String {
 		var hmac = HMAC<SHA256>(key: salt)
 		hmac.update(data: did.rawValue.utf8Data)
-		return
-			hmac
-			.finalize().dataRepresentation
-			.base64URLEncoded(padded: false)
+		return Base64.encodedString(
+			hmac.finalize().dataRepresentation,
+			variant: .url,
+			pad: .unpadded
+		)
 	}
 }
 
@@ -158,10 +159,10 @@ extension MockAtmosphere {
 
 extension MockAtmosphere {
 	public func publicAgent(did: Atproto.DID) async throws -> MockPDS.PublicAgent {
-		let url = try didDocs[did].tryUnwrap
+		let url = try didDocs[did].unwrapped
 			.pdsUrl
 
-		return try await repos[url].tryUnwrap.publicAgent(did: did)
+		return try await repos[url].unwrapped.publicAgent(did: did)
 	}
 }
 
@@ -173,12 +174,12 @@ extension MockAtmosphere: HTTPFetcher {
 					clientId: "https://client.example.com",
 					scopes: ["atproto"],
 					redirectURI: try URL(string: "com.example.static:/oauth")
-						.tryUnwrap
+						.unwrapped
 				),
 				resolver: self,
 				authFetcher: self,
 				userAuthenticator: { _, _ in
-					try URL(string: "https://callback.example.com").tryUnwrap
+					try URL(string: "https://callback.example.com").unwrapped
 				}
 			)
 		}
@@ -193,11 +194,11 @@ extension MockAtmosphere: HTTPFetcher {
 
 		if let proxyHeader =
 			xrpcComponents
-			.headers[try .atprotoProxy.tryUnwrap]
+			.headers[try .atprotoProxy.unwrapped]
 		{
 			if try proxyHeader == Atproto.Service.bskyAppView.headerValue {
 				return try await blueskyProxyResponse(
-					authedDid: try authedDid.tryUnwrap,
+					authedDid: try authedDid.unwrapped,
 					xrpcComponents: xrpcComponents
 				)
 			} else {
@@ -209,7 +210,7 @@ extension MockAtmosphere: HTTPFetcher {
 			)
 		} else {
 			let pds = try repos[host]
-				.tryUnwrap(Errors.noHost)
+				.unwrap(or: Errors.noHost)
 
 			return try await pds.response(xrpcComponents, authedDid: authedDid)
 		}
@@ -217,13 +218,13 @@ extension MockAtmosphere: HTTPFetcher {
 
 	func checkAuth(request: BundledHTTPRequest) throws -> Atproto.DID? {
 		let authHeader = request.request.headerFields[.authorization]
-		let dpopHeader = request.request.headerFields[try .dpop.tryUnwrap]
+		let dpopHeader = request.request.headerFields[try .dpop.unwrapped]
 
-		guard let authHeader, let dpopHeader else {
-			guard authHeader == nil, dpopHeader == nil else {
-				throw Errors.authHeaderMismatch
-			}
+		guard authHeader != nil || dpopHeader != nil else {
 			return nil
+		}
+		guard let authHeader, dpopHeader != nil else {
+			throw Errors.authHeaderMismatch
 		}
 
 		guard authHeader.lowercased().hasPrefix("dpop ") else {
@@ -231,7 +232,7 @@ extension MockAtmosphere: HTTPFetcher {
 		}
 
 		let suffix = String(authHeader.dropFirst(5))
-		return try tokenLookup[suffix].tryUnwrap
+		return try tokenLookup[suffix].unwrapped
 
 	}
 }
@@ -239,18 +240,18 @@ extension MockAtmosphere: HTTPFetcher {
 extension BundledHTTPRequest {
 	var decomposed: (host: URL, xrpcComponents: XRPCRequestComponents) {
 		get throws {
-			let url = try request.url.tryUnwrap
+			let url = try request.url.unwrapped
 			let components = try URLComponents(
 				url: url,
 				resolvingAgainstBaseURL: false
-			).tryUnwrap
+			).unwrapped
 
 			var hostComponents = URLComponents()
 			hostComponents.scheme = url.scheme
 			hostComponents.host = url.host()
 
 			return (
-				try hostComponents.url.tryUnwrap,
+				try hostComponents.url.unwrapped,
 				.init(
 					relativePath: components.path,
 					queryItems: components.queryItems ?? [],

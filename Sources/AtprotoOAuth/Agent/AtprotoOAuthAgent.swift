@@ -71,7 +71,7 @@ public actor AtprotoOAuthAgent {
 		guard case .active(let sessionState) = state else {
 			return nil
 		}
-		let dpopState = try sessionState.dPoPState.tryUnwrap
+		let dpopState = try sessionState.dPoPState.unwrapped
 		dpopState.nonceCache.countLimit = 25
 
 		self.authenticatedDID = did
@@ -85,7 +85,7 @@ public actor AtprotoOAuthAgent {
 			fetchTaskGenerator: {
 				Task {
 					let didDoc = try await atprotoResolver.resolve(did: did)
-						.tryUnwrap
+						.unwrapped
 					return
 						try await AtprotoOAuthUtils
 						.getAuthorizationServerURL(
@@ -150,7 +150,7 @@ extension AtprotoOAuthAgent {
 			clientId: clientId,
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
-		).tryUnwrap
+		).unwrapped
 		return (session, session.saveStream)
 	}
 
@@ -163,7 +163,7 @@ extension AtprotoOAuthAgent {
 		try self.init(
 			did: .init(string: archive.did),
 			clientId: clientId,
-			state: .init(archive: try archive.session),
+			state: .init(archive: archive.session),
 			authFetcher: authFetcher,
 			atprotoResolver: atprotoResolver
 		)
@@ -189,7 +189,7 @@ extension AtprotoOAuthAgent: Atproto.AuthPDSAgent {
 extension AtprotoOAuthAgent: OAuth.SessionCapabilities {
 	public var authServerMetadata: AuthServerMetadata {
 		get async throws {
-			try await lazyServerMetadata.lazyValue(isolation: self)
+			try await lazyServerMetadata.value(isolation: self)
 		}
 	}
 
@@ -309,7 +309,7 @@ extension AtprotoOAuthAgent: OAuth.DPoP.Signing {
 
 extension AtprotoOAuthAgent {
 	func getPDSUrl() async throws -> URL {
-		try await self.resolver.resolve(did: repo).tryUnwrap.pdsUrl
+		try await self.resolver.resolve(did: repo).unwrapped.pdsUrl
 	}
 }
 

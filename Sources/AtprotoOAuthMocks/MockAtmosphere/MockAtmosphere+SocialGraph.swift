@@ -25,7 +25,7 @@ extension MockAtmosphere {
 		mutuals: [Atproto.DID],
 		blocking: [Atproto.DID]
 	) {
-		let actorPDS = try pds(for: actor).tryUnwrap
+		let actorPDS = try pds(for: actor).unwrapped
 
 		var followsDids: [Atproto.DID] = []
 		var followers: [Atproto.DID: MockPDS] = [:]

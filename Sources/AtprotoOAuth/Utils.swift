@@ -28,7 +28,7 @@ public struct AtprotoOAuthUtils {
 		return try await urlAsAuthServer(
 			pdsServiceEndpoint: pdsServiceEndpoint,
 			authFetcher: authFetcher
-		).tryUnwrap
+		).unwrapped
 	}
 
 	// Treat the PDS service endpoint as a resource server
@@ -40,7 +40,7 @@ public struct AtprotoOAuthUtils {
 		let pdsResourceMetadata = try await authFetcher.resourceDiscoveryRequest(
 			url: pdsServiceEndpoint
 		)
-		.tryUnwrap
+		.unwrapped
 
 		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 		//PDS doesn't actually fill this field, so we only check it if present
@@ -68,7 +68,7 @@ public struct AtprotoOAuthUtils {
 		let pdsAuthMetadata =
 			try await authFetcher
 			.authServerDiscovery(endpoint: authorizationServerUrl)
-			.tryUnwrap
+			.unwrapped
 
 		return (pdsAuthMetadata, authorizationServerUrl)
 	}
@@ -81,7 +81,7 @@ public struct AtprotoOAuthUtils {
 		let pdsAuthMetadata =
 			try await authFetcher
 			.authServerDiscovery(endpoint: pdsServiceEndpoint)
-			.tryUnwrap
+			.unwrapped
 
 		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 		//PDS doesn't actually fill this field, so we only check it if present

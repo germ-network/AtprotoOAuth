@@ -43,13 +43,13 @@ extension AtprotoOAuthClient {
 		case .did(let did, _):
 			didDoc =
 				try await resolver
-				.verifiedResolve(atIdentifier: .did(did)).tryUnwrap
+				.verifiedResolve(atIdentifier: .did(did)).unwrapped
 
 		case .handle(let handle):
 			didDoc =
 				try await resolver
 				.verifiedResolve(handle: handle)
-				.tryUnwrap
+				.unwrapped
 		}
 		let additionalParameters = FormParameters(
 			["login_hint": identity.serverHint]

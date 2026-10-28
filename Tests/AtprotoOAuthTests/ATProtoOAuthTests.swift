@@ -28,7 +28,7 @@ struct APITests {
 		let (resolvedDid, _) =
 			try await resolver
 			.verifiedResolve(handle: .init(string: "germnetwork.com"))
-			.tryUnwrap
+			.unwrapped
 		#expect(parsedDid == resolvedDid)
 
 		//don't yet have correct resoultion to nil
@@ -86,7 +86,7 @@ struct ClientAPITests {
 		let (resolvedDid, _) =
 			try await resolver
 			.verifiedResolve(handle: inputHandle)
-			.tryUnwrap
+			.unwrapped
 
 		#expect(
 			resolvedDid.rawValue == "did:plc:4yvwfwxfz5sney4twepuzdu7"

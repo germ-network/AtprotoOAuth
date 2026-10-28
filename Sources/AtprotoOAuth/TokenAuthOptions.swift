@@ -5,6 +5,7 @@
 //  Created by Mark @ Germ on 3/9/26.
 //
 
+import AtprotoClient
 import AtprotoTypes
 import Foundation
 import GermConvenience
@@ -34,7 +35,7 @@ extension AtprotoOAuthClient {
 			}
 
 			//otherwise we need to resolve
-			let didDoc = try await resolver.resolve(did: subDid).tryUnwrap
+			let didDoc = try await resolver.resolve(did: subDid).unwrapped
 
 			let (resolvedAuthServerMetadata, _) =
 				try await AtprotoOAuthUtils.getAuthorizationServerURL(
@@ -85,8 +86,8 @@ extension TokenEndpointResponse {
 			throw OAuthSessionError.expectedDpopToken(tokenType.rawValue)
 		}
 
-		let sub = try additionalTokenFields?["sub"].tryUnwrap
-		let subString = try (sub as? String).tryUnwrap
+		let sub = try additionalTokenFields?["sub"].unwrapped
+		let subString = try (sub as? String).unwrapped
 		return try .init(string: subString)
 	}
 }

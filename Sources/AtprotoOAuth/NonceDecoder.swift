@@ -15,7 +15,7 @@ extension OAuth.DPoP {
 		dataResponse: HTTPDataResponse,
 		requestUrl: URL,
 	) throws -> IndexedNonce? {
-		let nonce = dataResponse.response.headerFields[try .dpopNonce.tryUnwrap]
+		let nonce = dataResponse.response.headerFields[try .dpopNonce.unwrapped]
 		guard let nonce else {
 			return nil
 		}

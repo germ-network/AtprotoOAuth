@@ -298,7 +298,7 @@ struct UnauthenticatedView: View {
 						]
 					)
 					.first
-				relationships = try relationship.tryUnwrap
+				relationships = try relationship.unwrapped
 			} catch {
 				print("Error loading relationship: \(error)")
 			}
@@ -319,7 +319,7 @@ struct UnauthenticatedView: View {
 			resourceFetcher: URLSession.shared
 		)
 		.resolveMiniDoc(identifier: .did(did))
-		.tryUnwrap
+		.unwrapped
 		.pds
 
 		return PublicPDSAgent(

@@ -201,7 +201,7 @@ import os
 		}
 		let otherDid = try await resolver.resolve(
 			handle: .init(string: otherHandle)
-		).tryUnwrap
+		).unwrapped
 		let metadata = try await authedClient.authBskyProfile(
 			for: otherDid
 		).viewer
@@ -226,7 +226,7 @@ import os
 				resourceFetcher: URLSession.shared
 			)
 			.resolveMiniDoc(identifier: .did(did))
-			.tryUnwrap
+			.unwrapped
 			.pds
 
 			return PublicPDSAgent(
@@ -246,7 +246,7 @@ import os
 				let otherDid =
 					try await resolver
 					.resolve(handle: .init(string: otherHandle))
-					.tryUnwrap
+					.unwrapped
 				let _ = try await authedClient.createRecord(
 					Lexicon.App.Bsky.Graph.Block.init(subject: otherDid)
 				)
@@ -301,7 +301,7 @@ import os
 				let did =
 					try await resolver
 					.resolve(handle: .init(string: handle))
-					.tryUnwrap
+					.unwrapped
 				let knownFollowersStream =
 					try await authedClient.streamSocialGraphs(
 						for: .did(did),
