@@ -11,19 +11,19 @@ import Foundation
 extension MockAtmosphere {
 	public func follow(subjectDid: Atproto.DID, from viewerDid: Atproto.DID) async throws {
 		try await pds(for: viewerDid)
-			.tryUnwrap
+			.unwrapped
 			.follow(did: subjectDid, from: viewerDid)
 	}
 
 	public func block(subjectDid: Atproto.DID, from viewerDid: Atproto.DID) async throws {
 		try await pds(for: viewerDid)
-			.tryUnwrap
+			.unwrapped
 			.block(did: subjectDid, from: viewerDid)
 	}
 
 	public func unfollow(subjectDid: Atproto.DID, from viewerDid: Atproto.DID) async throws {
 		try await pds(for: viewerDid)
-			.tryUnwrap
+			.unwrapped
 			.unfollow(did: subjectDid, from: viewerDid)
 	}
 }

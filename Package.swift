@@ -17,36 +17,30 @@ let package = Package(
 		.library(name: "AtprotoOAuthMocks", targets: ["AtprotoOAuthMocks"]),
 	],
 	dependencies: [
-		// 0.12.0 requires GermConvenience 0.14.0, where URLSession's HTTPFetcher
-		// conformance lives in GermConvenienceURLSession.
 		.package(
 			url: "https://github.com/germ-network/AtprotoClient.git",
-			from: "0.12.0"
+			from: "0.14.0"
 		),
 		.package(
 			url: "https://github.com/germ-network/AtprotoTypes.git",
-			from: "0.7.0"
+			from: "0.11.0"
 		),
 		.package(
 			url: "https://github.com/germ-network/GermConvenience.git",
-			// 0.14.0 is the floor AtprotoClient 0.12.0 needs. URLSession's HTTPFetcher
-			// conformance and manualRedirect(), the recommended authFetcher, live in
-			// GermConvenienceURLSession from 0.13.0.
-			from: "0.14.0"
+			// 0.15.0 includes the Swift API naming updates adopted below.
+			from: "0.15.0"
 		),
-		//use this as a out of the box resolver for tests
-		//does not get included in the main package
-		//0.4.1 carries the GermConvenienceHTTP-adoption fix for 0.8.0.
+		// Test-only resolver implementation.
 		.package(
 			url: "https://github.com/germ-network/Microcosm.git",
-			from: "0.4.1"
+			from: "0.5.0"
 		),
 		// 0.8.0 moves oauth4swift's session secrets into zeroizing custody,
 		// which this package's Archive rides directly. 0.9.0 drops its
-		// FoundationNetworking imports.
+		// FoundationNetworking imports; 0.9.1 is the current release.
 		.package(
 			url: "https://github.com/germ-network/oauth4swift.git",
-			from: "0.9.0"
+			from: "0.9.1"
 		),
 		.package(
 			url: "https://github.com/apple/swift-crypto.git",
@@ -98,7 +92,9 @@ let package = Package(
 				"AtprotoOAuth",
 				"Microcosm",
 				.product(name: "GermConvenienceHTTP", package: "GermConvenience"),
-				.product(name: "GermConvenienceURLSession", package: "GermConvenience"),
+				.product(
+					name: "GermConvenienceURLSession",
+					package: "GermConvenience"),
 			]
 		),
 	]

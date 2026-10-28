@@ -17,14 +17,14 @@ extension MockAtmosphere {
 		xrpcComponents: XRPCRequestComponents
 	) async throws -> HTTPDataResponse {
 		let request = try xrpcComponents.constructUrl(
-			serviceUrl: URL(string: "https://public.api.bsky.app").tryUnwrap
+			serviceUrl: URL(string: "https://public.api.bsky.app").unwrapped
 		)
-		let requestUrl = try request.request.url.tryUnwrap
+		let requestUrl = try request.request.url.unwrapped
 
 		let components = try URLComponents(
 			url: requestUrl,
 			resolvingAgainstBaseURL: false
-		).tryUnwrap
+		).unwrapped
 
 		let pathComponents = requestUrl.pathComponents
 		switch pathComponents[1] {
@@ -45,14 +45,14 @@ extension MockAtmosphere {
 		xrpcComponents: XRPCRequestComponents
 	) async throws -> HTTPDataResponse {
 		let request = try xrpcComponents.constructUrl(
-			serviceUrl: URL(string: "https://public.api.bsky.app").tryUnwrap
+			serviceUrl: URL(string: "https://public.api.bsky.app").unwrapped
 		)
-		let requestUrl = try request.request.url.tryUnwrap
+		let requestUrl = try request.request.url.unwrapped
 
 		let components = try URLComponents(
 			url: requestUrl,
 			resolvingAgainstBaseURL: false
-		).tryUnwrap
+		).unwrapped
 
 		let pathComponents = requestUrl.pathComponents
 		switch pathComponents[1] {
@@ -94,7 +94,7 @@ extension MockAtmosphere {
 		authedDid: Atproto.DID,
 	) async throws -> HTTPDataResponse {
 		let actorDid = try Atproto.DID(
-			string: (queryItems?["actor"]).tryUnwrap
+			string: (queryItems?["actor"]).unwrapped
 		)
 
 		let (page, nextCursor) = try await paginatedDids(
@@ -121,7 +121,7 @@ extension MockAtmosphere {
 		viewer: Atproto.DID
 	) async throws -> [Atproto.DID] {
 		let (viewerFollows, _) = try await pds(for: viewer)
-			.tryUnwrap
+			.unwrapped
 			.getGraph(did: viewer)
 		let viewerFollowDids = Set(viewerFollows.map(\.subject))
 
@@ -131,7 +131,7 @@ extension MockAtmosphere {
 			&& viewerFollowDids.contains(candidate)
 		{
 			let (candidateFollows, _) = try await pds(for: candidate)
-				.tryUnwrap
+				.unwrapped
 				.getGraph(did: candidate)
 			if candidateFollows.contains(where: { $0.subject == actor }) {
 				found.append(candidate)
@@ -147,7 +147,7 @@ extension MockAtmosphere {
 		queryItems: [URLQueryItem]?,
 	) async throws -> HTTPDataResponse {
 		let actorDid = try Atproto.DID(
-			string: (queryItems?["actor"]).tryUnwrap
+			string: (queryItems?["actor"]).unwrapped
 		)
 
 		let (page, nextCursor) = try await paginatedDids(
@@ -175,7 +175,7 @@ extension MockAtmosphere {
 		var found: [Atproto.DID] = []
 		for candidate in didDocs.keys where candidate != actor {
 			let (candidateFollows, _) = try await pds(for: candidate)
-				.tryUnwrap
+				.unwrapped
 				.getGraph(did: candidate)
 			if candidateFollows.contains(where: { $0.subject == actor }) {
 				found.append(candidate)
@@ -191,7 +191,7 @@ extension MockAtmosphere {
 		queryItems: [URLQueryItem]?,
 	) async throws -> HTTPDataResponse {
 		let actorDid = try Atproto.DID(
-			string: (queryItems?["actor"]).tryUnwrap
+			string: (queryItems?["actor"]).unwrapped
 		)
 
 		let (page, nextCursor) = try await paginatedDids(
@@ -217,7 +217,7 @@ extension MockAtmosphere {
 		actor: Atproto.DID
 	) async throws -> [Atproto.DID] {
 		let (follows, _) = try await pds(for: actor)
-			.tryUnwrap
+			.unwrapped
 			.getGraph(did: actor)
 
 		//drop follow edges pointing at DIDs the mock doesn't host, so a single
@@ -292,14 +292,14 @@ extension MockAtmosphere {
 		queryParameters: [String: String],
 		authedDid: Atproto.DID,
 	) async throws -> HTTPDataResponse {
-		let repo = try queryParameters["repo"].tryUnwrap
+		let repo = try queryParameters["repo"].unwrapped
 		let did = try Atproto.DID(string: repo)
 
 		let output = Lexicon.Com.Atproto.Repo.GetRecord<
 			Lexicon.App.Bsky.Actor.Profile
 		>.Output(
 			uri: .mock(),
-			cid: Atproto.CID.mock().string,
+			cid: Atproto.CID.mock().rawValue,
 			value: try await profile(did: did)
 		)
 
@@ -313,7 +313,7 @@ extension MockAtmosphere {
 		did: Atproto.DID,
 	) async throws -> Lexicon.App.Bsky.Actor.Profile {
 		let actorProfile = try await pds(for: did)
-			.tryUnwrap
+			.unwrapped
 			.getBskyProfile(did: did)
 
 		return .init(
@@ -331,10 +331,10 @@ extension MockAtmosphere {
 		did: Atproto.DID,
 	) async throws -> Lexicon.App.Bsky.Actor.Defs.ProfileView {
 		let actorProfile = try await pds(for: did)
-			.tryUnwrap
+			.unwrapped
 			.getBskyProfile(did: did)
 		let handle = try await verifiedResolve(atIdentifier: .did(did))
-			.tryUnwrap
+			.unwrapped
 			.verifiedHandle
 
 		return .init(
@@ -355,7 +355,7 @@ extension MockAtmosphere {
 		queryItems: [URLQueryItem]?,
 		authedDid: Atproto.DID?,
 	) async throws -> HTTPDataResponse {
-		let actor = try (queryItems?["actor"]).tryUnwrap
+		let actor = try (queryItems?["actor"]).unwrapped
 		let actorDid = try Atproto.DID(string: actor)
 
 		let output = try await detailedProfile(
@@ -375,14 +375,14 @@ extension MockAtmosphere {
 	) async throws -> Lexicon.App.Bsky.Actor.Defs.ProfileViewDetailed {
 
 		let (actorFollows, actorBlocks) = try await pds(for: actor)
-			.tryUnwrap
+			.unwrapped
 			.getGraph(did: actor)
 
 		let actorProfile = try await pds(for: actor)
-			.tryUnwrap
+			.unwrapped
 			.getBskyProfile(did: actor)
 		let handle = try await verifiedResolve(atIdentifier: .did(actor))
-			.tryUnwrap
+			.unwrapped
 			.verifiedHandle
 
 		let viewer: Lexicon.App.Bsky.Actor.Defs.ViewerState? = try await {
@@ -390,7 +390,7 @@ extension MockAtmosphere {
 				return nil
 			}
 			let (viewerFollows, viewerBlocks) = try await pds(for: authedViewer)
-				.tryUnwrap
+				.unwrapped
 				.getGraph(did: authedViewer)
 
 			/// Indicates whether the authed user has been blocked by the account requested. Optional.
@@ -476,18 +476,18 @@ extension MockAtmosphere {
 		body: Data?,
 	) async throws -> HTTPDataResponse {
 		let did = try Atproto.DID(
-			string: (queryItems?["repo"]).tryUnwrap
+			string: (queryItems?["repo"]).unwrapped
 		)
 
 		return try await pds(for: did)
-			.tryUnwrap
+			.unwrapped
 			.getRecord(queryItems: queryItems)
 	}
 
 	private func handleGetRelationships(
 		queryItems: [URLQueryItem]?,
 	) async throws -> HTTPDataResponse {
-		let actor = try (queryItems?["actor"]).tryUnwrap
+		let actor = try (queryItems?["actor"]).unwrapped
 		let others = queryItems?
 			.filter { $0.name == "others" }
 			.compactMap(\.value)
@@ -547,7 +547,7 @@ extension MockAtmosphere {
 		}
 
 		let (actorFollows, actorBlocks) = try await pds(for: actor)
-			.tryUnwrap
+			.unwrapped
 			.getGraph(did: actor)
 
 		let (targetFollows, targetBlocks) =

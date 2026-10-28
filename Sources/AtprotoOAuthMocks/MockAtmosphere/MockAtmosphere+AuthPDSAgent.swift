@@ -21,7 +21,7 @@ extension MockAtmosphere {
 	/// bsky appview service-proxying all behave like the real network.
 	public func authPDSAgent(did: Atproto.DID) throws -> MockAuthPDSAgent {
 		//ensure the did is actually hosted before vending an agent for it
-		let _ = try didDocs[did].tryUnwrap
+		let _ = try didDocs[did].unwrapped
 		return MockAuthPDSAgent(did: did, atmosphere: self)
 	}
 
@@ -32,11 +32,11 @@ extension MockAtmosphere {
 		did: Atproto.DID,
 		requestComponents: XRPCRequestComponents
 	) async throws -> HTTPDataResponse {
-		let pdsUrl = try didDocs[did].tryUnwrap.pdsUrl
+		let pdsUrl = try didDocs[did].unwrapped.pdsUrl
 
 		var requestComponents = requestComponents
 		requestComponents.headers[.authorization] = try "dpop \(salted(did: did))"
-		requestComponents.headers[try .dpop.tryUnwrap] = "mock-dpop"
+		requestComponents.headers[try .dpop.unwrapped] = "mock-dpop"
 
 		let request = try requestComponents.constructUrl(serviceUrl: pdsUrl)
 		return try await data(for: request)

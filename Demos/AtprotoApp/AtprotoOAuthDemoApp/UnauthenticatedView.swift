@@ -238,7 +238,7 @@ struct UnauthenticatedView: View {
 					avatarBlob = try await agent.getBlob(
 						parameters: .init(
 							did: .did(did),
-							cid: .init(string: avatarCid.string))
+							cid: .init(string: avatarCid.rawValue))
 					)
 				} catch {
 					print("Error loading avatar: \(error)")
@@ -252,7 +252,7 @@ struct UnauthenticatedView: View {
 					bannerBlob = try await agent.getBlob(
 						parameters: .init(
 							did: .did(did),
-							cid: .init(string: bannerCid.string))
+							cid: .init(string: bannerCid.rawValue))
 					)
 				} catch {
 					print("Error loading banner: \(error)")
@@ -298,7 +298,7 @@ struct UnauthenticatedView: View {
 						]
 					)
 					.first
-				relationships = try relationship.tryUnwrap
+				relationships = try relationship.unwrapped
 			} catch {
 				print("Error loading relationship: \(error)")
 			}
@@ -319,7 +319,7 @@ struct UnauthenticatedView: View {
 			resourceFetcher: URLSession.shared
 		)
 		.resolveMiniDoc(identifier: .did(did))
-		.tryUnwrap
+		.unwrapped
 		.pds
 
 		return PublicPDSAgent(

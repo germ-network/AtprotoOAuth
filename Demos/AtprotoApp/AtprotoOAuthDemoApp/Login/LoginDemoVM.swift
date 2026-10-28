@@ -56,7 +56,7 @@ struct LogEntry: Identifiable {
 				let resolvedDid = try await resolver.resolve(
 					handle: .init(string: handle)
 				)
-				.tryUnwrap
+				.unwrapped
 				appendLog(
 					"Resolved DID: \(resolvedDid.rawValue)"
 				)
