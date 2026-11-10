@@ -69,6 +69,7 @@ let package = Package(
 				.product(name: "GermConvenienceHTTP", package: "GermConvenience"),
 				.product(name: "Crypto", package: "swift-crypto"),
 				.product(name: "HTTPTypes", package: "swift-http-types"),
+				.product(name: "Logging", package: "swift-log"),
 				.product(name: "OAuth4Swift", package: "oauth4swift"),
 				.product(name: "SecretBytes", package: "swift-secret-bytes"),
 			]
@@ -82,6 +83,7 @@ let package = Package(
 				.product(name: "AtprotoTypesMocks", package: "AtprotoTypes"),
 				.product(name: "Mockable", package: "AtprotoTypes"),
 				.product(name: "Base64", package: "swift-bases"),
+				.product(name: "Crypto", package: "swift-crypto"),
 				.product(name: "Logging", package: "swift-log"),
 				.product(name: "GermConvenienceHTTP", package: "GermConvenience"),
 			]
