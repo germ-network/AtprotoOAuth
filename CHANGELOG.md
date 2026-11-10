@@ -1,5 +1,11 @@
 # @germ-network/atprotooauth
 
+## 0.8.1
+
+### Patch Changes
+
+- [#96](https://github.com/germ-network/AtprotoOAuth/pull/96) [`2e7dc12`](https://github.com/germ-network/AtprotoOAuth/commit/2e7dc12a6e788d9417478e0c71482832c4f192d3) Thanks [@germ-mark](https://github.com/germ-mark)! - Declare Logging and Crypto as direct dependencies of the targets that import them, so the products link when built as dynamic frameworks.
+
 ## 0.8.0
 
 ### Minor Changes
