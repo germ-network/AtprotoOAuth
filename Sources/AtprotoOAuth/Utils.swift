@@ -36,7 +36,14 @@ public struct AtprotoOAuthUtils {
 		pdsServiceEndpoint: URL,
 		authFetcher: HTTPFetcher
 	) async throws -> (AuthServerMetadata, URL)? {
-		//We start with a resource server so missing metadata is a throwing error
+		// We start with a resource server so missing metadata is a throwing error
+		//
+		// Known behavior: the DID document's endpoint is the resource identifier
+		// verbatim, not normalized to its origin. RFC 9728 requires the metadata's
+		// `resource` to be identical to it, so a DID document whose endpoint has a
+		// trailing slash or path, for a PDS publishing its bare origin, fails here
+		// with a resource mismatch. That is a misconfigured PDS; deliberately not
+		// papered over.
 		let pdsResourceMetadata = try await OAuth.discoverProtectedResource(
 			resource: pdsServiceEndpoint,
 			fetcher: authFetcher
