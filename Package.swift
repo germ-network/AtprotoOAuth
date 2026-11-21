@@ -36,7 +36,8 @@ let package = Package(
 		// Test-only resolver implementation.
 		.package(
 			url: "https://github.com/germ-network/Microcosm.git",
-			from: "0.5.0"
+			// from: "0.5.0"
+			branch: "adopt-oauth4swift-10"
 		),
 		// 0.8.0 moves oauth4swift's session secrets into zeroizing custody,
 		// which this package's Archive rides directly. 0.9.0 drops its
