@@ -7,7 +7,7 @@
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
         "branch" : "adopt-oauth4swift-10",
-        "revision" : "1fc509e31f17aed2b140c32ce25fedcfc2562939"
+        "revision" : "13aebba429281a83f479c946a60b67c159e95eb9"
       }
     },
     {
@@ -34,7 +34,7 @@
       "location" : "https://github.com/germ-network/Microcosm.git",
       "state" : {
         "branch" : "adopt-oauth4swift-10",
-        "revision" : "12a20b295249ae4896fe7f508a7e2a2a6a02cbe9"
+        "revision" : "69ec152a446c80df8e31d0031bcb00c046c47a1e"
       }
     },
     {
