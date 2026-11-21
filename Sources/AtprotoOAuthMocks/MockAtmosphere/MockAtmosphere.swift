@@ -63,6 +63,12 @@ public actor MockAtmosphere {
 		}
 		return try repos[didDoc.pdsUrl].unwrapped
 	}
+
+	///The authorization server behind `did`'s PDS, for scripting its `/oauth/`
+	///endpoints and reading back what the client sent.
+	public func authorizationServer(for did: Atproto.DID) throws -> MockAS? {
+		try pds(for: did)?.authorizationServer
+	}
 }
 
 extension MockAtmosphere: Atproto.Resolver {
@@ -220,10 +226,12 @@ extension MockAtmosphere: HTTPFetcher {
 		let authHeader = request.request.headerFields[.authorization]
 		let dpopHeader = request.request.headerFields[try .dpop.unwrapped]
 
-		guard authHeader != nil || dpopHeader != nil else {
+		//a DPoP proof alone is unauthenticated: PAR and token requests send one
+		//before there is an access token to bind it to
+		guard let authHeader else {
 			return nil
 		}
-		guard let authHeader, dpopHeader != nil else {
+		guard dpopHeader != nil else {
 			throw Errors.authHeaderMismatch
 		}
 

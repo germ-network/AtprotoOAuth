@@ -92,8 +92,10 @@ let package = Package(
 			name: "AtprotoOAuthTests",
 			dependencies: [
 				"AtprotoOAuth",
+				"AtprotoOAuthMocks",
 				"Microcosm",
 				.product(name: "GermConvenienceHTTP", package: "GermConvenience"),
+				.product(name: "GermConvenienceMocks", package: "GermConvenience"),
 				.product(
 					name: "GermConvenienceURLSession",
 					package: "GermConvenience"),
