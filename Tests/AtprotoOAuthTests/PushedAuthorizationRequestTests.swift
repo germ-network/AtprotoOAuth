@@ -32,6 +32,22 @@ struct PushedAuthorizationRequestTests {
 		case didWithHandle, didOnly, handle
 	}
 
+	///`login_hint` tells the authorization server which account to sign in. A
+	///`.did` identity always sends the DID, even when a handle is also given:
+	///the DID is stable and was verified during resolution, whereas a handle can
+	///change or stop resolving. Only a `.handle` identity sends the handle.
+	@Test(arguments: IdentityForm.allCases)
+	func parRequestIncludesLoginHint(_ form: IdentityForm) async throws {
+		let (parameters, did) = try await Self.pushedParameters(for: form)
+
+		let expected =
+			switch form {
+			case .didWithHandle, .didOnly: did.rawValue
+			case .handle: Self.handle.rawValue
+			}
+		#expect(parameters.get(name: "login_hint") == expected)
+	}
+
 	///Runs `authorize()` against a mock PDS that is its own authorization
 	///server, halting once the user would be sent to the browser, and returns
 	///the form parameters of the pushed authorization request.
