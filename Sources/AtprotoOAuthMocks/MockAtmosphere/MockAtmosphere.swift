@@ -110,7 +110,9 @@ extension MockAtmosphere {
 		let authorizationServer = newPds.authorizationServer
 		assert(
 			authorizationServer.serviceUrl == newPds.serviceUrl
-				|| entryways.contains { $0.issuerUrl == authorizationServer.issuerUrl },
+				|| entryways.contains {
+					$0.issuerUrl == authorizationServer.issuerUrl
+				},
 			"the PDS's authorization server must be itself or a registered entryway"
 		)
 
