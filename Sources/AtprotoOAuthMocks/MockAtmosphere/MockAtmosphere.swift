@@ -26,6 +26,8 @@ public actor MockAtmosphere {
 	public var handleResolution: [Atproto.Handle: Atproto.DID] = [:]
 	public var didDocs: [Atproto.DID: Atproto.DIDDocument] = [:]
 	private var repos: [URL: MockPDS] = [:]
+	//authorization servers on their own host, in front of PDSes in `repos`
+	private var entryways: [MockAS] = []
 
 	//server-side state for cursor-paginated queries, keyed by an opaque cursor uuid.
 	//the originating query is retained so a cursor can't be replayed against a
@@ -91,16 +93,26 @@ extension MockAtmosphere {
 		try await createDid(handle: handle, bskyProfile: bskyProfile).0
 	}
 
+	///`pds` defaults to a new PDS that is its own authorization server
 	func createDid(
 		handle: Atproto.Handle,
-		bskyProfile: Lexicon.App.Bsky.Actor.Profile?
+		bskyProfile: Lexicon.App.Bsky.Actor.Profile?,
+		pds: MockPDS? = nil
 	) async throws -> (Atproto.DID, MockPDS) {
 		let newDid = Atproto.DID.mock()
-		let newPds = try MockPDS()
+		let newPds = try pds ?? MockPDS()
 
 		assert(handleResolution[handle] == nil)
 		assert(didDocs[newDid] == nil)
 		assert(repos[newPds.serviceUrl] == nil)
+		//data(for:) can only route to a PDS's own authorization server or a
+		//registered entryway; any other would fail discovery with noHost
+		let authorizationServer = newPds.authorizationServer
+		assert(
+			authorizationServer.serviceUrl == newPds.serviceUrl
+				|| entryways.contains { $0.issuerUrl == authorizationServer.issuerUrl },
+			"the PDS's authorization server must be itself or a registered entryway"
+		)
 
 		let _ = try await newPds.host(did: newDid, bskyProfile: bskyProfile)
 
@@ -125,6 +137,47 @@ extension MockAtmosphere {
 		tokenLookup[saltedToken] = newDid
 
 		return (newDid, newPds)
+	}
+
+	///An authorization server on its own host, as bsky.social is, that DIDs
+	///created through it sit behind:
+	///
+	///    let entryway = try await MockAtmosphere().createEntryway()
+	///    let did = try await entryway.createDid(handle: handle)
+	///
+	///`serviceUrl` defaults to a random host.
+	public func createEntryway(serviceUrl: URL? = nil) throws -> Entryway {
+		guard let serviceUrl else {
+			//a minted URL is a fresh host, so it can't collide
+			return register(entryway: try MockAS())
+		}
+
+		//issuers are origins, so compare origins: a trailing slash is the same host
+		let origin = try serviceUrl.origin
+		assert(!entryways.contains { $0.issuerUrl.absoluteString == origin })
+		return register(entryway: try MockAS(serviceUrl: serviceUrl))
+	}
+
+	private func register(entryway authorizationServer: MockAS) -> Entryway {
+		entryways.append(authorizationServer)
+		return .init(atmosphere: self, authorizationServer: authorizationServer)
+	}
+
+	public struct Entryway: Sendable {
+		public let atmosphere: MockAtmosphere
+		public let authorizationServer: MockAS
+
+		///Each DID gets its own PDS, all sharing this authorization server.
+		public func createDid(
+			handle: Atproto.Handle,
+			bskyProfile: Lexicon.App.Bsky.Actor.Profile? = .mock()
+		) async throws -> Atproto.DID {
+			try await atmosphere.createDid(
+				handle: handle,
+				bskyProfile: bskyProfile,
+				pds: .withEntryway(authorizationServer)
+			).0
+		}
 	}
 
 	public func salted(did: Atproto.DID) throws -> String {
@@ -175,20 +228,26 @@ extension MockAtmosphere {
 extension MockAtmosphere: HTTPFetcher {
 	public var mockClient: AtprotoOAuthClient {
 		get throws {
-			.init(
-				clientInfo: .init(
-					clientId: "https://client.example.com",
-					scopes: ["atproto"],
-					redirectURI: try URL(string: "com.example.static:/oauth")
-						.unwrapped
-				),
-				resolver: self,
-				authFetcher: self,
-				userAuthenticator: { _, _ in
-					try URL(string: "https://callback.example.com").unwrapped
-				}
-			)
+			try mockClient(userAuthenticator: { _, _ in
+				try URL(string: "https://callback.example.com").unwrapped
+			})
 		}
+	}
+
+	public func mockClient(
+		userAuthenticator: @escaping @Sendable (URL, String) async throws -> URL
+	) throws -> AtprotoOAuthClient {
+		.init(
+			clientInfo: .init(
+				clientId: "https://client.example.com",
+				scopes: ["atproto"],
+				redirectURI: try URL(string: "com.example.static:/oauth")
+					.unwrapped
+			),
+			resolver: self,
+			authFetcher: self,
+			userAuthenticator: userAuthenticator
+		)
 	}
 
 	public func data(
@@ -214,11 +273,15 @@ extension MockAtmosphere: HTTPFetcher {
 			return try await blueskyPublicServiceResponse(
 				xrpcComponents: xrpcComponents
 			)
+		} else if let entryway = try entryways.first(where: {
+			try $0.handles(bundledRequest)
+		}) {
+			return try await entryway.response(for: bundledRequest)
 		} else {
 			let pds = try repos[host]
 				.unwrap(or: Errors.noHost)
 
-			return try await pds.response(xrpcComponents, authedDid: authedDid)
+			return try await pds.response(for: bundledRequest, authedDid: authedDid)
 		}
 	}
 

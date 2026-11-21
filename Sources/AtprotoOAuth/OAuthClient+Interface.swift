@@ -23,8 +23,8 @@ public enum AuthIdentity: Sendable {
 		switch self {
 		case .handle(let handle):
 			handle.rawValue
-		//the DID is unambiguous and already verified, so it wins over a handle
 		case .did(let did, _):
+			//the DID is unambiguous and already verified, so it wins over a handle
 			did.rawValue
 		}
 	}

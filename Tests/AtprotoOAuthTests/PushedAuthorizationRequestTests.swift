@@ -72,15 +72,8 @@ struct PushedAuthorizationRequestTests {
 							.utf8Data
 					)))
 
-		let client = AtprotoOAuthClient(
-			clientInfo: .init(
-				clientId: "https://client.example.com/client-metadata.json",
-				scopes: ["atproto"],
-				redirectURI: try #require(URL(string: "com.example.client:/oauth"))
-			),
-			resolver: atmosphere,
-			authFetcher: atmosphere,
-			//stop the flow here; we only care about what was pushed
+		//stop the flow here; we only care about what was pushed
+		let client = try await atmosphere.mockClient(
 			userAuthenticator: AuthHarness.failingUserAuthenticator
 		)
 
