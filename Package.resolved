@@ -1,13 +1,13 @@
 {
-  "originHash" : "67647f48ace7257af854eff345d262cb6f94ce1911f72b59a08c77a01b7cd4e8",
+  "originHash" : "b4be954c007f768712fd0d0b1b8fe9f7093c94f0b839ccf7e49e854d95d6359c",
   "pins" : [
     {
       "identity" : "atprotoclient",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoClient.git",
       "state" : {
-        "revision" : "3e9d731417cdc5411d5c358a5de7d65d0f4a28e1",
-        "version" : "0.14.0"
+        "branch" : "adopt-oauth4swift-10",
+        "revision" : "1fc509e31f17aed2b140c32ce25fedcfc2562939"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/AtprotoTypes.git",
       "state" : {
-        "revision" : "c129e67243aa5327926e0991e6c16f61790fcd79",
-        "version" : "0.11.0"
+        "branch" : "ci/repo-standard",
+        "revision" : "c81a084f2e46d00e32fbe53e96fdab4bb797a825"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/GermConvenience.git",
       "state" : {
-        "revision" : "6f9f44970d38889a02e8c3b2e51d0261c67237e2",
-        "version" : "0.15.0"
+        "branch" : "add-always-responder-to-mockhttpfetcher",
+        "revision" : "5f76ef80903dd0d5c804ffe9f48dd5427fced3cf"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/germ-network/oauth4swift.git",
       "state" : {
-        "revision" : "180d730f106fa60305198cb58f4975befd4932a3",
-        "version" : "0.9.1"
+        "branch" : "adopt-url-origin",
+        "revision" : "733c83a07a3c262b8057dfe7699df93af5dc1608"
       }
     },
     {
