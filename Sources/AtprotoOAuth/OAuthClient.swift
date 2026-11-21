@@ -61,6 +61,15 @@ extension AtprotoOAuthClient {
 				authFetcher: authFetcher
 			)
 
+		// The AT Protocol OAuth profile currently requires the `state` parameter to
+		// allow the client to assert that the redirect has not been replayed.
+		// Clients should use randomly-generated tokens for this parameter and not
+		// have collisions or reuse tokens across any combination of device,
+		// account, or session. Given our authorization flow happens within a
+		// closure, we don't actually key the checking of the issuer off the `state`
+		// token.
+		let state = UUID().uuidString
+
 		let authorizer = Authorizer(
 			clientId: clientInfo.clientId,
 			authorizeInputs:
@@ -68,7 +77,7 @@ extension AtprotoOAuthClient {
 					clientInfo: clientInfo,
 					authServerMetadata: authServerMetadata,
 					authEndpoint: authorizationServerUrl,
-					inputToken: nil,
+					inputToken: state,
 					additionalParameters: additionalParameters,
 					userAuthenticator: userAuthenticator,
 					tokenAuthOptions: .init(

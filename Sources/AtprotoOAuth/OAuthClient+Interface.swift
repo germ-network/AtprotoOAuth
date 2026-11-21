@@ -23,11 +23,9 @@ public enum AuthIdentity: Sendable {
 		switch self {
 		case .handle(let handle):
 			handle.rawValue
-		case .did(let did, let handle):
-			//Bluesky server shows did if we pass a did, so we favor
-			//the user-facing handle
-			//https://github.com/bluesky-social/atproto/issues/4900
-			handle?.rawValue ?? did.rawValue
+		case .did(let did, _):
+			//the DID is unambiguous and already verified, so it wins over a handle
+			did.rawValue
 		}
 	}
 }

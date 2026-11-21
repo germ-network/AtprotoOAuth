@@ -28,7 +28,7 @@ public struct AtprotoOAuthUtils {
 		return try await urlAsAuthServer(
 			pdsServiceEndpoint: pdsServiceEndpoint,
 			authFetcher: authFetcher
-		).unwrapped
+		)
 	}
 
 	// Treat the PDS service endpoint as a resource server
@@ -36,11 +36,18 @@ public struct AtprotoOAuthUtils {
 		pdsServiceEndpoint: URL,
 		authFetcher: HTTPFetcher
 	) async throws -> (AuthServerMetadata, URL)? {
-		//We start with a resource server so missing metadata is a throwing error
-		let pdsResourceMetadata = try await authFetcher.resourceDiscoveryRequest(
-			url: pdsServiceEndpoint
+		// We start with a resource server so missing metadata is a throwing error
+		//
+		// Known behavior: the DID document's endpoint is the resource identifier
+		// verbatim, not normalized to its origin. RFC 9728 requires the metadata's
+		// `resource` to be identical to it, so a DID document whose endpoint has a
+		// trailing slash or path, for a PDS publishing its bare origin, fails here
+		// with a resource mismatch. That is a misconfigured PDS; deliberately not
+		// papered over.
+		let pdsResourceMetadata = try await OAuth.discoverProtectedResource(
+			resource: pdsServiceEndpoint,
+			fetcher: authFetcher
 		)
-		.unwrapped
 
 		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 		//PDS doesn't actually fill this field, so we only check it if present
@@ -65,10 +72,10 @@ public struct AtprotoOAuthUtils {
 		}
 
 		//not a valid auth server unless we can get metadata from it
-		let pdsAuthMetadata =
-			try await authFetcher
-			.authServerDiscovery(endpoint: authorizationServerUrl)
-			.unwrapped
+		let pdsAuthMetadata = try await OAuth.discoverAuthorizationServer(
+			issuer: authorizationServerUrl,
+			fetcher: authFetcher
+		)
 
 		return (pdsAuthMetadata, authorizationServerUrl)
 	}
@@ -77,11 +84,11 @@ public struct AtprotoOAuthUtils {
 	private static func urlAsAuthServer(
 		pdsServiceEndpoint: URL,
 		authFetcher: HTTPFetcher
-	) async throws -> (AuthServerMetadata, URL)? {
-		let pdsAuthMetadata =
-			try await authFetcher
-			.authServerDiscovery(endpoint: pdsServiceEndpoint)
-			.unwrapped
+	) async throws -> (AuthServerMetadata, URL) {
+		let pdsAuthMetadata = try await OAuth.discoverAuthorizationServer(
+			issuer: pdsServiceEndpoint,
+			fetcher: authFetcher
+		)
 
 		//https://datatracker.ietf.org/doc/html/rfc7518#section-3.1
 		//PDS doesn't actually fill this field, so we only check it if present
